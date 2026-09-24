@@ -1,0 +1,4 @@
+nflreadpy
+pyarrow
+pandas
+numpy
