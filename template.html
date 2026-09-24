@@ -925,12 +925,68 @@ const pick=(s,...ks)=>{for(const k of ks) if(s[k]!=null) return s[k]; return nul
 function posGroup(a){const p=(a.position?.abbreviation||a.position?.name||"").toUpperCase();
   if(p.startsWith("G")) return "G"; if(p.startsWith("D")||p.includes("B")&&!p.includes("M")) return "D"; if(p.startsWith("M")) return "M"; if(p.startsWith("F")||p.includes("W")||p.includes("ST")||p==="A") return "F"; return "M";}
 let mxpLoaded=false, MXP=[];
+// Estadísticas completas desde el reporte de cada partido (se guardan para siempre: un partido terminado no cambia)
+async function mxFromSummaries(){
+  try{
+    const {ev}=await mxSeason();
+    const done=ev.filter(e=>e.status?.type?.state==="post");
+    if(!done.length) return [];
+    const load=id=>{try{return JSON.parse(localStorage.getItem("pz_mxm_"+id)||"null")}catch(e){return null}};
+    const save=(id,v)=>{try{localStorage.setItem("pz_mxm_"+id,JSON.stringify(v))}catch(e){}};
+    const pend=done.filter(e=>!load(e.id));
+    let n=done.length-pend.length, fails=0;
+    const msg=()=>$("#mxpMsg").textContent=`Leyendo los partidos del torneo: ${n} de ${done.length}…`;
+    msg();
+    const num=(st,...ks)=>{for(const k of ks){const x=st[k]; if(x!=null&&!isNaN(+x)) return +x;} return null;};
+    async function one(e){
+      try{
+        const sm=await fetch(`${ESPN}/site/v2/sports/soccer/mex.1/summary?event=${e.id}`).then(r=>r.json());
+        const cs=e.competitions?.[0]?.competitors||[];
+        const score=Object.fromEntries(cs.map(c=>[c.team?.id,+c.score||0]));
+        const logo=Object.fromEntries(cs.map(c=>[c.team?.id,c.team?.logo]));
+        const rows=[];
+        for(const r of sm.rosters||[]){
+          const tid=r.team?.id, opp=cs.find(c=>c.team?.id!==tid)?.team?.id;
+          for(const p of r.roster||[]){
+            if(!(p.starter||p.subbedIn)) continue;
+            const st=Object.fromEntries((p.stats||[]).map(s=>[s.name,s.value]));
+            const pos=(p.position?.abbreviation||"").toUpperCase();
+            const gk=p.starter&&(pos==="G"||pos==="GK");
+            rows.push({id:p.athlete?.id,n:p.athlete?.displayName,t:r.team?.abbreviation||"",tn:r.team?.displayName||"",logo:r.team?.logo||logo[tid],pos,
+              s:p.starter?1:0,g:num(st,"totalGoals","goals"),as:num(st,"goalAssists","assists"),sh:num(st,"totalShots","shots"),sot:num(st,"shotsOnTarget"),
+              yc:num(st,"yellowCards"),rc:num(st,"redCards"),fc:num(st,"foulsCommitted"),fs:num(st,"foulsSuffered"),sv:num(st,"saves"),
+              gc:gk?(score[opp]??null):null,cs:gk?((score[opp]??1)===0?1:0):null});
+          }
+        }
+        if(!rows.length) fails++;
+        save(e.id,rows);
+      }catch(err){fails++;}
+      n++; msg();
+    }
+    for(let i=0;i<pend.length;i+=6) await Promise.all(pend.slice(i,i+6).map(one));
+    const P=new Map();
+    for(const e of done){
+      for(const r of load(e.id)||[]){
+        if(!r.n) continue;
+        const k=r.id||(r.n+"|"+r.t);
+        if(!P.has(k)) P.set(k,{id:k,n:r.n,t:r.t,tn:r.tn,logo:r.logo,pos:r.pos,ap:0,tit:0});
+        const a=P.get(k); a.ap++; a.tit+=r.s; if(r.pos&&r.pos!=="SUB") a.pos=r.pos;
+        for(const f of ["g","as","sh","sot","yc","rc","fc","fs","sv","gc","cs"]) if(r[f]!=null) a[f]=(a[f]||0)+r[f];
+      }
+    }
+    const out=[...P.values()].map(r=>{const pg=/^G/.test(r.pos)?"G":/^(CD|CB|D|LB|RB|LWB|RWB|SW|WB)/.test(r.pos)?"D":/^(F|CF|ST|LW|RW|W|S$)/.test(r.pos)&&r.pos!=="SUB"?"F":"M";
+      return {...r,pg,g:r.g??0,as:r.as??null,ga:r.as==null?null:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null};});
+    return fails>=done.length?[]:out;
+  }catch(e){return [];}
+}
+
 async function loadMxPlayers(){
   if(mxpLoaded) return; mxpLoaded=true;
   try{
-    let cached=null; try{cached=JSON.parse(localStorage.getItem("pizarra_mxp2")||"null")}catch(e){}
+    let cached=null; try{cached=JSON.parse(localStorage.getItem("pizarra_mxp3")||"null")}catch(e){}
     if(D.mxp&&D.mxp.length){MXP=D.mxp.map(r=>({...r,ga:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null,g90:null}));}
     else if(cached&&Date.now()-cached.t<6*3600e3){MXP=cached.rows;}
+    else if((MXP=await mxFromSummaries())&&MXP.length){ try{localStorage.setItem("pizarra_mxp3",JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){} }
     else{
       $("#mxpMsg").textContent="Sumando los partidos del torneo…";
       const {ev:SEV}=await mxSeason();
@@ -969,14 +1025,14 @@ async function loadMxPlayers(){
         }
       }catch(e){}
       MXP=[...P.values()].map(r=>({...r,ap:null,pg:(r.pos||"M")[0].toUpperCase().replace(/[^GDMF]/,"M"),ga:r.as==null?null:r.g+r.as}));
-      try{localStorage.setItem("pizarra_mxp2",JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){}
+      try{localStorage.setItem("pizarra_mxp3",JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){}
     }
     if(!MXP.length){$("#mxpMsg").textContent="ESPN todavía no reporta estadísticas de jugadores para este torneo.";return;}
     $("#mxpMsg").textContent="";
     const teamsOpt=[...new Map(MXP.map(r=>[r.t,r.tn])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
     $("#mxpTeam").innerHTML=`<option value="">Todos los equipos</option>`+teamsOpt.map(([a,n])=>`<option value="${a}">${n}</option>`).join("");
     const lead=(k,label,fmtf=v=>fmt(v))=>{const r=[...MXP].filter(r=>r[k]!=null).sort((a,b)=>b[k]-a[k])[0]; return r&&r[k]>0?leaderCard(label,fmtf(r[k]),{...r,img:r.id?`https://a.espncdn.com/i/headshots/soccer/players/full/${r.id}.png`:null,logo:r.logo}):"";};
-    $("#mxLeaders").innerHTML=[lead("g","Goles"),lead("as","Asistencias"),lead("ga","Goles + asistencias"),lead("sot","Tiros a gol"),lead("sv","Atajadas"),lead("yc","Tarjetas amarillas")].join("");
+    $("#mxLeaders").innerHTML=[lead("g","Goles"),lead("as","Asistencias"),lead("ga","Goles + asistencias"),lead("sot","Tiros a gol"),lead("sv","Atajadas"),lead("cs","Porterías en cero"),lead("yc","Tarjetas amarillas")].join("");
     mxpState.render();
   }catch(e){mxpLoaded=false;$("#mxpMsg").textContent="Las estadísticas de jugadores se generan con la próxima actualización automática.";}
 }
@@ -986,7 +1042,7 @@ const mxpState={k:"g",dir:"desc",pos:"ALL",team:"",q:"",render(){
   const has=k=>MXP.some(r=>r[k]!=null);
   const gk=this.pos==="G";
   const cols=[{k:"n",h:"Jugador",l:1,f:r=>`<span class="nm">${r.n}</span><span class="tm">${r.t}${r.pos?" · "+r.pos:""}</span>`,asc:1},
-    {k:"ap",h:"PJ"},{k:"min",h:"Minutos",f:r=>fmt(r.min)},
+    {k:"ap",h:"PJ"},{k:"tit",h:"Titular"},{k:"min",h:"Minutos",f:r=>fmt(r.min)},
     ...(gk?[{k:"sv",h:"Atajadas"},{k:"gc",h:"Goles recibidos",asc:1},{k:"cs",h:"Porterías en cero"}]
           :[{k:"g",h:"Goles"},{k:"as",h:"Asistencias"},{k:"ga",h:"G + A"},{k:"g90",h:"Goles por 90",f:r=>fmt(r.g90,2)},{k:"sh",h:"Tiros"},{k:"sot",h:"Tiros a gol"},{k:"acc",h:"% a gol",f:r=>r.acc==null?"–":Math.round(r.acc*100)+"%"},{k:"fs",h:"Faltas recibidas"}]),
     {k:"yc",h:"Amarillas",asc:1},{k:"rc",h:"Rojas",asc:1}].filter(c=>c.k==="n"||has(c.k));
