@@ -113,6 +113,50 @@ td.rk{color:var(--muted);width:2.5em}
 .meter{height:12px;border-radius:6px;background:var(--alt);overflow:hidden;margin:10px 0 6px}
 .meter i{display:block;height:100%;background:var(--mark);transition:width .3s}
 .verdict strong{font:700 24px var(--display)}
+.btn{font:600 16px/1 var(--display);letter-spacing:.02em;background:var(--ink);color:var(--bg);border:0;border-radius:8px;padding:10px 18px;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:wait}
+hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:6px 0 24px}
+.kpi{border-top:3px solid var(--ink);padding-top:8px}
+.kpi .k{font:600 14px var(--display);color:var(--muted)}
+.kpi .v{font:700 36px/1 var(--display);color:var(--mark);margin-top:4px}
+.kpi .s{font-size:13px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:start}
+.power{display:grid;gap:8px}
+.prow{display:grid;grid-template-columns:minmax(90px,140px) 1fr 52px;gap:10px;align-items:center;font-size:14px}
+.prow .pn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prow .pb{height:14px;background:var(--line);border-radius:4px;overflow:hidden}
+.prow .pb i{display:block;height:100%;background:var(--muted)}
+.prow.me .pn{font-weight:700}.prow.me .pb i{background:var(--mark)}
+.prow .pv{text-align:right;font:600 15px var(--display);font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font:600 12px/1 var(--display);padding:4px 7px;border-radius:5px;border:1.5px solid currentColor}
+.tag.yes{color:var(--good)}.tag.no{color:var(--muted)}
+@media (max-width:720px){.kpis{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+.subnav{display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center;padding:4px 0 14px;border-bottom:1px solid var(--line)}
+.subnav[hidden],svg[hidden]{display:none}
+.subnav button{font:600 18px/1 var(--display);letter-spacing:.02em;border:0;background:none;color:var(--muted);padding:8px 0;cursor:pointer;border-bottom:3px solid transparent}
+.subnav button[aria-current="page"]{color:var(--ink);border-bottom-color:var(--mark)}
+.subnav .league{font:700 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--bg);background:var(--ink);padding:5px 8px;border-radius:5px}
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.game{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.game .when{display:flex;justify-content:space-between;font:600 14px var(--display);letter-spacing:.02em;color:var(--muted)}
+.game .when b{color:var(--ink)}
+.team{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center}
+.team img{width:30px;height:30px;object-fit:contain}
+.team .tn{font:600 19px/1.1 var(--display)}
+.team .tn small{font:500 12px var(--body);color:var(--muted);margin-left:6px}
+.team .ml{font:700 18px var(--display);font-variant-numeric:tabular-nums}
+.team .sc{font:700 24px var(--display)}
+.team.win .tn,.team.win .sc{color:var(--mark)}
+.prob{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line)}
+.prob i{display:block;height:100%}
+.probl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:-4px}
+.lines{display:flex;gap:16px;font-size:14px}
+.lines span b{font:600 15px var(--display)}
+.where{display:flex;justify-content:space-between;gap:10px;align-items:flex-end;border-top:1px dashed var(--line);padding-top:10px;font-size:13px;color:var(--muted)}
+.wx{text-align:right;white-space:nowrap}
+.wx b{font:700 20px var(--display);color:var(--ink)}
+.live{color:var(--alt);font-weight:700}
 footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color:var(--muted);font-size:13px}
 @media (max-width:720px){
   .hero{grid-template-columns:1fr}.play{max-height:170px}
@@ -127,18 +171,33 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 <div class="wrap">
 <header class="top">
   <div class="logo">La <span>Pizarra</span></div>
-  <nav class="tabs" role="tablist">
-    <button role="tab" aria-selected="true" data-tab="stats">Estadísticas</button>
-    <button role="tab" aria-selected="false" data-tab="fantasy">Fantasy</button>
+  <nav class="tabs sports" aria-label="Deporte">
+    <button aria-selected="true" data-sport="nfl">NFL</button>
+    <button aria-selected="false" data-sport="mx">Fútbol</button>
   </nav>
 </header>
+<nav class="subnav" data-for="nfl" aria-label="Secciones NFL">
+  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="fantasy">Fantasy</button>
+</nav>
+<nav class="subnav" data-for="mx" aria-label="Secciones Liga MX" hidden>
+  <span class="league">Liga MX</span><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button>
+</nav>
 
 <div class="hero">
   <div>
-    <h1>Números de la NFL, explicados en español</h1>
+    <h1 id="heroTitle">Números de la NFL, explicados en español</h1>
     <p id="heroSub"></p>
   </div>
-  <svg class="play" viewBox="0 0 420 220" aria-hidden="true">
+  <svg class="play mxart" viewBox="0 0 420 220" aria-hidden="true" hidden>
+    <rect class="los" x="20" y="20" width="380" height="180" rx="4" style="stroke-dasharray:none;fill:none"/>
+    <line class="los" x1="210" y1="20" x2="210" y2="200" style="stroke-dasharray:none;fill:none"/>
+    <circle class="los" cx="210" cy="110" r="30" style="fill:none;stroke-dasharray:none"/>
+    <rect class="los" x="20" y="65" width="55" height="90" style="stroke-dasharray:none;fill:none"/><rect class="los" x="345" y="65" width="55" height="90" style="stroke-dasharray:none;fill:none"/>
+    <g><circle class="o" cx="120" cy="70" r="8"/><circle class="o" cx="150" cy="150" r="8"/><circle class="o" cx="230" cy="95" r="8"/><circle class="o" cx="300" cy="140" r="8"/></g>
+    <path class="rt" style="--len:120" d="M128 74 L222 93"/><path class="rt" style="--len:110" d="M238 99 L292 136"/><path class="rt rt2" style="--len:80" d="M308 138 C335 128 350 118 372 110"/>
+    <g class="x"><path d="M260 60 l12 12 M272 60 l-12 12"/><path d="M330 90 l12 12 M342 90 l-12 12"/></g>
+  </svg>
+  <svg class="play nflart" viewBox="0 0 420 220" aria-hidden="true">
     <line class="los" x1="10" y1="140" x2="410" y2="140"/>
     <g>
       <circle class="o" cx="110" cy="155" r="9"/><circle class="o" cx="150" cy="155" r="9"/><circle class="o" cx="190" cy="155" r="9"/><circle class="o" cx="230" cy="155" r="9"/><circle class="o" cx="270" cy="155" r="9"/>
@@ -149,12 +208,46 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
     <path class="rt rt2" style="--len:200" d="M320 152 V100 C320 70 260 70 240 90"/>
     <path class="rt" style="--len:150" d="M230 200 C280 200 300 180 330 175 L390 175"/>
     <g class="x"><path d="M180 90 l12 12 M192 90 l-12 12"/><path d="M90 80 l12 12 M102 80 l-12 12"/><path d="M300 40 l12 12 M312 40 l-12 12"/></g>
-    <text class="lbl" x="12" y="132">línea de golpeo</text>
   </svg>
 </div>
 
+<!-- NFL PARTIDOS -->
+<section class="panel" id="nflgames">
+  <h2 id="gTitle"></h2>
+  <p class="lede">Horarios en tiempo del centro de México. Momios en formato americano; la barra muestra la probabilidad implícita de cada equipo, ya sin la comisión de la casa. El clima es el pronóstico para la hora del partido.</p>
+  <div class="games" id="nflGames"></div>
+</section>
+
+<!-- LIGA MX -->
+<section class="panel hidden" id="mxgames">
+  <h2>Partidos de Liga MX</h2>
+  <p class="lede">Resultados de los últimos días y próximos partidos. Horarios en tiempo del centro de México; momios en formato americano con probabilidad implícita de local, empate y visita.</p>
+  <p class="note" id="mxMsg" aria-live="polite">Cargando partidos…</p>
+  <div class="games" id="mxGames"></div>
+</section>
+<section class="panel hidden" id="mxtable">
+  <h2>Tabla general</h2>
+  <p class="lede">Clasificación del torneo actual. Da clic en cualquier encabezado para reordenar.</p>
+  <p class="note" id="mxtMsg" aria-live="polite">Cargando tabla…</p>
+  <div class="tbl"><table id="mxTable"></table></div>
+</section>
+
+<section class="panel hidden" id="mxplayers">
+  <h2>Líderes de la Liga MX</h2>
+  <p class="lede">Estadísticas de jugadores en la temporada. Da clic en cualquier encabezado para reordenar.</p>
+  <p class="note" id="mxpMsg" aria-live="polite">Cargando jugadores…</p>
+  <div class="leaders" id="mxLeaders"></div>
+  <div class="bar">
+    <div class="seg" id="mxpSeg"><button aria-pressed="true" data-p="ALL">Todos</button><button aria-pressed="false" data-p="F">Delanteros</button><button aria-pressed="false" data-p="M">Medios</button><button aria-pressed="false" data-p="D">Defensas</button><button aria-pressed="false" data-p="G">Porteros</button></div>
+    <select id="mxpTeam" aria-label="Equipo"><option value="">Todos los equipos</option></select>
+    <input type="search" id="mxpSearch" placeholder="Buscar jugador" aria-label="Buscar jugador">
+  </div>
+  <div class="tbl"><table id="mxpTable"></table></div>
+  <p class="note">Fuente: ESPN. Goles por 90 y tiros a gol se calculan solo cuando ESPN reporta minutos y tiros.</p>
+</section>
+
 <!-- ESTADÍSTICAS -->
-<section class="panel" id="stats">
+<section class="panel hidden" id="stats">
   <h2>Líderes de la temporada</h2>
   <p class="lede">Quién está produciendo de verdad, no solo quién suma más puntos. Da clic en cualquier encabezado para reordenar.</p>
   <div class="leaders" id="leaders"></div>
@@ -165,6 +258,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
       <button aria-pressed="true" data-k="qb">Pase</button>
       <button aria-pressed="false" data-k="rec">Recepción</button>
       <button aria-pressed="false" data-k="rush">Carrera</button>
+      <button aria-pressed="false" data-k="def">Defensa</button>
     </div>
     <input type="search" id="pSearch" placeholder="Buscar jugador o equipo" aria-label="Buscar jugador o equipo">
   </div>
@@ -173,11 +267,34 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 
   <h3 style="margin-top:30px">Equipos</h3>
   <div class="tbl"><table id="tTable"></table></div>
-  <p class="note">EPA/jugada mide cuántos puntos esperados gana (ofensiva) o permite (defensiva) un equipo por jugada; en defensa, más negativo es mejor. "Vs. récord ganador" cuenta juegos contra equipos que hoy tienen más victorias que derrotas.</p>
+  <p class="note">EPA/jugada mide cuántos puntos esperados gana (ofensiva) o permite (defensiva) un equipo por jugada; en defensa, más negativo es mejor. "Pase vs. esperado" compara qué tanto lanza un equipo contra lo que haría un equipo promedio en las mismas situaciones (down, distancia, marcador). "Vs. récord ganador" cuenta juegos contra equipos que hoy tienen más victorias que derrotas.</p>
 </section>
 
 <!-- FANTASY -->
 <section class="panel hidden" id="fantasy">
+  <div id="sleeper">
+    <h2>Tu liga de Sleeper</h2>
+    <p class="lede">Escribe tu usuario de Sleeper para ver tu roster, quién está libre en tu liga y cómo se comparan los equipos.</p>
+    <div class="bar">
+      <input type="search" id="slUser" placeholder="Usuario de Sleeper" aria-label="Usuario de Sleeper" autocomplete="off">
+      <button class="btn" id="slGo">Conectar</button>
+      <select id="slLeague" aria-label="Liga" hidden></select>
+    </div>
+    <p class="note" id="slMsg" aria-live="polite"></p>
+    <div id="slDash" hidden>
+      <div class="kpis" id="slKpis"></div>
+      <div class="grid2">
+        <div><h3>Tu roster</h3><div class="tbl"><table id="slRoster"></table></div></div>
+        <div><h3>Fuerza de los rosters</h3><p class="note" style="margin:0 0 10px">Suma del valor de todos los jugadores de cada equipo.</p><div id="slPower" class="power"></div></div>
+      </div>
+      <h3 style="margin-top:26px">Libres en tu liga</h3>
+      <div class="bar"><div class="seg" id="slSeg"><button aria-pressed="true" data-p="ALL">Todos</button><button aria-pressed="false" data-p="QB">QB</button><button aria-pressed="false" data-p="RB">RB</button><button aria-pressed="false" data-p="WR">WR</button><button aria-pressed="false" data-p="TE">TE</button></div></div>
+      <div class="tbl"><table id="slFree"></table></div>
+      <h3 style="margin-top:26px">Lo más agregado en Sleeper (últimas 24 h)</h3>
+      <div class="tbl"><table id="slTrend"></table></div>
+    </div>
+  </div>
+  <hr class="rule">
   <h2 id="fTitle"></h2>
   <p class="lede">Jugadores con dueño en menos de la mitad de las ligas cuyo uso subió la semana pasada.</p>
   <div class="notes" id="notes"></div>
@@ -195,17 +312,18 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <p class="note">% de ligas con dueño: promedio de ESPN y Yahoo reportado por FantasyPros (corte del 18 de septiembre).</p>
 
   <h3 style="margin-top:30px">Analizador de intercambios</h3>
-  <p class="lede">Agrega los jugadores de cada lado. El valor sale del ranking de consenso para el resto de la temporada en formato PPR.</p>
+  <p class="lede">Agrega los jugadores de cada lado. El valor sale del ranking de consenso para el resto de la temporada en formato PPR. Si conectaste tu liga, elige con quién negocias y solo verás los jugadores de cada roster.</p>
+  <div class="bar" id="tradeTeamBar" hidden><label class="slider">Negocias con <select id="tradeTeam"></select></label></div>
   <div class="trade">
-    <div class="side" id="sideA"><h3>Das <b>0</b></h3><ul></ul><input type="search" list="plist" placeholder="Agregar jugador" aria-label="Agregar jugador que das"></div>
+    <div class="side" id="sideA"><h3>Das <b>0</b></h3><ul></ul><input type="search" list="plistA" placeholder="Agregar jugador" aria-label="Agregar jugador que das"></div>
     <div class="vs">vs</div>
-    <div class="side" id="sideB"><h3>Recibes <b>0</b></h3><ul></ul><input type="search" list="plist" placeholder="Agregar jugador" aria-label="Agregar jugador que recibes"></div>
+    <div class="side" id="sideB"><h3>Recibes <b>0</b></h3><ul></ul><input type="search" list="plistB" placeholder="Agregar jugador" aria-label="Agregar jugador que recibes"></div>
   </div>
-  <datalist id="plist"></datalist>
+  <datalist id="plistA"></datalist><datalist id="plistB"></datalist>
   <div class="verdict" id="verdict"><strong>Agrega jugadores para comparar</strong><div class="meter"><i style="width:50%"></i></div><span class="note"></span></div>
 </section>
 
-<footer>Datos: nflverse (jugada por jugada, snaps y estadísticas) y rankings de consenso de FantasyPros vía ffverse. Hecho por La Pizarra.</footer>
+<footer>Datos: nflverse (jugada por jugada, snaps, estadísticas, calendario y momios), rankings de consenso de FantasyPros vía ffverse, Sleeper, ESPN (Liga MX) y Open-Meteo (clima). Hecho por La Pizarra.</footer>
 </div>
 
 <script>
@@ -214,15 +332,24 @@ const $ = s => document.querySelector(s);
 const fmt = (v,d=0) => v==null ? "–" : (d ? Number(v).toFixed(d) : Number(v).toLocaleString("es-MX"));
 const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
 
-$("#heroSub").textContent = `Estadísticas avanzadas y herramientas de fantasy de la temporada 2026, con datos hasta la semana ${D.week}.`;
+$("#heroSub").textContent = `Estadísticas avanzadas, partidos y herramientas de fantasy de la temporada ${D.season}, con datos hasta la semana ${D.week}.`;
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
-// Tabs
-document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
-  document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
-  $("#stats").classList.toggle("hidden",b.dataset.tab!=="stats");
-  $("#fantasy").classList.toggle("hidden",b.dataset.tab!=="fantasy");
-});
+// Navegación: deporte + secciones
+const SECTIONS=["nflgames","stats","fantasy","mxgames","mxtable","mxplayers"];
+function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
+  document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
+  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers();}
+function showSport(sp){
+  document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
+  document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
+  $(".nflart").toggleAttribute("hidden",sp!=="nfl"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
+  $("#heroTitle").textContent= sp==="nfl"?"Números de la NFL, explicados en español":"Números de la Liga MX, explicados en español";
+  $("#heroSub").textContent= sp==="nfl"?`Estadísticas avanzadas, partidos y herramientas de fantasy de la temporada ${D.season}, con datos hasta la semana ${D.week}.`:"Partidos, momios, clima y tabla del torneo, actualizados cada vez que abres la página.";
+  showTab(sp==="nfl"?"nflgames":"mxgames");
+}
+document.querySelectorAll("nav.sports button").forEach(b=>b.onclick=()=>showSport(b.dataset.sport));
+document.querySelectorAll(".subnav button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 
 // Generic sortable table
 function table(el, cols, rows, state){
@@ -253,25 +380,26 @@ $("#leaders").innerHTML=[
 
 // Players table
 const PCOLS={
- qb:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"epa",h:"EPA/jugada",f:r=>signed(r.epa),tip:"Puntos esperados añadidos por jugada de pase"},{k:"cpoe",h:"CPOE",f:r=>signed(r.cpoe,1),tip:"% de pases completos por encima de lo esperado"},{k:"yds",h:"Yardas",f:r=>fmt(r.yds)},{k:"ypa",h:"Yds/intento",f:r=>fmt(r.ypa,1)},{k:"td",h:"TD"},{k:"int",h:"INT"},{k:"plays",h:"Jugadas"}],
- rec:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"yds",h:"Yardas",f:r=>fmt(r.yds)},{k:"ypr",h:"Yds/recepción",f:r=>fmt(r.ypr,1)},{k:"rec",h:"Recepciones"},{k:"tgt",h:"Blancos"},{k:"ts",h:"% de blancos",f:r=>Math.round(r.ts*100)+"%",tip:"Porcentaje de los pases del equipo dirigidos a él"},{k:"td",h:"TD"}],
- rush:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"yds",h:"Yardas",f:r=>fmt(r.yds)},{k:"ypc",h:"Yds/acarreo",f:r=>fmt(r.ypc,1)},{k:"epa",h:"EPA/acarreo",f:r=>signed(r.epa)},{k:"car",h:"Acarreos"},{k:"td",h:"TD"}]
+ qb:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"epa",h:"EPA/jugada",f:r=>signed(r.epa),tip:"Puntos esperados añadidos por jugada de pase"},{k:"cpoe",h:"CPOE",f:r=>signed(r.cpoe,1),tip:"% de pases completos por encima de lo esperado"},{k:"yds",h:"Yardas",f:r=>fmt(r.yds)},{k:"ypa",h:"Yds/intento",f:r=>fmt(r.ypa,1)},{k:"td",h:"TD"},{k:"int",h:"INT"},{k:"sk",h:"Capturas recibidas"},{k:"skr",h:"% capturado",f:r=>r.skr==null?"–":(r.skr*100).toFixed(1)+"%",asc:1,tip:"Capturas por jugada de pase"},{k:"ttt",h:"Seg. para lanzar",f:r=>fmt(r.ttt,2),tip:"Tiempo promedio desde el snap hasta el pase (Next Gen Stats)"},{k:"iay",h:"Prof. de pase",f:r=>fmt(r.iay,1),tip:"Yardas aéreas promedio por intento (Next Gen Stats)"},{k:"plays",h:"Jugadas"}],
+ rec:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"yds",h:"Yardas",f:r=>fmt(r.yds)},{k:"ypr",h:"Yds/recepción",f:r=>fmt(r.ypr,1)},{k:"rec",h:"Recepciones"},{k:"tgt",h:"Blancos"},{k:"ts",h:"% de blancos",f:r=>Math.round(r.ts*100)+"%",tip:"Porcentaje de los pases del equipo dirigidos a él"},{k:"ays",h:"% yardas aéreas",f:r=>r.ays==null?"–":fmt(r.ays,1)+"%",tip:"Parte de las yardas aéreas del equipo que fueron hacia él (Next Gen Stats)"},{k:"sep",h:"Separación",f:r=>fmt(r.sep,1),tip:"Yardas promedio de separación del defensor al llegar el balón (Next Gen Stats)"},{k:"yacx",h:"YAC vs. esperado",f:r=>signed(r.yacx,1),tip:"Yardas después de la recepción por encima de lo esperado (Next Gen Stats)"},{k:"drop",h:"Drops",asc:1},{k:"td",h:"TD"}],
+ rush:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"yds",h:"Yardas",f:r=>fmt(r.yds)},{k:"ypc",h:"Yds/acarreo",f:r=>fmt(r.ypc,1)},{k:"epa",h:"EPA/acarreo",f:r=>signed(r.epa)},{k:"car",h:"Acarreos"},{k:"td",h:"TD"}],
+ def:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"tk",h:"Tacleadas"},{k:"solo",h:"Solitarias"},{k:"tfl",h:"Tacleadas con pérdida",f:r=>fmt(r.tfl,1)},{k:"sk",h:"Capturas",f:r=>fmt(r.sk,1)},{k:"qbh",h:"Golpes al QB"},{k:"int",h:"INT"},{k:"pd",h:"Pases defendidos"},{k:"ff",h:"Balones sueltos provocados"},{k:"fr",h:"Balones recuperados"},{k:"td",h:"TD"}]
 };
-const PNOTE={qb:"Mínimo 30 jugadas de pase.",rec:"Mínimo 5 blancos.",rush:"Mínimo 10 acarreos."};
+const PNOTE={qb:"Mínimo 30 jugadas de pase. Capturas y tiempo para lanzar: nflverse y Next Gen Stats.",rec:"Mínimo 5 blancos. Separación, yardas aéreas y YAC: Next Gen Stats. Drops: Pro Football Reference.",rush:"Mínimo 10 acarreos.",def:"Jugadores con al menos 4 tacleadas o alguna jugada grande (captura, intercepción, balón suelto)."};
 const pState={set:"qb",k:"epa",dir:"desc",q:"",render(){
   const q=this.q.toLowerCase();
   const rows=D[this.set].filter(r=>!q||r.n.toLowerCase().includes(q)||r.t.toLowerCase().includes(q));
   table($("#pTable"),PCOLS[this.set],rows,this); $("#pNote").textContent=PNOTE[this.set];}};
 document.querySelectorAll("#pSeg button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#pSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
-  pState.set=b.dataset.k; pState.limit=25; pState.k={qb:"epa",rec:"yds",rush:"yds"}[pState.set]; pState.dir="desc"; pState.render();});
+  pState.set=b.dataset.k; pState.limit=25; pState.k={qb:"epa",rec:"yds",rush:"yds",def:"sk"}[pState.set]; pState.dir="desc"; pState.render();});
 $("#pSearch").oninput=e=>{pState.q=e.target.value;pState.render();};
 pState.render();
 
 // Teams table
 const tState={k:"oepa",dir:"desc",render(){table($("#tTable"),[
  {k:"t",h:"Equipo",l:1,f:r=>`<span class="nm">${r.t}</span>`,asc:1},{k:"w",h:"Récord",f:r=>`${r.w}-${r.l}`},{k:"pf",h:"Puntos a favor"},{k:"pa",h:"Puntos en contra",asc:1},
- {k:"oepa",h:"EPA ofensiva",f:r=>signed(r.oepa)},{k:"depa",h:"EPA defensiva",f:r=>signed(r.depa),asc:1},{k:"sacks",h:"Capturas"},{k:"tko",h:"Robos de balón"},
+ {k:"oepa",h:"EPA ofensiva",f:r=>signed(r.oepa)},{k:"pp",h:"% pase",f:r=>r.pp==null?"–":Math.round(r.pp*100)+"%"},{k:"rp",h:"% carrera",f:r=>r.rp==null?"–":Math.round(r.rp*100)+"%"},{k:"proe",h:"Pase vs. esperado",f:r=>r.proe==null?"–":signed(r.proe,1)+"%",tip:"Qué tanto pasa el balón por encima (+) o debajo (−) de lo esperado según la situación"},{k:"depa",h:"EPA defensiva",f:r=>signed(r.depa),asc:1},{k:"sacks",h:"Capturas"},{k:"tko",h:"Robos de balón"},
  {k:"vww",h:"Vs. récord ganador",f:r=>r.vwg?r.vw:"Sin juegos"}],D.teams,this)}};
 tState.render();
 
@@ -297,7 +425,9 @@ fState.render();
 // Trade analyzer
 const val=p=>{const r=p.ecr??(p.pr?p.pr*3.2:null); return r==null?0:Math.round(10000*Math.exp(-0.022*(r-1)));};
 const pool=D.fantasy.filter(p=>p.ecr!=null||p.pr!=null);
-$("#plist").innerHTML=pool.map(p=>`<option value="${p.n}">${p.p} · ${p.t}</option>`).join("");
+const opts=list=>list.map(p=>`<option value="${p.n}">${p.p} · ${p.t}</option>`).join("");
+function setPools(a,b){$("#plistA").innerHTML=opts(a);$("#plistB").innerHTML=opts(b);}
+setPools(pool,pool);
 const sides={A:[],B:[]};
 function renderTrade(){
   for(const s of ["A","B"]){const el=$("#side"+s), list=sides[s];
@@ -314,6 +444,266 @@ function renderTrade(){
 for(const s of ["A","B"]){const inp=$("#side"+s+" input");
   inp.onchange=()=>{const p=pool.find(x=>x.n.toLowerCase()===inp.value.trim().toLowerCase()); if(p){sides[s].push(p);inp.value="";renderTrade();}};}
 renderTrade();
+
+// ---------- Sleeper ----------
+const API="https://api.sleeper.app/v1";
+const getJ=async u=>{const r=await fetch(API+u);if(!r.ok)throw new Error(r.status);return r.json();};
+const byG=Object.fromEntries(D.fantasy.filter(p=>p.g).map(p=>[p.g,p]));
+function slPlayer(id){
+  if(/^[A-Z]{2,3}$/.test(id)) return {n:id+" D/ST",p:"DEF",t:id,sid:id};
+  const m=D.sleeper[id]; if(!m) return {n:"Jugador "+id,p:"?",t:"",sid:id};
+  const f=m[3]&&byG[m[3]];
+  return f?{...f,sid:id}:{n:m[0],p:m[1],t:m[2],sid:id};
+}
+const SL={user:null,league:null,rosters:[],users:{},mine:null,pos:"ALL"};
+const msg=t=>$("#slMsg").textContent=t;
+async function slConnect(){
+  const u=$("#slUser").value.trim(); if(!u) return;
+  $("#slGo").disabled=true; msg("Buscando tu usuario…");
+  try{
+    const user=await getJ("/user/"+encodeURIComponent(u)); if(!user) throw new Error("nouser");
+    SL.user=user; try{localStorage.setItem("pizarra_sleeper",u)}catch(e){}
+    const leagues=await getJ(`/user/${user.user_id}/leagues/nfl/${D.season}`);
+    if(!leagues.length){msg(`${user.display_name} no tiene ligas de NFL en ${D.season}.`);return;}
+    const sel=$("#slLeague"); sel.innerHTML=leagues.map(l=>`<option value="${l.league_id}">${l.name}</option>`).join(""); sel.hidden=leagues.length<2;
+    let saved=null; try{saved=localStorage.getItem("pizarra_league")}catch(e){}
+    if(saved&&leagues.some(l=>l.league_id===saved)) sel.value=saved;
+    await slLoad(sel.value);
+  }catch(e){msg(e.message==="nouser"?"No encontramos ese usuario en Sleeper. Revisa cómo está escrito.":"No pudimos conectar con Sleeper. Intenta de nuevo en un momento.");}
+  finally{$("#slGo").disabled=false;}
+}
+async function slLoad(id){
+  msg("Cargando tu liga…"); try{localStorage.setItem("pizarra_league",id)}catch(e){}
+  const [league,rosters,users,trend]=await Promise.all([getJ("/league/"+id),getJ(`/league/${id}/rosters`),getJ(`/league/${id}/users`),getJ("/players/nfl/trending/add?lookback_hours=24&limit=25").catch(()=>[])]);
+  SL.league=league; SL.rosters=rosters; SL.trend=trend;
+  SL.users=Object.fromEntries(users.map(u=>[u.user_id,u.metadata?.team_name||u.display_name]));
+  SL.mine=rosters.find(r=>r.owner_id===SL.user.user_id)||rosters.find(r=>(r.co_owners||[]).includes(SL.user.user_id));
+  SL.taken=new Set(rosters.flatMap(r=>r.players||[]));
+  msg(`${league.name} · ${rosters.length} equipos`);
+  $("#slDash").hidden=false; slRender();
+}
+const teamName=r=>SL.users[r.owner_id]||("Equipo "+r.roster_id);
+const rosterVal=r=>(r.players||[]).reduce((a,id)=>a+val(slPlayer(id)),0);
+function slRender(){
+  const me=SL.mine, rs=SL.rosters;
+  SL.takenG=new Set([...SL.taken].map(id=>D.sleeper[id]?.[3]).filter(Boolean));
+  const pts=r=>(r.settings?.fpts||0)+(r.settings?.fpts_decimal||0)/100;
+  const stand=[...rs].sort((a,b)=>(b.settings?.wins||0)-(a.settings?.wins||0)||pts(b)-pts(a));
+  const power=[...rs].map(r=>({r,v:rosterVal(r)})).sort((a,b)=>b.v-a.v);
+  if(me){
+    const s=me.settings||{};
+    $("#slKpis").innerHTML=[
+      ["Récord",`${s.wins||0}-${s.losses||0}${s.ties?"-"+s.ties:""}`,`Lugar ${stand.indexOf(me)+1} de ${rs.length}`],
+      ["Puntos a favor",fmt(pts(me),1),"En la temporada"],
+      ["Valor del roster",fmt(rosterVal(me)),`Lugar ${power.findIndex(x=>x.r===me)+1} de ${rs.length}`],
+      ["Jugadores libres",fmt(D.fantasy.filter(p=>p.g&&!SL.takenG.has(p.g)).length),"Con ranking de consenso"]
+    ].map(([k,v,s2])=>`<div class="kpi"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s2}</div></div>`).join("");
+  } else $("#slKpis").innerHTML=`<p class="note">No encontramos tu equipo en esta liga; mostramos la liga completa.</p>`;
+  // roster
+  const starters=new Set(me?.starters||[]);
+  const mineRows=(me?.players||[]).map(slPlayer).map(p=>({...p,st:starters.has(p.sid)?1:0,v:val(p)}));
+  const rState={k:"v",dir:"desc",render(){table($("#slRoster"),[
+    {k:"n",h:"Jugador",l:1,f:r=>name(r)+(r.st?' <span class="tag yes">Titular</span>':''),asc:1},
+    {k:"ppg",h:"PPR/j",f:r=>fmt(r.ppg,1)},{k:"opp",h:`Oport. sem. ${D.week}`,f:r=>r.opp??"–"},{k:"v",h:"Valor",f:r=>fmt(r.v)}],mineRows,this)}};
+  rState.render();
+  const max=power[0]?.v||1;
+  $("#slPower").innerHTML=power.map(({r,v})=>`<div class="prow${r===me?" me":""}"><span class="pn">${teamName(r)}</span><span class="pb"><i style="width:${(v/max*100).toFixed(1)}%"></i></span><span class="pv">${fmt(v)}</span></div>`).join("");
+  slFree();
+  // trending
+  const tr=(SL.trend||[]).map(x=>({...slPlayer(x.player_id),cnt:x.count,free:!SL.taken.has(x.player_id)}));
+  const tState={k:"cnt",dir:"desc",render(){table($("#slTrend"),[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"cnt",h:"Veces agregado",f:r=>fmt(r.cnt)},{k:"free",h:"En tu liga",f:r=>r.free?'<span class="tag yes">Libre</span>':'<span class="tag no">Tiene dueño</span>'},{k:"opp",h:`Oport. sem. ${D.week}`,f:r=>r.opp??"–"}],tr,this)}};
+  tState.render();
+  // trade partner
+  const others=rs.filter(r=>r!==me);
+  $("#tradeTeam").innerHTML=`<option value="">Cualquier equipo</option>`+others.map(r=>`<option value="${r.roster_id}">${teamName(r)}</option>`).join("");
+  $("#tradeTeamBar").hidden=!me;
+  const mineP=(me?.players||[]).map(slPlayer).filter(p=>val(p)>0);
+  setPools(mineP.length?mineP:pool,pool);
+  $("#tradeTeam").onchange=e=>{const r=rs.find(x=>String(x.roster_id)===e.target.value); setPools(mineP.length?mineP:pool, r?(r.players||[]).map(slPlayer).filter(p=>val(p)>0):pool);};
+}
+function slFree(){
+  const rows=D.fantasy.filter(p=>p.g&&!SL.takenG.has(p.g)&&(SL.pos==="ALL"||p.p===SL.pos))
+    .map(p=>({...p,sc:(p.opp||0)+0.5*Math.max(0,(p.opp||0)-(p.opp0||0))+20*Math.max(0,(p.snap||0)-(p.snap0||0))}));
+  const st={k:"sc",dir:"desc",render(){table($("#slFree"),[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"opp",h:`Oport. sem. ${D.week}`,f:r=>r.opp+delta(r.opp,r.opp0)},{k:"snap",h:"% de snaps",f:r=>r.snap==null?"–":Math.round(r.snap*100)+"%"+delta(r.snap,r.snap0,1)},{k:"ppg",h:"PPR/j",f:r=>fmt(r.ppg,1)},{k:"own",h:"% ligas con dueño",f:r=>r.own==null?"–":Math.round(r.own)+"%"},{k:"sc",h:"Score waiver",f:r=>fmt(r.sc,1)}],rows,this)}};
+  st.render();
+}
+document.querySelectorAll("#slSeg button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#slSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));SL.pos=b.dataset.p;slFree();});
+$("#slGo").onclick=slConnect;
+$("#slUser").onkeydown=e=>{if(e.key==="Enter")slConnect();};
+$("#slLeague").onchange=e=>slLoad(e.target.value).catch(()=>msg("No pudimos cargar esa liga."));
+try{const u=localStorage.getItem("pizarra_sleeper");if(u){$("#slUser").value=u;slConnect();}}catch(e){}
+
+// ---------- Utilidades de partidos ----------
+const TZ="America/Mexico_City";
+const fDay=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(d);
+const fHour=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,hour:"numeric",minute:"2-digit"}).format(d);
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const mlTxt=m=>m==null?"–":(m>0?"+":"")+Math.round(m);
+const imp=m=>m==null?null:(m<0?-m/(-m+100):100/(m+100));
+function probs(list){const p=list.map(imp); if(p.some(x=>x==null)) return null; const s=p.reduce((a,b)=>a+b,0); return p.map(x=>x/s);}
+const WX={0:"Despejado",1:"Mayormente despejado",2:"Parcialmente nublado",3:"Nublado",45:"Niebla",48:"Niebla",51:"Llovizna",53:"Llovizna",55:"Llovizna",61:"Lluvia ligera",63:"Lluvia",65:"Lluvia fuerte",66:"Lluvia helada",67:"Lluvia helada",71:"Nieve ligera",73:"Nieve",75:"Nieve fuerte",80:"Chubascos",81:"Chubascos",82:"Chubascos fuertes",95:"Tormenta",96:"Tormenta con granizo",99:"Tormenta con granizo"};
+const wxCache={};
+async function forecast(lat,lon){
+  const k=lat.toFixed(2)+","+lon.toFixed(2);
+  if(!wxCache[k]) wxCache[k]=fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,weather_code&timezone=UTC&forecast_days=16`).then(r=>r.json()).catch(()=>null);
+  return wxCache[k];
+}
+async function fillWeather(el,lat,lon,when){
+  if(lat==null||!when) return;
+  const now=Date.now(); if(when-now>15.5*864e5||when-now<-3*3600e3){return;}
+  const f=await forecast(lat,lon); if(!f?.hourly) return;
+  const h=new Date(when); h.setUTCMinutes(0,0,0); const key=h.toISOString().slice(0,13)+":00";
+  const i=f.hourly.time.indexOf(key); if(i<0) return;
+  const tC=Math.round(f.hourly.temperature_2m[i]), pp=f.hourly.precipitation_probability?.[i], c=f.hourly.weather_code?.[i];
+  el.innerHTML=`<b>${tC}°C</b><br>${WX[c]||""}${pp!=null?` · ${pp}% lluvia`:""}`;
+}
+function gameCard(g){
+  // g: {when, status, teams:[{n,sub,logo,ml,score,win}], probs:[{p,c,l}], lines:[[k,v]], place, wxId}
+  const st=g.status?`<span class="${g.live?"live":""}">${g.status}</span>`:"";
+  return `<article class="game"><div class="when"><span><b>${g.when?cap(fDay(g.when)):"Por definir"}</b>${g.when?" · "+fHour(g.when):""}</span>${st}</div>
+  ${g.teams.map(t=>`<div class="team${t.win?" win":""}">${t.logo?`<img src="${t.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"<span></span>"}<span class="tn">${t.n}${t.sub?`<small>${t.sub}</small>`:""}</span>${t.score!=null?`<span class="sc">${t.score}</span>`:`<span class="ml" title="Momio">${mlTxt(t.ml)}</span>`}</div>`).join("")}
+  ${g.probs?`<div class="prob">${g.probs.map(p=>`<i style="width:${(p.p*100).toFixed(1)}%;background:${p.c}" title="${p.l}: ${Math.round(p.p*100)}%"></i>`).join("")}</div><div class="probl">${g.probs.map(p=>`<span>${p.l} ${Math.round(p.p*100)}%</span>`).join("")}</div>`:""}
+  ${g.lines?.length?`<div class="lines">${g.lines.map(([k,v])=>`<span>${k} <b>${v}</b></span>`).join("")}</div>`:""}
+  <div class="where"><span>${g.place||""}</span><span class="wx" id="${g.wxId}">${g.wxNote||""}</span></div></article>`;
+}
+
+// ---------- NFL: partidos de la semana ----------
+$("#gTitle").textContent=`Partidos de la semana ${D.gweek}`;
+(function(){
+  const cards=D.games.map((x,i)=>{
+    const when=x.ko?new Date(x.ko):null, done=x.hs!=null;
+    const pr=probs([x.aml,x.hml]);
+    const fav=x.spread==null?null:(x.spread>0?x.home.a:x.away.a);
+    return {when,status:done?"Final":"",wxId:"wx"+i,
+      teams:[{n:x.away.n,sub:x.away.a,logo:x.away.logo,ml:x.aml,score:x.as_,win:done&&x.as_>x.hs},{n:x.home.n,sub:x.home.a+" · local",logo:x.home.logo,ml:x.hml,score:x.hs,win:done&&x.hs>x.as_}],
+      probs:done||!pr?null:[{p:pr[0],c:x.away.c,l:x.away.a},{p:pr[1],c:x.home.c,l:x.home.a}],
+      lines:done?[]:[["Línea",fav?`${fav} −${Math.abs(x.spread)}`:"Pick"],["Total",x.total??"–"]],
+      place:x.stadium, wxNote:(x.roof==="dome"||x.roof==="closed")?"Techado":"", _x:x};
+  });
+  $("#nflGames").innerHTML=cards.map(gameCard).join("");
+  cards.forEach(c=>{if(!c.wxNote&&c.status!=="Final") fillWeather(document.getElementById(c.wxId),c._x.lat,c._x.lon,c.when?.getTime());});
+})();
+
+// ---------- Liga MX (ESPN) ----------
+const ESPN="https://site.api.espn.com/apis";
+const ymd=d=>d.toISOString().slice(0,10).replace(/-/g,"");
+const geoCache={};
+async function geocode(city){
+  if(!city) return null; const q=city.split(",")[0].trim();
+  if(!geoCache[q]) geoCache[q]=fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=es`).then(r=>r.json()).then(j=>j.results?.[0]||null).catch(()=>null);
+  return geoCache[q];
+}
+let mxLoaded=false;
+async function loadMxGames(){
+  if(mxLoaded) return; mxLoaded=true;
+  const from=new Date(Date.now()-3*864e5), to=new Date(Date.now()+8*864e5);
+  try{
+    const j=await (await fetch(`${ESPN}/site/v2/sports/soccer/mex.1/scoreboard?dates=${ymd(from)}-${ymd(to)}&limit=100`)).json();
+    const ev=(j.events||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    if(!ev.length){$("#mxMsg").textContent="No hay partidos de Liga MX en estos días (puede ser fecha FIFA o descanso).";return;}
+    $("#mxMsg").textContent="";
+    const cards=ev.map((e,i)=>{
+      const c=e.competitions?.[0]||{}, cs=c.competitors||[];
+      const H=cs.find(x=>x.homeAway==="home")||cs[0]||{}, A=cs.find(x=>x.homeAway==="away")||cs[1]||{};
+      const state=e.status?.type?.state, done=state==="post", live=state==="in";
+      const o=(c.odds||[])[0]||{};
+      const hm=o.homeTeamOdds?.moneyLine, am=o.awayTeamOdds?.moneyLine, dm=o.drawOdds?.moneyLine;
+      const pr=probs([hm,dm,am]);
+      const hs=H.score!=null&&state!=="pre"?+H.score:null, as=A.score!=null&&state!=="pre"?+A.score:null;
+      const col=t=>t.team?.color?"#"+t.team.color:"var(--muted)";
+      return {when:new Date(e.date),status:done?"Final":live?(e.status?.type?.shortDetail||"En vivo"):"",live,wxId:"mxwx"+i,
+        teams:[{n:H.team?.shortDisplayName||H.team?.displayName||"Local",sub:"local",logo:H.team?.logo,ml:hm,score:hs,win:done&&hs>as},
+               {n:A.team?.shortDisplayName||A.team?.displayName||"Visita",logo:A.team?.logo,ml:am,score:as,win:done&&as>hs}],
+        probs:(!done&&!live&&pr)?[{p:pr[0],c:col(H),l:"Local"},{p:pr[1],c:"var(--line)",l:"Empate"},{p:pr[2],c:col(A),l:"Visita"}]:null,
+        lines:(!done&&!live)?[["Empate",mlTxt(dm)],["Total de goles",o.overUnder??"–"]].filter(x=>x[1]!=="–"):[],
+        place:[c.venue?.fullName,c.venue?.address?.city].filter(Boolean).join(" · "), city:c.venue?.address?.city};
+    });
+    $("#mxGames").innerHTML=cards.map(gameCard).join("");
+    for(const c of cards){ if(c.status) continue; const g=await geocode(c.city); if(g) fillWeather(document.getElementById(c.wxId),g.latitude,g.longitude,c.when.getTime()); }
+  }catch(e){mxLoaded=false;$("#mxMsg").textContent="No pudimos cargar los partidos de Liga MX. Intenta recargar la página en un momento.";}
+}
+let mxtLoaded=false;
+async function loadMxTable(){
+  if(mxtLoaded) return; mxtLoaded=true;
+  try{
+    const j=await (await fetch(`${ESPN}/v2/sports/soccer/mex.1/standings`)).json();
+    const grp=j.children?.[0]?.standings||j.standings||{};
+    const rows=(grp.entries||[]).map(e=>{const g=k=>e.stats?.find(s=>s.name===k||s.type===k)?.value;
+      return {n:e.team?.displayName,logo:e.team?.logos?.[0]?.href,rk:g("rank"),pj:g("gamesPlayed"),g:g("wins"),e:g("ties"),p:g("losses"),gf:g("pointsFor"),gc:g("pointsAgainst"),dg:g("pointDifferential"),pts:g("points")};});
+    if(!rows.length) throw new Error("vacía");
+    $("#mxtMsg").textContent=j.children?.[0]?.name||grp.name||"";
+    const st={k:rows[0].rk!=null?"rk":"pts",dir:rows[0].rk!=null?"asc":"desc",render(){table($("#mxTable"),[
+      {k:"n",h:"Equipo",l:1,f:r=>`${r.logo?`<img src="${r.logo}" alt="" width="20" height="20" style="vertical-align:-4px;margin-right:8px">`:""}<span class="nm">${r.n}</span>`,asc:1},
+      {k:"pts",h:"Puntos"},{k:"pj",h:"PJ"},{k:"g",h:"G"},{k:"e",h:"E"},{k:"p",h:"P",asc:1},{k:"gf",h:"GF"},{k:"gc",h:"GC",asc:1},{k:"dg",h:"Dif.",f:r=>r.dg==null?"–":(r.dg>0?"+":"")+r.dg}],rows,this)}};
+    st.render();
+  }catch(e){mxtLoaded=false;$("#mxtMsg").textContent="No pudimos cargar la tabla de Liga MX. Intenta recargar la página en un momento.";}
+}
+// ---------- Liga MX: jugadores ----------
+function flatStats(obj,acc={}){
+  if(Array.isArray(obj)){obj.forEach(x=>flatStats(x,acc));return acc;}
+  if(obj&&typeof obj==="object"){
+    if(typeof obj.name==="string"&&(typeof obj.value==="number"||typeof obj.value==="string")&&!("athletes" in obj)){const v=+obj.value; if(!isNaN(v)&&acc[obj.name]==null) acc[obj.name]=v;}
+    for(const k in obj){ if(k==="team"||k==="links"||k==="headshot") continue; const v=obj[k]; if(v&&typeof v==="object") flatStats(v,acc);}
+  }
+  return acc;
+}
+const pick=(s,...ks)=>{for(const k of ks) if(s[k]!=null) return s[k]; return null;};
+function posGroup(a){const p=(a.position?.abbreviation||a.position?.name||"").toUpperCase();
+  if(p.startsWith("G")) return "G"; if(p.startsWith("D")||p.includes("B")&&!p.includes("M")) return "D"; if(p.startsWith("M")) return "M"; if(p.startsWith("F")||p.includes("W")||p.includes("ST")||p==="A") return "F"; return "M";}
+let mxpLoaded=false, MXP=[];
+async function loadMxPlayers(){
+  if(mxpLoaded) return; mxpLoaded=true;
+  try{
+    let cached=null; try{cached=JSON.parse(localStorage.getItem("pizarra_mxp")||"null")}catch(e){}
+    if(cached&&Date.now()-cached.t<6*3600e3){MXP=cached.rows;}
+    else{
+      const tj=await (await fetch(`${ESPN}/site/v2/sports/soccer/mex.1/teams`)).json();
+      const teams=(tj.sports?.[0]?.leagues?.[0]?.teams||[]).map(x=>x.team);
+      if(!teams.length) throw new Error("sin equipos");
+      $("#mxpMsg").textContent=`Cargando ${teams.length} planteles…`;
+      const rosters=await Promise.all(teams.map(tm=>fetch(`${ESPN}/site/v2/sports/soccer/mex.1/teams/${tm.id}/roster`).then(r=>r.json()).then(j=>({tm,j})).catch(()=>null)));
+      MXP=[];
+      for(const r of rosters){ if(!r) continue;
+        const ath=Array.isArray(r.j.athletes)?r.j.athletes.flatMap(a=>a.items||[a]):[];
+        for(const a of ath){
+          const s=flatStats(a.statistics||a.stats||a);
+          const row={n:a.displayName||a.fullName||a.shortName,t:r.tm.abbreviation||r.tm.shortDisplayName,tn:r.tm.displayName,pg:posGroup(a),pos:a.position?.abbreviation||"",
+            ap:pick(s,"appearances","gamesPlayed","starts"),min:pick(s,"minutesPlayed","minutes"),g:pick(s,"totalGoals","goals"),as:pick(s,"goalAssists","assists"),
+            sh:pick(s,"totalShots","shots","shotsTotal"),sot:pick(s,"shotsOnTarget","shotsOnGoal"),yc:pick(s,"yellowCards"),rc:pick(s,"redCards"),
+            fc:pick(s,"foulsCommitted"),fs:pick(s,"foulsSuffered"),sv:pick(s,"saves"),gc:pick(s,"goalsConceded"),cs:pick(s,"cleanSheet","cleanSheets")};
+          if(!row.n||[row.ap,row.g,row.as,row.min,row.sv].every(v=>v==null||v===0)) continue;
+          row.ga=(row.g||0)+(row.as||0);
+          row.g90=row.min>=180&&row.g!=null?row.g/row.min*90:null;
+          row.acc=row.sh>0&&row.sot!=null?row.sot/row.sh:null;
+          MXP.push(row);
+        }
+      }
+      try{localStorage.setItem("pizarra_mxp",JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){}
+    }
+    if(!MXP.length){$("#mxpMsg").textContent="ESPN todavía no reporta estadísticas de jugadores para este torneo.";return;}
+    $("#mxpMsg").textContent="";
+    const teamsOpt=[...new Map(MXP.map(r=>[r.t,r.tn])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
+    $("#mxpTeam").innerHTML=`<option value="">Todos los equipos</option>`+teamsOpt.map(([a,n])=>`<option value="${a}">${n}</option>`).join("");
+    const lead=(k,label,fmtf=v=>fmt(v),filter=r=>true)=>{const r=[...MXP].filter(r=>r[k]!=null&&filter(r)).sort((a,b)=>b[k]-a[k])[0]; return r&&r[k]>0?`<div class="leader"><div class="k">${label}</div><div class="v">${fmtf(r[k])}</div><div class="w">${r.n} <span class="tm">${r.t}</span></div></div>`:"";};
+    $("#mxLeaders").innerHTML=[lead("g","Goles"),lead("as","Asistencias"),lead("ga","Goles + asistencias"),lead("sot","Tiros a gol"),lead("sv","Atajadas"),lead("yc","Tarjetas amarillas")].join("");
+    mxpState.render();
+  }catch(e){mxpLoaded=false;$("#mxpMsg").textContent="No pudimos cargar los jugadores de Liga MX. Intenta recargar la página en un momento.";}
+}
+const mxpState={k:"g",dir:"desc",pos:"ALL",team:"",q:"",render(){
+  const q=this.q.toLowerCase();
+  const rows=MXP.filter(r=>(this.pos==="ALL"||r.pg===this.pos)&&(!this.team||r.t===this.team)&&(!q||r.n.toLowerCase().includes(q)));
+  const has=k=>MXP.some(r=>r[k]!=null);
+  const gk=this.pos==="G";
+  const cols=[{k:"n",h:"Jugador",l:1,f:r=>`<span class="nm">${r.n}</span><span class="tm">${r.t}${r.pos?" · "+r.pos:""}</span>`,asc:1},
+    {k:"ap",h:"PJ"},{k:"min",h:"Minutos",f:r=>fmt(r.min)},
+    ...(gk?[{k:"sv",h:"Atajadas"},{k:"gc",h:"Goles recibidos",asc:1},{k:"cs",h:"Porterías en cero"}]
+          :[{k:"g",h:"Goles"},{k:"as",h:"Asistencias"},{k:"ga",h:"G + A"},{k:"g90",h:"Goles por 90",f:r=>fmt(r.g90,2)},{k:"sh",h:"Tiros"},{k:"sot",h:"Tiros a gol"},{k:"acc",h:"% a gol",f:r=>r.acc==null?"–":Math.round(r.acc*100)+"%"},{k:"fs",h:"Faltas recibidas"}]),
+    {k:"yc",h:"Amarillas",asc:1},{k:"rc",h:"Rojas",asc:1}].filter(c=>c.k==="n"||has(c.k));
+  if(!cols.some(c=>c.k===this.k)) this.k=gk?"sv":"g";
+  table($("#mxpTable"),cols,rows,this);}};
+document.querySelectorAll("#mxpSeg button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#mxpSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));mxpState.pos=b.dataset.p;mxpState.k=b.dataset.p==="G"?"sv":"g";mxpState.limit=25;mxpState.render();});
+$("#mxpTeam").onchange=e=>{mxpState.team=e.target.value;mxpState.render();};
+$("#mxpSearch").oninput=e=>{mxpState.q=e.target.value;mxpState.render();};
 </script>
 </body>
 </html>

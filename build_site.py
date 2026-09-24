@@ -23,17 +23,17 @@ py=ps[ps.position=='QB'].groupby('player_id').agg(yds=('passing_yards','sum'),td
 qb=nm(qb,'passer_player_id').merge(py,on='player_id',how='left')
 qb=qb[(qb.plays>=30)&(qb.pos=='QB')]
 qb['ypa']=qb.yds/qb.att
-out['qb']=[dict(n=r.n,t=r.tm,plays=int(r.plays),epa=round(r.epa,3),cpoe=round(r.cpoe,1) if pd.notna(r.cpoe) else None,yds=int(r.yds),td=int(r.td),int=int(r.int_),ypa=round(r.ypa,1)) for r in qb.itertuples()]
+out['qb']=[dict(id=r.player_id,n=r.n,t=r.tm,plays=int(r.plays),epa=round(r.epa,3),cpoe=round(r.cpoe,1) if pd.notna(r.cpoe) else None,yds=int(r.yds),td=int(r.td),int=int(r.int_),ypa=round(r.ypa,1)) for r in qb.itertuples()]
 # receivers
 rec=ps[ps.position.isin(['WR','TE','RB'])].groupby('player_id').agg(rec=('receptions','sum'),tgt=('targets','sum'),yds=('receiving_yards','sum'),td=('receiving_tds','sum'),yac=('receiving_yards_after_catch','sum'),ts=('target_share','mean')).reset_index()
 rec=rec.merge(names,on='player_id'); rec=rec[rec.tgt>=5]
 rec['ypr']=rec.yds/rec.rec.replace(0,np.nan)
-out['rec']=[dict(n=r.n,p=r.pos,t=r.tm,rec=int(r.rec),tgt=int(r.tgt),yds=int(r.yds),td=int(r.td),ypr=round(r.ypr,1) if pd.notna(r.ypr) else 0,ts=round(float(r.ts or 0),3)) for r in rec.itertuples()]
+out['rec']=[dict(id=r.player_id,n=r.n,p=r.pos,t=r.tm,rec=int(r.rec),tgt=int(r.tgt),yds=int(r.yds),td=int(r.td),ypr=round(r.ypr,1) if pd.notna(r.ypr) else 0,ts=round(float(r.ts or 0),3)) for r in rec.itertuples()]
 # rushers
 ru=pbp[(pbp.rush_attempt==1)&pbp.rusher_player_id.notna()].groupby('rusher_player_id').agg(car=('epa','size'),epa=('epa','mean'),yds=('rushing_yards','sum'),td=('rush_touchdown','sum')).reset_index()
 ru=nm(ru,'rusher_player_id'); ru=ru[(ru.car>=10)&(ru.pos.isin(['RB','QB','WR']))]
 ru['ypc']=ru.yds/ru.car
-out['rush']=[dict(n=r.n,p=r.pos,t=r.tm,car=int(r.car),yds=int(r.yds),td=int(r.td),ypc=round(r.ypc,1),epa=round(r.epa,3)) for r in ru.itertuples()]
+out['rush']=[dict(id=r.player_id,n=r.n,p=r.pos,t=r.tm,car=int(r.car),yds=int(r.yds),td=int(r.td),ypc=round(r.ypc,1),epa=round(r.epa,3)) for r in ru.itertuples()]
 # teams
 g=sch.dropna(subset=['home_score'])
 rows=[]
@@ -71,13 +71,93 @@ for r in rr.drop_duplicates('id').itertuples():
     L=last.loc[pid] if isinstance(pid,str) and pid in last.index else None
     P=prev.loc[pid] if isinstance(pid,str) and pid in prev.index else None
     opp=lambda x: int((x.carries or 0)+(x.targets or 0)) if x is not None else 0
-    fan.append(dict(n=r.player,p=r.pos,t=r.team,own=round(float(r.player_owned_avg),1) if pd.notna(r.player_owned_avg) else None,
+    fan.append(dict(g=pid if isinstance(pid,str) else None,n=r.player,p=r.pos,t=r.team,own=round(float(r.player_owned_avg),1) if pd.notna(r.player_owned_avg) else None,
         ecr=round(float(r.ecr_ov),1) if pd.notna(r.ecr_ov) else None, pr=round(float(r.ecr),1),
         ppg=round(float(tot.loc[pid].ppr/tot.loc[pid].g),1) if isinstance(pid,str) and pid in tot.index else None,
         opp=opp(L), opp0=opp(P),
         snap=round(float(snl.get(pid,np.nan)),2) if isinstance(pid,str) and pd.notna(snl.get(pid,np.nan)) else None,
         snap0=round(float(snp.get(pid,np.nan)),2) if isinstance(pid,str) and pd.notna(snp.get(pid,np.nan)) else None))
 out['fantasy']=fan
+
+# ---------- Extras: capturas, Next Gen Stats, drops, tendencias de equipo, defensa, Sleeper ----------
+def rnd(v,d=1):
+    return None if v is None or pd.isna(v) else round(float(v),d)
+tot_p=ps.groupby('player_id').agg(sk=('sacks_suffered','sum'),sky=('sack_yards_lost','sum'))
+ngp=nfl.load_nextgen_stats(stat_type='passing').to_pandas()
+ngp=ngp[(ngp.season==S)&(ngp.week==0)].drop_duplicates('player_gsis_id').set_index('player_gsis_id')
+for q in out['qb']:
+    k=int(tot_p.sk.get(q['id'],0)); q['sk']=k; q['skr']=rnd(k/q['plays'],3) if q['plays'] else None
+    q['ttt']=rnd(ngp.avg_time_to_throw.get(q['id'],np.nan),2); q['iay']=rnd(ngp.avg_intended_air_yards.get(q['id'],np.nan),1)
+ngr=nfl.load_nextgen_stats(stat_type='receiving').to_pandas()
+ngr=ngr[(ngr.season==S)&(ngr.week==0)].drop_duplicates('player_gsis_id').set_index('player_gsis_id')
+try:
+    adv=nfl.load_pfr_advstats(S,stat_type='rec').to_pandas()
+    adv=adv.merge(ids[['pfr_id','gsis_id']].dropna(),left_on='pfr_player_id',right_on='pfr_id')
+    drops=adv.groupby('gsis_id').receiving_drop.sum()
+except Exception:
+    drops=pd.Series(dtype=float)
+for r in out['rec']:
+    r['sep']=rnd(ngr.avg_separation.get(r['id'],np.nan),1)
+    r['ays']=rnd(ngr.percent_share_of_intended_air_yards.get(r['id'],np.nan),1)
+    r['yacx']=rnd(ngr.avg_yac_above_expectation.get(r['id'],np.nan),1)
+    d=drops.get(r['id'],np.nan); r['drop']=None if pd.isna(d) else int(d)
+pr=pbp[pbp.play_type.isin(['pass','run'])]
+tend=pr.groupby('posteam').agg(pp=('pass_attempt','mean'),proe=('pass_oe','mean')).reset_index()
+for t in out['teams']:
+    x=tend[tend.posteam==t['t']]
+    if len(x):
+        t['pp']=rnd(x.pp.iloc[0],3); t['rp']=rnd(1-x.pp.iloc[0],3); t['proe']=rnd(x.proe.iloc[0],1)
+DEF=['LB','CB','DT','SAF','DE','DB','OLB','FS','S','MLB','ILB','NT','DL','EDGE']
+dfn=ps[ps.position.isin(DEF)].groupby('player_id').agg(n=('player_display_name','last'),p=('position','last'),t=('team','last'),
+    solo=('def_tackles_solo','sum'),ast=('def_tackle_assists','sum'),tfl=('def_tackles_for_loss','sum'),sk=('def_sacks','sum'),
+    qbh=('def_qb_hits','sum'),int_=('def_interceptions','sum'),pd_=('def_pass_defended','sum'),ff=('def_fumbles_forced','sum'),
+    fr=('fumble_recovery_opp','sum'),td=('def_tds','sum')).reset_index()
+dfn['tk']=dfn.solo+dfn.ast
+dfn=dfn[(dfn.tk>=4)|(dfn.sk>0)|(dfn.int_>0)|(dfn.ff>0)|(dfn.fr>0)]
+out['def']=[dict(n=r.n,p=r.p,t=r.t,tk=int(r.tk),solo=int(r.solo),tfl=rnd(r.tfl,1),sk=rnd(r.sk,1),qbh=int(r.qbh),int=int(r.int_),pd=int(r.pd_),ff=int(r.ff),fr=int(r.fr),td=int(r.td)) for r in dfn.itertuples()]
+sl=ids[ids.sleeper_id.notna()&ids.position.isin(['QB','RB','WR','TE','K'])].copy()
+sl['sid']=sl.sleeper_id.astype(int).astype(str)
+sl=sl.drop_duplicates('sid')
+out['sleeper']={r.sid:[r.name,r.position,r.team if isinstance(r.team,str) else '',r.gsis_id if isinstance(r.gsis_id,str) else ''] for r in sl.itertuples()}
+out['season']=int(S)
+
+# ---------- Partidos de la semana (NFL) ----------
+from zoneinfo import ZoneInfo
+from datetime import datetime
+COORD={"ATL97":(33.7554,-84.4008),"BAL00":(39.2780,-76.6227),"BOS00":(42.0909,-71.2643),"BUF00":(42.7738,-78.7870),"CAR00":(35.2258,-80.8528),
+"CHI98":(41.8623,-87.6167),"CIN00":(39.0955,-84.5161),"CLE00":(41.5061,-81.6995),"DAL00":(32.7473,-97.0945),"DEN00":(39.7439,-105.0201),
+"DET00":(42.3400,-83.0456),"GNB00":(44.5013,-88.0622),"HOU00":(29.6847,-95.4107),"IND00":(39.7601,-86.1639),"JAX00":(30.3239,-81.6373),
+"KAN00":(39.0489,-94.4839),"LAX01":(33.9535,-118.3392),"LON00":(51.5560,-0.2796),"LON02":(51.6043,-0.0664),"MAD01":(40.4531,-3.6883),
+"MEL00":(-37.8200,144.9834),"MEX00":(19.3029,-99.1505),"MIA00":(25.9580,-80.2389),"MIN01":(44.9737,-93.2575),"MUN01":(48.2188,11.6247),
+"NAS00":(36.1665,-86.7713),"NOR00":(29.9511,-90.0812),"NYC01":(40.8135,-74.0745),"PAR00":(48.9245,2.3602),"PHI00":(39.9008,-75.1675),
+"PHO00":(33.5276,-112.2626),"PIT00":(40.4468,-80.0158),"RIO00":(-22.9121,-43.2302),"SEA00":(47.5952,-122.3316),"SFO01":(37.4030,-121.9700),
+"TAM00":(27.9759,-82.5033),"VEG00":(36.0909,-115.1833),"WAS00":(38.9078,-76.8645)}
+BYNAME={"Tottenham Hotspur Stadium":"LON02","Wembley Stadium":"LON00"}
+OPEN_AIR={"MUN01","PAR00","MEL00"}  # el dato de techo viene mal para estos estadios
+teams=nfl.load_teams().to_pandas().set_index('team_abbr')
+full=nfl.load_schedules(S).to_pandas(); full=full[full.game_type=='REG']
+pend=full[full.home_score.isna()]
+gw=int(pend.week.min()) if len(pend) else int(full.week.max())
+ET=ZoneInfo("America/New_York")
+def team_info(a):
+    if a in teams.index:
+        t=teams.loc[a]; return dict(a=a,n=t.team_nick,c=t.team_color,logo=t.team_logo_espn)
+    return dict(a=a,n=a,c="#555",logo="")
+gl=[]
+for r in full[full.week==gw].sort_values(['gameday','gametime']).itertuples():
+    try:
+        ko=datetime.strptime(f"{r.gameday} {r.gametime}","%Y-%m-%d %H:%M").replace(tzinfo=ET).astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ")
+    except Exception:
+        ko=None
+    sid=r.stadium_id if isinstance(r.stadium_id,str) and r.stadium_id else BYNAME.get(r.stadium)
+    roof=r.roof if isinstance(r.roof,str) else None
+    if sid in OPEN_AIR: roof="outdoors"
+    ll=COORD.get(sid)
+    gl.append(dict(ko=ko,away=team_info(r.away_team),home=team_info(r.home_team),stadium=r.stadium,roof=roof,
+        lat=ll[0] if ll else None,lon=ll[1] if ll else None,
+        aml=rnd(r.away_moneyline,0),hml=rnd(r.home_moneyline,0),spread=rnd(r.spread_line,1),total=rnd(r.total_line,1),
+        as_=None if pd.isna(r.away_score) else int(r.away_score),hs=None if pd.isna(r.home_score) else int(r.home_score)))
+out['games']=gl; out['gweek']=gw
 out['week']=wk; out['winners']=sorted(winners)
 data=json.dumps(out,ensure_ascii=False,allow_nan=False)
 aqui=os.path.dirname(os.path.abspath(__file__))
