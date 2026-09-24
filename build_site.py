@@ -114,12 +114,18 @@ dfn=ps[ps.position.isin(DEF)].groupby('player_id').agg(n=('player_display_name',
     fr=('fumble_recovery_opp','sum'),td=('def_tds','sum')).reset_index()
 dfn['tk']=dfn.solo+dfn.ast
 dfn=dfn[(dfn.tk>=4)|(dfn.sk>0)|(dfn.int_>0)|(dfn.ff>0)|(dfn.fr>0)]
-out['def']=[dict(n=r.n,p=r.p,t=r.t,tk=int(r.tk),solo=int(r.solo),tfl=rnd(r.tfl,1),sk=rnd(r.sk,1),qbh=int(r.qbh),int=int(r.int_),pd=int(r.pd_),ff=int(r.ff),fr=int(r.fr),td=int(r.td)) for r in dfn.itertuples()]
+out['def']=[dict(id=r.player_id,n=r.n,p=r.p,t=r.t,tk=int(r.tk),solo=int(r.solo),tfl=rnd(r.tfl,1),sk=rnd(r.sk,1),qbh=int(r.qbh),int=int(r.int_),pd=int(r.pd_),ff=int(r.ff),fr=int(r.fr),td=int(r.td)) for r in dfn.itertuples()]
 sl=ids[ids.sleeper_id.notna()&ids.position.isin(['QB','RB','WR','TE','K'])].copy()
 sl['sid']=sl.sleeper_id.astype(int).astype(str)
 sl=sl.drop_duplicates('sid')
 out['sleeper']={r.sid:[r.name,r.position,r.team if isinstance(r.team,str) else '',r.gsis_id if isinstance(r.gsis_id,str) else ''] for r in sl.itertuples()}
 out['season']=int(S)
+heads=ps.groupby('player_id').headshot_url.last()
+for lst in ('qb','rec','rush','def'):
+    for r in out[lst]:
+        h=heads.get(r['id']); r['img']=h if isinstance(h,str) else None
+lg=nfl.load_teams().to_pandas().team_league_logo.dropna()
+out['nfl_logo']=lg.iloc[0] if len(lg) else None
 
 # ---------- Partidos de la semana (NFL) ----------
 from zoneinfo import ZoneInfo
@@ -158,6 +164,92 @@ for r in full[full.week==gw].sort_values(['gameday','gametime']).itertuples():
         aml=rnd(r.away_moneyline,0),hml=rnd(r.home_moneyline,0),spread=rnd(r.spread_line,1),total=rnd(r.total_line,1),
         as_=None if pd.isna(r.away_score) else int(r.away_score),hs=None if pd.isna(r.home_score) else int(r.home_score)))
 out['games']=gl; out['gweek']=gw
+
+# ---------- Liga MX: estadísticas de jugadores partido por partido (ESPN) ----------
+import urllib.request
+from datetime import date, timedelta
+def espn(url):
+    req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 (La Pizarra)"})
+    with urllib.request.urlopen(req,timeout=20) as r:
+        return json.loads(r.read().decode("utf-8"))
+def mx_player_stats():
+    base="https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1"
+    hoy=date.today()
+    ini=date(hoy.year,7,1) if hoy.month>=7 else date(hoy.year,1,1)   # Apertura: jul-dic, Clausura: ene-jun
+    eventos={}
+    d=ini
+    while d<=hoy:   # por bloques de 15 días para no toparnos con límites
+        fin=min(d+timedelta(days=14),hoy)
+        try:
+            j=espn(f"{base}/scoreboard?dates={d:%Y%m%d}-{fin:%Y%m%d}&limit=200")
+            for e in j.get("events",[]):
+                if e.get("status",{}).get("type",{}).get("state")=="post": eventos[e["id"]]=e
+        except Exception as ex:
+            print("  aviso scoreboard",d,ex)
+        d=fin+timedelta(days=1)
+    P={}
+    def fila(pid,nombre,equipo,equipo_n,pos):
+        if pid not in P: P[pid]=dict(n=nombre,t=equipo,tn=equipo_n,pos=pos,ap=0,g=0,as_=0,sh=None,sot=None,yc=0,rc=0,fc=None,fs=None,sv=None,gc=None)
+        return P[pid]
+    def suma(r,k,v):
+        if v is None: return
+        r[k]=(r[k] or 0)+v
+    fuente="resumen"
+    con_stats=0
+    for eid,e in eventos.items():
+        comp=(e.get("competitions") or [{}])[0]
+        equipos={c["team"]["id"]:(c["team"].get("abbreviation",""),c["team"].get("displayName","")) for c in comp.get("competitors",[]) if "team" in c}
+        usado=False
+        try:
+            sm=espn(f"{base}/summary?event={eid}")
+            for ros in sm.get("rosters",[]):
+                tid=str(ros.get("team",{}).get("id",""))
+                ab,tn=equipos.get(tid,(ros.get("team",{}).get("abbreviation",""),ros.get("team",{}).get("displayName","")))
+                for p in ros.get("roster",[]):
+                    a=p.get("athlete",{})
+                    st={x.get("name"):x.get("value") for x in p.get("stats",[]) if isinstance(x,dict)}
+                    jugo=p.get("starter") or p.get("subbedIn") or (st.get("appearances") or 0)>0
+                    if not st and not jugo: continue
+                    r=fila(a.get("id"),a.get("displayName"),ab,tn,(p.get("position") or {}).get("abbreviation",""))
+                    if jugo: r["ap"]+=1
+                    def v(*ks):
+                        for k in ks:
+                            if st.get(k) is not None:
+                                try: return float(st[k])
+                                except Exception: pass
+                        return None
+                    suma(r,"g",v("totalGoals","goals")); suma(r,"as_",v("goalAssists","assists"))
+                    suma(r,"sh",v("totalShots","shots")); suma(r,"sot",v("shotsOnTarget"))
+                    suma(r,"yc",v("yellowCards")); suma(r,"rc",v("redCards"))
+                    suma(r,"fc",v("foulsCommitted")); suma(r,"fs",v("foulsSuffered"))
+                    suma(r,"sv",v("saves")); suma(r,"gc",v("goalsConceded"))
+                    if st: usado=True
+        except Exception as ex:
+            print("  aviso resumen",eid,ex)
+        if usado: con_stats+=1; continue
+        # Respaldo: goles y tarjetas desde los eventos del marcador
+        fuente="eventos"
+        for det in comp.get("details",[]):
+            tipo=(det.get("type") or {}).get("text","").lower()
+            for a in det.get("athletesInvolved",[])[:1]:
+                tid=str((a.get("team") or det.get("team") or {}).get("id",""))
+                ab,tn=equipos.get(tid,("",""))
+                r=fila(a.get("id"),a.get("displayName"),ab,tn,(a.get("position") or {}).get("abbreviation","") if isinstance(a.get("position"),dict) else "")
+                if det.get("scoringPlay") and not det.get("ownGoal"): r["g"]+=1
+                elif det.get("redCard") or "red" in tipo: r["rc"]+=1
+                elif det.get("yellowCard") or "yellow" in tipo: r["yc"]+=1
+    filas=[]
+    for pid,r in P.items():
+        if not r["n"]: continue
+        pg=(r["pos"] or "M")[0].upper(); pg=pg if pg in "GDMF" else "M"
+        filas.append(dict(id=pid,n=r["n"],t=r["t"],tn=r["tn"],pos=r["pos"],pg=pg,ap=r["ap"] or None,g=int(r["g"]),**{"as":int(r["as_"])},
+            sh=r["sh"],sot=r["sot"],yc=int(r["yc"]),rc=int(r["rc"]),fc=r["fc"],fs=r["fs"],sv=r["sv"],gc=r["gc"]))
+    print(f"Liga MX: {len(eventos)} partidos terminados, {con_stats} con estadísticas por jugador, {len(filas)} jugadores")
+    return filas
+try:
+    out['mxp']=mx_player_stats()
+except Exception as ex:
+    print("Liga MX: no se pudieron obtener estadísticas de jugadores:",ex); out['mxp']=[]
 out['week']=wk; out['winners']=sorted(winners)
 data=json.dumps(out,ensure_ascii=False,allow_nan=False)
 aqui=os.path.dirname(os.path.abspath(__file__))

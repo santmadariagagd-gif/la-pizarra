@@ -39,10 +39,12 @@ nav.tabs button{font:600 16px/1 var(--display);letter-spacing:.02em;border:0;bac
 nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
 
-.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center;padding:28px 0 20px;border-bottom:2px solid var(--ink)}
+.hero{display:grid;grid-template-columns:1fr 260px;gap:24px;align-items:center;padding:18px 0 14px;border-bottom:2px solid var(--ink)}
+.hero .kicker img{height:44px;width:auto;vertical-align:middle;margin-right:14px}
+.hero .kicker{display:flex;align-items:center;font:700 30px/1 var(--display);margin:0 0 6px;letter-spacing:.01em;color:var(--ink)}
 .hero h1{font:700 clamp(44px,8vw,86px)/.92 var(--display);margin:0 0 14px;letter-spacing:-.01em}
 .hero p{margin:0;color:var(--muted);max-width:44ch;font-size:17px}
-.play{width:100%;height:auto;max-height:240px}
+.play{width:100%;height:auto;max-height:110px}
 .play .x,.play .o{stroke:var(--ink);stroke-width:3;fill:none}
 .play .rt{stroke:var(--mark);stroke-width:2.5;fill:none;stroke-linecap:round}
 .play .rt2{stroke:var(--alt)}
@@ -92,6 +94,11 @@ td.rk{color:var(--muted);width:2.5em}
 .leader .k{font:600 14px var(--display);color:var(--muted);letter-spacing:.02em}
 .leader .v{font:700 40px/1 var(--display);margin:4px 0 2px;color:var(--mark)}
 .leader .w{font-weight:600}
+.leader{display:grid;grid-template-columns:64px 1fr;gap:2px 14px;align-items:center}
+.leader .ph{grid-row:span 3;width:64px;height:64px;border-radius:50%;background:var(--line);overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.leader .ph img{width:100%;height:100%;object-fit:cover;object-position:top}
+.leader .ph span{font:700 22px/64px var(--display);color:var(--muted);width:100%;text-align:center}
+.lgroup{font:700 14px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
 
 .notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 28px;margin-bottom:26px}
 .notes article{padding:14px 0;border-bottom:1px solid var(--line)}
@@ -159,7 +166,7 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 .live{color:var(--alt);font-weight:700}
 footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color:var(--muted);font-size:13px}
 @media (max-width:720px){
-  .hero{grid-template-columns:1fr}.play{max-height:170px}
+  .hero{grid-template-columns:1fr}.play{display:none}
   .trade{grid-template-columns:1fr}.vs{justify-self:center}
   .leaders{grid-template-columns:1fr 1fr}.leader .v{font-size:32px}
   header.top{flex-wrap:wrap}
@@ -185,7 +192,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 
 <div class="hero">
   <div>
-    <h1 id="heroTitle">Números de la NFL, explicados en español</h1>
+    <p class="kicker"><img id="leagueLogo" alt="" hidden><span id="heroTitle"></span></p>
     <p id="heroSub"></p>
   </div>
   <svg class="play mxart" viewBox="0 0 420 220" aria-hidden="true" hidden>
@@ -214,27 +221,23 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 <!-- NFL PARTIDOS -->
 <section class="panel" id="nflgames">
   <h2 id="gTitle"></h2>
-  <p class="lede">Horarios en tiempo del centro de México. Momios en formato americano; la barra muestra la probabilidad implícita de cada equipo, ya sin la comisión de la casa. El clima es el pronóstico para la hora del partido.</p>
   <div class="games" id="nflGames"></div>
 </section>
 
 <!-- LIGA MX -->
 <section class="panel hidden" id="mxgames">
   <h2>Partidos de Liga MX</h2>
-  <p class="lede">Resultados de los últimos días y próximos partidos. Horarios en tiempo del centro de México; momios en formato americano con probabilidad implícita de local, empate y visita.</p>
   <p class="note" id="mxMsg" aria-live="polite">Cargando partidos…</p>
   <div class="games" id="mxGames"></div>
 </section>
 <section class="panel hidden" id="mxtable">
   <h2>Tabla general</h2>
-  <p class="lede">Clasificación del torneo actual. Da clic en cualquier encabezado para reordenar.</p>
   <p class="note" id="mxtMsg" aria-live="polite">Cargando tabla…</p>
   <div class="tbl"><table id="mxTable"></table></div>
 </section>
 
 <section class="panel hidden" id="mxplayers">
   <h2>Líderes de la Liga MX</h2>
-  <p class="lede">Estadísticas de jugadores en la temporada. Da clic en cualquier encabezado para reordenar.</p>
   <p class="note" id="mxpMsg" aria-live="polite">Cargando jugadores…</p>
   <div class="leaders" id="mxLeaders"></div>
   <div class="bar">
@@ -243,14 +246,12 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
     <input type="search" id="mxpSearch" placeholder="Buscar jugador" aria-label="Buscar jugador">
   </div>
   <div class="tbl"><table id="mxpTable"></table></div>
-  <p class="note">Fuente: ESPN. Goles por 90 y tiros a gol se calculan solo cuando ESPN reporta minutos y tiros.</p>
 </section>
 
 <!-- ESTADÍSTICAS -->
 <section class="panel hidden" id="stats">
   <h2>Líderes de la temporada</h2>
-  <p class="lede">Quién está produciendo de verdad, no solo quién suma más puntos. Da clic en cualquier encabezado para reordenar.</p>
-  <div class="leaders" id="leaders"></div>
+  <div id="leaders"></div>
 
   <h3>Jugadores</h3>
   <div class="bar">
@@ -263,18 +264,15 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
     <input type="search" id="pSearch" placeholder="Buscar jugador o equipo" aria-label="Buscar jugador o equipo">
   </div>
   <div class="tbl"><table id="pTable"></table></div>
-  <p class="note" id="pNote"></p>
 
   <h3 style="margin-top:30px">Equipos</h3>
   <div class="tbl"><table id="tTable"></table></div>
-  <p class="note">EPA/jugada mide cuántos puntos esperados gana (ofensiva) o permite (defensiva) un equipo por jugada; en defensa, más negativo es mejor. "Pase vs. esperado" compara qué tanto lanza un equipo contra lo que haría un equipo promedio en las mismas situaciones (down, distancia, marcador). "Vs. récord ganador" cuenta juegos contra equipos que hoy tienen más victorias que derrotas.</p>
 </section>
 
 <!-- FANTASY -->
 <section class="panel hidden" id="fantasy">
   <div id="sleeper">
     <h2>Tu liga de Sleeper</h2>
-    <p class="lede">Escribe tu usuario de Sleeper para ver tu roster, quién está libre en tu liga y cómo se comparan los equipos.</p>
     <div class="bar">
       <input type="search" id="slUser" placeholder="Usuario de Sleeper" aria-label="Usuario de Sleeper" autocomplete="off">
       <button class="btn" id="slGo">Conectar</button>
@@ -285,7 +283,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
       <div class="kpis" id="slKpis"></div>
       <div class="grid2">
         <div><h3>Tu roster</h3><div class="tbl"><table id="slRoster"></table></div></div>
-        <div><h3>Fuerza de los rosters</h3><p class="note" style="margin:0 0 10px">Suma del valor de todos los jugadores de cada equipo.</p><div id="slPower" class="power"></div></div>
+        <div><h3>Fuerza de los rosters</h3><div id="slPower" class="power"></div></div>
       </div>
       <h3 style="margin-top:26px">Libres en tu liga</h3>
       <div class="bar"><div class="seg" id="slSeg"><button aria-pressed="true" data-p="ALL">Todos</button><button aria-pressed="false" data-p="QB">QB</button><button aria-pressed="false" data-p="RB">RB</button><button aria-pressed="false" data-p="WR">WR</button><button aria-pressed="false" data-p="TE">TE</button></div></div>
@@ -296,11 +294,9 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   </div>
   <hr class="rule">
   <h2 id="fTitle"></h2>
-  <p class="lede">Jugadores con dueño en menos de la mitad de las ligas cuyo uso subió la semana pasada.</p>
   <div class="notes" id="notes"></div>
 
   <h3>Disponibilidad y waivers</h3>
-  <p class="lede">Busca a cualquier jugador para ver en qué porcentaje de ligas ya tiene dueño. Oportunidades = acarreos + blancos.</p>
   <div class="bar">
     <div class="seg" id="fSeg">
       <button aria-pressed="true" data-p="ALL">Todos</button><button aria-pressed="false" data-p="QB">QB</button><button aria-pressed="false" data-p="RB">RB</button><button aria-pressed="false" data-p="WR">WR</button><button aria-pressed="false" data-p="TE">TE</button>
@@ -309,10 +305,8 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
     <input type="search" id="fSearch" placeholder="Buscar jugador" aria-label="Buscar jugador">
   </div>
   <div class="tbl"><table id="fTable"></table></div>
-  <p class="note">% de ligas con dueño: promedio de ESPN y Yahoo reportado por FantasyPros (corte del 18 de septiembre).</p>
 
   <h3 style="margin-top:30px">Analizador de intercambios</h3>
-  <p class="lede">Agrega los jugadores de cada lado. El valor sale del ranking de consenso para el resto de la temporada en formato PPR. Si conectaste tu liga, elige con quién negocias y solo verás los jugadores de cada roster.</p>
   <div class="bar" id="tradeTeamBar" hidden><label class="slider">Negocias con <select id="tradeTeam"></select></label></div>
   <div class="trade">
     <div class="side" id="sideA"><h3>Das <b>0</b></h3><ul></ul><input type="search" list="plistA" placeholder="Agregar jugador" aria-label="Agregar jugador que das"></div>
@@ -323,7 +317,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <div class="verdict" id="verdict"><strong>Agrega jugadores para comparar</strong><div class="meter"><i style="width:50%"></i></div><span class="note"></span></div>
 </section>
 
-<footer>Datos: nflverse (jugada por jugada, snaps, estadísticas, calendario y momios), rankings de consenso de FantasyPros vía ffverse, Sleeper, ESPN (Liga MX) y Open-Meteo (clima). Hecho por La Pizarra.</footer>
+<footer>La Pizarra</footer>
 </div>
 
 <script>
@@ -332,7 +326,9 @@ const $ = s => document.querySelector(s);
 const fmt = (v,d=0) => v==null ? "–" : (d ? Number(v).toFixed(d) : Number(v).toLocaleString("es-MX"));
 const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
 
-$("#heroSub").textContent = `Estadísticas avanzadas, partidos y herramientas de fantasy de la temporada ${D.season}, con datos hasta la semana ${D.week}.`;
+let MX_LOGO=null;
+function setLogo(u){const im=$("#leagueLogo"); if(u){im.onerror=()=>{im.hidden=true};im.src=u;im.hidden=false;} else im.hidden=true;}
+$("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLogo(D.nfl_logo); $("#heroSub").textContent=`Datos actualizados hasta la semana ${D.week}.`;
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
@@ -344,8 +340,9 @@ function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
   $(".nflart").toggleAttribute("hidden",sp!=="nfl"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
-  $("#heroTitle").textContent= sp==="nfl"?"Números de la NFL, explicados en español":"Números de la Liga MX, explicados en español";
-  $("#heroSub").textContent= sp==="nfl"?`Estadísticas avanzadas, partidos y herramientas de fantasy de la temporada ${D.season}, con datos hasta la semana ${D.week}.`:"Partidos, momios, clima y tabla del torneo, actualizados cada vez que abres la página.";
+  $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:"Liga MX";
+  setLogo(sp==="nfl"?D.nfl_logo:MX_LOGO);
+  $("#heroSub").textContent= sp==="nfl"?`Datos actualizados hasta la semana ${D.week}.`:"Partidos, tabla y jugadores, actualizados cada vez que abres la página.";
   showTab(sp==="nfl"?"nflgames":"mxgames");
 }
 document.querySelectorAll("nav.sports button").forEach(b=>b.onclick=()=>showSport(b.dataset.sport));
@@ -370,13 +367,21 @@ function table(el, cols, rows, state){
 }
 const name = r => `<span class="nm">${r.n}</span><span class="tm">${r.t}${r.p?" · "+r.p:""}</span>`;
 
-// Leaders
-const topOf=(arr,k,asc)=>[...arr].sort((a,b)=>asc?a[k]-b[k]:b[k]-a[k])[0];
-const qbE=topOf(D.qb,"epa"), py=topOf(D.qb,"yds"), ry=topOf(D.rec,"yds"), ypr=topOf(D.rec.filter(r=>r.rec>=6),"ypr"), rsh=topOf(D.rush,"yds"), sk=topOf(D.teams,"sacks");
-$("#leaders").innerHTML=[
- ["EPA por jugada (QB)",signed(qbE.epa),qbE],["Yardas de pase",fmt(py.yds),py],["Yardas por recepción",fmt(ypr.ypr,1),ypr],
- ["Yardas recibidas",fmt(ry.yds),ry],["Yardas terrestres",fmt(rsh.yds),rsh],["Capturas (equipo)",sk.sacks,{n:sk.t,t:""}]
-].map(([k,v,r])=>`<div class="leader"><div class="k">${k}</div><div class="v">${v}</div><div class="w">${r.n} <span class="tm">${r.t||""}</span></div></div>`).join("");
+// Líderes con foto
+const topOf=(arr,k,asc)=>[...arr].filter(r=>r[k]!=null).sort((a,b)=>asc?a[k]-b[k]:b[k]-a[k])[0];
+const initials=n=>(n||"").split(" ").map(x=>x[0]).slice(0,2).join("");
+function leaderCard(k,v,r){ if(!r) return "";
+  const ini=initials(r.n);
+  const ph=r.img?`<img src="${r.img}" alt="" loading="lazy" data-ini="${ini}" onerror="this.outerHTML='<span>'+this.dataset.ini+'</span>'">`:`<span>${ini}</span>`;
+  return `<div class="leader"><div class="ph">${ph}</div><div class="k">${k}</div><div class="v">${v}</div><div class="w">${r.n} <span class="tm">${r.t||""}</span></div></div>`;}
+{const q=topOf(D.qb,"epa"),py=topOf(D.qb,"yds"),ptd=topOf(D.qb,"td"),rsh=topOf(D.rush,"yds"),ry=topOf(D.rec,"yds"),ypr=topOf(D.rec.filter(r=>r.rec>=6),"ypr");
+ const sk=topOf(D.def,"sk"),it=topOf(D.def,"int"),ff=topOf(D.def,"ff"),tk=topOf(D.def,"tk"),tfl=topOf(D.def,"tfl"),pdf=topOf(D.def,"pd");
+ $("#leaders").innerHTML=`<p class="lgroup">Ofensiva</p><div class="leaders">${[
+   leaderCard("EPA por jugada",signed(q?.epa),q),leaderCard("Yardas de pase",fmt(py?.yds),py),leaderCard("Pases de TD",ptd?.td,ptd),
+   leaderCard("Yardas terrestres",fmt(rsh?.yds),rsh),leaderCard("Yardas recibidas",fmt(ry?.yds),ry),leaderCard("Yardas por recepción",fmt(ypr?.ypr,1),ypr)].join("")}</div>
+  <p class="lgroup">Defensiva</p><div class="leaders">${[
+   leaderCard("Capturas",fmt(sk?.sk,1),sk),leaderCard("Intercepciones",it?.int,it),leaderCard("Balones sueltos provocados",ff?.ff,ff),
+   leaderCard("Tacleadas",tk?.tk,tk),leaderCard("Tacleadas con pérdida",fmt(tfl?.tfl,1),tfl),leaderCard("Pases defendidos",pdf?.pd,pdf)].join("")}</div>`;}
 
 // Players table
 const PCOLS={
@@ -389,7 +394,7 @@ const PNOTE={qb:"Mínimo 30 jugadas de pase. Capturas y tiempo para lanzar: nflv
 const pState={set:"qb",k:"epa",dir:"desc",q:"",render(){
   const q=this.q.toLowerCase();
   const rows=D[this.set].filter(r=>!q||r.n.toLowerCase().includes(q)||r.t.toLowerCase().includes(q));
-  table($("#pTable"),PCOLS[this.set],rows,this); $("#pNote").textContent=PNOTE[this.set];}};
+  table($("#pTable"),PCOLS[this.set],rows,this);}};
 document.querySelectorAll("#pSeg button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#pSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
   pState.set=b.dataset.k; pState.limit=25; pState.k={qb:"epa",rec:"yds",rush:"yds",def:"sk"}[pState.set]; pState.dir="desc"; pState.render();});
@@ -498,7 +503,7 @@ function slRender(){
       ["Valor del roster",fmt(rosterVal(me)),`Lugar ${power.findIndex(x=>x.r===me)+1} de ${rs.length}`],
       ["Jugadores libres",fmt(D.fantasy.filter(p=>p.g&&!SL.takenG.has(p.g)).length),"Con ranking de consenso"]
     ].map(([k,v,s2])=>`<div class="kpi"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s2}</div></div>`).join("");
-  } else $("#slKpis").innerHTML=`<p class="note">No encontramos tu equipo en esta liga; mostramos la liga completa.</p>`;
+  } else $("#slKpis").innerHTML=``;
   // roster
   const starters=new Set(me?.starters||[]);
   const mineRows=(me?.players||[]).map(slPlayer).map(p=>({...p,st:starters.has(p.sid)?1:0,v:val(p)}));
@@ -596,12 +601,24 @@ async function geocode(city){
 let mxLoaded=false;
 async function loadMxGames(){
   if(mxLoaded) return; mxLoaded=true;
-  const from=new Date(Date.now()-3*864e5), to=new Date(Date.now()+8*864e5);
+  const from=new Date(Date.now()-3*864e5), to=new Date(Date.now()+35*864e5);
   try{
     const j=await (await fetch(`${ESPN}/site/v2/sports/soccer/mex.1/scoreboard?dates=${ymd(from)}-${ymd(to)}&limit=100`)).json();
-    const ev=(j.events||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
-    if(!ev.length){$("#mxMsg").textContent="No hay partidos de Liga MX en estos días (puede ser fecha FIFA o descanso).";return;}
-    $("#mxMsg").textContent="";
+    MX_LOGO=j.leagues?.[0]?.logos?.[0]?.href||MX_LOGO; if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(MX_LOGO);
+    let ev=(j.events||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    const now=Date.now();
+    const past=ev.filter(e=>e.status?.type?.state!=="pre"&&new Date(e.date)>=from);
+    const next=ev.filter(e=>e.status?.type?.state==="pre");
+    let note="";
+    if(next.length){
+      const first=new Date(next[0].date);
+      const upto=first.getTime()+6*864e5;                       // la jornada completa: 7 días desde el primer partido
+      const nextJ=next.filter(e=>new Date(e.date).getTime()<=upto);
+      if(first.getTime()-now>5*864e5) note=`La Liga MX regresa el ${fDay(first)} después de la pausa. Estos son los partidos de la próxima jornada.`;
+      ev=[...past,...nextJ];
+    } else ev=past;
+    if(!ev.length){$("#mxMsg").textContent="No hay partidos de Liga MX programados en las próximas semanas.";return;}
+    $("#mxMsg").textContent=note;
     const cards=ev.map((e,i)=>{
       const c=e.competitions?.[0]||{}, cs=c.competitors||[];
       const H=cs.find(x=>x.homeAway==="home")||cs[0]||{}, A=cs.find(x=>x.homeAway==="away")||cs[1]||{};
@@ -655,7 +672,8 @@ async function loadMxPlayers(){
   if(mxpLoaded) return; mxpLoaded=true;
   try{
     let cached=null; try{cached=JSON.parse(localStorage.getItem("pizarra_mxp")||"null")}catch(e){}
-    if(cached&&Date.now()-cached.t<6*3600e3){MXP=cached.rows;}
+    if(D.mxp&&D.mxp.length){MXP=D.mxp.map(r=>({...r,ga:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null,g90:null}));}
+    else if(cached&&Date.now()-cached.t<6*3600e3){MXP=cached.rows;}
     else{
       const tj=await (await fetch(`${ESPN}/site/v2/sports/soccer/mex.1/teams`)).json();
       const teams=(tj.sports?.[0]?.leagues?.[0]?.teams||[]).map(x=>x.team);
@@ -684,7 +702,7 @@ async function loadMxPlayers(){
     $("#mxpMsg").textContent="";
     const teamsOpt=[...new Map(MXP.map(r=>[r.t,r.tn])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
     $("#mxpTeam").innerHTML=`<option value="">Todos los equipos</option>`+teamsOpt.map(([a,n])=>`<option value="${a}">${n}</option>`).join("");
-    const lead=(k,label,fmtf=v=>fmt(v),filter=r=>true)=>{const r=[...MXP].filter(r=>r[k]!=null&&filter(r)).sort((a,b)=>b[k]-a[k])[0]; return r&&r[k]>0?`<div class="leader"><div class="k">${label}</div><div class="v">${fmtf(r[k])}</div><div class="w">${r.n} <span class="tm">${r.t}</span></div></div>`:"";};
+    const lead=(k,label,fmtf=v=>fmt(v))=>{const r=[...MXP].filter(r=>r[k]!=null).sort((a,b)=>b[k]-a[k])[0]; return r&&r[k]>0?leaderCard(label,fmtf(r[k]),{...r,img:r.id?`https://a.espncdn.com/i/headshots/soccer/players/full/${r.id}.png`:null}):"";};
     $("#mxLeaders").innerHTML=[lead("g","Goles"),lead("as","Asistencias"),lead("ga","Goles + asistencias"),lead("sot","Tiros a gol"),lead("sv","Atajadas"),lead("yc","Tarjetas amarillas")].join("");
     mxpState.render();
   }catch(e){mxpLoaded=false;$("#mxpMsg").textContent="No pudimos cargar los jugadores de Liga MX. Intenta recargar la página en un momento.";}
