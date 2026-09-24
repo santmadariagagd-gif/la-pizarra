@@ -40,7 +40,7 @@ nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
 
 .hero{display:grid;grid-template-columns:1fr 260px;gap:24px;align-items:center;padding:18px 0 14px;border-bottom:2px solid var(--ink)}
-.hero .kicker img{height:44px;width:auto;vertical-align:middle;margin-right:14px}
+.hero .kicker img{height:64px;width:auto;vertical-align:middle;margin-right:14px}
 .hero .kicker{display:flex;align-items:center;font:700 30px/1 var(--display);margin:0 0 6px;letter-spacing:.01em;color:var(--ink)}
 .hero h1{font:700 clamp(44px,8vw,86px)/.92 var(--display);margin:0 0 14px;letter-spacing:-.01em}
 .hero p{margin:0;color:var(--muted);max-width:44ch;font-size:17px}
@@ -179,12 +179,16 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 <header class="top">
   <div class="logo">La <span>Pizarra</span></div>
   <nav class="tabs sports" aria-label="Deporte">
-    <button aria-selected="true" data-sport="nfl">NFL</button>
     <button aria-selected="false" data-sport="mx">Fútbol</button>
+    <button aria-selected="true" data-sport="nfl">NFL</button>
+    <button aria-selected="false" data-sport="ff">Fantasy</button>
   </nav>
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL">
-  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="fantasy">Fantasy</button>
+  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button>
+</nav>
+<nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
+  <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
 </nav>
 <nav class="subnav" data-for="mx" aria-label="Secciones Liga MX" hidden>
   <span class="league">Liga MX</span><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button>
@@ -270,7 +274,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 </section>
 
 <!-- FANTASY -->
-<section class="panel hidden" id="fantasy">
+<section class="panel hidden" id="fliga">
   <div id="sleeper">
     <h2>Tu liga de Sleeper</h2>
     <div class="bar">
@@ -292,7 +296,8 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
       <div class="tbl"><table id="slTrend"></table></div>
     </div>
   </div>
-  <hr class="rule">
+</section>
+<section class="panel hidden" id="fwaivers">
   <h2 id="fTitle"></h2>
   <div class="notes" id="notes"></div>
 
@@ -306,7 +311,9 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   </div>
   <div class="tbl"><table id="fTable"></table></div>
 
-  <h3 style="margin-top:30px">Analizador de intercambios</h3>
+</section>
+<section class="panel hidden" id="ftrade">
+  <h2>Analizador de intercambios</h2>
   <div class="bar" id="tradeTeamBar" hidden><label class="slider">Negocias con <select id="tradeTeam"></select></label></div>
   <div class="trade">
     <div class="side" id="sideA"><h3>Das <b>0</b></h3><ul></ul><input type="search" list="plistA" placeholder="Agregar jugador" aria-label="Agregar jugador que das"></div>
@@ -326,27 +333,29 @@ const $ = s => document.querySelector(s);
 const fmt = (v,d=0) => v==null ? "–" : (d ? Number(v).toFixed(d) : Number(v).toLocaleString("es-MX"));
 const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
 
-let MX_LOGO=D.mx_logo||null;
+let MX_LOGOS=D.mx_logos||[];
+function pickLogo(ls){ if(!ls||!ls.length) return null; const dark=document.documentElement.dataset.theme==="dark"||(document.documentElement.dataset.theme!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);
+  const f=ls.find(l=>(l.rel||[]).includes(dark?"dark":"default"))||ls[0]; return f.href;}
 function setLogo(u){const im=$("#leagueLogo"); if(u){im.onerror=()=>{im.hidden=true};im.src=u;im.hidden=false;} else im.hidden=true;}
 $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLogo(D.nfl_logo); $("#heroSub").textContent=`Datos actualizados hasta la semana ${D.week}.`;
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["nflgames","stats","fantasy","mxgames","mxtable","mxplayers"];
+const SECTIONS=["nflgames","stats","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers"];
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
   if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers();}
 function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
-  $(".nflart").toggleAttribute("hidden",sp!=="nfl"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
-  $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:"Liga MX";
-  setLogo(sp==="nfl"?D.nfl_logo:MX_LOGO);
-  $("#heroSub").textContent= sp==="nfl"?`Datos actualizados hasta la semana ${D.week}.`:"Partidos, tabla y jugadores, actualizados cada vez que abres la página.";
-  showTab(sp==="nfl"?"nflgames":"mxgames");
+  $(".nflart").toggleAttribute("hidden",sp==="mx"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
+  $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:sp==="mx"?"Liga MX":`Fantasy Football · Semana ${D.gweek}`;
+  setLogo(sp==="mx"?pickLogo(MX_LOGOS):D.nfl_logo);
+  $("#heroSub").textContent= sp==="mx"?"":`Datos actualizados hasta la semana ${D.week}.`;
+  showTab(sp==="nfl"?"nflgames":sp==="mx"?"mxgames":"fliga");
 }
 document.querySelectorAll("nav.sports button").forEach(b=>b.onclick=()=>showSport(b.dataset.sport));
-fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/scoreboard").then(r=>r.json()).then(j=>{MX_LOGO=j.leagues?.[0]?.logos?.[0]?.href||MX_LOGO;}).catch(()=>{});
+fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/scoreboard").then(r=>r.json()).then(j=>{if(j.leagues?.[0]?.logos?.length) MX_LOGOS=j.leagues[0].logos;}).catch(()=>{});
 document.querySelectorAll(".subnav button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 
 // Generic sortable table
@@ -605,8 +614,8 @@ async function loadMxGames(){
   try{
     const sb=d=>fetch(`${ESPN}/site/v2/sports/soccer/mex.1/scoreboard${d?`?dates=${d}`:""}`).then(r=>r.json());
     const base=await sb();
-    MX_LOGO=base.leagues?.[0]?.logos?.[0]?.href||MX_LOGO;
-    if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(MX_LOGO);
+    if(base.leagues?.[0]?.logos?.length) MX_LOGOS=base.leagues[0].logos;
+    if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(pickLogo(MX_LOGOS));
     // ESPN organiza la Liga MX por días: usamos su calendario de fechas con partidos
     const cal=(base.leagues?.[0]?.calendar||[]).map(x=>typeof x==="string"?x:(x.startDate||x.value||"")).map(s=>s.slice(0,10)).filter(Boolean);
     const hoy=new Intl.DateTimeFormat("en-CA",{timeZone:TZ}).format(new Date());
@@ -684,27 +693,27 @@ async function loadMxPlayers(){
     if(D.mxp&&D.mxp.length){MXP=D.mxp.map(r=>({...r,ga:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null,g90:null}));}
     else if(cached&&Date.now()-cached.t<6*3600e3){MXP=cached.rows;}
     else{
-      const tj=await (await fetch(`${ESPN}/site/v2/sports/soccer/mex.1/teams`)).json();
-      const teams=(tj.sports?.[0]?.leagues?.[0]?.teams||[]).map(x=>x.team);
-      if(!teams.length) throw new Error("sin equipos");
-      $("#mxpMsg").textContent=`Cargando ${teams.length} planteles…`;
-      const rosters=await Promise.all(teams.map(tm=>fetch(`${ESPN}/site/v2/sports/soccer/mex.1/teams/${tm.id}/roster`).then(r=>r.json()).then(j=>({tm,j})).catch(()=>null)));
-      MXP=[];
-      for(const r of rosters){ if(!r) continue;
-        const ath=Array.isArray(r.j.athletes)?r.j.athletes.flatMap(a=>a.items||[a]):[];
-        for(const a of ath){
-          const s=flatStats(a.statistics||a.stats||a);
-          const row={n:a.displayName||a.fullName||a.shortName,t:r.tm.abbreviation||r.tm.shortDisplayName,tn:r.tm.displayName,pg:posGroup(a),pos:a.position?.abbreviation||"",
-            ap:pick(s,"appearances","gamesPlayed","starts"),min:pick(s,"minutesPlayed","minutes"),g:pick(s,"totalGoals","goals"),as:pick(s,"goalAssists","assists"),
-            sh:pick(s,"totalShots","shots","shotsTotal"),sot:pick(s,"shotsOnTarget","shotsOnGoal"),yc:pick(s,"yellowCards"),rc:pick(s,"redCards"),
-            fc:pick(s,"foulsCommitted"),fs:pick(s,"foulsSuffered"),sv:pick(s,"saves"),gc:pick(s,"goalsConceded"),cs:pick(s,"cleanSheet","cleanSheets")};
-          if(!row.n||[row.ap,row.g,row.as,row.min,row.sv].every(v=>v==null||v===0)) continue;
-          row.ga=(row.g||0)+(row.as||0);
-          row.g90=row.min>=180&&row.g!=null?row.g/row.min*90:null;
-          row.acc=row.sh>0&&row.sot!=null?row.sot/row.sh:null;
-          MXP.push(row);
+      $("#mxpMsg").textContent="Sumando los partidos del torneo…";
+      const sb=d=>fetch(`${ESPN}/site/v2/sports/soccer/mex.1/scoreboard${d?`?dates=${d}`:""}`).then(r=>r.json());
+      const base=await sb();
+      const hoy=new Intl.DateTimeFormat("en-CA",{timeZone:TZ}).format(new Date());
+      const fechas=(base.leagues?.[0]?.calendar||[]).map(x=>(typeof x==="string"?x:(x.startDate||"")).slice(0,10)).filter(d=>d&&d<=hoy);
+      const days=await Promise.all(fechas.map(d=>sb(d.replace(/-/g,"")).catch(()=>({events:[]}))));
+      const P=new Map();
+      for(const e of days.flatMap(x=>x.events||[])){
+        if(e.status?.type?.state!=="post") continue;
+        const c=e.competitions?.[0]||{}; const tm={}; (c.competitors||[]).forEach(x=>tm[x.team?.id]=x.team||{});
+        const seen=new Set();
+        for(const dt of c.details||[]){
+          const a=(dt.athletesInvolved||[])[0]; if(!a) continue;
+          const team=tm[a.team?.id||dt.team?.id]||{};
+          if(!P.has(a.id)) P.set(a.id,{id:a.id,n:a.displayName||a.fullName,t:team.abbreviation||"",tn:team.displayName||"",pos:a.position?.abbreviation||a.position||"",g:0,as:0,yc:0,rc:0,pen:0,ap:0});
+          const r=P.get(a.id); if(!seen.has(a.id)){r.ap++;seen.add(a.id);}
+          if(dt.scoringPlay&&!dt.ownGoal&&!dt.shootout){r.g++; if(dt.penaltyKick) r.pen++; const as=(dt.athletesInvolved||[])[1]; if(as){ if(!P.has(as.id)) P.set(as.id,{id:as.id,n:as.displayName,t:r.t,tn:r.tn,pos:"",g:0,as:0,yc:0,rc:0,pen:0,ap:0}); P.get(as.id).as++; }}
+          else if(dt.redCard) r.rc++; else if(dt.yellowCard) r.yc++;
         }
       }
+      MXP=[...P.values()].map(r=>({...r,ap:null,pg:(r.pos||"M")[0].toUpperCase().replace(/[^GDMF]/,"M"),ga:r.g+r.as}));
       try{localStorage.setItem("pizarra_mxp",JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){}
     }
     if(!MXP.length){$("#mxpMsg").textContent="ESPN todavía no reporta estadísticas de jugadores para este torneo.";return;}

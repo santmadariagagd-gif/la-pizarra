@@ -120,6 +120,20 @@ sl['sid']=sl.sleeper_id.astype(int).astype(str)
 sl=sl.drop_duplicates('sid')
 out['sleeper']={r.sid:[r.name,r.position,r.team if isinstance(r.team,str) else '',r.gsis_id if isinstance(r.gsis_id,str) else ''] for r in sl.itertuples()}
 out['season']=int(S)
+try:
+    import urllib.request as _ur
+    _req=_ur.Request("https://api.sleeper.app/v1/players/nfl",headers={"User-Agent":"Mozilla/5.0 (La Pizarra)"})
+    with _ur.urlopen(_req,timeout=60) as _r: _spl=json.loads(_r.read().decode("utf-8"))
+    _n=0
+    for _sid,_p in _spl.items():
+        if _p.get("position") not in ("QB","RB","WR","TE","K"): continue
+        _prev=out['sleeper'].get(_sid)
+        _g=(_prev[3] if _prev and _prev[3] else (_p.get("gsis_id") or "").strip())
+        out['sleeper'][_sid]=[_p.get("full_name") or f"{_p.get('first_name','')} {_p.get('last_name','')}".strip(),_p.get("position"),_p.get("team") or "",_g]
+        _n+=1
+    print(f"Sleeper: {_n} jugadores en el mapa")
+except Exception as _ex:
+    print("Sleeper: no se pudo descargar la lista de jugadores:",_ex)
 heads=ps.groupby('player_id').headshot_url.last()
 for lst in ('qb','rec','rush','def'):
     for r in out[lst]:
@@ -177,7 +191,7 @@ def mx_player_stats():
     hoy=date.today().isoformat()
     base_sb=espn(f"{base}/scoreboard")
     lg=(base_sb.get("leagues") or [{}])[0]
-    out['mx_logo']=((lg.get("logos") or [{}])[0]).get("href")
+    out['mx_logos']=[{"href":l.get("href"),"rel":l.get("rel",[])} for l in lg.get("logos",[])]
     cal=[(x if isinstance(x,str) else (x.get("startDate") or x.get("value") or ""))[:10] for x in lg.get("calendar",[])]
     fechas=[d for d in cal if d and d<=hoy]
     print(f"Liga MX: {len(fechas)} fechas jugadas en el calendario del torneo")
