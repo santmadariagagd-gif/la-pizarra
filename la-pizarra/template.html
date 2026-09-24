@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>La Pizarra · NFL 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F0; --surface:#FFFFFF; --ink:#1B2A38; --muted:#5B6A76; --line:#D3DAD8;
+  --mark:#1F5FA8; --alt:#C23A2E; --hl:#FFF3B8; --good:#23794A; --bad:#B53A2E;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow","Helvetica Neue",Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1F332D; --surface:#263D36; --ink:#ECEFE7; --muted:#A8B8AF; --line:#3A554C;
+    --mark:#F2D466; --alt:#9CC7E6; --hl:#3E5A3A; --good:#8FD6A6; --bad:#F29C8C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1F332D; --surface:#263D36; --ink:#ECEFE7; --muted:#A8B8AF; --line:#3A554C;
+  --mark:#F2D466; --alt:#9CC7E6; --hl:#3E5A3A; --good:#8FD6A6; --bad:#F29C8C;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--mark)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0 8px}
+.logo{font:700 26px/1 var(--display);letter-spacing:.01em}
+.logo span{color:var(--mark)}
+nav.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+nav.tabs button{font:600 16px/1 var(--display);letter-spacing:.02em;border:0;background:none;color:var(--muted);padding:9px 18px;border-radius:999px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center;padding:28px 0 20px;border-bottom:2px solid var(--ink)}
+.hero h1{font:700 clamp(44px,8vw,86px)/.92 var(--display);margin:0 0 14px;letter-spacing:-.01em}
+.hero p{margin:0;color:var(--muted);max-width:44ch;font-size:17px}
+.play{width:100%;height:auto;max-height:240px}
+.play .x,.play .o{stroke:var(--ink);stroke-width:3;fill:none}
+.play .rt{stroke:var(--mark);stroke-width:2.5;fill:none;stroke-linecap:round}
+.play .rt2{stroke:var(--alt)}
+.play .los{stroke:var(--line);stroke-width:2;stroke-dasharray:6 6}
+.play .lbl{font:600 13px var(--display);fill:var(--muted)}
+@media (prefers-reduced-motion:no-preference){
+  .play .rt{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 1.2s ease-out forwards}
+  .play .rt:nth-of-type(2){animation-delay:.25s}.play .rt:nth-of-type(3){animation-delay:.5s}.play .rt:nth-of-type(4){animation-delay:.75s}
+}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+section.panel{padding:30px 0 10px}
+h2{font:700 34px/1 var(--display);margin:0 0 6px}
+h3{font:600 22px/1.1 var(--display);margin:0 0 4px}
+.lede{color:var(--muted);margin:0 0 18px;max-width:70ch}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:8px;overflow:hidden}
+.seg button{font:600 15px/1 var(--display);border:0;background:var(--surface);color:var(--ink);padding:9px 14px;cursor:pointer;border-left:1.5px solid var(--ink)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+input[type=search],select{font:500 15px var(--body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;min-width:0}
+input[type=search]{width:220px}
+.slider{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
+.slider output{font:600 16px var(--display);color:var(--ink);min-width:3ch}
+
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:15px}
+th,td{padding:9px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child,th.l,td.l{text-align:left}
+thead th{font:600 14px/1.2 var(--display);letter-spacing:.02em;color:var(--muted);cursor:pointer;user-select:none;position:sticky;top:0;background:var(--surface)}
+thead th[aria-sort]{color:var(--ink)}
+thead th[aria-sort="descending"]::after{content:" ▼";font-size:10px}
+thead th[aria-sort="ascending"]::after{content:" ▲";font-size:10px}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--hl)}
+td.rk{color:var(--muted);width:2.5em}
+.nm{font-weight:600}
+.tm{color:var(--muted);font-size:13px;margin-left:6px}
+.up{color:var(--good)}.down{color:var(--bad)}
+.note{font-size:13px;color:var(--muted);margin:8px 2px 0}
+.hidden{display:none}
+.more{display:block;margin:10px auto 0;font:600 15px var(--display);color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:8px;padding:8px 16px;cursor:pointer}
+.more[hidden]{display:none}
+
+.leaders{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 26px}
+.leader{border-top:3px solid var(--ink);padding:10px 0 0}
+.leader .k{font:600 14px var(--display);color:var(--muted);letter-spacing:.02em}
+.leader .v{font:700 40px/1 var(--display);margin:4px 0 2px;color:var(--mark)}
+.leader .w{font-weight:600}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 28px;margin-bottom:26px}
+.notes article{padding:14px 0;border-bottom:1px solid var(--line)}
+.notes .who{font:700 20px/1.1 var(--display)}
+.notes .who small{font:500 14px var(--body);color:var(--muted);margin-left:6px}
+.notes .pct{float:right;font:700 20px/1 var(--display);color:var(--alt)}
+.notes p{margin:6px 0 0;font-size:15px}
+
+.trade{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:start}
+.side{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.side h3{display:flex;justify-content:space-between}
+.side h3 b{color:var(--mark)}
+.side ul{list-style:none;margin:10px 0;padding:0;min-height:40px}
+.side li{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line)}
+.side li button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 6px}
+.side input{width:100%}
+.vs{font:700 30px var(--display);color:var(--muted);align-self:center}
+.verdict{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.meter{height:12px;border-radius:6px;background:var(--alt);overflow:hidden;margin:10px 0 6px}
+.meter i{display:block;height:100%;background:var(--mark);transition:width .3s}
+.verdict strong{font:700 24px var(--display)}
+footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color:var(--muted);font-size:13px}
+@media (max-width:720px){
+  .hero{grid-template-columns:1fr}.play{max-height:170px}
+  .trade{grid-template-columns:1fr}.vs{justify-self:center}
+  .leaders{grid-template-columns:1fr 1fr}.leader .v{font-size:32px}
+  header.top{flex-wrap:wrap}
+  input[type=search]{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="logo">La <span>Pizarra</span></div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="stats">Estadísticas</button>
+    <button role="tab" aria-selected="false" data-tab="fantasy">Fantasy</button>
+  </nav>
+</header>
+
+<div class="hero">
+  <div>
+    <h1>Números de la NFL, explicados en español</h1>
+    <p id="heroSub"></p>
+  </div>
+  <svg class="play" viewBox="0 0 420 220" aria-hidden="true">
+    <line class="los" x1="10" y1="140" x2="410" y2="140"/>
+    <g>
+      <circle class="o" cx="110" cy="155" r="9"/><circle class="o" cx="150" cy="155" r="9"/><circle class="o" cx="190" cy="155" r="9"/><circle class="o" cx="230" cy="155" r="9"/><circle class="o" cx="270" cy="155" r="9"/>
+      <circle class="o" cx="190" cy="190" r="9"/><circle class="o" cx="40" cy="155" r="9"/><circle class="o" cx="370" cy="155" r="9"/><circle class="o" cx="320" cy="162" r="9"/><circle class="o" cx="230" cy="200" r="9"/>
+    </g>
+    <path class="rt" style="--len:230" d="M40 145 V70 L130 30"/>
+    <path class="rt" style="--len:190" d="M370 145 V60 L300 60"/>
+    <path class="rt rt2" style="--len:200" d="M320 152 V100 C320 70 260 70 240 90"/>
+    <path class="rt" style="--len:150" d="M230 200 C280 200 300 180 330 175 L390 175"/>
+    <g class="x"><path d="M180 90 l12 12 M192 90 l-12 12"/><path d="M90 80 l12 12 M102 80 l-12 12"/><path d="M300 40 l12 12 M312 40 l-12 12"/></g>
+    <text class="lbl" x="12" y="132">línea de golpeo</text>
+  </svg>
+</div>
+
+<!-- ESTADÍSTICAS -->
+<section class="panel" id="stats">
+  <h2>Líderes de la temporada</h2>
+  <p class="lede">Quién está produciendo de verdad, no solo quién suma más puntos. Da clic en cualquier encabezado para reordenar.</p>
+  <div class="leaders" id="leaders"></div>
+
+  <h3>Jugadores</h3>
+  <div class="bar">
+    <div class="seg" id="pSeg">
+      <button aria-pressed="true" data-k="qb">Pase</button>
+      <button aria-pressed="false" data-k="rec">Recepción</button>
+      <button aria-pressed="false" data-k="rush">Carrera</button>
+    </div>
+    <input type="search" id="pSearch" placeholder="Buscar jugador o equipo" aria-label="Buscar jugador o equipo">
+  </div>
+  <div class="tbl"><table id="pTable"></table></div>
+  <p class="note" id="pNote"></p>
+
+  <h3 style="margin-top:30px">Equipos</h3>
+  <div class="tbl"><table id="tTable"></table></div>
+  <p class="note">EPA/jugada mide cuántos puntos esperados gana (ofensiva) o permite (defensiva) un equipo por jugada; en defensa, más negativo es mejor. "Vs. récord ganador" cuenta juegos contra equipos que hoy tienen más victorias que derrotas.</p>
+</section>
+
+<!-- FANTASY -->
+<section class="panel hidden" id="fantasy">
+  <h2 id="fTitle"></h2>
+  <p class="lede">Jugadores con dueño en menos de la mitad de las ligas cuyo uso subió la semana pasada.</p>
+  <div class="notes" id="notes"></div>
+
+  <h3>Disponibilidad y waivers</h3>
+  <p class="lede">Busca a cualquier jugador para ver en qué porcentaje de ligas ya tiene dueño. Oportunidades = acarreos + blancos.</p>
+  <div class="bar">
+    <div class="seg" id="fSeg">
+      <button aria-pressed="true" data-p="ALL">Todos</button><button aria-pressed="false" data-p="QB">QB</button><button aria-pressed="false" data-p="RB">RB</button><button aria-pressed="false" data-p="WR">WR</button><button aria-pressed="false" data-p="TE">TE</button>
+    </div>
+    <label class="slider">Con dueño en máx. <input type="range" id="own" min="5" max="100" step="5" value="50"> <output id="ownOut">50</output>% de ligas</label>
+    <input type="search" id="fSearch" placeholder="Buscar jugador" aria-label="Buscar jugador">
+  </div>
+  <div class="tbl"><table id="fTable"></table></div>
+  <p class="note">% de ligas con dueño: promedio de ESPN y Yahoo reportado por FantasyPros (corte del 18 de septiembre).</p>
+
+  <h3 style="margin-top:30px">Analizador de intercambios</h3>
+  <p class="lede">Agrega los jugadores de cada lado. El valor sale del ranking de consenso para el resto de la temporada en formato PPR.</p>
+  <div class="trade">
+    <div class="side" id="sideA"><h3>Das <b>0</b></h3><ul></ul><input type="search" list="plist" placeholder="Agregar jugador" aria-label="Agregar jugador que das"></div>
+    <div class="vs">vs</div>
+    <div class="side" id="sideB"><h3>Recibes <b>0</b></h3><ul></ul><input type="search" list="plist" placeholder="Agregar jugador" aria-label="Agregar jugador que recibes"></div>
+  </div>
+  <datalist id="plist"></datalist>
+  <div class="verdict" id="verdict"><strong>Agrega jugadores para comparar</strong><div class="meter"><i style="width:50%"></i></div><span class="note"></span></div>
+</section>
+
+<footer>Datos: nflverse (jugada por jugada, snaps y estadísticas) y rankings de consenso de FantasyPros vía ffverse. Hecho por La Pizarra.</footer>
+</div>
+
+<script>
+const D = __DATA__;
+const $ = s => document.querySelector(s);
+const fmt = (v,d=0) => v==null ? "–" : (d ? Number(v).toFixed(d) : Number(v).toLocaleString("es-MX"));
+const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
+
+$("#heroSub").textContent = `Estadísticas avanzadas y herramientas de fantasy de la temporada 2026, con datos hasta la semana ${D.week}.`;
+$("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
+
+// Tabs
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  $("#stats").classList.toggle("hidden",b.dataset.tab!=="stats");
+  $("#fantasy").classList.toggle("hidden",b.dataset.tab!=="fantasy");
+});
+
+// Generic sortable table
+function table(el, cols, rows, state){
+  const sorted=[...rows].sort((a,b)=>{const x=a[state.k],y=b[state.k];
+    if(x==null) return 1; if(y==null) return -1;
+    return (typeof x==="string"? x.localeCompare(y): x-y)*(state.dir==="asc"?1:-1)});
+  el.innerHTML = `<thead><tr><th class="l" aria-label="Posición"></th>${cols.map(c=>`<th tabindex="0" class="${c.l?'l':''}" data-k="${c.k}" ${c.k===state.k?`aria-sort="${state.dir==='asc'?'ascending':'descending'}"`:''} title="${c.tip||''}">${c.h}</th>`).join("")}</tr></thead>
+  <tbody>${sorted.slice(0,state.limit||25).map((r,i)=>`<tr><td class="rk">${i+1}</td>${cols.map(c=>`<td class="${c.l?'l':''}">${c.f?c.f(r):r[c.k]}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  el.querySelectorAll("th[data-k]").forEach(th=>{const go=()=>{const k=th.dataset.k;
+    state.dir = state.k===k ? (state.dir==="asc"?"desc":"asc") : (cols.find(c=>c.k===k).asc?"asc":"desc"); state.k=k; state.render();};
+    th.onclick=go; th.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}}});
+  const wrap=el.parentElement; let more=wrap.nextElementSibling;
+  if(!more||!more.classList.contains("more")){more=document.createElement("button");more.className="more";wrap.after(more);}
+  const lim=state.limit||25;
+  more.hidden = sorted.length<=lim;
+  more.textContent=`Mostrar ${Math.min(25,sorted.length-lim)} más (${sorted.length} en total)`;
+  more.onclick=()=>{state.limit=lim+25;state.render();};
+}
+const name = r => `<span class="nm">${r.n}</span><span class="tm">${r.t}${r.p?" · "+r.p:""}</span>`;
+
+// Leaders
+const topOf=(arr,k,asc)=>[...arr].sort((a,b)=>asc?a[k]-b[k]:b[k]-a[k])[0];
+const qbE=topOf(D.qb,"epa"), py=topOf(D.qb,"yds"), ry=topOf(D.rec,"yds"), ypr=topOf(D.rec.filter(r=>r.rec>=6),"ypr"), rsh=topOf(D.rush,"yds"), sk=topOf(D.teams,"sacks");
+$("#leaders").innerHTML=[
+ ["EPA por jugada (QB)",signed(qbE.epa),qbE],["Yardas de pase",fmt(py.yds),py],["Yardas por recepción",fmt(ypr.ypr,1),ypr],
+ ["Yardas recibidas",fmt(ry.yds),ry],["Yardas terrestres",fmt(rsh.yds),rsh],["Capturas (equipo)",sk.sacks,{n:sk.t,t:""}]
+].map(([k,v,r])=>`<div class="leader"><div class="k">${k}</div><div class="v">${v}</div><div class="w">${r.n} <span class="tm">${r.t||""}</span></div></div>`).join("");
+
+// Players table
+const PCOLS={
+ qb:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"epa",h:"EPA/jugada",f:r=>signed(r.epa),tip:"Puntos esperados añadidos por jugada de pase"},{k:"cpoe",h:"CPOE",f:r=>signed(r.cpoe,1),tip:"% de pases completos por encima de lo esperado"},{k:"yds",h:"Yardas",f:r=>fmt(r.yds)},{k:"ypa",h:"Yds/intento",f:r=>fmt(r.ypa,1)},{k:"td",h:"TD"},{k:"int",h:"INT"},{k:"plays",h:"Jugadas"}],
+ rec:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"yds",h:"Yardas",f:r=>fmt(r.yds)},{k:"ypr",h:"Yds/recepción",f:r=>fmt(r.ypr,1)},{k:"rec",h:"Recepciones"},{k:"tgt",h:"Blancos"},{k:"ts",h:"% de blancos",f:r=>Math.round(r.ts*100)+"%",tip:"Porcentaje de los pases del equipo dirigidos a él"},{k:"td",h:"TD"}],
+ rush:[{k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"yds",h:"Yardas",f:r=>fmt(r.yds)},{k:"ypc",h:"Yds/acarreo",f:r=>fmt(r.ypc,1)},{k:"epa",h:"EPA/acarreo",f:r=>signed(r.epa)},{k:"car",h:"Acarreos"},{k:"td",h:"TD"}]
+};
+const PNOTE={qb:"Mínimo 30 jugadas de pase.",rec:"Mínimo 5 blancos.",rush:"Mínimo 10 acarreos."};
+const pState={set:"qb",k:"epa",dir:"desc",q:"",render(){
+  const q=this.q.toLowerCase();
+  const rows=D[this.set].filter(r=>!q||r.n.toLowerCase().includes(q)||r.t.toLowerCase().includes(q));
+  table($("#pTable"),PCOLS[this.set],rows,this); $("#pNote").textContent=PNOTE[this.set];}};
+document.querySelectorAll("#pSeg button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#pSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  pState.set=b.dataset.k; pState.limit=25; pState.k={qb:"epa",rec:"yds",rush:"yds"}[pState.set]; pState.dir="desc"; pState.render();});
+$("#pSearch").oninput=e=>{pState.q=e.target.value;pState.render();};
+pState.render();
+
+// Teams table
+const tState={k:"oepa",dir:"desc",render(){table($("#tTable"),[
+ {k:"t",h:"Equipo",l:1,f:r=>`<span class="nm">${r.t}</span>`,asc:1},{k:"w",h:"Récord",f:r=>`${r.w}-${r.l}`},{k:"pf",h:"Puntos a favor"},{k:"pa",h:"Puntos en contra",asc:1},
+ {k:"oepa",h:"EPA ofensiva",f:r=>signed(r.oepa)},{k:"depa",h:"EPA defensiva",f:r=>signed(r.depa),asc:1},{k:"sacks",h:"Capturas"},{k:"tko",h:"Robos de balón"},
+ {k:"vww",h:"Vs. récord ganador",f:r=>r.vwg?r.vw:"Sin juegos"}],D.teams,this)}};
+tState.render();
+
+// Notas de fantasy: se editan en notas.json
+const NOTES=__NOTES__;
+const byName=Object.fromEntries(D.fantasy.map(p=>[p.n,p]));
+$("#notes").innerHTML=NOTES.map(([n,p,t,txt])=>{const o=byName[n]?.own; return `<article><div class="pct" title="% de ligas con dueño">${o!=null?Math.round(o)+"%":""}</div><div class="who">${n}<small>${p} · ${t}</small></div><p>${txt}</p></article>`}).join("");
+
+// Waivers / availability table
+const delta=(a,b,pct)=>{if(a==null||b==null) return ""; const d=pct?Math.round((a-b)*100):a-b; if(!d) return ""; return ` <span class="${d>0?'up':'down'}">${d>0?"+":""}${d}${pct?"":""}</span>`;};
+const fState={k:"opp",dir:"desc",pos:"ALL",max:50,q:"",render(){
+  const q=this.q.toLowerCase();
+  const rows=D.fantasy.filter(r=>(this.pos==="ALL"||r.p===this.pos)&&(q? r.n.toLowerCase().includes(q) : (r.own??0)<=this.max));
+  table($("#fTable"),[
+   {k:"n",h:"Jugador",l:1,f:name,asc:1},{k:"own",h:"% ligas con dueño",f:r=>r.own==null?"–":Math.round(r.own)+"%",asc:1},
+   {k:"opp",h:`Oportunidades sem. ${D.week}`,f:r=>r.opp+delta(r.opp,r.opp0)},{k:"snap",h:"% de snaps",f:r=>r.snap==null?"–":Math.round(r.snap*100)+"%"+delta(r.snap,r.snap0,1)},
+   {k:"ppg",h:"PPR por juego",f:r=>fmt(r.ppg,1)},{k:"ecr",h:"Ranking consenso",f:r=>r.ecr==null?"–":Math.round(r.ecr),asc:1}],rows,this);}};
+document.querySelectorAll("#fSeg button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#fSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));fState.pos=b.dataset.p;fState.render();});
+$("#own").oninput=e=>{fState.max=+e.target.value;$("#ownOut").textContent=e.target.value;fState.render();};
+$("#fSearch").oninput=e=>{fState.q=e.target.value;fState.render();};
+fState.render();
+
+// Trade analyzer
+const val=p=>{const r=p.ecr??(p.pr?p.pr*3.2:null); return r==null?0:Math.round(10000*Math.exp(-0.022*(r-1)));};
+const pool=D.fantasy.filter(p=>p.ecr!=null||p.pr!=null);
+$("#plist").innerHTML=pool.map(p=>`<option value="${p.n}">${p.p} · ${p.t}</option>`).join("");
+const sides={A:[],B:[]};
+function renderTrade(){
+  for(const s of ["A","B"]){const el=$("#side"+s), list=sides[s];
+    el.querySelector("ul").innerHTML=list.map((p,i)=>`<li><span><span class="nm">${p.n}</span><span class="tm">${p.p} · ${p.t}</span></span><span>${fmt(val(p))}<button aria-label="Quitar ${p.n}" data-i="${i}">×</button></span></li>`).join("");
+    el.querySelector("h3 b").textContent=fmt(list.reduce((a,p)=>a+val(p),0));
+    el.querySelectorAll("li button").forEach(b=>b.onclick=()=>{list.splice(+b.dataset.i,1);renderTrade();});}
+  const a=sides.A.reduce((x,p)=>x+val(p),0), b=sides.B.reduce((x,p)=>x+val(p),0), v=$("#verdict");
+  if(!a&&!b){v.querySelector("strong").textContent="Agrega jugadores para comparar";v.querySelector("i").style.width="50%";v.querySelector("span").textContent="";return;}
+  const share=b/(a+b), diff=(b-a)/Math.max(a,b);
+  v.querySelector("i").style.width=(share*100).toFixed(0)+"%";
+  v.querySelector("strong").textContent= Math.abs(diff)<0.08?"Intercambio parejo": diff>0?"Te conviene: recibes más valor":"No te conviene: das más valor";
+  v.querySelector("span").textContent=`Das ${fmt(a)} puntos de valor y recibes ${fmt(b)}. En un 2 por 1, recuerda que el lado que recibe al mejor jugador suele ganar aunque sume menos.`;
+}
+for(const s of ["A","B"]){const inp=$("#side"+s+" input");
+  inp.onchange=()=>{const p=pool.find(x=>x.n.toLowerCase()===inp.value.trim().toLowerCase()); if(p){sides[s].push(p);inp.value="";renderTrade();}};}
+renderTrade();
+</script>
+</body>
+</html>

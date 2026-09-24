@@ -1,0 +1,41 @@
+{
+  "instrucciones": "Edita esta lista cada semana. Escribe el nombre del jugador igual que aparece en la página para que salga su % de ligas con dueño.",
+  "notas": [
+    {
+      "jugador": "Emanuel Wilson",
+      "posicion": "RB",
+      "equipo": "SEA",
+      "texto": "Pasó de 6% a 41% de los snaps: 21 acarreos y 7 dentro de la zona roja. Comparte backfield con Jadarian Price, pero hoy el trabajo pesado es suyo."
+    },
+    {
+      "jugador": "Tank Bigsby",
+      "posicion": "RB",
+      "equipo": "PHI",
+      "texto": "Saquon Barkley salió con un stinger en la semana 2. Bigsby fue el reemplazo principal con 13 acarreos y un TD. Revisa el reporte antes del lunes."
+    },
+    {
+      "jugador": "Jonah Coleman",
+      "posicion": "RB",
+      "equipo": "DEN",
+      "texto": "El novato pasó de 0 a 13 oportunidades, con 3 acarreos en zona roja, mientras RJ Harvey se recupera del tendón de la corva."
+    },
+    {
+      "jugador": "Adonai Mitchell",
+      "posicion": "WR",
+      "equipo": "NYJ",
+      "texto": "82% de los snaps y 12 blancos. Ese volumen no se regala en ningún lado."
+    },
+    {
+      "jugador": "Rashod Bateman",
+      "posicion": "WR",
+      "equipo": "BAL",
+      "texto": "9 blancos y 21.8 puntos PPR con Zay Flowers tocado. Apuesta de corto plazo."
+    },
+    {
+      "jugador": "Dalton Schultz",
+      "posicion": "TE",
+      "equipo": "HOU",
+      "texto": "14 blancos y 26 puntos. Buena opción para streamear en tight end."
+    }
+  ]
+}
