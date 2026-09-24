@@ -1,0 +1,13 @@
+{
+  "instrucciones": "Ajusta aquí tu power ranking. 'mover' sube (+) o baja (-) lugares al equipo respecto a la fórmula. Usa la abreviatura del equipo: NFL (PIT, KC, DAL...) y Liga MX (TOL, AME, CAZ...).",
+  "nfl": {
+    "ajustes": [
+      {"equipo": "KC", "mover": 0, "comentario": ""}
+    ]
+  },
+  "ligamx": {
+    "ajustes": [
+      {"equipo": "TOL", "mover": 0, "comentario": ""}
+    ]
+  }
+}

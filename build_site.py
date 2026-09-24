@@ -179,11 +179,156 @@ for r in full[full.week==gw].sort_values(['gameday','gametime']).itertuples():
         as_=None if pd.isna(r.away_score) else int(r.away_score),hs=None if pd.isna(r.home_score) else int(r.home_score)))
 out['games']=gl; out['gweek']=gw
 
+# ---------- NFL: calendario completo, detalle de partidos y power ranking ----------
+def _i(v):
+    return None if v is None or pd.isna(v) else int(v)
+out['nflteams']={a:dict(n=teams.loc[a].team_nick,name=teams.loc[a].team_name,c=teams.loc[a].team_color,logo=teams.loc[a].team_logo_espn) for a in teams.index}
+sched=[]
+for r in full.sort_values(['week','gameday','gametime']).itertuples():
+    tbd=not isinstance(r.gametime,str) or not r.gametime
+    try:
+        ko=datetime.strptime(f"{r.gameday} {r.gametime if not tbd else '12:00'}","%Y-%m-%d %H:%M").replace(tzinfo=ET).astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ")
+    except Exception:
+        ko=None
+    sid=r.stadium_id if isinstance(r.stadium_id,str) and r.stadium_id else BYNAME.get(r.stadium)
+    roof=r.roof if isinstance(r.roof,str) else None
+    if sid in OPEN_AIR: roof="outdoors"
+    ll=COORD.get(sid)
+    sched.append(dict(id=r.game_id,w=int(r.week),ko=ko,tbd=tbd,a=r.away_team,h=r.home_team,st=r.stadium,roof=roof,
+        lat=ll[0] if ll else None,lon=ll[1] if ll else None,aml=rnd(r.away_moneyline,0),hml=rnd(r.home_moneyline,0),
+        sp=rnd(r.spread_line,1),tot=rnd(r.total_line,1),as_=_i(r.away_score),hs=_i(r.home_score)))
+out['sched']=sched
+
+box={}
+done_ids=set(full[full.home_score.notna()].game_id)
+pg=pbp[pbp.game_id.isin(done_ids)]
+def nm2(x): return x if isinstance(x,str) else "?"
+for gid,g in pg.groupby('game_id'):
+    home,away=g.home_team.iloc[0],g.away_team.iloc[0]
+    # marcador por cuarto
+    q={away:[],home:[]}; pa=ph=0
+    for qt in sorted(g.qtr.dropna().unique()):
+        gg=g[g.qtr==qt]; ea=int(gg.total_away_score.max()); eh=int(gg.total_home_score.max())
+        q[away].append(ea-pa); q[home].append(eh-ph); pa,ph=ea,eh
+    # jugadas de anotación
+    sc=[]
+    for r in g[g.sp==1].itertuples():
+        score=f"{int(r.total_away_score)}-{int(r.total_home_score)}"
+        if (r.extra_point_attempt==1 or r.two_point_attempt==1):
+            if sc: sc[-1]['s']=score
+            continue
+        if r.touchdown==1:
+            tm=r.td_team if isinstance(r.td_team,str) else r.posteam
+            if r.pass_touchdown==1: txt=f"TD: pase de {nm2(r.passer_player_name)} a {nm2(r.receiver_player_name)}, {int(r.yards_gained or 0)} yds"
+            elif r.rush_touchdown==1: txt=f"TD: carrera de {nm2(r.rusher_player_name)}, {int(r.yards_gained or 0)} yds"
+            else: txt=f"TD de {nm2(r.td_player_name)} (regreso)"
+        elif r.field_goal_result=="made":
+            tm=r.posteam; txt=f"Gol de campo de {nm2(r.kicker_player_name)}, {int(r.kick_distance or 0)} yds"
+        elif r.safety==1:
+            tm=r.defteam; txt="Safety"
+        else:
+            continue
+        sc.append(dict(q=int(r.qtr),t=r.time,tm=tm,x=txt,s=score))
+    # estadísticas de equipo
+    pr=g[g.play_type.isin(['pass','run'])]
+    ts={}
+    for tm in (away,home):
+        o=pr[pr.posteam==tm]; allp=g[g.posteam==tm]
+        ts[tm]=dict(plays=len(o),yds=int(o.yards_gained.sum()),py=int(o[o.pass_attempt==1].yards_gained.sum()),ry=int(o[o.rush_attempt==1].yards_gained.sum()),
+            epa=rnd(o.epa.mean(),2),fd=int(allp.first_down.fillna(0).sum()),
+            d3=f"{int(allp.third_down_converted.fillna(0).sum())}/{int(allp.third_down_converted.fillna(0).sum()+allp.third_down_failed.fillna(0).sum())}",
+            d4=f"{int(allp.fourth_down_converted.fillna(0).sum())}/{int(allp.fourth_down_converted.fillna(0).sum()+allp.fourth_down_failed.fillna(0).sum())}",
+            to=int(allp.interception.fillna(0).sum()+allp.fumble_lost.fillna(0).sum()),sk=int(allp.sack.fillna(0).sum()),
+            pen=f"{int(((g.penalty==1)&(g.penalty_team==tm)).sum())}-{int(g[(g.penalty==1)&(g.penalty_team==tm)].penalty_yards.fillna(0).sum())}")
+    # jugadores
+    wk=int(g.week.iloc[0]); pl={}
+    for tm in (away,home):
+        rows=ps[(ps.week==wk)&(ps.team==tm)]
+        L=[]
+        for r in rows.itertuples():
+            d=dict(n=r.player_display_name,p=r.position)
+            if (r.attempts or 0)>0: d['pa']=[int(r.completions),int(r.attempts),int(r.passing_yards or 0),int(r.passing_tds or 0),int(r.passing_interceptions or 0)]
+            if (r.carries or 0)>0: d['ru']=[int(r.carries),int(r.rushing_yards or 0),int(r.rushing_tds or 0)]
+            if (r.targets or 0)>0: d['re']=[int(r.receptions or 0),int(r.targets),int(r.receiving_yards or 0),int(r.receiving_tds or 0)]
+            tk=(r.def_tackles_solo or 0)+(r.def_tackle_assists or 0)
+            if tk>0 or (r.def_sacks or 0)>0 or (r.def_interceptions or 0)>0: d['df']=[int(tk),rnd(r.def_sacks,1) or 0,int(r.def_interceptions or 0)]
+            f=r.fantasy_points_ppr
+            if len(d)>2:
+                if f is not None and not pd.isna(f) and ('pa' in d or 'ru' in d or 're' in d): d['ppr']=round(float(f),1)
+                L.append(d)
+        pl[tm]=L
+    box[gid]=dict(q=q,sc=sc,ts=ts,pl=pl)
+out['box']=box
+
+# ----- Power ranking NFL -----
+def team_metrics(pbp_,sch_,upto):
+    p=pbp_[(pbp_.week<=upto)&pbp_.play_type.isin(['pass','run'])]
+    off=p.groupby('posteam').epa.mean(); de=p.groupby('defteam').epa.mean()
+    g=sch_[(sch_.week<=upto)&sch_.home_score.notna()]
+    rows=[]
+    for r in g.itertuples():
+        rows.append((r.home_team,r.away_team,r.home_score,r.away_score,r.week)); rows.append((r.away_team,r.home_team,r.away_score,r.home_score,r.week))
+    gm=pd.DataFrame(rows,columns=['tm','opp','pf','pa','wk'])
+    pf=gm.groupby('tm').pf.mean(); pa=gm.groupby('tm').pa.mean()
+    # forma: EPA neto en los últimos 3 partidos
+    net_g=[]
+    for (gid,tm),x in p.groupby(['game_id','posteam']): net_g.append((tm,x.week.iloc[0],x.epa.mean(),'o'))
+    for (gid,tm),x in p.groupby(['game_id','defteam']): net_g.append((tm,x.week.iloc[0],-x.epa.mean(),'d'))
+    ng=pd.DataFrame(net_g,columns=['tm','wk','v','k']).groupby(['tm','wk']).v.sum().reset_index()
+    rec=ng.sort_values('wk').groupby('tm').tail(3).groupby('tm').v.mean()
+    return dict(off=off,de=de,pf=pf,pa=pa,rec=rec,gm=gm)
+def power_nfl(upto):
+    cur=team_metrics(pbp_all,full,upto)
+    wprev=max(0.0,0.7*(1-(upto-1)/5))
+    prv=team_metrics(pbp_prev,sch_prev,99) if (wprev>0 and pbp_prev is not None) else None
+    T=sorted(set(cur['gm'].tm))
+    def bl(k,t):
+        c=cur[k].get(t,np.nan)
+        if prv is None: return c
+        pv=prv[k].get(t,np.nan)
+        if pd.isna(c): return pv
+        if pd.isna(pv): return c
+        return wprev*pv+(1-wprev)*c
+    M=pd.DataFrame([dict(t=t,off=bl('off',t),de=bl('de',t),pf=bl('pf',t),pa=bl('pa',t),rec=bl('rec',t)) for t in T]).set_index('t')
+    net=M.off-M.de
+    sos=cur['gm'].groupby('tm').opp.apply(lambda o: np.nanmean([net.get(x,np.nan) for x in o]))
+    M['sos']=sos
+    z=lambda s:(s-s.mean())/(s.std(ddof=0) or 1)
+    M['score']=0.225*z(M.off)+0.225*z(-M.de)+0.20*z(M.sos)+0.15*z(M.rec)+0.10*z(M.pf)+0.10*z(-M.pa)
+    M=M.sort_values('score',ascending=False)
+    M['rank']=range(1,len(M)+1)
+    return M,wprev
+pbp_all=pbp
+try:
+    pbp_prev=nfl.load_pbp(S-1).to_pandas(); pbp_prev=pbp_prev[pbp_prev.season_type=="REG"]
+    sch_prev=nfl.load_schedules(S-1).to_pandas(); sch_prev=sch_prev[sch_prev.game_type=="REG"]
+except Exception as ex:
+    print("Power ranking: sin temporada pasada:",ex); pbp_prev=None; sch_prev=None
+M,wprev=power_nfl(wk)
+prevM=power_nfl(wk-1)[0] if wk>1 else None
+aqui=os.path.dirname(os.path.abspath(__file__))
+try: RJ=json.load(open(os.path.join(aqui,'ranking.json'),encoding='utf-8'))
+except Exception: RJ={}
+out['ranking_mx']=RJ.get('ligamx',{})
+order=list(M.index)
+for a in RJ.get('nfl',{}).get('ajustes',[]):
+    t=a.get('equipo'); mv=int(a.get('mover',0) or 0)
+    if t in order and mv:
+        i=order.index(t); order.pop(i); order.insert(max(0,min(len(order),i-mv)),t)
+com={a.get('equipo'):a.get('comentario','') for a in RJ.get('nfl',{}).get('ajustes',[])}
+recs=rec_t.set_index('tm')
+smin,smax=M.score.min(),M.score.max()
+out['pr_nfl']=[dict(r=i+1,t=t,prev=int(prevM.loc[t,'rank']) if prevM is not None and t in prevM.index else None,
+    sc=round(float((M.loc[t,'score']-smin)/((smax-smin) or 1)*100),1),w=int(recs.loc[t,'w']) if t in recs.index else 0,l=int(recs.loc[t,'l']) if t in recs.index else 0,
+    off=rnd(M.loc[t,'off'],3),de=rnd(M.loc[t,'de'],3),pf=rnd(M.loc[t,'pf'],1),pa=rnd(M.loc[t,'pa'],1),sos=rnd(M.loc[t,'sos'],3),rec=rnd(M.loc[t,'rec'],3),c=com.get(t,'')) for i,t in enumerate(order)]
+out['pr_wprev']=round(wprev*100)
+print(f"Power ranking NFL: semana {wk}, peso temporada pasada {round(wprev*100)}%")
+
 # ---------- Liga MX: estadísticas de jugadores partido por partido (ESPN) ----------
 import urllib.request
 from datetime import date, timedelta
 def espn(url):
-    req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 (La Pizarra)"})
+    req=urllib.request.Request(url,headers={"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36","Accept":"application/json,text/plain,*/*","Accept-Language":"es-MX,es;q=0.9,en;q=0.8","Referer":"https://www.espn.com/","Origin":"https://www.espn.com"})
     with urllib.request.urlopen(req,timeout=20) as r:
         return json.loads(r.read().decode("utf-8"))
 def mx_player_stats():
