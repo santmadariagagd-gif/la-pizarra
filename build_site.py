@@ -174,19 +174,21 @@ def espn(url):
         return json.loads(r.read().decode("utf-8"))
 def mx_player_stats():
     base="https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1"
-    hoy=date.today()
-    ini=date(hoy.year,7,1) if hoy.month>=7 else date(hoy.year,1,1)   # Apertura: jul-dic, Clausura: ene-jun
+    hoy=date.today().isoformat()
+    base_sb=espn(f"{base}/scoreboard")
+    lg=(base_sb.get("leagues") or [{}])[0]
+    out['mx_logo']=((lg.get("logos") or [{}])[0]).get("href")
+    cal=[(x if isinstance(x,str) else (x.get("startDate") or x.get("value") or ""))[:10] for x in lg.get("calendar",[])]
+    fechas=[d for d in cal if d and d<=hoy]
+    print(f"Liga MX: {len(fechas)} fechas jugadas en el calendario del torneo")
     eventos={}
-    d=ini
-    while d<=hoy:   # por bloques de 15 días para no toparnos con límites
-        fin=min(d+timedelta(days=14),hoy)
+    for d in fechas:   # ESPN organiza la Liga MX por día
         try:
-            j=espn(f"{base}/scoreboard?dates={d:%Y%m%d}-{fin:%Y%m%d}&limit=200")
+            j=espn(f"{base}/scoreboard?dates={d.replace('-','')}")
             for e in j.get("events",[]):
                 if e.get("status",{}).get("type",{}).get("state")=="post": eventos[e["id"]]=e
         except Exception as ex:
-            print("  aviso scoreboard",d,ex)
-        d=fin+timedelta(days=1)
+            print("  aviso fecha",d,ex)
     P={}
     def fila(pid,nombre,equipo,equipo_n,pos):
         if pid not in P: P[pid]=dict(n=nombre,t=equipo,tn=equipo_n,pos=pos,ap=0,g=0,as_=0,sh=None,sot=None,yc=0,rc=0,fc=None,fs=None,sv=None,gc=None)
@@ -196,12 +198,18 @@ def mx_player_stats():
         r[k]=(r[k] or 0)+v
     fuente="resumen"
     con_stats=0
-    for eid,e in eventos.items():
+    for eid,e in list(eventos.items()):
+        if eid=="_diag": continue
         comp=(e.get("competitions") or [{}])[0]
         equipos={c["team"]["id"]:(c["team"].get("abbreviation",""),c["team"].get("displayName","")) for c in comp.get("competitors",[]) if "team" in c}
         usado=False
         try:
             sm=espn(f"{base}/summary?event={eid}")
+            if not eventos.get("_diag"):
+                eventos["_diag"]=True
+                ros=sm.get("rosters") or []
+                ej=((ros[0].get("roster") or [{}])[0].get("stats") or []) if ros else []
+                print("  diagnóstico resumen: claves",list(sm.keys())[:15],"| rosters:",len(ros),"| stats ejemplo:",[x.get("name") for x in ej][:12])
             for ros in sm.get("rosters",[]):
                 tid=str(ros.get("team",{}).get("id",""))
                 ab,tn=equipos.get(tid,(ros.get("team",{}).get("abbreviation",""),ros.get("team",{}).get("displayName","")))
@@ -244,6 +252,7 @@ def mx_player_stats():
         pg=(r["pos"] or "M")[0].upper(); pg=pg if pg in "GDMF" else "M"
         filas.append(dict(id=pid,n=r["n"],t=r["t"],tn=r["tn"],pos=r["pos"],pg=pg,ap=r["ap"] or None,g=int(r["g"]),**{"as":int(r["as_"])},
             sh=r["sh"],sot=r["sot"],yc=int(r["yc"]),rc=int(r["rc"]),fc=r["fc"],fs=r["fs"],sv=r["sv"],gc=r["gc"]))
+    eventos.pop("_diag",None)
     print(f"Liga MX: {len(eventos)} partidos terminados, {con_stats} con estadísticas por jugador, {len(filas)} jugadores")
     return filas
 try:

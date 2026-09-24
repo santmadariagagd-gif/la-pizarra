@@ -326,7 +326,7 @@ const $ = s => document.querySelector(s);
 const fmt = (v,d=0) => v==null ? "–" : (d ? Number(v).toFixed(d) : Number(v).toLocaleString("es-MX"));
 const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
 
-let MX_LOGO=null;
+let MX_LOGO=D.mx_logo||null;
 function setLogo(u){const im=$("#leagueLogo"); if(u){im.onerror=()=>{im.hidden=true};im.src=u;im.hidden=false;} else im.hidden=true;}
 $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLogo(D.nfl_logo); $("#heroSub").textContent=`Datos actualizados hasta la semana ${D.week}.`;
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
@@ -346,6 +346,7 @@ function showSport(sp){
   showTab(sp==="nfl"?"nflgames":"mxgames");
 }
 document.querySelectorAll("nav.sports button").forEach(b=>b.onclick=()=>showSport(b.dataset.sport));
+fetch("https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/scoreboard").then(r=>r.json()).then(j=>{MX_LOGO=j.leagues?.[0]?.logos?.[0]?.href||MX_LOGO;}).catch(()=>{});
 document.querySelectorAll(".subnav button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 
 // Generic sortable table
@@ -601,36 +602,44 @@ async function geocode(city){
 let mxLoaded=false;
 async function loadMxGames(){
   if(mxLoaded) return; mxLoaded=true;
-  const from=new Date(Date.now()-3*864e5), to=new Date(Date.now()+35*864e5);
   try{
-    const j=await (await fetch(`${ESPN}/site/v2/sports/soccer/mex.1/scoreboard?dates=${ymd(from)}-${ymd(to)}&limit=100`)).json();
-    MX_LOGO=j.leagues?.[0]?.logos?.[0]?.href||MX_LOGO; if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(MX_LOGO);
-    let ev=(j.events||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
-    const now=Date.now();
-    const past=ev.filter(e=>e.status?.type?.state!=="pre"&&new Date(e.date)>=from);
-    const next=ev.filter(e=>e.status?.type?.state==="pre");
+    const sb=d=>fetch(`${ESPN}/site/v2/sports/soccer/mex.1/scoreboard${d?`?dates=${d}`:""}`).then(r=>r.json());
+    const base=await sb();
+    MX_LOGO=base.leagues?.[0]?.logos?.[0]?.href||MX_LOGO;
+    if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(MX_LOGO);
+    // ESPN organiza la Liga MX por días: usamos su calendario de fechas con partidos
+    const cal=(base.leagues?.[0]?.calendar||[]).map(x=>typeof x==="string"?x:(x.startDate||x.value||"")).map(s=>s.slice(0,10)).filter(Boolean);
+    const hoy=new Intl.DateTimeFormat("en-CA",{timeZone:TZ}).format(new Date());
+    const hace3=new Intl.DateTimeFormat("en-CA",{timeZone:TZ}).format(new Date(Date.now()-3*864e5));
+    const pasadas=cal.filter(d=>d>=hace3&&d<hoy);
+    const futuras=cal.filter(d=>d>=hoy);
+    let proxima=[];
+    if(futuras.length){const lim=new Date(futuras[0]+"T12:00:00Z").getTime()+6*864e5; proxima=futuras.filter(d=>new Date(d+"T12:00:00Z").getTime()<=lim);}
+    const fechas=[...new Set([...pasadas,...proxima])];
+    const res=await Promise.all(fechas.map(d=>sb(d.replace(/-/g,"")).catch(()=>({events:[]}))));
+    const byId=new Map();
+    [...(base.events||[]),...res.flatMap(r=>r.events||[])].forEach(e=>byId.set(e.id,e));
+    const tMax=proxima.length?new Date(proxima[proxima.length-1]+"T12:00:00Z").getTime()+1.5*864e5:Date.now()+8*864e5;
+    const ev=[...byId.values()].filter(e=>{const t=new Date(e.date).getTime(); return t>=Date.now()-3.5*864e5&&t<=tMax;})
+      .sort((a,b)=>new Date(a.date)-new Date(b.date));
     let note="";
-    if(next.length){
-      const first=new Date(next[0].date);
-      const upto=first.getTime()+6*864e5;                       // la jornada completa: 7 días desde el primer partido
-      const nextJ=next.filter(e=>new Date(e.date).getTime()<=upto);
-      if(first.getTime()-now>5*864e5) note=`La Liga MX regresa el ${fDay(first)} después de la pausa. Estos son los partidos de la próxima jornada.`;
-      ev=[...past,...nextJ];
-    } else ev=past;
-    if(!ev.length){$("#mxMsg").textContent="No hay partidos de Liga MX programados en las próximas semanas.";return;}
+    if(proxima.length&&new Date(proxima[0]+"T12:00:00Z").getTime()-Date.now()>5*864e5) note=`La Liga MX regresa el ${fDay(new Date(proxima[0]+"T18:00:00Z"))} después de la pausa.`;
+    if(!ev.length){$("#mxMsg").textContent="No hay partidos de Liga MX programados por ahora.";return;}
     $("#mxMsg").textContent=note;
     const cards=ev.map((e,i)=>{
       const c=e.competitions?.[0]||{}, cs=c.competitors||[];
       const H=cs.find(x=>x.homeAway==="home")||cs[0]||{}, A=cs.find(x=>x.homeAway==="away")||cs[1]||{};
       const state=e.status?.type?.state, done=state==="post", live=state==="in";
       const o=(c.odds||[])[0]||{};
-      const hm=o.homeTeamOdds?.moneyLine, am=o.awayTeamOdds?.moneyLine, dm=o.drawOdds?.moneyLine;
+      const ml=x=>x?.moneyLine??x?.current?.moneyLine?.american??null;
+      const hm=ml(o.homeTeamOdds), am=ml(o.awayTeamOdds), dm=ml(o.drawOdds);
       const pr=probs([hm,dm,am]);
-      const hs=H.score!=null&&state!=="pre"?+H.score:null, as=A.score!=null&&state!=="pre"?+A.score:null;
+      const hs=state!=="pre"&&H.score!=null?+H.score:null, as=state!=="pre"&&A.score!=null?+A.score:null;
       const col=t=>t.team?.color?"#"+t.team.color:"var(--muted)";
+      const rec=t=>t.records?.[0]?.summary?`${t.records[0].summary}`:"";
       return {when:new Date(e.date),status:done?"Final":live?(e.status?.type?.shortDetail||"En vivo"):"",live,wxId:"mxwx"+i,
-        teams:[{n:H.team?.shortDisplayName||H.team?.displayName||"Local",sub:"local",logo:H.team?.logo,ml:hm,score:hs,win:done&&hs>as},
-               {n:A.team?.shortDisplayName||A.team?.displayName||"Visita",logo:A.team?.logo,ml:am,score:as,win:done&&as>hs}],
+        teams:[{n:H.team?.shortDisplayName||H.team?.displayName||"Local",sub:["local",rec(H)].filter(Boolean).join(" · "),logo:H.team?.logo,ml:hm,score:hs,win:done&&hs>as},
+               {n:A.team?.shortDisplayName||A.team?.displayName||"Visita",sub:rec(A),logo:A.team?.logo,ml:am,score:as,win:done&&as>hs}],
         probs:(!done&&!live&&pr)?[{p:pr[0],c:col(H),l:"Local"},{p:pr[1],c:"var(--line)",l:"Empate"},{p:pr[2],c:col(A),l:"Visita"}]:null,
         lines:(!done&&!live)?[["Empate",mlTxt(dm)],["Total de goles",o.overUnder??"–"]].filter(x=>x[1]!=="–"):[],
         place:[c.venue?.fullName,c.venue?.address?.city].filter(Boolean).join(" · "), city:c.venue?.address?.city};
@@ -705,7 +714,7 @@ async function loadMxPlayers(){
     const lead=(k,label,fmtf=v=>fmt(v))=>{const r=[...MXP].filter(r=>r[k]!=null).sort((a,b)=>b[k]-a[k])[0]; return r&&r[k]>0?leaderCard(label,fmtf(r[k]),{...r,img:r.id?`https://a.espncdn.com/i/headshots/soccer/players/full/${r.id}.png`:null}):"";};
     $("#mxLeaders").innerHTML=[lead("g","Goles"),lead("as","Asistencias"),lead("ga","Goles + asistencias"),lead("sot","Tiros a gol"),lead("sv","Atajadas"),lead("yc","Tarjetas amarillas")].join("");
     mxpState.render();
-  }catch(e){mxpLoaded=false;$("#mxpMsg").textContent="No pudimos cargar los jugadores de Liga MX. Intenta recargar la página en un momento.";}
+  }catch(e){mxpLoaded=false;$("#mxpMsg").textContent="Las estadísticas de jugadores se generan con la próxima actualización automática.";}
 }
 const mxpState={k:"g",dir:"desc",pos:"ALL",team:"",q:"",render(){
   const q=this.q.toLowerCase();
