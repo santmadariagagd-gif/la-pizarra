@@ -418,6 +418,37 @@ try:
     out['mxp']=mx_player_stats()
 except Exception as ex:
     print("Liga MX: no se pudieron obtener estadísticas de jugadores:",ex); out['mxp']=[]
+# ---------- Liga MX: fotos libres de Wikimedia Commons (vía Wikidata) ----------
+# Una sola consulta por actualización: futbolistas de clubes mexicanos (sin fecha de salida), nacidos desde 1983, con foto.
+# La página empata por nombre + club. Si esta consulta falla aquí, el navegador la hace como respaldo (usa el mismo texto).
+MX_WD_Q="""SELECT ?j ?nombre ?clubLabel ?foto WHERE {
+  ?club wdt:P17 wd:Q96 ; wdt:P31 wd:Q476028 .
+  ?j p:P54 ?st . ?st ps:P54 ?club .
+  FILTER NOT EXISTS { ?st pq:P582 ?fin }
+  ?j wdt:P106 wd:Q937857 ; wdt:P18 ?foto ; wdt:P569 ?nac .
+  FILTER(YEAR(?nac) >= 1983)
+  ?j rdfs:label ?nombre . FILTER(LANG(?nombre) IN ("es","en","mul"))
+  OPTIONAL { ?club rdfs:label ?clubLabel . FILTER(LANG(?clubLabel) = "es") }
+}"""
+out['mx_wd_q']=MX_WD_Q
+def mx_wikidata():
+    import urllib.request, urllib.parse
+    url="https://query.wikidata.org/sparql?format=json&query="+urllib.parse.quote(MX_WD_Q)
+    req=urllib.request.Request(url,headers={"User-Agent":"LaPizarra/1.0 (https://santmadariagagd-gif.github.io/la-pizarra/)","Accept":"application/sparql-results+json"})
+    with urllib.request.urlopen(req,timeout=90) as r: j=json.loads(r.read().decode("utf-8"))
+    P={}
+    for b in j["results"]["bindings"]:
+        q=b["j"]["value"].rsplit("/",1)[-1]
+        e=P.setdefault(q,[set(),set(),None])
+        e[0].add(b["nombre"]["value"])
+        if "clubLabel" in b: e[1].add(b["clubLabel"]["value"])
+        if not e[2]: e[2]=urllib.parse.unquote(b["foto"]["value"].rsplit("/",1)[-1])
+    return [[sorted(n),sorted(c),f] for n,c,f in P.values() if f]
+try:
+    out['mx_wd']=mx_wikidata()
+    print(f"Wikidata: {len(out['mx_wd'])} futbolistas de clubes mexicanos con foto libre")
+except Exception as ex:
+    print("Wikidata: no se pudo consultar (la página lo intentará desde el navegador):",ex); out['mx_wd']=[]
 out['week']=wk; out['winners']=sorted(winners)
 data=json.dumps(out,ensure_ascii=False,allow_nan=False)
 aqui=os.path.dirname(os.path.abspath(__file__))

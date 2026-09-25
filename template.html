@@ -289,7 +289,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <h2>Líderes de la Liga MX</h2>
   <p class="note" id="mxpMsg" aria-live="polite">Cargando jugadores…</p>
   <div class="leaders" id="mxLeaders"></div>
-  <p class="note" id="mxCredit" hidden style="margin:-18px 2px 18px">Fotos: <a href="https://www.thesportsdb.com" target="_blank" rel="noopener">TheSportsDB</a> (CC)</p>
+  <p class="note" id="mxCredit" hidden style="margin:-18px 2px 18px"></p>
   <div class="bar">
     <div class="seg" id="mxpSeg"><button aria-pressed="true" data-p="ALL">Todos</button><button aria-pressed="false" data-p="F">Delanteros</button><button aria-pressed="false" data-p="M">Medios</button><button aria-pressed="false" data-p="D">Defensas</button><button aria-pressed="false" data-p="G">Porteros</button></div>
     <select id="mxpTeam" aria-label="Equipo"><option value="">Todos los equipos</option></select>
@@ -1042,25 +1042,97 @@ function tsdbPhoto(name,team){
     finally{delete tsdbPending[k];}
   })();
 }
+// ---------- Fotos Liga MX: Wikimedia Commons (vía Wikidata) ----------
+// build_site.py manda D.mx_wd = [[nombres], [clubes], archivo]. Si viene vacío, el navegador hace la misma consulta
+// (D.mx_wd_q) y la guarda 7 días. Todas las fotos de Commons tienen licencia libre; el autor y la licencia se muestran
+// al pasar el mouse y hay una línea de crédito discreta.
+const WD_KEY="pz_wd1";
+let WD_LIST=null;
+async function wdList(){
+  if(WD_LIST) return WD_LIST;
+  if(D.mx_wd&&D.mx_wd.length) return WD_LIST=D.mx_wd;
+  try{const c=JSON.parse(localStorage.getItem(WD_KEY)||"null"); if(c&&Date.now()-c.t<7*864e5) return WD_LIST=c.rows;}catch(e){}
+  if(!D.mx_wd_q) return WD_LIST=[];
+  try{
+    const j=await fetch("https://query.wikidata.org/sparql?format=json&query="+encodeURIComponent(D.mx_wd_q),{headers:{Accept:"application/sparql-results+json"}}).then(r=>r.json());
+    const P=new Map();
+    for(const b of j.results?.bindings||[]){
+      const q=b.j.value.split("/").pop(); if(!P.has(q)) P.set(q,[new Set(),new Set(),null]);
+      const e=P.get(q); e[0].add(b.nombre.value); if(b.clubLabel) e[1].add(b.clubLabel.value);
+      if(!e[2]) e[2]=decodeURIComponent(b.foto.value.split("/").pop());
+    }
+    WD_LIST=[...P.values()].filter(e=>e[2]).map(e=>[[...e[0]],[...e[1]],e[2]]);
+    try{localStorage.setItem(WD_KEY,JSON.stringify({t:Date.now(),rows:WD_LIST}))}catch(e){}
+  }catch(e){WD_LIST=[];}
+  return WD_LIST;
+}
+function wdMatch(list,name,team){
+  const E=tsdbToks(name), en=E.join(" ");
+  if(!E.length) return null;
+  const exact=[],loose=[];
+  for(const e of list){
+    const labels=e[0].map(n=>tsdbToks(n));
+    if(labels.some(L=>L.join(" ")===en)) exact.push(e);
+    else if(E.length>1&&labels.some(L=>L.length>1&&(E.every(x=>L.includes(x))||L.every(x=>E.includes(x))))) loose.push(e);
+  }
+  const byTeam=c=>c.filter(e=>e[1].some(cl=>tsdbSameTeam(team,cl)));
+  const uniq=c=>new Set(c.map(e=>e[2])).size===1?c[0]:null;
+  // Nombre exacto: se acepta si es único (todos son de clubes mexicanos) o si el club desempata.
+  if(exact.length) return uniq(exact)||uniq(byTeam(exact));
+  // Nombre parecido (ej. "Santiago Naveda" / "Santiago Naveda Lara"): solo con club que coincida.
+  return uniq(byTeam(loose));
+}
+const wdUrl=f=>"https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(f)+"?width=250";
+async function wdCredits(files){
+  const out={}; if(!files.length) return out;
+  try{
+    const u="https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=extmetadata&format=json&origin=*&titles="+encodeURIComponent(files.map(f=>"File:"+f).join("|"));
+    const j=await fetch(u).then(r=>r.json());
+    const txt=h=>{const d=document.createElement("div"); d.innerHTML=h||""; return d.textContent.trim();};
+    for(const pg of Object.values(j.query?.pages||{})){
+      const m=pg.imageinfo?.[0]?.extmetadata||{}; const f=(pg.title||"").replace(/^File:/,"");
+      out[f]=[txt(m.Artist?.value),txt(m.LicenseShortName?.value)].filter(Boolean).join(" · ");
+    }
+  }catch(e){}
+  return out;
+}
+
 // Espera a que la foto de ESPN termine de cargar (o falle) antes de decidir.
 const tsdbSettle=img=>img&&!img.complete?new Promise(res=>{img.addEventListener("load",res,{once:true});img.addEventListener("error",()=>setTimeout(res,0),{once:true});setTimeout(res,4000);}):Promise.resolve();
+// Orden: ESPN → Wikimedia Commons → TheSportsDB (solo licencia CC "Yes") → escudo → iniciales.
 async function mxLeaderPhotos(rows){
   const cards=[...document.querySelectorAll("#mxLeaders .leader .ph")];
-  let used=false;
+  const used=new Set(), wdImgs=[];
+  const list=await wdList();
   await Promise.all(rows.map(async(r,i)=>{
     const ph=cards[i]; if(!ph||!r?.n) return;
-    const [hit]=await Promise.all([tsdbPhoto(r.n,r.tn||r.t),tsdbSettle(ph.querySelector("img"))]);
-    if(!hit||!ph.isConnected) return;
+    await tsdbSettle(ph.querySelector("img"));
     const cur=ph.querySelector("img");
     if(cur&&!cur.classList.contains("crest")&&cur.naturalWidth>0) return; // ESPN sí tenía foto: se queda
-    const alts=[hit.u,r.logo].filter(Boolean);
+    let hit=null;
+    const w=wdMatch(list,r.n,r.tn||r.t);
+    if(w) hit={src:"wd",u:wdUrl(w[2]),alts:[r.logo],file:w[2]};
+    else{const t=await tsdbPhoto(r.n,r.tn||r.t); if(t) hit={src:"tsdb",u:t.u+"/small",alts:[t.u,r.logo]};}
+    if(!hit||!ph.isConnected) return;
+    const alts=hit.alts.filter(Boolean);
     const img=document.createElement("img");
-    img.alt=""; img.title="Foto: TheSportsDB";
+    img.alt=""; img.title=hit.src==="wd"?"Foto: Wikimedia Commons":"Foto: TheSportsDB";
     img.onerror=()=>{const nx=alts.shift(); if(nx){img.src=nx; if(nx===r.logo) img.classList.add("crest");} else {const s=document.createElement("span"); s.textContent=initials(r.n); img.replaceWith(s);}};
-    img.src=hit.u+"/small"; // versión ligera de 250 px; si no existe, cae a la original
-    ph.replaceChildren(img); used=true;
+    img.src=hit.u;
+    ph.replaceChildren(img); used.add(hit.src);
+    if(hit.src==="wd") wdImgs.push([img,hit.file]);
   }));
-  if(used){const c=$("#mxCredit"); if(c) c.hidden=false;}
+  const c=$("#mxCredit");
+  if(c&&used.size){
+    const parts=[];
+    if(used.has("wd")) parts.push('<a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>');
+    if(used.has("tsdb")) parts.push('<a href="https://www.thesportsdb.com" target="_blank" rel="noopener">TheSportsDB</a> (CC)');
+    c.innerHTML="Fotos: "+parts.join(" · "); c.hidden=false;
+  }
+  if(wdImgs.length){
+    const cr=await wdCredits([...new Set(wdImgs.map(x=>x[1]))]);
+    for(const [img,f] of wdImgs) if(cr[f]) img.title="Foto: "+cr[f]+" · Wikimedia Commons";
+  }
 }
 
 async function loadMxPlayers(){
