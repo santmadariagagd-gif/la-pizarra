@@ -289,7 +289,6 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <h2>Líderes de la Liga MX</h2>
   <p class="note" id="mxpMsg" aria-live="polite">Cargando jugadores…</p>
   <div class="leaders" id="mxLeaders"></div>
-  <p class="note" id="mxCredit" hidden style="margin:-18px 2px 18px"></p>
   <div class="bar">
     <div class="seg" id="mxpSeg"><button aria-pressed="true" data-p="ALL">Todos</button><button aria-pressed="false" data-p="F">Delanteros</button><button aria-pressed="false" data-p="M">Medios</button><button aria-pressed="false" data-p="D">Defensas</button><button aria-pressed="false" data-p="G">Porteros</button></div>
     <select id="mxpTeam" aria-label="Equipo"><option value="">Todos los equipos</option></select>
@@ -981,160 +980,6 @@ async function mxFromSummaries(){
   }catch(e){return [];}
 }
 
-// ---------- Fotos Liga MX: TheSportsDB (llave gratuita "123") ----------
-// Se busca cada jugador por nombre desde el navegador del visitante y el resultado se guarda en localStorage:
-// fotos encontradas 30 días, "no hay foto" 7 días. Solo se usan fotos marcadas como Creative Commons ("Yes"),
-// como piden los términos de TheSportsDB. Si algo falla, la tarjeta se queda como antes (ESPN → escudo → iniciales).
-const TSDB_BASE="https://www.thesportsdb.com/api/v1/json/123/";
-// La búsqueda regresa una versión recortada (sin licencia); la licencia sale de la ficha completa (lookupplayer).
-const TSDB_MX=new Set(["134193","134203","134195","136856","134206","134196","136855","134207","134198","135662","134191","134199","134201","134194","134192","134197","134202","134204"]); // los 18 equipos de Liga MX en TheSportsDB
-const TSDB_KEY="pz_tsdb1";
-const tsdbNorm=t=>(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9 ]/g," ").trim();
-const tsdbToks=t=>tsdbNorm(t).split(/\s+/).filter(Boolean);
-const TSDB_NOISE=new Set(["club","cf","fc","cd","de","del","la","el","futbol","deportivo","sad","sa","cv"]);
-function tsdbSameTeam(a,b){const A=tsdbToks(a).filter(x=>!TSDB_NOISE.has(x)),B=new Set(tsdbToks(b).filter(x=>!TSDB_NOISE.has(x))); return A.some(x=>B.has(x));}
-function tsdbSameName(espn,p){
-  const E=tsdbToks(espn), M=tsdbToks(p.strPlayer), T=new Set([...M,...tsdbToks(p.strPlayerAlternate)]);
-  if(!E.length||!M.length) return false;
-  if(E.length===1||M.length===1) return E.join(" ")===M.join(" ");
-  return E.every(x=>T.has(x))||M.every(x=>E.includes(x));
-}
-let tsdbCache={}; try{tsdbCache=JSON.parse(localStorage.getItem(TSDB_KEY)||"{}")||{}}catch(e){}
-const tsdbSave=()=>{try{localStorage.setItem(TSDB_KEY,JSON.stringify(tsdbCache))}catch(e){}};
-// Límite de la llave gratuita: 30 consultas por minuto. Nos quedamos en 25 y paramos si responde 429.
-const TSDB_RL={q:Promise.resolve(),t:[],off:false};
-function tsdbFetch(path){
-  const run=async()=>{
-    if(TSDB_RL.off) return null;
-    for(;;){const now=Date.now(); TSDB_RL.t=TSDB_RL.t.filter(x=>now-x<60000); if(TSDB_RL.t.length<25) break; await new Promise(r=>setTimeout(r,60000-(now-TSDB_RL.t[0])+50));}
-    TSDB_RL.t.push(Date.now());
-    const r=await fetch(TSDB_BASE+path);
-    if(r.status===429){TSDB_RL.off=true; return null;}
-    if(!r.ok) throw new Error("TheSportsDB "+r.status);
-    const j=await r.json(); return j.player||j.players||[];
-  };
-  const p=TSDB_RL.q.then(run,run); TSDB_RL.q=p.catch(()=>{}); return p;
-}
-const tsdbPending={};
-function tsdbPhoto(name,team){
-  const k=tsdbNorm(name)+"|"+tsdbNorm(team);
-  const c=tsdbCache[k];
-  if(c&&Date.now()-c.t<(c.u?30:7)*864e5) return Promise.resolve(c.u?c:null);
-  if(tsdbPending[k]) return tsdbPending[k];
-  return tsdbPending[k]=(async()=>{
-    try{
-      const plain=tsdbNorm(name);
-      const q=t=>"searchplayers.php?p="+encodeURIComponent(t.replace(/\s+/g,"_"));
-      let list=await tsdbFetch(q(name));
-      if(list&&!list.length&&plain!==name.toLowerCase()) list=await tsdbFetch(q(plain)); // segundo intento sin acentos
-      if(list==null) return null; // límite alcanzado: no guardamos nada, se reintenta en otra visita
-      let p=list.find(p=>p.strSport==="Soccer"&&tsdbSameName(name,p)&&(tsdbSameTeam(team,p.strTeam)||tsdbSameTeam(team,p.strTeam2)||TSDB_MX.has(String(p.idTeam))));
-      if(p&&p.strCreativeCommons==null&&p.idPlayer){ // ficha completa para conocer la licencia de la foto
-        const full=await tsdbFetch("lookupplayer.php?id="+encodeURIComponent(p.idPlayer));
-        if(full==null) return null; // límite alcanzado: se reintenta en otra visita
-        const f=full.find(x=>String(x.idPlayer)===String(p.idPlayer)); if(f) p={...p,...f};
-      }
-      const src=p&&p.strCreativeCommons==="Yes"?(p.strCutout||p.strThumb):null;
-      const v={u:src||"",id:p?.idPlayer||"",t:Date.now()};
-      tsdbCache[k]=v; tsdbSave();
-      return v.u?v:null;
-    }catch(e){return null;} // error de red o CORS: sin foto, sin guardar
-    finally{delete tsdbPending[k];}
-  })();
-}
-// ---------- Fotos Liga MX: Wikimedia Commons (vía Wikidata) ----------
-// build_site.py manda D.mx_wd = [[nombres], [clubes], archivo]. Si viene vacío, el navegador hace la misma consulta
-// (D.mx_wd_q) y la guarda 7 días. Todas las fotos de Commons tienen licencia libre; el autor y la licencia se muestran
-// al pasar el mouse y hay una línea de crédito discreta.
-const WD_KEY="pz_wd1";
-let WD_LIST=null;
-async function wdList(){
-  if(WD_LIST) return WD_LIST;
-  if(D.mx_wd&&D.mx_wd.length) return WD_LIST=D.mx_wd;
-  try{const c=JSON.parse(localStorage.getItem(WD_KEY)||"null"); if(c&&Date.now()-c.t<7*864e5) return WD_LIST=c.rows;}catch(e){}
-  if(!D.mx_wd_q) return WD_LIST=[];
-  try{
-    const j=await fetch("https://query.wikidata.org/sparql?format=json&query="+encodeURIComponent(D.mx_wd_q),{headers:{Accept:"application/sparql-results+json"}}).then(r=>r.json());
-    const P=new Map();
-    for(const b of j.results?.bindings||[]){
-      const q=b.j.value.split("/").pop(); if(!P.has(q)) P.set(q,[new Set(),new Set(),null]);
-      const e=P.get(q); e[0].add(b.nombre.value); if(b.clubLabel) e[1].add(b.clubLabel.value);
-      if(!e[2]) e[2]=decodeURIComponent(b.foto.value.split("/").pop());
-    }
-    WD_LIST=[...P.values()].filter(e=>e[2]).map(e=>[[...e[0]],[...e[1]],e[2]]);
-    try{localStorage.setItem(WD_KEY,JSON.stringify({t:Date.now(),rows:WD_LIST}))}catch(e){}
-  }catch(e){WD_LIST=[];}
-  return WD_LIST;
-}
-function wdMatch(list,name,team){
-  const E=tsdbToks(name), en=E.join(" ");
-  if(!E.length) return null;
-  const exact=[],loose=[];
-  for(const e of list){
-    const labels=e[0].map(n=>tsdbToks(n));
-    if(labels.some(L=>L.join(" ")===en)) exact.push(e);
-    else if(E.length>1&&labels.some(L=>L.length>1&&(E.every(x=>L.includes(x))||L.every(x=>E.includes(x))))) loose.push(e);
-  }
-  const byTeam=c=>c.filter(e=>e[1].some(cl=>tsdbSameTeam(team,cl)));
-  const uniq=c=>new Set(c.map(e=>e[2])).size===1?c[0]:null;
-  // Nombre exacto: se acepta si es único (todos son de clubes mexicanos) o si el club desempata.
-  if(exact.length) return uniq(exact)||uniq(byTeam(exact));
-  // Nombre parecido (ej. "Santiago Naveda" / "Santiago Naveda Lara"): solo con club que coincida.
-  return uniq(byTeam(loose));
-}
-const wdUrl=f=>"https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(f)+"?width=250";
-async function wdCredits(files){
-  const out={}; if(!files.length) return out;
-  try{
-    const u="https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=extmetadata&format=json&origin=*&titles="+encodeURIComponent(files.map(f=>"File:"+f).join("|"));
-    const j=await fetch(u).then(r=>r.json());
-    const txt=h=>{const d=document.createElement("div"); d.innerHTML=h||""; return d.textContent.trim();};
-    for(const pg of Object.values(j.query?.pages||{})){
-      const m=pg.imageinfo?.[0]?.extmetadata||{}; const f=(pg.title||"").replace(/^File:/,"");
-      out[f]=[txt(m.Artist?.value),txt(m.LicenseShortName?.value)].filter(Boolean).join(" · ");
-    }
-  }catch(e){}
-  return out;
-}
-
-// Espera a que la foto de ESPN termine de cargar (o falle) antes de decidir.
-const tsdbSettle=img=>img&&!img.complete?new Promise(res=>{img.addEventListener("load",res,{once:true});img.addEventListener("error",()=>setTimeout(res,0),{once:true});setTimeout(res,4000);}):Promise.resolve();
-// Orden: ESPN → Wikimedia Commons → TheSportsDB (solo licencia CC "Yes") → escudo → iniciales.
-async function mxLeaderPhotos(rows){
-  const cards=[...document.querySelectorAll("#mxLeaders .leader .ph")];
-  const used=new Set(), wdImgs=[];
-  const list=await wdList();
-  await Promise.all(rows.map(async(r,i)=>{
-    const ph=cards[i]; if(!ph||!r?.n) return;
-    await tsdbSettle(ph.querySelector("img"));
-    const cur=ph.querySelector("img");
-    if(cur&&!cur.classList.contains("crest")&&cur.naturalWidth>0) return; // ESPN sí tenía foto: se queda
-    let hit=null;
-    const w=wdMatch(list,r.n,r.tn||r.t);
-    if(w) hit={src:"wd",u:wdUrl(w[2]),alts:[r.logo],file:w[2]};
-    else{const t=await tsdbPhoto(r.n,r.tn||r.t); if(t) hit={src:"tsdb",u:t.u+"/small",alts:[t.u,r.logo]};}
-    if(!hit||!ph.isConnected) return;
-    const alts=hit.alts.filter(Boolean);
-    const img=document.createElement("img");
-    img.alt=""; img.title=hit.src==="wd"?"Foto: Wikimedia Commons":"Foto: TheSportsDB";
-    img.onerror=()=>{const nx=alts.shift(); if(nx){img.src=nx; if(nx===r.logo) img.classList.add("crest");} else {const s=document.createElement("span"); s.textContent=initials(r.n); img.replaceWith(s);}};
-    img.src=hit.u;
-    ph.replaceChildren(img); used.add(hit.src);
-    if(hit.src==="wd") wdImgs.push([img,hit.file]);
-  }));
-  const c=$("#mxCredit");
-  if(c&&used.size){
-    const parts=[];
-    if(used.has("wd")) parts.push('<a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>');
-    if(used.has("tsdb")) parts.push('<a href="https://www.thesportsdb.com" target="_blank" rel="noopener">TheSportsDB</a> (CC)');
-    c.innerHTML="Fotos: "+parts.join(" · "); c.hidden=false;
-  }
-  if(wdImgs.length){
-    const cr=await wdCredits([...new Set(wdImgs.map(x=>x[1]))]);
-    for(const [img,f] of wdImgs) if(cr[f]) img.title="Foto: "+cr[f]+" · Wikimedia Commons";
-  }
-}
-
 async function loadMxPlayers(){
   if(mxpLoaded) return; mxpLoaded=true;
   try{
@@ -1186,10 +1031,8 @@ async function loadMxPlayers(){
     $("#mxpMsg").textContent="";
     const teamsOpt=[...new Map(MXP.map(r=>[r.t,r.tn])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
     $("#mxpTeam").innerHTML=`<option value="">Todos los equipos</option>`+teamsOpt.map(([a,n])=>`<option value="${a}">${n}</option>`).join("");
-    const LEADS=[];
-    const lead=(k,label,fmtf=v=>fmt(v))=>{const r=[...MXP].filter(r=>r[k]!=null).sort((a,b)=>b[k]-a[k])[0]; if(!(r&&r[k]>0)) return ""; LEADS.push(r); return leaderCard(label,fmtf(r[k]),{...r,img:r.id?`https://a.espncdn.com/i/headshots/soccer/players/full/${r.id}.png`:null,logo:r.logo});};
+    const lead=(k,label,fmtf=v=>fmt(v))=>{const r=[...MXP].filter(r=>r[k]!=null).sort((a,b)=>b[k]-a[k])[0]; return r&&r[k]>0?leaderCard(label,fmtf(r[k]),{...r,img:r.id?`https://a.espncdn.com/i/headshots/soccer/players/full/${r.id}.png`:null,logo:r.logo}):"";};
     $("#mxLeaders").innerHTML=[lead("g","Goles"),lead("as","Asistencias"),lead("ga","Goles + asistencias"),lead("sot","Tiros a gol"),lead("sv","Atajadas"),lead("cs","Porterías en cero"),lead("yc","Tarjetas amarillas")].join("");
-    mxLeaderPhotos(LEADS);
     mxpState.render();
   }catch(e){mxpLoaded=false;$("#mxpMsg").textContent="Las estadísticas de jugadores se generan con la próxima actualización automática.";}
 }
