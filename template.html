@@ -817,18 +817,49 @@ function mxRounds(ev,fixes,official){
   if(extra.length) out.push({games:extra.sort((a,b)=>new Date(a.date)-new Date(b.date)),teams:new Set(),name:"Liguilla"});
   return out;
 }
+// ---------- Jornada real de cada partido de Liga MX, vía TheSportsDB (llave gratuita "123") ----------
+// ESPN no publica el número de jornada para esta liga. TheSportsDB sí lo trae (campo intRound) en su
+// calendario oficial, y esta consulta se hace desde el navegador de quien visita la página, porque ESPN
+// bloquea estas peticiones cuando vienen del servidor de GitHub (confirmado: error 403 en cada actualización).
+// Se guarda 20 horas en este navegador. Si algo falla (o TheSportsDB no permite la consulta desde aquí),
+// mxRounds() usa su propio cálculo aproximado por fechas — la página sigue funcionando igual.
+const MXR_KEY="pz_mxr1";
+const mxrNorm=t=>(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(Boolean);
+const MXR_NOISE=new Set(["club","cf","fc","cd","de","del","la","el","futbol","deportivo","sad","sa","cv","atletico"]);
+async function mxOfficialRounds(){
+  try{const c=JSON.parse(localStorage.getItem(MXR_KEY)||"null"); if(c&&Date.now()-c.t<20*36e5) return c.map;}catch(e){}
+  try{
+    const ej=await fetch(`${ESPN}/site/v2/sports/soccer/mex.1/teams`).then(r=>r.json());
+    const espn=(ej.sports?.[0]?.leagues?.[0]?.teams||[]).map(t=>t.team);
+    const lg=await fetch("https://www.thesportsdb.com/api/v1/json/123/lookupleague.php?id=4350").then(r=>r.json());
+    const season=lg.leagues?.[0]?.strCurrentSeason;
+    const ev=season?await fetch(`https://www.thesportsdb.com/api/v1/json/123/eventsseason.php?id=4350&s=${season}`).then(r=>r.json()):null;
+    const match=name=>{const toks=new Set(mxrNorm(name).filter(w=>!MXR_NOISE.has(w)));
+      const hit=espn.filter(t=>{const a=new Set(mxrNorm(t.displayName).filter(w=>!MXR_NOISE.has(w))),b=new Set(mxrNorm(t.shortDisplayName));
+        return [...toks].some(w=>a.has(w))||[...toks].some(w=>b.has(w));});
+      return hit.length===1?hit[0].id:null;};
+    const map={};
+    for(const e of (ev?.events||[])){
+      const r=e.intRound; if(r==null||!/^\d+$/.test(String(r))) continue;
+      const a=match(e.strHomeTeam), b=match(e.strAwayTeam);
+      if(a&&b) map[[a,b].sort().join("-")]=+r;
+    }
+    try{localStorage.setItem(MXR_KEY,JSON.stringify({t:Date.now(),map}))}catch(e){}
+    return map;
+  }catch(e){return {};}
+}
 function mxSeason(){
   if(MXS) return MXS;
   MXS=(async()=>{
     const sb=d=>fetch(`${ESPN}/site/v2/sports/soccer/mex.1/scoreboard${d?`?dates=${d}`:""}`).then(r=>r.json());
-    const base=await sb();
+    const [base,mxOfficial]=await Promise.all([sb(),mxOfficialRounds()]);
     if(base.leagues?.[0]?.logos?.length) MX_LOGOS=base.leagues[0].logos;
     if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(pickLogo(MX_LOGOS));
     const cal=[...new Set((base.leagues?.[0]?.calendar||[]).map(x=>(typeof x==="string"?x:(x.startDate||x.value||"")).slice(0,10)).filter(Boolean))];
     const days=await Promise.all(cal.map(d=>sb(d.replace(/-/g,"")).catch(()=>({events:[]}))));
     const byId=new Map(); [...(base.events||[]),...days.flatMap(r=>r.events||[])].forEach(e=>byId.set(e.id,e));
     const ev=[...byId.values()].sort((a,b)=>new Date(a.date)-new Date(b.date));
-    return {ev,J:mxRounds(ev,D.mx_jfix,D.mx_rounds)};
+    return {ev,J:mxRounds(ev,D.mx_jfix,mxOfficial)};
   })();
   MXS.catch(()=>{MXS=null});
   return MXS;
