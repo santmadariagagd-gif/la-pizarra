@@ -744,6 +744,37 @@ async function geocode(city){
   return geoCache[q];
 }
 let MXS=null;
+// Jornadas del torneo regular: todos contra todos una vez (18 equipos → 17 jornadas de 9 partidos).
+// Cada partido va a la PRIMERA jornada donde ninguno de sus dos equipos haya jugado: así un partido reprogramado
+// regresa a su jornada original. Si la pareja ya se enfrentó, es Liguilla. Si ESPN trae el número de jornada, se usa ese.
+function mxRounds(ev){
+  const ids=e=>(e.competitions?.[0]?.competitors||[]).map(c=>c.team?.id).filter(Boolean);
+  const cnt={}; ev.forEach(e=>ids(e).forEach(t=>cnt[t]=(cnt[t]||0)+1));
+  const T=new Set(Object.keys(cnt).filter(t=>cnt[t]>=3)); // equipos reales (descarta "por definir" de Liguilla)
+  const nT=T.size, R=nT%2?nT:nT-1, G=Math.floor(nT/2);
+  const byDate=(a,b)=>new Date(a.date)-new Date(b.date);
+  const reg=e=>{const t=ids(e); return t.length===2&&t.every(x=>T.has(x));};
+  // Número oficial de ESPN, solo si es completo y coherente
+  const wk=e=>+(e.week?.number??e.competitions?.[0]?.week?.number)||0;
+  if(nT>=4&&ev.filter(reg).every(e=>wk(e)>=1&&wk(e)<=R)){
+    const J=Array.from({length:R},()=>({games:[]})); const extra=[]; const seen=new Set();
+    for(const e of ev){ if(!reg(e)){extra.push(e);continue;} const k=ids(e).sort().join("-"); if(seen.has(k)){extra.push(e);continue;} seen.add(k); J[wk(e)-1].games.push(e); }
+    if(J.every(j=>j.games.length<=G)){const out=J.filter(j=>j.games.length); if(extra.length) out.push({games:extra,name:"Liguilla"}); return out;}
+  }
+  const J=Array.from({length:Math.max(R,1)},()=>({games:[],teams:new Set()})), met=new Set(), extra=[];
+  for(const e of ev){
+    if(!reg(e)){extra.push(e);continue;}
+    const [a,b]=ids(e), k=[a,b].sort().join("-");
+    if(met.has(k)){extra.push(e);continue;}
+    const j=J.find(j=>j.games.length<G&&!j.teams.has(a)&&!j.teams.has(b));
+    if(!j){extra.push(e);continue;}
+    j.games.push(e); j.teams.add(a); j.teams.add(b); met.add(k);
+  }
+  J.forEach(j=>j.games.sort(byDate));
+  const out=J.filter(j=>j.games.length);
+  if(extra.length) out.push({games:extra.sort(byDate),teams:new Set(),name:"Liguilla"});
+  return out;
+}
 function mxSeason(){
   if(MXS) return MXS;
   MXS=(async()=>{
@@ -755,14 +786,7 @@ function mxSeason(){
     const days=await Promise.all(cal.map(d=>sb(d.replace(/-/g,"")).catch(()=>({events:[]}))));
     const byId=new Map(); [...(base.events||[]),...days.flatMap(r=>r.events||[])].forEach(e=>byId.set(e.id,e));
     const ev=[...byId.values()].sort((a,b)=>new Date(a.date)-new Date(b.date));
-    // Jornadas: se abre una nueva cuando un equipo repetiría partido o ya van 9 juegos
-    const J=[]; let cur=null;
-    for(const e of ev){
-      const ids=(e.competitions?.[0]?.competitors||[]).map(c=>c.team?.id);
-      if(!cur||cur.games.length>=9||ids.some(i=>cur.teams.has(i))){cur={games:[],teams:new Set()};J.push(cur);}
-      cur.games.push(e); ids.forEach(i=>cur.teams.add(i));
-    }
-    return {ev,J};
+    return {ev,J:mxRounds(ev)};
   })();
   MXS.catch(()=>{MXS=null});
   return MXS;
@@ -799,7 +823,7 @@ async function loadMxGames(){
 }
 async function renderMxJ(){
   const J=MXJ;
-  $("#jSel").innerHTML=J.map((j,i)=>`<option value="${i}"${i===curJ?" selected":""}>Jornada ${i+1}</option>`).join("");
+  $("#jSel").innerHTML=J.map((j,i)=>`<option value="${i}"${i===curJ?" selected":""}>${j.name||`Jornada ${i+1}`}</option>`).join("");
   $("#jPrev").disabled=curJ===0; $("#jNext").disabled=curJ===J.length-1;
   const ev=J[curJ].games;
   const first=new Date(ev[0].date).getTime();
@@ -836,6 +860,43 @@ function pitchSVG(r,subOut){
   lines.forEach((L,li)=>{const y=Hh-110-li*((Hh-170)/Math.max(1,n-1||1)); L.forEach((p,k)=>{s+=dot(p,(W/(L.length+1))*(k+1),n===1?Hh/2:y);});});
   return s+"</svg>";
 }
+// ----- Cambios: la alineación de ESPN (subbedIn / subbedOut) manda; el texto del evento solo ayuda a emparejar -----
+const nrm=t=>(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+function findP(list,name){ // nombre sin acentos → nombre contenido → apellido único
+  const n=nrm(name); if(!n) return null;
+  const nm=p=>nrm(p.athlete?.displayName);
+  let c=list.filter(p=>nm(p)===n); if(c.length===1) return c[0];
+  const T=n.split(" ");
+  c=list.filter(p=>{const P=nm(p).split(" "); return T.every(x=>P.includes(x))||P.every(x=>T.includes(x));}); if(c.length===1) return c[0];
+  c=list.filter(p=>nm(p).split(" ").includes(T[T.length-1])); return c.length===1?c[0]:null;
+}
+function mxSubs(r,K,R){
+  const ro=r.roster||[], tn=nrm(r.team?.displayName), tns=nrm(r.team?.shortDisplayName);
+  const hasOut=ro.some(p=>typeof p.subbedOut==="boolean");
+  const outs=ro.filter(p=>hasOut?p.subbedOut:p.starter||p.subbedIn), ins=ro.filter(p=>p.subbedIn);
+  const minOf=p=>((p?.plays||[]).find(x=>x.substitution)?.clock?.displayValue)||"";
+  const res=[], usedIn=new Set(), usedOut=new Set();
+  // 1) Si ESPN trae la pareja directa en la alineación (subbedOutFor), se usa tal cual.
+  for(const p of outs){const f=p.subbedOutFor?.athlete||p.subbedOutFor; if(!f||!(f.id||f.displayName)) continue;
+    const q=ins.find(x=>(f.id&&x.athlete?.id===f.id)||nrm(x.athlete?.displayName)===nrm(f.displayName)); if(!q) continue;
+    res.push({outP:p,inP:q,m:minOf(p)||minOf(q)}); usedIn.add(q); usedOut.add(p);}
+  // 2) Eventos de cambio de este equipo: se empareja con la alineación sin acentos, solo con jugadores marcados como que entraron/salieron.
+  const own=(K||[]).filter(k=>k.tp==="Cambio"&&(!k.tm||nrm(k.tm)===tn||nrm(k.tm)===tns||(R||[]).length<2));
+  for(const k of own){
+    const mt=k.txt.match(/\.\s*(.+?) replaces (.+?)\.?$/i); const inName=(mt?mt[1]:k.who[0]||"").trim(), outName=(mt?mt[2]:k.who[1]||"").trim();
+    const inP=findP(ins.filter(x=>!usedIn.has(x)),inName); if(inP&&usedIn.has(inP)) continue;
+    if(!inP&&ins.length&&[...usedIn].some(x=>nrm(x.athlete?.displayName)===nrm(inName))) continue; // ya emparejado en el paso 1
+    let outP=findP(outs.filter(x=>!usedOut.has(x)),outName);
+    res.push({outP,inP,m:k.m,inName,outName}); if(inP) usedIn.add(inP); if(outP) usedOut.add(outP);
+  }
+  // 3) Si un cambio no encontró a quién sustituyó y solo queda un jugador marcado como que salió, es él.
+  const left=outs.filter(p=>!usedOut.has(p)&&(hasOut||p.starter));
+  const orphan=res.filter(x=>!x.outP);
+  if(hasOut&&orphan.length===1&&left.length===1){orphan[0].outP=left[0]; usedOut.add(left[0]);}
+  // Si el nombre del texto no se pudo confirmar, no se inventa: se muestra solo quién entró.
+  for(const x of res) if(!x.outP) x.outName=hasOut?"":x.outName;
+  return res;
+}
 async function openMx(id){
   const {ev}=await mxSeason(); const e=ev.find(x=>x.id===id); if(!e) return;
   const c=mxCard(e,0), comp=e.competitions?.[0]||{}, cs=comp.competitors||[];
@@ -849,8 +910,6 @@ async function openMx(id){
   if(sm){
     const K=(sm.keyEvents||[]).map(k=>({m:k.clock?.displayValue||"",tp:EVT(k.type?.text||""),txt:k.text||"",tm:k.team?.displayName||"",who:(k.participants||[]).map(p=>p.athlete?.displayName).filter(Boolean)}))
       .filter(k=>["Gol","Gol de penal","Autogol","Amarilla","Roja","Cambio"].includes(k.tp));
-    const subOut={}, subs=[];
-    K.filter(k=>k.tp==="Cambio").forEach(k=>{const m=k.txt.match(/\.\s*(.+?) replaces (.+?)\.?$/i); const inn=m?m[1]:k.who[0], outp=m?m[2]:k.who[1]; if(outp) subOut[outp.trim()]={m:k.m,inn:inn&&inn.trim()}; subs.push({m:k.m,tm:k.tm,inn:inn&&inn.trim(),outp:outp&&outp.trim()});});
     const goals=K.filter(k=>k.tp!=="Cambio");
     if(goals.length){
       // Marcador parcial en cada gol; solo se muestra si al final cuadra con el resultado real.
@@ -873,7 +932,11 @@ async function openMx(id){
     const R=sm.rosters||[];
     if(R.length&&R.some(r=>(r.roster||[]).some(p=>p.starter))){
       const rH=R.find(r=>r.homeAway==="home")||R[0], rA=R.find(r=>r.homeAway==="away")||R[1]||R[0];
-      h+=`<h3>Alineaciones</h3><div class="pitches">${[rH,rA].map(r=>`<div class="pitch"><h4><span>${r.team?.shortDisplayName||r.team?.displayName||""}</span><span class="tm">${r.formation||""}</span></h4>${pitchSVG(r,subOut)}${(()=>{const st=new Set((r.roster||[]).filter(p=>p.starter).map(p=>p.athlete?.displayName));const x=subs.filter(s=>s.tm===(r.team?.displayName)&&!st.has(s.outp));return x.length?`<div class="subs">${x.map(s=>`<span><b>${s.m}</b><span class="in">↑ ${s.inn||"?"}</span> · <span class="out">↓ ${s.outp||"?"}</span></span>`).join("")}</div>`:"";})()}</div>`).join("")}</div>`;
+      h+=`<h3>Alineaciones</h3><div class="pitches">${[rH,rA].map(r=>{const S=mxSubs(r,K,R); const st=new Set((r.roster||[]).filter(p=>p.starter));
+        const subOut={}; S.forEach(x=>{if(x.outP&&st.has(x.outP)) subOut[x.outP.athlete?.displayName]={m:x.m,inn:x.inP?.athlete?.displayName||x.inName};});
+        const rest=S.filter(x=>!(x.outP&&st.has(x.outP)));
+        const nm=(p,n)=>p?.athlete?.displayName||n||"";
+        return `<div class="pitch"><h4><span>${r.team?.shortDisplayName||r.team?.displayName||""}</span><span class="tm">${r.formation||""}</span></h4>${pitchSVG(r,subOut)}${rest.length?`<div class="subs">${rest.map(x=>`<span>${x.m?`<b>${x.m}</b>`:""}<span class="in">↑ ${nm(x.inP,x.inName)}</span>${nm(x.outP,x.outName)?` · <span class="out">↓ ${nm(x.outP,x.outName)}</span>`:""}</span>`).join("")}</div>`:""}</div>`;}).join("")}</div>`;
       const SC=[["totalGoals","Goles"],["goalAssists","Asist."],["totalShots","Tiros"],["shotsOnTarget","A gol"],["foulsCommitted","Faltas"],["foulsSuffered","Faltas rec."],["yellowCards","Amarillas"],["redCards","Rojas"],["saves","Atajadas"]];
       for(const r of [rH,rA]){
         const pl=(r.roster||[]).filter(p=>p.starter||p.subbedIn).map(p=>({n:p.athlete?.displayName,pos:p.position?.abbreviation||"",st:Object.fromEntries((p.stats||[]).map(s=>[s.name,s.value]))}));
