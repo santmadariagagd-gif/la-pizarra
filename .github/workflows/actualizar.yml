@@ -7,7 +7,7 @@ on:
     - cron: "0 13 * * 2"   # martes 7:00 am CDMX (después del Monday Night)
   workflow_dispatch:        # botón para correrlo a mano
   push:
-    paths: ["notas.json", "template.html", "build_site.py"]
+    paths: ["notas.json", "ranking.json", "template.html", "build_site.py"]
 
 permissions:
   contents: write
