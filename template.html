@@ -227,6 +227,20 @@ dialog#gdlg::backdrop{background:rgba(0,0,0,.55)}
 .prt tr.cmr td{border-top:0}
 .tlogo,.prt .tlogo{width:24px;height:24px;object-fit:contain;vertical-align:-6px;margin-right:8px}
 .idx{display:inline-block;height:8px;border-radius:4px;background:var(--mark);vertical-align:middle;margin-right:8px}
+.bracket{margin-top:22px;padding-top:18px;border-top:2px solid var(--line)}
+.bracket h3{margin:0 0 4px}
+.bracket .sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+.bconf{margin-bottom:16px}
+.bconf .cname{font:700 14px var(--display);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.bpairs{display:grid;gap:8px}
+.bmatch{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.bmatch .bt{display:flex;align-items:center;gap:6px;flex:1;min-width:0;font-weight:600;font-size:14px}
+.bmatch .bt img{width:20px;height:20px;object-fit:contain;flex:none}
+.bmatch .bt small{color:var(--muted);font-weight:500;margin-left:2px}
+.bmatch .vs{color:var(--muted);font-size:12px;flex:none}
+.bmatch.bye{background:none;border-style:dashed}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+@media (max-width:720px){.bgrid{grid-template-columns:1fr}}
 @media (max-width:720px){.tl li{gap:8px}.tl .e{gap:6px}.tl .who,.tl li.g .who{font-size:14px}.tl .who small{font-size:12px}.pitches{grid-template-columns:1fr}.mhead .res{font-size:34px}.mhead .tm2 img{width:44px;height:44px}}
 footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color:var(--muted);font-size:13px}
 @media (max-width:720px){
@@ -302,6 +316,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <h2>Tabla general</h2>
   <p class="note" id="mxtMsg" aria-live="polite">Cargando tabla…</p>
   <div class="tbl"><table id="mxTable"></table></div>
+  <div class="bracket" id="mxBracket"></div>
 </section>
 
 <section class="panel hidden" id="mxplayers">
@@ -320,6 +335,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <h2>Power Ranking NFL</h2>
   <p class="note" id="prNote"></p>
   <div class="tbl"><table id="prNfl" class="prt"></table></div>
+  <div class="bracket" id="nflBracket"></div>
 </section>
 <section class="panel hidden" id="mxpr">
   <h2>Power Ranking Liga MX</h2>
@@ -724,8 +740,29 @@ function openNfl(id){
   if(!b&&x.roof!=="dome"&&x.roof!=="closed"&&!x.tbd) fillWeather($("#dwx"),x.lat,x.lon,when?.getTime());
 }
 
+// ---------- Brackets de postemporada, calculados con la tabla de hoy (provisional) ----------
+const bTeam=(logo,name,tag)=>`<span class="bt">${logo?`<img src="${logo}" alt="">`:""}<span>${name}${tag?`<small>${tag}</small>`:""}</span></span>`;
+function renderNflBracket(){
+  const S=D.nfl_seeds||{}; if(!S.AFC||!S.NFC) return;
+  const conf=c=>{const T=t=>NT[t.t]||{n:t.t};
+    const bye=S[c][0];
+    const pairs=[[1,6],[2,5],[3,4]].map(([a,b])=>[S[c][a],S[c][b]]);
+    return `<div class="bconf"><p class="cname">${c}</p><div class="bpairs">
+      <div class="bmatch bye">${bTeam(T(bye).logo,T(bye).n,"1 · descansa")}</div>
+      ${pairs.map(([a,b])=>`<div class="bmatch">${bTeam(T(a).logo,T(a).n,a.seed+" · "+a.w+"-"+a.l)}<span class="vs">vs</span>${bTeam(T(b).logo,T(b).n,b.seed+" · "+b.w+"-"+b.l)}</div>`).join("")}
+    </div></div>`;};
+  $("#nflBracket").innerHTML=`<h3>Postemporada, si la temporada terminara hoy</h3><p class="sub">Ronda de comodines. Cálculo propio y aproximado: no usa todos los criterios oficiales de desempate de la NFL, solo % de victorias y diferencia de puntos.</p><div class="bgrid">${conf("AFC")}${conf("NFC")}</div>`;
+}
+function renderMxBracket(rows){
+  if(!rows||rows.length<8) return;
+  const top8=[...rows].sort((a,b)=>(b.pts??-1)-(a.pts??-1)||(b.dg??0)-(a.dg??0)).slice(0,8);
+  const pairs=[[0,7],[1,6],[2,5],[3,4]];
+  $("#mxBracket").innerHTML=`<h3>Liguilla, si el torneo terminara hoy</h3><p class="sub">Cuartos de final con los 8 primeros lugares de la tabla general (formato del Apertura 2026, sin Play-In). Se actualiza con cada jornada.</p><div class="bpairs">${pairs.map(([a,b])=>{const A=top8[a],B=top8[b];
+    return `<div class="bmatch">${bTeam(A.logo,A.n,(a+1)+"º · "+A.pts+" pts")}<span class="vs">vs</span>${bTeam(B.logo,B.n,(b+1)+"º · "+B.pts+" pts")}</div>`;}).join("")}</div>`;
+}
 // ---------- Power ranking NFL ----------
 (function(){
+  renderNflBracket();
   const R=D.pr_nfl||[]; if(!R.length) return;
   $("#prNote").textContent=D.pr_wprev>0?`La temporada pasada pesa ${D.pr_wprev}% esta semana.`:"";
   const mv=r=>r.prev==null?"–":r.prev>r.r?`<span class="up">▲${r.prev-r.r}</span>`:r.prev<r.r?`<span class="down">▼${r.r-r.prev}</span>`:"=";
@@ -745,34 +782,39 @@ async function geocode(city){
 }
 let MXS=null;
 // Jornadas del torneo regular: todos contra todos una vez (18 equipos → 17 jornadas de 9 partidos).
-// Cada partido va a la PRIMERA jornada donde ninguno de sus dos equipos haya jugado: así un partido reprogramado
-// regresa a su jornada original. Si la pareja ya se enfrentó, es Liguilla. Si ESPN trae el número de jornada, se usa ese.
-function mxRounds(ev){
+// ESPN no expone el número de jornada para esta liga (ver notas del proyecto), así que se reconstruye:
+// cada equipo juega su jornada 1, luego la 2, etc., EN ESE ORDEN, sin importar cuándo se reprograme un
+// partido. Por eso el partido va a la primera jornada libre para AMBOS equipos según cuántos partidos
+// de liga regular lleva jugados cada uno (no según su fecha) — así un aplazamiento no corre a los demás.
+// Si un par de equipos ya se enfrentó antes en el torneo, el segundo cruce es Liguilla, no un descuido.
+function mxRounds(ev,fixes,official){
   const ids=e=>(e.competitions?.[0]?.competitors||[]).map(c=>c.team?.id).filter(Boolean);
+  const abbr=e=>(e.competitions?.[0]?.competitors||[]).map(c=>c.team?.abbreviation);
+  const FIX={}; (fixes||[]).forEach(f=>{if(f.equipo&&f.rival&&f.jornada) FIX[[f.equipo,f.rival].sort().join("-")]=f.jornada-1;});
+  const OFF=official||{}; // jornada real de TheSportsDB, calculada en build_site.py: {"idA-idB": jornada}
   const cnt={}; ev.forEach(e=>ids(e).forEach(t=>cnt[t]=(cnt[t]||0)+1));
   const T=new Set(Object.keys(cnt).filter(t=>cnt[t]>=3)); // equipos reales (descarta "por definir" de Liguilla)
-  const nT=T.size, R=nT%2?nT:nT-1, G=Math.floor(nT/2);
-  const byDate=(a,b)=>new Date(a.date)-new Date(b.date);
   const reg=e=>{const t=ids(e); return t.length===2&&t.every(x=>T.has(x));};
-  // Número oficial de ESPN, solo si es completo y coherente
-  const wk=e=>+(e.week?.number??e.competitions?.[0]?.week?.number)||0;
-  if(nT>=4&&ev.filter(reg).every(e=>wk(e)>=1&&wk(e)<=R)){
-    const J=Array.from({length:R},()=>({games:[]})); const extra=[]; const seen=new Set();
-    for(const e of ev){ if(!reg(e)){extra.push(e);continue;} const k=ids(e).sort().join("-"); if(seen.has(k)){extra.push(e);continue;} seen.add(k); J[wk(e)-1].games.push(e); }
-    if(J.every(j=>j.games.length<=G)){const out=J.filter(j=>j.games.length); if(extra.length) out.push({games:extra,name:"Liguilla"}); return out;}
-  }
-  const J=Array.from({length:Math.max(R,1)},()=>({games:[],teams:new Set()})), met=new Set(), extra=[];
-  for(const e of ev){
+  const sorted=[...ev].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const R=Math.max(Object.keys(cnt).length?T.size%2?T.size:T.size-1:0,1); // jornadas esperadas
+  const next={}, met=new Set(), J=Array.from({length:R},()=>({games:[],teams:new Set()})), extra=[];
+  for(const e of sorted){
     if(!reg(e)){extra.push(e);continue;}
     const [a,b]=ids(e), k=[a,b].sort().join("-");
     if(met.has(k)){extra.push(e);continue;}
-    const j=J.find(j=>j.games.length<G&&!j.teams.has(a)&&!j.teams.has(b));
-    if(!j){extra.push(e);continue;}
-    j.games.push(e); j.teams.add(a); j.teams.add(b); met.add(k);
+    const fk=abbr(e).sort().join("-"), idk=[a,b].sort().join("-");
+    const forced=FIX[fk]??(OFF[idk]!=null?OFF[idk]-1:null); // primero la corrección manual, luego TheSportsDB
+    let r=forced!=null?forced:Math.max(next[a]||0,next[b]||0);
+    // Un aplazamiento muy largo puede "empujar" a un equipo más allá de las jornadas que existen:
+    // en ese caso se busca hacia atrás la jornada más reciente con hueco y ambos equipos libres.
+    if(r>=R){r=-1; for(let i=R-1;i>=0;i--) if(J[i].games.length<9&&!J[i].teams.has(a)&&!J[i].teams.has(b)){r=i;break;}
+      if(r<0){extra.push(e);continue;}}
+    J[r].games.push(e); J[r].teams.add(a); J[r].teams.add(b); met.add(k);
+    next[a]=r+1; next[b]=r+1;
   }
-  J.forEach(j=>j.games.sort(byDate));
+  J.forEach(j=>j.games.sort((a,b)=>new Date(a.date)-new Date(b.date)));
   const out=J.filter(j=>j.games.length);
-  if(extra.length) out.push({games:extra.sort(byDate),teams:new Set(),name:"Liguilla"});
+  if(extra.length) out.push({games:extra.sort((a,b)=>new Date(a.date)-new Date(b.date)),teams:new Set(),name:"Liguilla"});
   return out;
 }
 function mxSeason(){
@@ -786,7 +828,7 @@ function mxSeason(){
     const days=await Promise.all(cal.map(d=>sb(d.replace(/-/g,"")).catch(()=>({events:[]}))));
     const byId=new Map(); [...(base.events||[]),...days.flatMap(r=>r.events||[])].forEach(e=>byId.set(e.id,e));
     const ev=[...byId.values()].sort((a,b)=>new Date(a.date)-new Date(b.date));
-    return {ev,J:mxRounds(ev)};
+    return {ev,J:mxRounds(ev,D.mx_jfix,D.mx_rounds)};
   })();
   MXS.catch(()=>{MXS=null});
   return MXS;
@@ -1001,7 +1043,7 @@ async function loadMxTable(){
     const st={k:rows[0].rk!=null?"rk":"pts",dir:rows[0].rk!=null?"asc":"desc",render(){table($("#mxTable"),[
       {k:"n",h:"Equipo",l:1,f:r=>`${r.logo?`<img src="${r.logo}" alt="" width="20" height="20" style="vertical-align:-4px;margin-right:8px">`:""}<span class="nm">${r.n}</span>`,asc:1},
       {k:"pts",h:"Puntos"},{k:"pj",h:"PJ"},{k:"g",h:"G"},{k:"e",h:"E"},{k:"p",h:"P",asc:1},{k:"gf",h:"GF"},{k:"gc",h:"GC",asc:1},{k:"dg",h:"Dif.",f:r=>r.dg==null?"–":(r.dg>0?"+":"")+r.dg}],rows,this)}};
-    st.render();
+    st.render(); renderMxBracket(rows);
   }catch(e){mxtLoaded=false;$("#mxtMsg").textContent="No pudimos cargar la tabla de Liga MX. Intenta recargar la página en un momento.";}
 }
 // ---------- Liga MX: jugadores ----------

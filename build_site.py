@@ -310,6 +310,43 @@ aqui=os.path.dirname(os.path.abspath(__file__))
 try: RJ=json.load(open(os.path.join(aqui,'ranking.json'),encoding='utf-8'))
 except Exception: RJ={}
 out['ranking_mx']=RJ.get('ligamx',{})
+out['mx_jfix']=RJ.get('jornadas_mx',[])  # correcciones manuales de jornada para partidos aplazados que se confunden con la Liguilla
+
+# ---------- Jornada real de cada partido de Liga MX, vía TheSportsDB (llave gratuita "123") ----------
+# ESPN no publica el número de jornada para esta liga; TheSportsDB sí lo trae (campo intRound) en el
+# calendario oficial. Se hace 1 consulta a la lista de equipos de ESPN + 2 a TheSportsDB por actualización.
+# El resultado es out['mx_rounds']: {"idEquipoA-idEquipoB": jornada}. Si algo falla, la página usa su
+# propio cálculo aproximado por fechas (ver template.html) para lo que falte.
+import urllib.request as _ur, unicodedata as _ud
+def _tsdb(path):
+    req=_ur.Request("https://www.thesportsdb.com/api/v1/json/123/"+path,headers={"User-Agent":"LaPizarra/1.0 (https://santmadariagagd-gif.github.io/la-pizarra/)"})
+    with _ur.urlopen(req,timeout=30) as r: return json.loads(r.read().decode("utf-8"))
+def _norm(t):
+    t=_ud.normalize("NFD",t or "").encode("ascii","ignore").decode().lower()
+    return "".join(c if c.isalnum() or c==" " else " " for c in t).split()
+_NOISE={"club","cf","fc","cd","de","del","la","el","futbol","deportivo","sad","sa","cv","atletico"}
+def mx_rounds():
+    req=_ur.Request("https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/teams",headers={"User-Agent":"LaPizarra/1.0"})
+    with _ur.urlopen(req,timeout=30) as r: ej=json.loads(r.read().decode("utf-8"))
+    espn=[(t['team']['id'],t['team'].get('displayName',''),t['team'].get('shortDisplayName',''),t['team'].get('abbreviation','')) for t in ej['sports'][0]['leagues'][0]['teams']]
+    lg=_tsdb("lookupleague.php?id=4350")['leagues'][0]; season=lg['strCurrentSeason']
+    ev=_tsdb(f"eventsseason.php?id=4350&s={season}").get('events') or []
+    def match(name):
+        toks=set(w for w in _norm(name) if w not in _NOISE)
+        hit=[eid for eid,disp,short,abbr in espn if toks & set(w for w in _norm(disp) if w not in _NOISE) or toks & set(_norm(short))]
+        return hit[0] if len(hit)==1 else None
+    rounds={}
+    for e in ev:
+        r=e.get('intRound')
+        if r is None or not str(r).isdigit(): continue
+        a,b=match(e.get('strHomeTeam','')),match(e.get('strAwayTeam',''))
+        if a and b: rounds["-".join(sorted([a,b]))]=int(r)
+    return rounds
+try:
+    out['mx_rounds']=mx_rounds()
+    print(f"Liga MX: {len(out['mx_rounds'])} partidos con jornada oficial de TheSportsDB")
+except Exception as ex:
+    print("Liga MX: no se pudo obtener la jornada oficial de TheSportsDB (se usará el cálculo aproximado):",ex); out['mx_rounds']={}
 order=list(M.index)
 for a in RJ.get('nfl',{}).get('ajustes',[]):
     t=a.get('equipo'); mv=int(a.get('mover',0) or 0)
@@ -418,6 +455,90 @@ try:
     out['mxp']=mx_player_stats()
 except Exception as ex:
     print("Liga MX: no se pudieron obtener estadísticas de jugadores:",ex); out['mxp']=[]
+# ---------- Postemporada NFL, si la temporada terminara hoy ----------
+# Sigue el orden oficial de desempate de la NFL (nfl.com/standings/tie-breaking-procedures):
+# cabeza a cabeza → récord de división (empates de división) o de conferencia (comodines) → rivales en
+# común (mín. 4 partidos) → récord de conferencia (empates de división) → fuerza de victoria → fuerza de
+# calendario → diferencia de puntos. Se omiten, por ser extremadamente raro que se necesiten y requerir
+# datos que no se calculan aquí, los últimos pasos oficiales: clasificación combinada de puntos anotados
+# y recibidos, diferencia de touchdowns y volado. En un empate a 3+ equipos, la regla oficial reevalúa
+# desde el paso 1 en cuanto quedan solo 2 con la misma marca; aquí se hace lo mismo.
+def nfl_seeds():
+    conf=teams['team_conf'].to_dict(); div=teams['team_division'].to_dict()
+    g2=gm.copy(); g2['t_conf']=g2.tm.map(conf); g2['t_div']=g2.tm.map(div)
+    g2['o_conf']=g2.opp.map(conf); g2['o_div']=g2.opp.map(div)
+    PCT=rec_t.set_index('tm').pct.to_dict()
+    def pct_of(rows):
+        n=len(rows)
+        return None if n==0 else (rows.w.sum()+0.5*rows.tie.sum())/n
+    def h2h(a,b):
+        rows=g2[(g2.tm==a)&(g2.opp==b)]
+        return pct_of(rows)
+    def div_pct(t): return pct_of(g2[(g2.tm==t)&(g2.t_div==g2.o_div)])
+    def conf_pct(t): return pct_of(g2[(g2.tm==t)&(g2.t_conf==g2.o_conf)])
+    def common_pct(t,opps):
+        rows=g2[(g2.tm==t)&(g2.opp.isin(opps))]
+        return pct_of(rows) if len(rows)>=4 else None
+    def sov(t):
+        rows=g2[(g2.tm==t)&(g2.w==1)]
+        return np.mean([PCT.get(o,0) for o in rows.opp]) if len(rows) else None
+    def sos(t):
+        rows=g2[g2.tm==t]
+        return np.mean([PCT.get(o,0) for o in rows.opp]) if len(rows) else None
+    def diff(t):
+        r=rec_t.set_index('tm').loc[t]; return r.pf-r.pa
+    def h2h_group(group):
+        # Solo cuenta si TODOS los equipos del grupo se han enfrentado entre sí (barrida/round-robin).
+        need=[(a,b) for i,a in enumerate(group) for b in group[i+1:]]
+        if any(g2[(g2.tm==a)&(g2.opp==b)].empty for a,b in need): return {t:None for t in group}
+        return {t:pct_of(g2[(g2.tm==t)&(g2.opp.isin([x for x in group if x!=t]))]) for t in group}
+    def common_group(group):
+        opp_sets=[set(g2[g2.tm==t].opp) for t in group]
+        common=set.intersection(*opp_sets) if opp_sets else set()
+        return {t:common_pct(t,common) for t in group}
+    def resolve(group,division_tie):
+        # Ordena TODO el grupo empatado, no solo escoge un ganador: en cada paso separa al subgrupo que
+        # va mejor (y lo sigue afinando entre sí desde el paso 1, como marca la regla oficial), ordena por
+        # su cuenta al resto, y los concatena. Si el empate sigue hasta el final, deja el orden en que venía
+        # (equivalente al volado oficial, el único paso que no se reproduce aquí).
+        if len(group)<=1: return list(group)
+        steps=[('h2h',h2h_group)]
+        if division_tie: steps.append(('div',lambda grp:{t:div_pct(t) for t in grp}))
+        steps.append(('common',common_group))
+        steps.append(('conf',lambda grp:{t:conf_pct(t) for t in grp}))
+        steps+= [('sov',lambda grp:{t:sov(t) for t in grp}),('sos',lambda grp:{t:sos(t) for t in grp}),('diff',lambda grp:{t:diff(t) for t in grp})]
+        for name,fn in steps:
+            vals=fn(group)
+            if any(v is None for v in vals.values()): continue
+            mx=max(vals.values()); top=[t for t in group if abs(vals[t]-mx)<1e-9]
+            if 0<len(top)<len(group):
+                rest=[t for t in group if t not in top]
+                return resolve(top,division_tie)+resolve(rest,division_tie)
+        return group
+    def order(group,division_tie):
+        buckets={}
+        for t in group: buckets.setdefault(round(PCT[t],9),[]).append(t)
+        out=[]
+        for p in sorted(buckets,reverse=True):
+            grp=buckets[p]
+            out+= grp if len(grp)==1 else resolve(grp,division_tie)
+        return out
+    res={}
+    for c in ['AFC','NFC']:
+        cteams=[t for t,cc in conf.items() if cc==c and t in PCT]
+        by_div={}
+        for t in cteams: by_div.setdefault(div[t],[]).append(t)
+        leaders=[order(ts,True)[0] for ts in by_div.values()]
+        leaders=order(leaders,False)
+        rest=order([t for t in cteams if t not in leaders],False)[:3]
+        seeds=leaders+rest
+        rt=rec_t.set_index('tm')
+        res[c]=[dict(seed=i+1,t=t,div=div[t].replace(c+' ',''),w=int(rt.loc[t].w),l=int(rt.loc[t].l),tie=int(rt.loc[t].tie),div_leader=bool(i<4)) for i,t in enumerate(seeds)]
+    return res
+try:
+    out['nfl_seeds']=nfl_seeds()
+except Exception as ex:
+    print("Postemporada NFL: no se pudo calcular:",ex); out['nfl_seeds']={}
 out['week']=wk; out['winners']=sorted(winners)
 data=json.dumps(out,ensure_ascii=False,allow_nan=False)
 aqui=os.path.dirname(os.path.abspath(__file__))
