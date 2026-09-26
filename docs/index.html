@@ -811,8 +811,13 @@ let MXS=null;
 // jornada — ESPN no publica ese número para esta liga y reconstruirlo con fechas nunca salió del todo
 // bien. Los partidos entre dos equipos que ya se habían enfrentado antes en el torneo (revanchas) son
 // Liguilla, no temporada regular: se apartan aquí y se muestran en su propia pestaña "Liguilla".
-const mxWeekStart=d=>{const dt=new Date(d); const wd=(dt.getUTCDay()+6)%7; dt.setUTCDate(dt.getUTCDate()-wd); dt.setUTCHours(0,0,0,0); return dt;};
-const fDateShort=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,day:"numeric",month:"long"}).format(d);
+// El día de un partido se define por la fecha LOCAL (México), no por el día en UTC que trae ESPN: un
+// partido del domingo 9:10 p.m. en México ya es lunes en UTC, y agruparlo por UTC lo mandaba a la
+// semana siguiente aunque en la tarjeta se viera "domingo". Por eso primero se saca la fecha local
+// (YYYY-MM-DD) y de ahí se calcula el lunes de esa semana, siempre en términos de calendario, nunca de hora.
+const mxLocalYMD=d=>new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(d));
+const mxWeekStart=d=>{const noon=new Date(mxLocalYMD(d)+"T12:00:00Z"); const wd=(noon.getUTCDay()+6)%7; noon.setUTCDate(noon.getUTCDate()-wd); return noon.toISOString().slice(0,10);};
+const fDateShort=d=>new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",day:"numeric",month:"long"}).format(d);
 function mxGroups(ev){
   const ids=e=>(e.competitions?.[0]?.competitors||[]).map(c=>c.team?.id).filter(Boolean);
   const cnt={}; ev.forEach(e=>ids(e).forEach(t=>cnt[t]=(cnt[t]||0)+1));
@@ -825,12 +830,12 @@ function mxGroups(ev){
     const k=ids(e).sort().join("-");
     if(met.has(k)){liguilla.push(e); continue;} // segundo cruce entre los mismos dos equipos = Liguilla
     met.add(k);
-    const wk=+mxWeekStart(e.date);
+    const wk=mxWeekStart(e.date);
     if(!byWeek.has(wk)) byWeek.set(wk,[]);
     byWeek.get(wk).push(e);
   }
-  const weeks=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([wk,games])=>{
-    const start=new Date(wk), end=new Date(wk); end.setUTCDate(end.getUTCDate()+6);
+  const weeks=[...byWeek.entries()].sort((a,b)=>a[0]<b[0]?-1:1).map(([wk,games])=>{
+    const start=new Date(wk+"T12:00:00Z"), end=new Date(wk+"T12:00:00Z"); end.setUTCDate(end.getUTCDate()+6);
     return {games,label:`${start.getUTCDate()} – ${fDateShort(end)}`};
   });
   return {weeks,liguilla};
