@@ -7,7 +7,11 @@ import nflreadpy as nfl, pandas as pd, numpy as np, json, os
 S=nfl.get_current_season()
 pbp=nfl.load_pbp(S).to_pandas(); pbp=pbp[pbp.season_type=="REG"]
 ps=nfl.load_player_stats(S).to_pandas(); ps=ps[ps.season_type=="REG"]
-sch=nfl.load_schedules(S).to_pandas(); sch=sch[(sch.game_type=="REG")]
+schAll=nfl.load_schedules(S).to_pandas()
+sch=schAll[(schAll.game_type=="REG")]
+# Postemporada real (vacío casi toda la temporada; se llena solo cuando empiezan los playoffs)
+POST_LBL={"WC":"Ronda de comodines","DIV":"Ronda divisional","CON":"Campeonato de conferencia","SB":"Super Bowl"}
+post=schAll[schAll.game_type!="REG"].sort_values("gameday")
 rank=nfl.load_ff_rankings().to_pandas()
 ids=nfl.load_ff_playerids().to_pandas()
 wk=int(ps.week.max())
@@ -16,6 +20,50 @@ names=ps.groupby('player_id').agg(n=('player_display_name','last'),pos=('positio
 def nm(df,col):
     return df.merge(names,left_on=col,right_on='player_id',how='left')
 out={}
+out['nfl_post']=[dict(round=POST_LBL.get(r.game_type,r.game_type),home=r.home_team,away=r.away_team,
+    hs=int(r.home_score) if pd.notna(r.home_score) else None,as_=int(r.away_score) if pd.notna(r.away_score) else None,
+    date=str(r.gameday)) for r in post.itertuples()]
+
+# ---------- Palmarés histórico: campeonatos de liga por equipo ----------
+# Datos fijos (no se pueden traer en vivo de ESPN): tomados y cruzados de Wikipedia
+# ("List of Mexican/English/Spanish/Italian/German/French football champions",
+# "List of Super Bowl champions"), sep 2026. Solo títulos de LIGA (no copas ni torneos
+# internacionales). Se actualiza a mano cuando corresponda: al final de cada temporada.
+PALMARES = {
+  "nfl": [("Patriots",6),("Steelers",6),("49ers",5),("Cowboys",5),("Packers",4),("Giants",4),
+    ("Chiefs",4),("Broncos",3),("Raiders",3),("Commanders",3),("Dolphins",2),("Ravens",2),
+    ("Colts",2),("Rams",2),("Eagles",2),("Buccaneers",2),("Seahawks",2),("Bears",1),
+    ("Jets",1),("Saints",1)],
+  "mx": [("América",16),("Guadalajara",12),("Toluca",12),("Cruz Azul",10),("Tigres UANL",8),
+    ("León",8),("Pumas UNAM",7),("Pachuca",7),("Santos Laguna",6),("Monterrey",5),
+    ("Atlante",3),("Atlas",3),("Necaxa",3),("Puebla",2),("Zacatepec",2),("Veracruz",2),
+    ("Tijuana",1),("Morelia",1),("Tecos",1),("Oro",1),("Tampico",1),("Marte",1),
+    ("Asturias",1),("Real España",1)],
+  "eng": [("Liverpool",20),("Manchester United",20),("Arsenal",14),("Manchester City",10),
+    ("Everton",9),("Aston Villa",7),("Sunderland",6),("Chelsea",6),("Sheffield Wednesday",4),
+    ("Newcastle United",4),("Blackburn Rovers",3),("Huddersfield Town",3),("Wolverhampton Wanderers",3),
+    ("Leeds United",3),("Preston North End",2),("Burnley",2),("Portsmouth",2),("Tottenham Hotspur",2),
+    ("Derby County",2),("Sheffield United",1),("West Bromwich Albion",1),("Ipswich Town",1),
+    ("Nottingham Forest",1),("Leicester City",1)],
+  "esp": [("Real Madrid",36),("Barcelona",29),("Atlético Madrid",11),("Athletic Bilbao",8),
+    ("Valencia",6),("Real Sociedad",2),("Deportivo La Coruña",1),("Sevilla",1),("Real Betis",1)],
+  "ita": [("Juventus",36),("Inter Milan",21),("Milan",19),("Genoa",9),("Torino",7),("Bologna",7),
+    ("Pro Vercelli",7),("Napoli",4),("Roma",3),("Lazio",2),("Fiorentina",2),("Casale",1),
+    ("Novese",1),("Cagliari",1),("Hellas Verona",1),("Sampdoria",1)],
+  "ger": [("Bayern Munich",35),("1. FC Nürnberg",9),("Borussia Dortmund",8),("Schalke 04",7),
+    ("Hamburger SV",6),("VfB Stuttgart",5),("Borussia Mönchengladbach",5),("Werder Bremen",4),
+    ("1. FC Kaiserslautern",4),("1. FC Köln",3),("Lokomotive Leipzig",3),("Greuther Fürth",3),
+    ("Hertha BSC",2),("Viktoria Berlin",2),("Dresdner SC",2),("Hannover 96",2),("Bayer Leverkusen",1),
+    ("Karlsruher FV",1),("Holstein Kiel",1),("1860 Munich",1),("Fortuna Düsseldorf",1),
+    ("Eintracht Frankfurt",1),("VfL Wolfsburg",1),("Freiburger FC",1),("VfR Mannheim",1),
+    ("Rot-Weiss Essen",1),("Eintracht Braunschweig",1)],
+  "fra": [("Paris Saint-Germain",14),("Marseille",10),("Saint-Étienne",10),("Monaco",8),("Nantes",8),
+    ("Lyon",7),("Bordeaux",6),("Lille",6),("Reims",6),("Standard Athletic Club",5),("RC Roubaix",5),
+    ("Nice",4),("Stade Helvétique",3),("Le Havre",3),("RC Paris",2),("Sochaux",2),("Sète",2),
+    ("Lens",1),("Strasbourg",1),("Auxerre",1),("Montpellier",1)],
+}
+out['palmares']=PALMARES
+
 # QB
 db=pbp[(pbp.qb_dropback==1)&pbp.passer_player_id.notna()]
 qb=db.groupby('passer_player_id').agg(plays=('epa','size'),epa=('epa','mean'),cpoe=('cpoe','mean')).reset_index()
@@ -312,41 +360,6 @@ except Exception: RJ={}
 out['ranking_mx']=RJ.get('ligamx',{})
 out['mx_jfix']=RJ.get('jornadas_mx',[])  # correcciones manuales de jornada para partidos aplazados que se confunden con la Liguilla
 
-# ---------- Jornada real de cada partido de Liga MX, vía TheSportsDB (llave gratuita "123") ----------
-# ESPN no publica el número de jornada para esta liga; TheSportsDB sí lo trae (campo intRound) en el
-# calendario oficial. Se hace 1 consulta a la lista de equipos de ESPN + 2 a TheSportsDB por actualización.
-# El resultado es out['mx_rounds']: {"idEquipoA-idEquipoB": jornada}. Si algo falla, la página usa su
-# propio cálculo aproximado por fechas (ver template.html) para lo que falte.
-import urllib.request as _ur, unicodedata as _ud
-def _tsdb(path):
-    req=_ur.Request("https://www.thesportsdb.com/api/v1/json/123/"+path,headers={"User-Agent":"LaPizarra/1.0 (https://santmadariagagd-gif.github.io/la-pizarra/)"})
-    with _ur.urlopen(req,timeout=30) as r: return json.loads(r.read().decode("utf-8"))
-def _norm(t):
-    t=_ud.normalize("NFD",t or "").encode("ascii","ignore").decode().lower()
-    return "".join(c if c.isalnum() or c==" " else " " for c in t).split()
-_NOISE={"club","cf","fc","cd","de","del","la","el","futbol","deportivo","sad","sa","cv","atletico"}
-def mx_rounds():
-    req=_ur.Request("https://site.api.espn.com/apis/site/v2/sports/soccer/mex.1/teams",headers={"User-Agent":"LaPizarra/1.0"})
-    with _ur.urlopen(req,timeout=30) as r: ej=json.loads(r.read().decode("utf-8"))
-    espn=[(t['team']['id'],t['team'].get('displayName',''),t['team'].get('shortDisplayName',''),t['team'].get('abbreviation','')) for t in ej['sports'][0]['leagues'][0]['teams']]
-    lg=_tsdb("lookupleague.php?id=4350")['leagues'][0]; season=lg['strCurrentSeason']
-    ev=_tsdb(f"eventsseason.php?id=4350&s={season}").get('events') or []
-    def match(name):
-        toks=set(w for w in _norm(name) if w not in _NOISE)
-        hit=[eid for eid,disp,short,abbr in espn if toks & set(w for w in _norm(disp) if w not in _NOISE) or toks & set(_norm(short))]
-        return hit[0] if len(hit)==1 else None
-    rounds={}
-    for e in ev:
-        r=e.get('intRound')
-        if r is None or not str(r).isdigit(): continue
-        a,b=match(e.get('strHomeTeam','')),match(e.get('strAwayTeam',''))
-        if a and b: rounds["-".join(sorted([a,b]))]=int(r)
-    return rounds
-try:
-    out['mx_rounds']=mx_rounds()
-    print(f"Liga MX: {len(out['mx_rounds'])} partidos con jornada oficial de TheSportsDB")
-except Exception as ex:
-    print("Liga MX: no se pudo obtener la jornada oficial de TheSportsDB (se usará el cálculo aproximado):",ex); out['mx_rounds']={}
 order=list(M.index)
 for a in RJ.get('nfl',{}).get('ajustes',[]):
     t=a.get('equipo'); mv=int(a.get('mover',0) or 0)

@@ -265,7 +265,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   </nav>
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL">
-  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button>
+  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
   <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
@@ -278,7 +278,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
     <option value="ita">Serie A</option>
     <option value="ger">Bundesliga</option>
     <option value="fra">Ligue 1</option>
-  </select><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla">Liguilla</button><button data-tab="mxpr">Power Ranking</button>
+  </select><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla">Liguilla</button><button data-tab="mxpr">Power Ranking</button><button data-tab="mxhonors">Palmarés</button>
 </nav>
 
 <div class="hero">
@@ -327,6 +327,12 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <div class="tbl"><table id="mxTable"></table></div>
 </section>
 
+<section class="panel hidden" id="mxhonors">
+  <h2 id="mxhonorsTitle">Palmarés</h2>
+  <p class="note">Campeonatos de liga ganados por equipo, de mayor a menor. No incluye copas ni torneos internacionales.</p>
+  <div class="tbl"><table id="mxHonorsTable"></table></div>
+</section>
+
 <section class="panel hidden" id="mxliguilla">
   <h2>Liguilla</h2>
   <p class="note" id="mxlgMsg">Cargando…</p>
@@ -334,7 +340,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 </section>
 
 <section class="panel hidden" id="mxplayers">
-  <h2>Líderes de la Liga MX</h2>
+  <h2 id="mxpTitle">Líderes de la Liga MX</h2>
   <p class="note" id="mxpMsg" aria-live="polite">Cargando jugadores…</p>
   <div class="leaders" id="mxLeaders"></div>
   <div class="bar">
@@ -355,6 +361,11 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <p class="note" id="nflpoMsg"></p>
   <div id="nflpoReal"></div>
   <div class="bracket" id="nflBracket"></div>
+</section>
+<section class="panel hidden" id="nflhonors">
+  <h2>Palmarés de la NFL</h2>
+  <p class="note">Super Bowls ganados por franquicia, de mayor a menor.</p>
+  <div class="tbl"><table id="nflHonorsTable"></table></div>
 </section>
 <section class="panel hidden" id="mxpr">
   <h2>Power Ranking Liga MX</h2>
@@ -448,12 +459,12 @@ const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
 // "liguilla:true" únicamente ahí) y solo Liga MX tiene Jugadores/Power Ranking por ahora — para las
 // otras 5 ligas se muestran nada más Partidos y Tabla.
 const LEAGUES={
-  mx:{slug:"mex.1",label:"Liga MX",liguilla:true,full:true},
-  eng:{slug:"eng.1",label:"Premier League",liguilla:false,full:false},
-  esp:{slug:"esp.1",label:"La Liga",liguilla:false,full:false},
-  ita:{slug:"ita.1",label:"Serie A",liguilla:false,full:false},
-  ger:{slug:"ger.1",label:"Bundesliga",liguilla:false,full:false},
-  fra:{slug:"fra.1",label:"Ligue 1",liguilla:false,full:false},
+  mx:{slug:"mex.1",label:"Liga MX",liguilla:true,players:true,pr:true},
+  eng:{slug:"eng.1",label:"Premier League",liguilla:false,players:true,pr:false},
+  esp:{slug:"esp.1",label:"La Liga",liguilla:false,players:true,pr:false},
+  ita:{slug:"ita.1",label:"Serie A",liguilla:false,players:true,pr:false},
+  ger:{slug:"ger.1",label:"Bundesliga",liguilla:false,players:true,pr:false},
+  fra:{slug:"fra.1",label:"Ligue 1",liguilla:false,players:true,pr:false},
 };
 let FLIG=localStorage.getItem("pz_flig")||"mx"; if(!LEAGUES[FLIG]) FLIG="mx";
 const flSlug=()=>LEAGUES[FLIG].slug, flLabel=()=>LEAGUES[FLIG].label;
@@ -465,7 +476,17 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["nflgames","stats","nflpr","nflpo","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr"];
+const SECTIONS=["nflgames","stats","nflpr","nflpo","nflhonors","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxhonors"];
+// Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
+function renderHonors(tableId,rows){
+  $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
+    `<tr><td class="tm">${i+1}</td><td class="l"><span class="nm">${r[0]}</span></td><td>${r[1]}</td></tr>`).join("")}</tbody>`;
+}
+function loadNflHonors(){renderHonors("nflHonorsTable",D.palmares?.nfl||[]);}
+function loadMxHonors(){
+  $("#mxhonorsTitle").textContent=`Palmarés · ${flLabel()}`;
+  renderHonors("mxHonorsTable",D.palmares?.[FLIG]||[]);
+}
 function loadNflPlayoffs(){
   const post=D.nfl_post||[];
   if(post.length){
@@ -480,7 +501,7 @@ function loadNflPlayoffs(){
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="nflpo") loadNflPlayoffs();}
+  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors();}
 function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
@@ -497,10 +518,10 @@ document.querySelectorAll(".subnav button").forEach(b=>b.onclick=()=>showTab(b.d
 // Selector de competencia dentro de Fútbol. Solo Liga MX tiene Jugadores/Liguilla/Power Ranking por
 // ahora; las otras 5 ligas muestran nada más Partidos y Tabla.
 function applyLeagueTabs(){
-  const full=LEAGUES[FLIG].full, lig=LEAGUES[FLIG].liguilla;
-  $('.subnav[data-for=mx] button[data-tab=mxplayers]').hidden=!full;
-  $('.subnav[data-for=mx] button[data-tab=mxpr]').hidden=!full;
-  $('.subnav[data-for=mx] button[data-tab=mxliguilla]').hidden=!lig;
+  const L=LEAGUES[FLIG];
+  $('.subnav[data-for=mx] button[data-tab=mxplayers]').hidden=!L.players;
+  $('.subnav[data-for=mx] button[data-tab=mxpr]').hidden=!L.pr;
+  $('.subnav[data-for=mx] button[data-tab=mxliguilla]').hidden=!L.liguilla;
 }
 applyLeagueTabs();
 $("#flSel").value=FLIG;
@@ -1173,8 +1194,9 @@ async function mxFromSummaries(){
     const {ev}=await mxSeason();
     const done=ev.filter(e=>e.status?.type?.state==="post");
     if(!done.length) return [];
-    const load=id=>{try{return JSON.parse(localStorage.getItem("pz_mxm_"+id)||"null")}catch(e){return null}};
-    const save=(id,v)=>{try{localStorage.setItem("pz_mxm_"+id,JSON.stringify(v))}catch(e){}};
+    const ck=id=>`pz_mxm_${FLIG}_${id}`; // caché por partido, separado por competencia
+    const load=id=>{try{return JSON.parse(localStorage.getItem(ck(id))||"null")}catch(e){return null}};
+    const save=(id,v)=>{try{localStorage.setItem(ck(id),JSON.stringify(v))}catch(e){}};
     const pend=done.filter(e=>!load(e.id));
     let n=done.length-pend.length, fails=0;
     const msg=()=>$("#mxpMsg").textContent=`Leyendo los partidos del torneo: ${n} de ${done.length}…`;
@@ -1182,7 +1204,7 @@ async function mxFromSummaries(){
     const num=(st,...ks)=>{for(const k of ks){const x=st[k]; if(x!=null&&!isNaN(+x)) return +x;} return null;};
     async function one(e){
       try{
-        const sm=await fetch(`${ESPN}/site/v2/sports/soccer/mex.1/summary?event=${e.id}`).then(r=>r.json());
+        const sm=await fetch(`${ESPN}/site/v2/sports/soccer/${flSlug()}/summary?event=${e.id}`).then(r=>r.json());
         const cs=e.competitions?.[0]?.competitors||[];
         const score=Object.fromEntries(cs.map(c=>[c.team?.id,+c.score||0]));
         const logo=Object.fromEntries(cs.map(c=>[c.team?.id,c.team?.logo]));
@@ -1225,10 +1247,12 @@ async function mxFromSummaries(){
 async function loadMxPlayers(){
   if(mxpLoaded) return; mxpLoaded=true;
   try{
-    let cached=null; try{cached=JSON.parse(localStorage.getItem("pizarra_mxp3")||"null")}catch(e){}
-    if(D.mxp&&D.mxp.length){MXP=D.mxp.map(r=>({...r,ga:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null,g90:null}));}
+    $("#mxpTitle").textContent=`Líderes de ${flLabel()}`;
+    const pk="pizarra_mxp3_"+FLIG; // caché de líderes, separado por competencia
+    let cached=null; try{cached=JSON.parse(localStorage.getItem(pk)||"null")}catch(e){}
+    if(FLIG==="mx"&&D.mxp&&D.mxp.length){MXP=D.mxp.map(r=>({...r,ga:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null,g90:null}));}
     else if(cached&&Date.now()-cached.t<6*3600e3){MXP=cached.rows;}
-    else if((MXP=await mxFromSummaries())&&MXP.length){ try{localStorage.setItem("pizarra_mxp3",JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){} }
+    else if((MXP=await mxFromSummaries())&&MXP.length){ try{localStorage.setItem(pk,JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){} }
     else{
       $("#mxpMsg").textContent="Sumando los partidos del torneo…";
       const {ev:SEV}=await mxSeason();
@@ -1248,7 +1272,7 @@ async function loadMxPlayers(){
       }
       // Asistencias: lista de líderes de ESPN (core API). Si no responde, la columna se oculta.
       try{
-        const L=await fetch("https://sports.core.api.espn.com/v2/sports/soccer/leagues/mex.1/leaders?limit=200").then(r=>r.json());
+        const L=await fetch(`https://sports.core.api.espn.com/v2/sports/soccer/leagues/${flSlug()}/leaders?limit=200`).then(r=>r.json());
         const cats=L.categories||[];
         const cat=cats.find(c=>/assist/i.test(c.name||""));
         if(cat){
@@ -1267,7 +1291,7 @@ async function loadMxPlayers(){
         }
       }catch(e){}
       MXP=[...P.values()].map(r=>({...r,ap:null,pg:(r.pos||"M")[0].toUpperCase().replace(/[^GDMF]/,"M"),ga:r.as==null?null:r.g+r.as}));
-      try{localStorage.setItem("pizarra_mxp3",JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){}
+      try{localStorage.setItem(pk,JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){}
     }
     if(!MXP.length){$("#mxpMsg").textContent="ESPN todavía no reporta estadísticas de jugadores para este torneo.";return;}
     $("#mxpMsg").textContent="";
