@@ -459,12 +459,12 @@ const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
 // "liguilla:true" únicamente ahí) y solo Liga MX tiene Jugadores/Power Ranking por ahora — para las
 // otras 5 ligas se muestran nada más Partidos y Tabla.
 const LEAGUES={
-  mx:{slug:"mex.1",label:"Liga MX",liguilla:true,players:true,pr:true},
-  eng:{slug:"eng.1",label:"Premier League",liguilla:false,players:true,pr:false},
-  esp:{slug:"esp.1",label:"La Liga",liguilla:false,players:true,pr:false},
-  ita:{slug:"ita.1",label:"Serie A",liguilla:false,players:true,pr:false},
-  ger:{slug:"ger.1",label:"Bundesliga",liguilla:false,players:true,pr:false},
-  fra:{slug:"fra.1",label:"Ligue 1",liguilla:false,players:true,pr:false},
+  mx:{slug:"mex.1",label:"Liga MX",liguilla:true,players:true,pr:true,photos:false},
+  eng:{slug:"eng.1",label:"Premier League",liguilla:false,players:true,pr:false,photos:true},
+  esp:{slug:"esp.1",label:"La Liga",liguilla:false,players:true,pr:false,photos:true},
+  ita:{slug:"ita.1",label:"Serie A",liguilla:false,players:true,pr:false,photos:true},
+  ger:{slug:"ger.1",label:"Bundesliga",liguilla:false,players:true,pr:false,photos:true},
+  fra:{slug:"fra.1",label:"Ligue 1",liguilla:false,players:true,pr:false,photos:true},
 };
 let FLIG=localStorage.getItem("pz_flig")||"mx"; if(!LEAGUES[FLIG]) FLIG="mx";
 const flSlug=()=>LEAGUES[FLIG].slug, flLabel=()=>LEAGUES[FLIG].label;
@@ -560,8 +560,77 @@ const initials=n=>(n||"").split(" ").map(x=>x[0]).slice(0,2).join("");
 function leaderCard(k,v,r){ if(!r) return "";
   const ini=initials(r.n);
   const src=r.img||r.logo;
-  const ph=src?`<img src="${src}" alt="" loading="lazy" data-ini="${ini}" data-alt="${r.img&&r.logo?r.logo:""}" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt='';this.classList.add('crest')}else{this.outerHTML='<span>'+this.dataset.ini+'</span>'}">`:`<span>${ini}</span>`;
+  const ph=src?`<img src="${src}" alt="" loading="lazy" data-ini="${ini}" data-alt="${r.img&&r.logo?r.logo:""}" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt='';this.classList.add('crest')}else if(this.parentNode){this.outerHTML='<span>'+this.dataset.ini+'</span>'}">`:`<span>${ini}</span>`;
   return `<div class="leader"><div class="ph">${ph}</div><div class="k">${k}</div><div class="v">${v}</div><div class="w">${r.n} <span class="tm">${r.t||""}</span></div></div>`;}
+// ---------- Fotos de líderes (5 ligas europeas): Wikimedia Commons, vía Wikidata ----------
+// D.wd_photos[liga] trae la lista ya calculada en build_site.py; si viene vacía (GitHub no siempre
+// puede hablar con Wikidata), el navegador hace la misma consulta con D.wd_photos_q[liga] y la guarda
+// 7 días. El emparejamiento es por nombre EXACTO — con nombre "parecido" alguna vez salió la foto de
+// otro jugador — y por club cuando hace falta desempatar.
+const wpNorm=t=>(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(Boolean);
+const WP_NOISE=new Set(["club","cf","fc","cd","de","del","la","el","futbol","deportivo","sad","sa","cv","afc","calcio","ssc","ac"]);
+function wpSameTeam(a,b){const A=wpNorm(a).filter(x=>!WP_NOISE.has(x)),B=new Set(wpNorm(b).filter(x=>!WP_NOISE.has(x))); return A.some(x=>B.has(x));}
+async function wdList(code){
+  if(D.wd_photos?.[code]?.length) return D.wd_photos[code];
+  const key="pz_wd_"+code;
+  try{const c=JSON.parse(localStorage.getItem(key)||"null"); if(c&&Date.now()-c.t<7*864e5) return c.rows;}catch(e){}
+  const q=D.wd_photos_q?.[code]; if(!q) return [];
+  try{
+    const j=await fetch("https://query.wikidata.org/sparql?format=json&query="+encodeURIComponent(q),{headers:{Accept:"application/sparql-results+json"}}).then(r=>r.json());
+    const P=new Map();
+    for(const b of j.results?.bindings||[]){
+      const qid=b.j.value.split("/").pop(); if(!P.has(qid)) P.set(qid,[new Set(),new Set(),null]);
+      const e=P.get(qid); e[0].add(b.nombre.value); if(b.clubLabel) e[1].add(b.clubLabel.value);
+      if(!e[2]) e[2]=decodeURIComponent(b.foto.value.split("/").pop());
+    }
+    const rows=[...P.values()].filter(e=>e[2]).map(e=>[[...e[0]],[...e[1]],e[2]]);
+    try{localStorage.setItem(key,JSON.stringify({t:Date.now(),rows}))}catch(e){}
+    return rows;
+  }catch(e){return [];}
+}
+function wdMatch(list,name,team){
+  const en=wpNorm(name).join(" "); if(!en) return null;
+  const exact=list.filter(e=>e[0].some(n=>wpNorm(n).join(" ")===en));
+  const byTeam=c=>c.filter(e=>e[1].some(cl=>wpSameTeam(team,cl)));
+  const uniq=c=>c.length&&new Set(c.map(e=>e[2])).size===1?c[0]:null;
+  return uniq(exact)||uniq(byTeam(exact));
+}
+const wdUrl=f=>"https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(f)+"?width=250";
+async function wdCredits(files){
+  const out={}; if(!files.length) return out;
+  try{
+    const u="https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=extmetadata&format=json&origin=*&titles="+encodeURIComponent(files.map(f=>"File:"+f).join("|"));
+    const j=await fetch(u).then(r=>r.json());
+    const txt=h=>{const d=document.createElement("div"); d.innerHTML=h||""; return d.textContent.trim();};
+    for(const pg of Object.values(j.query?.pages||{})){
+      const m=pg.imageinfo?.[0]?.extmetadata||{}; const f=(pg.title||"").replace(/^File:/,"");
+      out[f]=[txt(m.Artist?.value),txt(m.LicenseShortName?.value)].filter(Boolean).join(" · ");
+    }
+  }catch(e){}
+  return out;
+}
+const wpSettle=img=>img&&!img.complete?new Promise(res=>{img.addEventListener("load",res,{once:true});img.addEventListener("error",()=>setTimeout(res,0),{once:true});setTimeout(res,4000);}):Promise.resolve();
+async function leaderPhotos(rows,code){
+  const cards=[...document.querySelectorAll("#mxLeaders .leader .ph")];
+  const list=await wdList(code); if(!list.length) return;
+  const wdImgs=[];
+  await Promise.all(rows.map(async(r,i)=>{
+    const ph=cards[i]; if(!ph||!r?.n) return;
+    await wpSettle(ph.querySelector("img"));
+    const cur=ph.querySelector("img");
+    if(cur&&!cur.classList.contains("crest")&&cur.naturalWidth>0) return; // ESPN ya tenía foto: se queda
+    const w=wdMatch(list,r.n,r.tn||r.t); if(!w||!ph.isConnected) return;
+    const img=document.createElement("img");
+    img.alt=""; img.title="Foto: Wikimedia Commons"; img.dataset.ini=initials(r.n); img.dataset.alt=r.logo||"";
+    img.onerror=()=>{if(img.dataset.alt){img.src=img.dataset.alt;img.dataset.alt="";img.classList.add("crest")}else if(img.parentNode){img.outerHTML="<span>"+img.dataset.ini+"</span>"}};
+    img.src=wdUrl(w[2]);
+    ph.replaceChildren(img); wdImgs.push([img,w[2]]);
+  }));
+  if(wdImgs.length){
+    const cr=await wdCredits([...new Set(wdImgs.map(x=>x[1]))]);
+    for(const [img,f] of wdImgs) if(cr[f]) img.title="Foto: "+cr[f]+" · Wikimedia Commons";
+  }
+}
 {const q=topOf(D.qb,"epa"),py=topOf(D.qb,"yds"),ptd=topOf(D.qb,"td"),rsh=topOf(D.rush,"yds"),ry=topOf(D.rec,"yds"),ypr=topOf(D.rec.filter(r=>r.rec>=6),"ypr");
  const sk=topOf(D.def,"sk"),it=topOf(D.def,"int"),ff=topOf(D.def,"ff"),tk=topOf(D.def,"tk"),tfl=topOf(D.def,"tfl"),pdf=topOf(D.def,"pd");
  $("#leaders").innerHTML=`<p class="lgroup">Ofensiva</p><div class="leaders">${[
@@ -1297,9 +1366,11 @@ async function loadMxPlayers(){
     $("#mxpMsg").textContent="";
     const teamsOpt=[...new Map(MXP.map(r=>[r.t,r.tn])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
     $("#mxpTeam").innerHTML=`<option value="">Todos los equipos</option>`+teamsOpt.map(([a,n])=>`<option value="${a}">${n}</option>`).join("");
-    const lead=(k,label,fmtf=v=>fmt(v))=>{const r=[...MXP].filter(r=>r[k]!=null).sort((a,b)=>b[k]-a[k])[0]; return r&&r[k]>0?leaderCard(label,fmtf(r[k]),{...r,img:r.id?`https://a.espncdn.com/i/headshots/soccer/players/full/${r.id}.png`:null,logo:r.logo}):"";};
+    const LEADS=[];
+    const lead=(k,label,fmtf=v=>fmt(v))=>{const r=[...MXP].filter(r=>r[k]!=null).sort((a,b)=>b[k]-a[k])[0]; if(!(r&&r[k]>0)) return ""; LEADS.push(r); return leaderCard(label,fmtf(r[k]),{...r,img:r.id?`https://a.espncdn.com/i/headshots/soccer/players/full/${r.id}.png`:null,logo:r.logo});};
     $("#mxLeaders").innerHTML=[lead("g","Goles"),lead("as","Asistencias"),lead("ga","Goles + asistencias"),lead("sot","Tiros a gol"),lead("sv","Atajadas"),lead("cs","Porterías en cero"),lead("yc","Tarjetas amarillas")].join("");
     mxpState.render();
+    if(LEAGUES[FLIG].photos) leaderPhotos(LEADS,FLIG);
   }catch(e){mxpLoaded=false;$("#mxpMsg").textContent="Las estadísticas de jugadores se generan con la próxima actualización automática.";}
 }
 const mxpState={k:"g",dir:"desc",pos:"ALL",team:"",q:"",render(){

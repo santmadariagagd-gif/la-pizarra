@@ -20,6 +20,45 @@ names=ps.groupby('player_id').agg(n=('player_display_name','last'),pos=('positio
 def nm(df,col):
     return df.merge(names,left_on=col,right_on='player_id',how='left')
 out={}
+# ---------- Fotos de jugadores de las 5 ligas europeas: Wikimedia Commons (vía Wikidata) ----------
+# Igual que se probó para Liga MX: una consulta SPARQL por liga y por actualización, futbolistas de
+# clubes de ese país con foto libre en Commons. Liga MX se queda con escudos (así lo prefirió Santiago).
+# El emparejamiento (nombre EXACTO + club) se hace en el navegador, igual que antes.
+import urllib.request, urllib.parse
+def wd_query_text(country_qid):
+    return f"""SELECT ?j ?nombre ?clubLabel ?foto WHERE {{
+  ?club wdt:P17 wd:{country_qid} ; wdt:P31 wd:Q476028 .
+  ?j p:P54 ?st . ?st ps:P54 ?club .
+  FILTER NOT EXISTS {{ ?st pq:P582 ?fin }}
+  ?j wdt:P106 wd:Q937857 ; wdt:P18 ?foto ; wdt:P569 ?nac .
+  FILTER(YEAR(?nac) >= 1983)
+  ?j rdfs:label ?nombre . FILTER(LANG(?nombre) IN ("es","en","mul"))
+  OPTIONAL {{ ?club rdfs:label ?clubLabel . FILTER(LANG(?clubLabel) = "en") }}
+}}"""
+def wd_photos(q):
+    url="https://query.wikidata.org/sparql?format=json&query="+urllib.parse.quote(q)
+    req=urllib.request.Request(url,headers={"User-Agent":"LaPizarra/1.0 (https://santmadariagagd-gif.github.io/la-pizarra/)","Accept":"application/sparql-results+json"})
+    with urllib.request.urlopen(req,timeout=90) as r: j=json.loads(r.read().decode("utf-8"))
+    P={}
+    for b in j["results"]["bindings"]:
+        qid=b["j"]["value"].rsplit("/",1)[-1]
+        e=P.setdefault(qid,[set(),set(),None])
+        e[0].add(b["nombre"]["value"])
+        if "clubLabel" in b: e[1].add(b["clubLabel"]["value"])
+        if not e[2]: e[2]=urllib.parse.unquote(b["foto"]["value"].rsplit("/",1)[-1])
+    return [[sorted(n),sorted(c),f] for n,c,f in P.values() if f]
+WD_COUNTRIES={"eng":"Q21","esp":"Q29","ita":"Q38","ger":"Q183","fra":"Q142"}
+out['wd_photos']={}; out['wd_photos_q']={}
+for code,qid in WD_COUNTRIES.items():
+    q=wd_query_text(qid); out['wd_photos_q'][code]=q  # se manda siempre, para que el navegador la use si esto falla
+    try:
+        rows=wd_photos(q)
+        out['wd_photos'][code]=rows
+        print(f"Fotos {code}: {len(rows)} futbolistas con foto libre")
+    except Exception as ex:
+        print(f"Fotos {code}: no se pudo consultar Wikidata desde GitHub (la página lo intentará desde el navegador):",ex)
+        out['wd_photos'][code]=[]
+
 out['nfl_post']=[dict(round=POST_LBL.get(r.game_type,r.game_type),home=r.home_team,away=r.away_team,
     hs=int(r.home_score) if pd.notna(r.home_score) else None,as_=int(r.away_score) if pd.notna(r.away_score) else None,
     date=str(r.gameday)) for r in post.itertuples()]
