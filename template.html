@@ -81,6 +81,12 @@ thead th[aria-sort="ascending"]::after{content:" ▲";font-size:10px}
 tbody tr:last-child td{border-bottom:0}
 tbody tr:hover{background:var(--hl)}
 td.rk{color:var(--muted);width:2.5em}
+/* Columna(s) fijas a la izquierda al deslizar una tabla ancha, igual que el nombre y la posición del
+   jugador en un box score: la primera celda de cada fila (número de fila, o el nombre si no hay número)
+   siempre se queda visible, y si la segunda celda es el nombre (".l"), también se congela justo a su lado. */
+.tbl table:not(.cmp) tr>:first-child{position:sticky;left:0;z-index:2;background:var(--surface)}
+.tbl table:not(.cmp) tr>:nth-child(2).l{position:sticky;left:2.5em;z-index:2;background:var(--surface)}
+.tbl table:not(.cmp) tr>:nth-child(3).l{position:sticky;left:calc(2.5em + 44px);z-index:2;background:var(--surface)}
 .nm{font-weight:600}
 .tm{color:var(--muted);font-size:13px;margin-left:6px}
 .up{color:var(--good)}.down{color:var(--bad)}
