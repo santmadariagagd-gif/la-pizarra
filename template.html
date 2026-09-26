@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>La Pizarra · NFL 2026</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%226.5%22%20y%3D%227.5%22%20width%3D%2251%22%20height%3D%2239%22%20rx%3D%223%22%20style%3D%22fill%3A%231F332D%3Bstroke%3A%23F2D466%3Bstroke-width%3A4.5%22%3E%3C/rect%3E%3Crect%20x%3D%2212.5%22%20y%3D%2255%22%20width%3D%2239%22%20height%3D%224%22%20rx%3D%222%22%20style%3D%22fill%3A%23F2D466%22%3E%3C/rect%3E%3Cg%20transform%3D%22translate%2832%2027.5%29%20scale%280.84%29%20translate%28-32%20-29%29%22%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2215%22%20r%3D%223%22%20style%3D%22fill%3Anone%3Bstroke%3A%23F2D466%3Bstroke-width%3A2.8%22%3E%3C/circle%3E%3Cpath%20d%3D%22M15%2020%20V40%20H26%20M22.5%2036.5%20L26%2040%20L22.5%2043.5%22%20style%3D%22fill%3Anone%3Bstroke%3A%23EFEBDD%3Bstroke-width%3A3.5%3Bstroke-linecap%3Around%3Bstroke-linejoin%3Around%22%3E%3C/path%3E%3Cpath%20d%3D%22M36%2037%20V14%20H40%20C50%2014%2050%2029%2040%2029%20H37.5%20M41.5%2025%20L37.5%2029%20L41.5%2033%22%20style%3D%22fill%3Anone%3Bstroke%3A%23EFEBDD%3Bstroke-width%3A3.5%3Bstroke-linecap%3Around%3Bstroke-linejoin%3Around%22%3E%3C/path%3E%3Cpath%20d%3D%22M33.5%2041%20L38.5%2046%20M38.5%2041%20L33.5%2046%22%20style%3D%22fill%3Anone%3Bstroke%3A%23F2D466%3Bstroke-width%3A2.8%3Bstroke-linecap%3Around%22%3E%3C/path%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
@@ -32,7 +33,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body
 a{color:var(--mark)}
 .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
 header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0 8px}
-.logo{font:700 26px/1 var(--display);letter-spacing:.01em}
+.logo{display:flex;align-items:center;gap:9px;font:700 26px/1 var(--display);letter-spacing:.01em}
 .logo span{color:var(--mark)}
 nav.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
 nav.tabs button{font:600 16px/1 var(--display);letter-spacing:.02em;border:0;background:none;color:var(--muted);padding:9px 18px;border-radius:999px;cursor:pointer}
@@ -261,9 +262,23 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="lp-logo" viewBox="0 0 64 64">
+<rect x="6.5" y="7.5" width="51" height="39" rx="3" style="fill:#1F332D;stroke:#F2D466;stroke-width:4.5"></rect>
+<rect x="12.5" y="55" width="39" height="4" rx="2" style="fill:#F2D466"></rect>
+<g transform="translate(32 27.5) scale(0.84) translate(-32 -29)">
+<circle cx="15" cy="15" r="3" style="fill:none;stroke:#F2D466;stroke-width:2.8"></circle>
+<path d="M15 20 V40 H26 M22.5 36.5 L26 40 L22.5 43.5" style="fill:none;stroke:#EFEBDD;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round"></path>
+<path d="M36 37 V14 H40 C50 14 50 29 40 29 H37.5 M41.5 25 L37.5 29 L41.5 33" style="fill:none;stroke:#EFEBDD;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round"></path>
+<path d="M33.5 41 L38.5 46 M38.5 41 L33.5 46" style="fill:none;stroke:#F2D466;stroke-width:2.8;stroke-linecap:round"></path>
+</g>
+</symbol>
+</defs>
+</svg>
 <div class="wrap">
 <header class="top">
-  <div class="logo">La <span>Pizarra</span></div>
+  <div class="logo"><svg width="30" height="30" style="flex:none"><use href="#lp-logo"></use></svg>La <span>Pizarra</span></div>
   <nav class="tabs sports" aria-label="Deporte">
     <button aria-selected="false" data-sport="mx">Fútbol</button>
     <button aria-selected="true" data-sport="nfl">NFL</button>
