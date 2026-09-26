@@ -755,7 +755,7 @@ function gameCard(g){
   const st=g.status?`<span class="${g.live?"live":""}">${g.status}</span>`:"";
   const hora=g.tbd?" · Por definir horario":(g.when?" · "+fHour(g.when):"");
   return `<article class="game${g.gid?" click":""}"${g.gid?` tabindex="0" role="button" data-gid="${g.gid}" data-kind="${g.kind}"`:""}><div class="when"><span><b>${g.when?cap(fDay(g.when)):"Fecha por definir"}</b>${hora}</span>${st}</div>
-  ${g.teams.map(t=>`<div class="team${t.win?" win":""}">${t.logo?`<img src="${t.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"<span></span>"}<span class="tn">${t.n}${t.sub?`<small>${t.sub}</small>`:""}</span>${t.score!=null?`<span class="sc">${t.score}</span>`:`<span class="ml" title="Momio">${mlTxt(t.ml)}</span>`}</div>`).join("")}
+  ${g.teams.map(t=>`<div class="team${t.win?" win":""}">${t.logo?`<img src="${t.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"<span></span>"}<span class="tn">${t.n}${t.sub?`<small>${t.sub}</small>`:""}</span>${t.score!=null?`<span class="sc">${t.score}</span>`:t.ml!=null?`<span class="ml" title="Momio">${mlTxt(t.ml)}</span>`:""}</div>`).join("")}
   ${g.probs?`<div class="prob">${g.probs.map(p=>`<i style="width:${(p.p*100).toFixed(1)}%;background:${p.c}" title="${p.l}: ${Math.round(p.p*100)}%"></i>`).join("")}</div><div class="probl">${g.probs.map(p=>`<span>${p.l} ${Math.round(p.p*100)}%</span>`).join("")}</div>`:""}
   ${g.lines?.length?`<div class="lines">${g.lines.map(([k,v])=>`<span>${k} <b>${v}</b></span>`).join("")}</div>`:""}
   <div class="where"><span>${g.place||""}</span><span class="wx" id="${g.wxId}">${g.wxNote||""}</span></div></article>`;
