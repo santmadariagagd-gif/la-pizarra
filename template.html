@@ -60,6 +60,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible{o
 section.panel{padding:30px 0 10px}
 h2{font:700 34px/1 var(--display);margin:0 0 6px}
 h3{font:600 22px/1.1 var(--display);margin:0 0 4px}
+h4.stat-cat{font:700 13px var(--display);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+h4.stat-cat:first-of-type{margin-top:8px}
 .lede{color:var(--muted);margin:0 0 18px;max-width:70ch}
 .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
 .seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:8px;overflow:hidden}
@@ -896,12 +898,20 @@ function openNfl(id){
     h+=`<h3>Jugadas de anotación</h3><ul class="ev">${b.sc.map(s=>`<li><span class="mn">${s.q<=4?s.q+"º":"TE"} · ${s.t||""}</span>${logoImg((NT[s.tm]||{}).logo)}<span>${s.x}</span><span class="sco">${s.s}</span></li>`).join("")||"<li>Sin anotaciones</li>"}</ul>`;
     const TS=[["Jugadas","plays"],["Yardas totales","yds"],["Yardas por pase","py"],["Yardas por tierra","ry"],["EPA por jugada","epa"],["Primeros downs","fd"],["Terceros downs","d3"],["Cuartos downs","d4"],["Pérdidas de balón","to"],["Capturas recibidas","sk"],["Castigos (núm.-yds)","pen"]];
     h+=`<h3>Estadísticas de equipo</h3><div class="tbl"><table class="cmp"><thead><tr><th class="l">${x.a}</th><th></th><th>${x.h}</th></tr></thead><tbody>${TS.map(([l,k])=>`<tr><td>${b.ts[x.a]?.[k]??"–"}</td><td>${l}</td><td>${b.ts[x.h]?.[k]??"–"}</td></tr>`).join("")}</tbody></table></div>`;
+    // Cada tipo de jugada en su propia tabla, con sus propias columnas y solo quien la jugó —
+    // igual que Apple Sports — en vez de una sola tabla mezclada con "–" para lo que no aplica.
+    const statCat=(title,rows,cols)=>rows.length?`<h4 class="stat-cat">${title}</h4><div class="tbl"><table><thead><tr><th class="l">Jugador</th>${cols.map(c=>`<th>${c[0]}</th>`).join("")}</tr></thead><tbody>${rows.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span><span class="tm">${p.p}</span></td>${cols.map(c=>`<td>${c[1](p)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`:"";
     for(const tm of [x.a,x.h]){
       const P=b.pl[tm]||[], T=NT[tm]||{n:tm};
-      const off=P.filter(p=>p.pa||p.ru||p.re).sort((p,q)=>(q.ppr||0)-(p.ppr||0));
+      const pass=P.filter(p=>p.pa).sort((p,q)=>q.pa[2]-p.pa[2]);
+      const rush=P.filter(p=>p.ru).sort((p,q)=>q.ru[1]-p.ru[1]);
+      const recv=P.filter(p=>p.re).sort((p,q)=>q.re[2]-p.re[2]);
       const df=P.filter(p=>p.df).sort((p,q)=>q.df[0]-p.df[0]).slice(0,10);
-      h+=`<h3>${logoImg(T.logo,"tlogo")}${T.name||T.n}</h3><div class="tbl"><table><thead><tr><th class="l">Jugador</th><th>Pase</th><th>Carrera</th><th>Recepción</th><th>Pts PPR</th></tr></thead><tbody>${off.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span><span class="tm">${p.p}</span></td><td>${p.pa?`${p.pa[0]}/${p.pa[1]} · ${p.pa[2]} yds${p.pa[3]?` · ${p.pa[3]} TD`:""}${p.pa[4]?` · ${p.pa[4]} INT`:""}`:"–"}</td><td>${p.ru?`${p.ru[0]} · ${p.ru[1]} yds${p.ru[2]?` · ${p.ru[2]} TD`:""}`:"–"}</td><td>${p.re?`${p.re[0]}/${p.re[1]} · ${p.re[2]} yds${p.re[3]?` · ${p.re[3]} TD`:""}`:"–"}</td><td><b>${p.ppr!=null?p.ppr.toFixed(1):"–"}</b></td></tr>`).join("")}</tbody></table></div>`;
-      if(df.length) h+=`<div class="tbl" style="margin-top:10px"><table><thead><tr><th class="l">Defensa</th><th>Tacleadas</th><th>Capturas</th><th>INT</th></tr></thead><tbody>${df.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span><span class="tm">${p.p}</span></td><td>${p.df[0]}</td><td>${p.df[1]}</td><td>${p.df[2]}</td></tr>`).join("")}</tbody></table></div>`;
+      h+=`<h3>${logoImg(T.logo,"tlogo")}${T.name||T.n}</h3>`;
+      h+=statCat("Pase",pass,[["COMP/INT",p=>`${p.pa[0]}/${p.pa[1]}`],["YDS",p=>p.pa[2]],["TD",p=>p.pa[3]||0],["INT",p=>p.pa[4]||0],["PTS PPR",p=>p.ppr!=null?`<b>${p.ppr.toFixed(1)}</b>`:"–"]]);
+      h+=statCat("Carrera",rush,[["ACT",p=>p.ru[0]],["YDS",p=>p.ru[1]],["TD",p=>p.ru[2]||0],["PTS PPR",p=>p.ppr!=null?`<b>${p.ppr.toFixed(1)}</b>`:"–"]]);
+      h+=statCat("Recepción",recv,[["REC/OBJ",p=>`${p.re[0]}/${p.re[1]}`],["YDS",p=>p.re[2]],["TD",p=>p.re[3]||0],["PTS PPR",p=>p.ppr!=null?`<b>${p.ppr.toFixed(1)}</b>`:"–"]]);
+      if(df.length) h+=statCat("Defensa",df,[["TACLEADAS",p=>p.df[0]],["CAPTURAS",p=>p.df[1]],["INT",p=>p.df[2]]]);
     }
   } else {
     const pr=probs([x.aml,x.hml]);
