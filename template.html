@@ -190,7 +190,7 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 .hq{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:inherit;margin:4px 0 6px}
 .hon.hist li{display:block}
 .hist .ht{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-.hist .ht span{font-size:13px;color:var(--muted);white-space:nowrap}
+.hist .ht span{font-size:13px;color:var(--muted);text-align:right}
 .hist .hc2{display:block;font:800 18px var(--display);margin:2px 0}
 .hist small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 .zn{display:inline-block;width:4px;height:18px;border-radius:2px;vertical-align:-4px;margin-right:8px}
@@ -316,7 +316,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   </nav>
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL">
-  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button>
+  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
   <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
@@ -436,6 +436,12 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <p class="note" id="nflpoMsg"></p>
   <div id="nflpoReal"></div>
   <div class="bracket" id="nflBracket"></div>
+</section>
+<section class="panel hidden" id="nflhist">
+  <h2>Historia de la NFL</h2>
+  <input type="search" id="nflhistQ" class="hq" placeholder="Buscar equipo, jugador o año" aria-label="Buscar en la historia">
+  <p class="note" id="nflhistMsg" aria-live="polite"></p>
+  <ul class="hon hist" id="nflHist"></ul>
 </section>
 <section class="panel hidden" id="nflhonors">
   <h2>Palmarés de la NFL</h2>
@@ -558,7 +564,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["nflgames","stats","nflpr","nflpo","nflhonors","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist"];
+const SECTIONS=["nflgames","stats","nflpr","nflpo","nflhonors","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -587,7 +593,7 @@ function loadNflPlayoffs(){
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
+  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
@@ -1505,24 +1511,29 @@ async function loadUclKo(){
 }
 
 // ----- Historia por temporada (datos fijos en build_site.py, HISTORIA) -----
-function loadMxHist(){
-  const L=D.historia?.[FLIG]||[];
-  $("#mxhistTitle").textContent=`Historia · ${flLabel()}`;
+// Apodos para que la búsqueda encuentre "chivas", "rayados", "la máquina", etc.
+const APODO={"Guadalajara":"chivas rebano sagrado","América":"aguilas azulcremas","Cruz Azul":"la maquina cementeros","Pumas UNAM":"universidad","Tigres UANL":"felinos","Monterrey":"rayados","Pachuca":"tuzos","Toluca":"diablos rojos","Atlas":"zorros rojinegros","Necaxa":"rayos","León":"panzas verdes esmeraldas fiera","Santos Laguna":"guerreros","Atlante":"potros de hierro","Puebla":"camoteros la franja","Veracruz":"tiburones rojos","Zacatepec":"canero","Morelia":"monarcas","Tijuana":"xolos","Querétaro":"gallos blancos","Tecos":"uag","Leones Negros UdeG":"udeg",
+  "Washington":"redskins commanders","Boston Redskins":"washington commanders","Oakland Raiders":"las vegas","Los Angeles Raiders":"las vegas oakland","St. Louis Rams":"los angeles","Cleveland Rams":"los angeles","Baltimore Colts":"indianapolis","San Diego Chargers":"los angeles","Chicago Cardinals":"arizona","Chicago Staleys":"bears","Decatur Staleys":"bears","Houston Oilers":"tennessee titans"};
+// Pinta la Historia de una competencia. key = clave en D.historia ("mx", "eng", "nfl"...);
+// pfx = prefijo de los ids de la sección ("mx" → #mxhistQ, #mxhistMsg, #mxHist; "nfl" → #nflhistQ...).
+function histRender(key,pfx){
+  const L=D.historia?.[key]||[];
+  const nfl=key==="nfl", lbl=nfl?"MVP":"Goleo", unit=nfl?"":" goles";
+  const Q=$(`#${pfx}histQ`), M=$(`#${pfx}histMsg`), U=$(`#${pfx}Hist`);
   const norm=s=>(s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-  // Apodos para que la búsqueda encuentre "chivas", "rayados", "la máquina", etc.
-  const APODO={"Guadalajara":"chivas rebano sagrado","América":"aguilas azulcremas","Cruz Azul":"la maquina cementeros","Pumas UNAM":"universidad","Tigres UANL":"felinos","Monterrey":"rayados","Pachuca":"tuzos","Toluca":"diablos rojos","Atlas":"zorros rojinegros","Necaxa":"rayos","León":"panzas verdes esmeraldas fiera","Santos Laguna":"guerreros","Atlante":"potros de hierro","Puebla":"camoteros la franja","Veracruz":"tiburones rojos","Zacatepec":"canero","Morelia":"monarcas","Tijuana":"xolos","Querétaro":"gallos blancos","Tecos":"uag","Leones Negros UdeG":"udeg"};
-  const scor=r=>r.g.length?`Goleo: ${r.g.map(([p,c])=>`${p} (${c})`).join(", ")}${r.n!=null?` · ${r.n} goles`:""}`:"";
+  const who=r=>r.g.length?`${lbl}: ${r.g.map(([p,c])=>`${p} (${c})`).join(", ")}${r.n!=null?` · ${r.n}${unit}`:""}`:"";
   const draw=()=>{
-    const q=norm($("#mxhistQ").value.trim());
+    const q=norm(Q.value.trim());
     const rows=[...L].reverse().filter(r=>!q||norm([r.t,r.c,r.s,APODO[r.c],APODO[r.s],...r.g.flat()].join(" ")).includes(q));
-    $("#mxHist").innerHTML=rows.map(r=>r.c
-      ?`<li><div class="ht"><b>${r.t}</b>${r.f?`<span>${r.f}</span>`:""}</div><span class="hc2">🏆 ${r.c}</span><small>Subcampeón: ${r.s}</small>${r.g.length?`<small>${scor(r)}</small>`:""}</li>`
+    U.innerHTML=rows.map(r=>r.c
+      ?`<li><div class="ht"><b>${r.t}</b>${r.f?`<span>${r.f}</span>`:""}</div><span class="hc2">🏆 ${r.c}</span><small>Subcampeón: ${r.s}</small>${r.g.length?`<small>${who(r)}</small>`:""}</li>`
       :`<li><div class="ht"><b>${r.t}</b></div><small>${r.f||"Sin campeón"}</small></li>`).join("");
-    $("#mxhistMsg").textContent=q?(rows.length?`${rows.length} de ${L.length} temporadas`:"No encontramos nada con esa búsqueda."):`${L.filter(r=>r.c).length} campeonatos, del más reciente al más antiguo.`;
+    M.textContent=q?(rows.length?`${rows.length} de ${L.length} temporadas`:"No encontramos nada con esa búsqueda."):`${L.filter(r=>r.c).length} campeonatos, del más reciente al más antiguo.`;
   };
-  $("#mxhistQ").oninput=draw;
+  Q.oninput=draw;
   draw();
 }
+function loadMxHist(){ $("#mxhistTitle").textContent=`Historia · ${flLabel()}`; histRender(FLIG,"mx"); }
 
 // ----- Power ranking de fútbol (Liga MX y las 5 ligas europeas; misma fórmula) -----
 let mxprLoaded=false;

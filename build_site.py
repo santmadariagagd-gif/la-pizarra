@@ -235,7 +235,102 @@ HIST_MX = [
 
 # Historia por temporada, una lista por competencia (misma clave que LEAGUES en la página).
 # Para agregar otra liga: HISTORIA['eng']=HIST_ENG, etc.
-HISTORIA = {"mx": HIST_MX}
+# Historia de la NFL (1920 a hoy). (temporada, campeón, subcampeón, final, [(MVP, equipo), ...], None)
+# 1920-1932: campeón por récord; 1933-1965: Juego de Campeonato de la NFL; 1966 en adelante: Super Bowl
+# (la temporada es el año en que empieza; el Super Bowl se juega en febrero del año siguiente).
+# MVP de AP desde 1957 (en 1960 AP no lo entregó; en 1997 y 2003 fue compartido).
+# Fuentes: Wikipedia "List of NFL champions (1920–1969)", Topend Sports "Super Bowl Winners List",
+# Bleacher Nation "NFL MVP Winners" (cruzado con los récords de MVP de Pro Football Reference).
+_SB=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX",
+     "XXI","XXII","XXIII","XXIV","XXV","XXVI","XXVII","XXVIII","XXIX","XXX","XXXI","XXXII","XXXIII","XXXIV","XXXV",
+     "XXXVI","XXXVII","XXXVIII","XXXIX","XL","XLI","XLII","XLIII","XLIV","XLV","XLVI","XLVII","XLVIII","XLIX","50",
+     "LI","LII","LIII","LIV","LV","LVI","LVII","LVIII","LIX","LX"]
+_PRE=[("1920","Akron Pros","Decatur Staleys",""),("1921","Chicago Staleys","Buffalo All-Americans",""),
+  ("1922","Canton Bulldogs","Chicago Bears",""),("1923","Canton Bulldogs","Chicago Bears",""),
+  ("1924","Cleveland Bulldogs","Chicago Bears",""),("1925","Chicago Cardinals","Pottsville Maroons",""),
+  ("1926","Frankford Yellow Jackets","Chicago Bears",""),("1927","New York Giants","Green Bay Packers",""),
+  ("1928","Providence Steam Roller","Frankford Yellow Jackets",""),("1929","Green Bay Packers","New York Giants",""),
+  ("1930","Green Bay Packers","New York Giants",""),("1931","Green Bay Packers","Portsmouth Spartans",""),
+  ("1932","Chicago Bears","Green Bay Packers",""),
+  ("1933","Chicago Bears","New York Giants","23-21"),("1934","New York Giants","Chicago Bears","30-13"),
+  ("1935","Detroit Lions","New York Giants","26-7"),("1936","Green Bay Packers","Boston Redskins","21-6"),
+  ("1937","Washington","Chicago Bears","28-21"),("1938","New York Giants","Green Bay Packers","23-17"),
+  ("1939","Green Bay Packers","New York Giants","27-0"),("1940","Chicago Bears","Washington","73-0"),
+  ("1941","Chicago Bears","New York Giants","37-9"),("1942","Washington","Chicago Bears","14-6"),
+  ("1943","Chicago Bears","Washington","41-21"),("1944","Green Bay Packers","New York Giants","14-7"),
+  ("1945","Cleveland Rams","Washington","15-14"),("1946","Chicago Bears","New York Giants","24-14"),
+  ("1947","Chicago Cardinals","Philadelphia Eagles","28-21"),("1948","Philadelphia Eagles","Chicago Cardinals","7-0"),
+  ("1949","Philadelphia Eagles","Los Angeles Rams","14-0"),("1950","Cleveland Browns","Los Angeles Rams","30-28"),
+  ("1951","Los Angeles Rams","Cleveland Browns","24-17"),("1952","Detroit Lions","Cleveland Browns","17-7"),
+  ("1953","Detroit Lions","Cleveland Browns","17-16"),("1954","Cleveland Browns","Detroit Lions","56-10"),
+  ("1955","Cleveland Browns","Los Angeles Rams","38-14"),("1956","New York Giants","Chicago Bears","47-7"),
+  ("1957","Detroit Lions","Cleveland Browns","59-14"),("1958","Baltimore Colts","New York Giants","23-17"),
+  ("1959","Baltimore Colts","New York Giants","31-16"),("1960","Philadelphia Eagles","Green Bay Packers","17-13"),
+  ("1961","Green Bay Packers","New York Giants","37-0"),("1962","Green Bay Packers","New York Giants","16-7"),
+  ("1963","Chicago Bears","New York Giants","14-10"),("1964","Cleveland Browns","Baltimore Colts","27-0"),
+  ("1965","Green Bay Packers","Cleveland Browns","23-12")]
+_SBR=[("Green Bay Packers","Kansas City Chiefs","35-10"),("Green Bay Packers","Oakland Raiders","33-14"),
+  ("New York Jets","Baltimore Colts","16-7"),("Kansas City Chiefs","Minnesota Vikings","23-7"),
+  ("Baltimore Colts","Dallas Cowboys","16-13"),("Dallas Cowboys","Miami Dolphins","24-3"),
+  ("Miami Dolphins","Washington","14-7"),("Miami Dolphins","Minnesota Vikings","24-7"),
+  ("Pittsburgh Steelers","Minnesota Vikings","16-6"),("Pittsburgh Steelers","Dallas Cowboys","21-17"),
+  ("Oakland Raiders","Minnesota Vikings","32-14"),("Dallas Cowboys","Denver Broncos","27-10"),
+  ("Pittsburgh Steelers","Dallas Cowboys","35-31"),("Pittsburgh Steelers","Los Angeles Rams","31-19"),
+  ("Oakland Raiders","Philadelphia Eagles","27-10"),("San Francisco 49ers","Cincinnati Bengals","26-21"),
+  ("Washington","Miami Dolphins","27-17"),("Los Angeles Raiders","Washington","38-9"),
+  ("San Francisco 49ers","Miami Dolphins","38-16"),("Chicago Bears","New England Patriots","46-10"),
+  ("New York Giants","Denver Broncos","39-20"),("Washington","Denver Broncos","42-10"),
+  ("San Francisco 49ers","Cincinnati Bengals","20-16"),("San Francisco 49ers","Denver Broncos","55-10"),
+  ("New York Giants","Buffalo Bills","20-19"),("Washington","Buffalo Bills","37-24"),
+  ("Dallas Cowboys","Buffalo Bills","52-17"),("Dallas Cowboys","Buffalo Bills","30-13"),
+  ("San Francisco 49ers","San Diego Chargers","49-26"),("Dallas Cowboys","Pittsburgh Steelers","27-17"),
+  ("Green Bay Packers","New England Patriots","35-21"),("Denver Broncos","Green Bay Packers","31-24"),
+  ("Denver Broncos","Atlanta Falcons","34-19"),("St. Louis Rams","Tennessee Titans","23-16"),
+  ("Baltimore Ravens","New York Giants","34-7"),("New England Patriots","St. Louis Rams","20-17"),
+  ("Tampa Bay Buccaneers","Oakland Raiders","48-21"),("New England Patriots","Carolina Panthers","32-29"),
+  ("New England Patriots","Philadelphia Eagles","24-21"),("Pittsburgh Steelers","Seattle Seahawks","21-10"),
+  ("Indianapolis Colts","Chicago Bears","29-17"),("New York Giants","New England Patriots","17-14"),
+  ("Pittsburgh Steelers","Arizona Cardinals","27-23"),("New Orleans Saints","Indianapolis Colts","31-17"),
+  ("Green Bay Packers","Pittsburgh Steelers","31-25"),("New York Giants","New England Patriots","21-17"),
+  ("Baltimore Ravens","San Francisco 49ers","34-31"),("Seattle Seahawks","Denver Broncos","43-8"),
+  ("New England Patriots","Seattle Seahawks","28-24"),("Denver Broncos","Carolina Panthers","24-10"),
+  ("New England Patriots","Atlanta Falcons","34-28"),("Philadelphia Eagles","New England Patriots","41-33"),
+  ("New England Patriots","Los Angeles Rams","13-3"),("Kansas City Chiefs","San Francisco 49ers","31-20"),
+  ("Tampa Bay Buccaneers","Kansas City Chiefs","31-9"),("Los Angeles Rams","Cincinnati Bengals","23-20"),
+  ("Kansas City Chiefs","Philadelphia Eagles","38-35"),("Kansas City Chiefs","San Francisco 49ers","25-22"),
+  ("Philadelphia Eagles","Kansas City Chiefs","40-22"),("Seattle Seahawks","New England Patriots","29-13")]
+_MVP={1957:[("Jim Brown","Cleveland Browns")],1958:[("Jim Brown","Cleveland Browns")],1959:[("Johnny Unitas","Baltimore Colts")],
+  1961:[("Paul Hornung","Green Bay Packers")],1962:[("Jim Taylor","Green Bay Packers")],1963:[("Y. A. Tittle","New York Giants")],
+  1964:[("Johnny Unitas","Baltimore Colts")],1965:[("Jim Brown","Cleveland Browns")],1966:[("Bart Starr","Green Bay Packers")],
+  1967:[("Johnny Unitas","Baltimore Colts")],1968:[("Earl Morrall","Baltimore Colts")],1969:[("Roman Gabriel","Los Angeles Rams")],
+  1970:[("John Brodie","San Francisco 49ers")],1971:[("Alan Page","Minnesota Vikings")],1972:[("Larry Brown","Washington")],
+  1973:[("O. J. Simpson","Buffalo Bills")],1974:[("Ken Stabler","Oakland Raiders")],1975:[("Fran Tarkenton","Minnesota Vikings")],
+  1976:[("Bert Jones","Baltimore Colts")],1977:[("Walter Payton","Chicago Bears")],1978:[("Terry Bradshaw","Pittsburgh Steelers")],
+  1979:[("Earl Campbell","Houston Oilers")],1980:[("Brian Sipe","Cleveland Browns")],1981:[("Ken Anderson","Cincinnati Bengals")],
+  1982:[("Mark Moseley","Washington")],1983:[("Joe Theismann","Washington")],1984:[("Dan Marino","Miami Dolphins")],
+  1985:[("Marcus Allen","Los Angeles Raiders")],1986:[("Lawrence Taylor","New York Giants")],1987:[("John Elway","Denver Broncos")],
+  1988:[("Boomer Esiason","Cincinnati Bengals")],1989:[("Joe Montana","San Francisco 49ers")],1990:[("Joe Montana","San Francisco 49ers")],
+  1991:[("Thurman Thomas","Buffalo Bills")],1992:[("Steve Young","San Francisco 49ers")],1993:[("Emmitt Smith","Dallas Cowboys")],
+  1994:[("Steve Young","San Francisco 49ers")],1995:[("Brett Favre","Green Bay Packers")],1996:[("Brett Favre","Green Bay Packers")],
+  1997:[("Brett Favre","Green Bay Packers"),("Barry Sanders","Detroit Lions")],1998:[("Terrell Davis","Denver Broncos")],
+  1999:[("Kurt Warner","St. Louis Rams")],2000:[("Marshall Faulk","St. Louis Rams")],2001:[("Kurt Warner","St. Louis Rams")],
+  2002:[("Rich Gannon","Oakland Raiders")],2003:[("Peyton Manning","Indianapolis Colts"),("Steve McNair","Tennessee Titans")],
+  2004:[("Peyton Manning","Indianapolis Colts")],2005:[("Shaun Alexander","Seattle Seahawks")],2006:[("LaDainian Tomlinson","San Diego Chargers")],
+  2007:[("Tom Brady","New England Patriots")],2008:[("Peyton Manning","Indianapolis Colts")],2009:[("Peyton Manning","Indianapolis Colts")],
+  2010:[("Tom Brady","New England Patriots")],2011:[("Aaron Rodgers","Green Bay Packers")],2012:[("Adrian Peterson","Minnesota Vikings")],
+  2013:[("Peyton Manning","Denver Broncos")],2014:[("Aaron Rodgers","Green Bay Packers")],2015:[("Cam Newton","Carolina Panthers")],
+  2016:[("Matt Ryan","Atlanta Falcons")],2017:[("Tom Brady","New England Patriots")],2018:[("Patrick Mahomes","Kansas City Chiefs")],
+  2019:[("Lamar Jackson","Baltimore Ravens")],2020:[("Aaron Rodgers","Green Bay Packers")],2021:[("Aaron Rodgers","Green Bay Packers")],
+  2022:[("Patrick Mahomes","Kansas City Chiefs")],2023:[("Lamar Jackson","Baltimore Ravens")],2024:[("Josh Allen","Buffalo Bills")],
+  2025:[("Matthew Stafford","Los Angeles Rams")]}
+HIST_NFL=[]
+for (t,c,s,f) in _PRE:
+    y=int(t); fin=("Juego de campeonato: "+f) if f else "Por récord de la temporada"
+    HIST_NFL.append((t,c,s,fin,_MVP.get(y,[]),None))
+for i,(c,s,f) in enumerate(_SBR):
+    y=1966+i; HIST_NFL.append((str(y),c,s,f"Super Bowl {_SB[i]}: {f}",_MVP.get(y,[]),None))
+
+HISTORIA = {"mx": HIST_MX, "nfl": HIST_NFL}
 out['historia']={k:[{"t":t,"c":c,"s":s,"f":f,"g":[list(x) for x in g],"n":n} for (t,c,s,f,g,n) in v] for k,v in HISTORIA.items()}
 # Selección mexicana: palmarés y récords (datos fijos). Fuentes: Wikipedia "Mexico national football
 # team" y "... records and statistics" (al 5 jul 2026), cruzado con Récord / Mediotiempo para los goles
