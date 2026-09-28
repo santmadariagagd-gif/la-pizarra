@@ -189,6 +189,8 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 .headrow h2{margin:0}
 .hq{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:inherit;margin:4px 0 6px}
 .hon.hist li{display:block}
+.hist li.sbk{cursor:pointer}
+.hist .sbl{color:var(--mark);font-weight:600}
 .hist .ht{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 .hist .ht span{font-size:13px;color:var(--muted);text-align:right}
 .hist .hc2{display:block;font:800 18px var(--display);margin:2px 0}
@@ -1524,14 +1526,57 @@ function histRender(key,pfx){
   const who=r=>r.g.length?`${lbl}: ${r.g.map(([p,c])=>`${p} (${c})`).join(", ")}${r.n!=null?` · ${r.n}${unit}`:""}`:"";
   const draw=()=>{
     const q=norm(Q.value.trim());
-    const rows=[...L].reverse().filter(r=>!q||norm([r.t,r.c,r.s,APODO[r.c],APODO[r.s],...r.g.flat()].join(" ")).includes(q));
+    const rows=[...L].reverse().filter(r=>!q||norm([r.t,r.c,r.s,APODO[r.c],APODO[r.s],...r.g.flat(),...(r.a||[]).flat()].join(" ")).includes(q));
     U.innerHTML=rows.map(r=>r.c
-      ?`<li><div class="ht"><b>${r.t}</b>${r.f?`<span>${r.f}</span>`:""}</div><span class="hc2">🏆 ${r.c}</span><small>Subcampeón: ${r.s}</small>${r.g.length?`<small>${who(r)}</small>`:""}</li>`
+      ?`<li${nfl&&+r.t>=1966?` class="sbk" role="button" tabindex="0" data-sb="${r.t}"`:""}><div class="ht"><b>${r.t}</b>${r.f?`<span>${r.f}</span>`:""}</div><span class="hc2">🏆 ${r.c}</span><small>Subcampeón: ${r.s}</small>${r.g.length?`<small>${who(r)}</small>`:""}${(r.a||[]).map(([l,p,c])=>`<small>${l}: ${p} (${c})</small>`).join("")}${nfl&&+r.t>=1966?`<small class="sbl">Ver scorecard del Super Bowl ›</small>`:""}</li>`
       :`<li><div class="ht"><b>${r.t}</b></div><small>${r.f||"Sin campeón"}</small></li>`).join("");
     M.textContent=q?(rows.length?`${rows.length} de ${L.length} temporadas`:"No encontramos nada con esa búsqueda."):`${L.filter(r=>r.c).length} campeonatos, del más reciente al más antiguo.`;
   };
   Q.oninput=draw;
+  U.onclick=e=>{const li=e.target.closest("li[data-sb]"); if(li) openSB(li.dataset.sb);};
+  U.onkeydown=e=>{const li=e.target.closest("li[data-sb]"); if(li&&(e.key==="Enter"||e.key===" ")){e.preventDefault(); openSB(li.dataset.sb);}};
   draw();
+}
+// ----- Scorecard del Super Bowl (desde la Historia de la NFL) -----
+// ESPN no tiene una lista de fechas de Super Bowl: se piden los domingos del 7 de enero al 16 de febrero
+// del año siguiente a la temporada (todos los Super Bowls han sido en domingo) con el marcador de
+// postemporada (?dates=AAAAMMDD&seasontype=3) y se toma el partido cuya nota dice "Super Bowl".
+// Lo que ESPN tiene cambia según la época: los recientes traen marcador por cuarto y líderes; los viejos
+// (probado: 1967 y 1986) solo el marcador final. Se muestra lo que haya, sin rellenar.
+// Los partidos terminados no cambian: se guardan en el navegador (pz_sb_<temporada>).
+async function findSB(season){
+  const ck=`pz_sb_${season}`;
+  try{const c=JSON.parse(localStorage.getItem(ck)||"null"); if(c) return c;}catch(e){}
+  const y=+season+1, days=[];
+  for(let d=new Date(Date.UTC(y,0,7)); d<=new Date(Date.UTC(y,1,16)); d=new Date(d.getTime()+864e5)) if(d.getUTCDay()===0) days.push(d.toISOString().slice(0,10).replace(/-/g,""));
+  const res=await Promise.all(days.map(d=>fetch(`${ESPN}/site/v2/sports/football/nfl/scoreboard?dates=${d}&seasontype=3`).then(r=>r.json()).catch(()=>({events:[]}))));
+  const e=res.flatMap(r=>r.events||[]).find(ev=>(ev.competitions?.[0]?.notes||[]).some(n=>/super bowl/i.test(n.headline||"")));
+  if(e&&e.status?.type?.completed){try{localStorage.setItem(ck,JSON.stringify(e));}catch(err){}}
+  return e||null;
+}
+async function openSB(season){
+  $("#gbody").innerHTML=`<p class="note" style="text-align:center">Cargando el Super Bowl de la temporada ${season}…</p>`; dlg.showModal();
+  let e=null; try{e=await findSB(season);}catch(err){}
+  if(!e){$("#gbody").innerHTML=`<p class="note" style="text-align:center">No pudimos cargar este Super Bowl. Intenta de nuevo en un momento.</p>`; return;}
+  const c=e.competitions?.[0]||{}, cs=c.competitors||[];
+  const H=cs.find(x=>x.homeAway==="home")||cs[0]||{}, A=cs.find(x=>x.homeAway==="away")||cs[1]||{};
+  const T=x=>({n:x.team?.displayName||"",logo:x.team?.logo});
+  const title=(c.notes||[]).map(n=>n.headline).find(h=>/super bowl/i.test(h||""))||"Super Bowl";
+  const fecha=new Date(e.date).toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric",timeZone:"UTC"});
+  const v=c.venue||{}, lugar=[v.fullName,v.address?.city].filter(Boolean).join(" · ");
+  let h=mheadHTML(T(A),T(H),A.score,H.score,"Final")+`<p class="meta">${title} · ${fecha}${lugar?` · ${lugar}`:""}${c.attendance>0?` · ${c.attendance.toLocaleString("es-MX")} asistentes`:""}</p>`;
+  const ls=[A,H].every(x=>(x.linescores||[]).length);
+  if(ls){
+    const qs=Math.max(...[A,H].map(x=>x.linescores.length));
+    h+=`<h3>Marcador por cuarto</h3><div class="tbl"><table><thead><tr><th class="l">Equipo</th>${Array.from({length:qs},(_,i)=>`<th>${i<4?i+1:"TE"}</th>`).join("")}<th>Total</th></tr></thead><tbody>${[A,H].map(x=>`<tr><td class="l">${logoImg(x.team?.logo,"tlogo")}<span class="nm">${x.team?.abbreviation||""}</span></td>${Array.from({length:qs},(_,i)=>`<td>${x.linescores[i]?.displayValue??"–"}</td>`).join("")}<td><b>${x.score??"–"}</b></td></tr>`).join("")}</tbody></table></div>`;
+  }
+  const LBL={passingYards:"Pase",rushingYards:"Carrera",receivingYards:"Recepción"};
+  const es=s=>(s||"").replace(/\bYDS\b/g,"yds").replace(/\bCAR\b/g,"acarreos").replace(/\bREC\b/g,"rec.").replace(/\bINT\b/g,"int.");
+  const ab=id=>cs.find(x=>x.team?.id===id)?.team?.abbreviation||"";
+  const L=(c.leaders||[]).map(g=>{const x=g.leaders?.[0]; return x?[LBL[g.name]||g.displayName,x.athlete?.displayName,ab(x.team?.id||x.athlete?.team?.id),es(x.displayValue)]:null;}).filter(Boolean);
+  if(L.length) h+=`<h3>Líderes del partido</h3><ul class="hon">${L.map(([l,n,t,d])=>`<li><span class="hn"><b>${l}: ${n}${t?` (${t})`:""}</b><small>${d}</small></span></li>`).join("")}</ul>`;
+  if(!ls&&!L.length) h+=`<p class="note">ESPN solo tiene el marcador final de este Super Bowl; no hay marcador por cuarto ni estadísticas.</p>`;
+  $("#gbody").innerHTML=h; $("#gbody").scrollTop=0;
 }
 function loadMxHist(){ $("#mxhistTitle").textContent=`Historia · ${flLabel()}`; histRender(FLIG,"mx"); }
 
