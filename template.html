@@ -1126,21 +1126,21 @@ function mxSeason(){
     if(FLIG===key&&document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(pickLogo(logos.length?logos:MX_LOGOS));
     const calRaw=base.leagues?.[0]?.calendar||[];
     // Champions (y copas): el calendario no es una lista de días sino de etapas con rango de fechas
-    // ({label, entries:[{label, startDate, endDate}]}). Se pide cada etapa con ?dates=INICIO-FIN; si una
-    // etapa que ya empezó regresa vacía, se piden uno por uno los martes, miércoles y jueves de esa etapa.
+    // ({label, entries:[{label, startDate, endDate}]}). Se pide cada etapa con ?dates=INICIO-FIN y, además,
+    // en cada etapa que ya empezó se piden todos sus martes, miércoles y jueves hasta el FINAL de la etapa
+    // (sin tope de días): en vivo el rango no trajo todo y un tope de 35 días dejaba solo 3 jornadas.
     const stages=calRaw.flatMap(x=>x&&typeof x==="object"&&Array.isArray(x.entries)?x.entries:[]).filter(s=>s.startDate&&s.endDate);
     let days=[];
     if(stages.length){
       const ymd=d=>new Date(d).toISOString().slice(0,10).replace(/-/g,"");
-      const got=await Promise.all(stages.map(s=>sb(`${ymd(s.startDate)}-${ymd(s.endDate)}&limit=1000`).catch(()=>({events:[]}))));
-      days=got;
-      const now=Date.now();
-      for(let i=0;i<stages.length;i++){
-        const s=stages[i], a=new Date(s.startDate).getTime(), b=Math.min(new Date(s.endDate).getTime(),now+35*864e5);
-        if((got[i].events||[]).length||a>now) continue;
-        const ds=[]; for(let t=a;t<=b;t+=864e5){const d=new Date(t); if([2,3,4].includes(d.getUTCDay())) ds.push(ymd(d));}
-        days.push(...await Promise.all(ds.map(d=>sb(d).catch(()=>({events:[]})))));
+      const now=Date.now(), ds=new Set();
+      for(const s of stages){
+        const a=new Date(s.startDate).getTime(), b=new Date(s.endDate).getTime();
+        if(a>now) continue;
+        for(let t=a;t<=b;t+=864e5){const d=new Date(t); if([2,3,4].includes(d.getUTCDay())) ds.add(ymd(d));}
       }
+      const reqs=[...stages.map(s=>`${ymd(s.startDate)}-${ymd(s.endDate)}&limit=1000`),...ds];
+      days=await Promise.all(reqs.map(d=>sb(d).catch(()=>({events:[]}))));
     } else {
       const cal=[...new Set(calRaw.map(x=>(typeof x==="string"?x:(x.startDate||x.value||"")).slice(0,10)).filter(Boolean))];
       days=await Promise.all(cal.map(d=>sb(d.replace(/-/g,"")).catch(()=>({events:[]}))));
