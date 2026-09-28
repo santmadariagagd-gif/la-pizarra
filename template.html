@@ -1234,12 +1234,34 @@ async function openMx(id){
         const rest=S.filter(x=>!(x.outP&&st.has(x.outP)));
         const nm=(p,n)=>p?.athlete?.displayName||n||"";
         return `<div class="pitch"><h4><span>${r.team?.shortDisplayName||r.team?.displayName||""}</span><span class="tm">${r.formation||""}</span></h4>${pitchSVG(r,subOut)}${rest.length?`<div class="subs">${rest.map(x=>`<span>${x.m?`<b>${x.m}</b>`:""}<span class="in">↑ ${nm(x.inP,x.inName)}</span>${nm(x.outP,x.outName)?` · <span class="out">↓ ${nm(x.outP,x.outName)}</span>`:""}</span>`).join("")}</div>`:""}</div>`;}).join("")}</div>`;
-      const SC=[["totalGoals","Goles"],["goalAssists","Asist."],["totalShots","Tiros"],["shotsOnTarget","A gol"],["foulsCommitted","Faltas"],["foulsSuffered","Faltas rec."],["yellowCards","Amarillas"],["redCards","Rojas"],["saves","Atajadas"]];
+      // Igual que en NFL (Pase/Carrera/Recepción): una tabla por posición, cada una con sus propias
+      // columnas y solo con quien jugó ahí. Una columna se omite si nadie de ese grupo tiene dato
+      // (o todos traen 0), salvo las dos primeras de cada grupo, que siempre se muestran.
+      const LBL={totalGoals:"Goles",goalAssists:"Asist.",totalShots:"Tiros",shotsOnTarget:"A gol",foulsCommitted:"Faltas",foulsSuffered:"Faltas rec.",yellowCards:"Amarillas",redCards:"Rojas",saves:"Atajadas",goalsConceded:"Goles rec.",offsides:"Fuera de lugar"};
+      const GRP=[
+        ["G","Portero",["saves","goalsConceded","yellowCards","redCards"]],
+        ["D","Defensa",["totalGoals","goalAssists","foulsCommitted","foulsSuffered","yellowCards","redCards"]],
+        ["M","Medio",["totalGoals","goalAssists","totalShots","shotsOnTarget","foulsCommitted","foulsSuffered","yellowCards","redCards"]],
+        ["F","Delantero",["totalGoals","goalAssists","totalShots","shotsOnTarget","offsides","foulsSuffered","yellowCards","redCards"]],
+        ["S","Entraron de cambio",["totalGoals","goalAssists","totalShots","shotsOnTarget","foulsCommitted","yellowCards","redCards"]]];
+      const grpOf=p=>{const a=(p.pos||"").toUpperCase();
+        if(!a||a==="SUB") return (p.st.saves>0)?"G":"S"; // ESPN no siempre da la posición real de quien entró de cambio
+        if(a==="G"||a==="GK") return "G";
+        if(/^(DM|CDM|CM|AM|CAM|LM|RM|M)/.test(a)) return "M"; // medios, incluidos los defensivos (DM), antes que la regla de la "D"
+        if(/^(CD|CB|D|LB|RB|LWB|RWB|SW|WB)/.test(a)) return "D";
+        if(/^(F|CF|ST|LW|RW|W|S)/.test(a)) return "F";
+        return "M";};
       for(const r of [rH,rA]){
         const pl=(r.roster||[]).filter(p=>p.starter||p.subbedIn).map(p=>({n:p.athlete?.displayName,pos:p.position?.abbreviation||"",st:Object.fromEntries((p.stats||[]).map(s=>[s.name,s.value]))}));
-        const cols=SC.filter(([k])=>pl.some(p=>p.st[k]!=null));
-        if(!cols.length) continue;
-        h+=`<h3>${logoImg(r.team?.logo||r.team?.logos?.[0]?.href,"tlogo")}${r.team?.displayName||""}</h3><div class="tbl"><table data-freeze="1"><thead><tr><th class="l">Jugador</th>${cols.map(([,l])=>`<th>${l}</th>`).join("")}</tr></thead><tbody>${pl.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span><span class="tm">${p.pos}</span></td>${cols.map(([k])=>`<td>${p.st[k]??"–"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+        if(!pl.some(p=>Object.keys(p.st).length)) continue;
+        let block="";
+        for(const [g,title,keys] of GRP){
+          const rows=pl.filter(p=>grpOf(p)===g); if(!rows.length) continue;
+          const cols=keys.filter((k,i)=>rows.some(p=>p.st[k]!=null)&&(i<2||rows.some(p=>+p.st[k]>0)));
+          if(!cols.length) continue;
+          block+=`<h4 class="stat-cat">${title}</h4><div class="tbl"><table data-freeze="1"><thead><tr><th class="l">Jugador</th>${cols.map(k=>`<th>${LBL[k]}</th>`).join("")}</tr></thead><tbody>${rows.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span>${p.pos&&p.pos!=="SUB"?`<span class="tm">${p.pos}</span>`:""}</td>${cols.map(k=>`<td>${p.st[k]??"–"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+        }
+        if(block) h+=`<h3>${logoImg(r.team?.logo||r.team?.logos?.[0]?.href,"tlogo")}${r.team?.displayName||""}</h3>`+block;
       }
     } else if(e.status?.type?.state==="pre") h+=`<p class="note" style="text-align:center;margin-top:18px">Las alineaciones se publican cerca de la hora del partido.</p>`;
   }
