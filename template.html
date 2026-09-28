@@ -87,11 +87,20 @@ td.rk{color:var(--muted);width:2.5em}
 /* Columna(s) fijas a la izquierda al deslizar una tabla ancha, igual que el nombre y la posición del
    jugador en un box score: la primera celda de cada fila (número de fila, o el nombre si no hay número)
    siempre se queda visible, y si la segunda celda es el nombre (".l"), también se congela justo a su lado. */
-/* transform:translateZ(0) fuerza a Safari a tratar la celda como su propia capa; sin esto, en
-   algunas versiones de iOS Safari las columnas fijas se llegan a dibujar en el lugar equivocado. */
-.tbl table:not(.cmp) tr>:first-child{position:sticky;left:0;z-index:2;background:var(--surface);transform:translateZ(0)}
-.tbl table:not(.cmp) tr>:nth-child(2).l{position:sticky;left:2.5em;z-index:2;background:var(--surface);transform:translateZ(0)}
-.tbl table:not(.cmp) tr>:nth-child(3).l{position:sticky;left:calc(2.5em + 44px);z-index:2;background:var(--surface);transform:translateZ(0)}
+/* Columna(s) fijas de una tabla ancha: en vez de position:sticky en la celda (que en ciertas
+   versiones de iOS Safari dibuja la columna en el lugar equivocado al deslizar), se arma con dos
+   tablas de verdad, una congelada y otra que se desliza — ver freezeTable() en el JS. */
+.tbl.tbl-split{display:flex;overflow-x:hidden}
+.tbl.tbl-split>.frozen{flex:none;overflow:hidden}
+.tbl.tbl-split>.frozen table{border-right:1px solid var(--line)}
+.tbl.tbl-split>.tbl-scroll{flex:1;min-width:0;overflow-x:auto}
+.frz-hide{display:none}
+.nm-short{display:none}
+@media (max-width:720px){
+  .nm-full{display:none}.nm-short{display:inline}
+  .tbl.tbl-split>.frozen td.l,.tbl.tbl-split>.frozen th.l{max-width:46vw;overflow:hidden;text-overflow:ellipsis}
+  .tbl.tbl-split>.frozen{box-shadow:4px 0 6px -4px rgba(0,0,0,.18);position:relative;z-index:1}
+}
 .nm{font-weight:600}
 .tm{color:var(--muted);font-size:13px;margin-left:6px}
 .up{color:var(--good)}.down{color:var(--bad)}
@@ -379,7 +388,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 <section class="panel hidden" id="nflpr">
   <h2>Power Ranking NFL</h2>
   <p class="note" id="prNote"></p>
-  <div class="tbl"><table id="prNfl" class="prt"></table></div>
+  <div class="tbl"><table id="prNfl" class="prt" data-freeze="3"></table></div>
 </section>
 <section class="panel hidden" id="nflpo">
   <h2>Playoffs</h2>
@@ -395,7 +404,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 <section class="panel hidden" id="mxpr">
   <h2>Power Ranking Liga MX</h2>
   <p class="note" id="mxprMsg" aria-live="polite">Calculando…</p>
-  <div class="tbl"><table id="prMx" class="prt"></table></div>
+  <div class="tbl"><table id="prMx" class="prt" data-freeze="3"></table></div>
 </section>
 <dialog id="gdlg" aria-label="Detalle del partido"><div class="dlg"><button class="x" id="gClose" aria-label="Cerrar">×</button><div id="gbody"></div></div></dialog>
 
@@ -526,7 +535,7 @@ function loadNflPlayoffs(){
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors();}
+  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
@@ -561,16 +570,64 @@ $("#flSel").onchange=e=>{
 };
 
 // Generic sortable table
+// Congela las primeras N columnas de una tabla (dato en <table data-freeze="N">) armando una tabla
+// aparte, sin scroll, a la izquierda — en vez de position:sticky en la celda, que en algunas versiones
+// de Safari en iPhone dibuja la columna en el lugar equivocado al deslizar. Se puede llamar de nuevo
+// después de volver a pintar la tabla (por ejemplo al reordenar): rehace la copia congelada desde cero.
+function freezeTable(container){
+  if(!container) return;
+  container.querySelectorAll(":scope>.frozen").forEach(e=>e.remove());
+  let scroller=container.querySelector(":scope>.tbl-scroll");
+  const table=(scroller||container).querySelector(":scope>table[data-freeze]");
+  if(!table){ if(scroller){container.classList.remove("tbl-split"); container.appendChild(table||scroller.firstElementChild||document.createTextNode("")); } return; }
+  const n=+table.dataset.freeze; 
+  if(!scroller){scroller=document.createElement("div"); scroller.className="tbl-scroll"; table.before(scroller); scroller.appendChild(table);}
+  if(!n||!table.rows.length){container.classList.remove("tbl-split"); return;}
+  container.classList.add("tbl-split");
+  const frozen=document.createElement("table"); frozen.className=table.className;
+  for(const row of table.rows){
+    const fr=document.createElement("tr"); if(row.className) fr.className=row.className;
+    let taken=0;
+    for(const cell of [...row.cells]){
+      if(taken>=n||(cell.colSpan||1)>1) break; // una celda que abarca varias columnas (comentario) se queda del lado que se desliza
+      fr.appendChild(cell.cloneNode(true));
+      cell.classList.add("frz-hide");
+      taken+=cell.colSpan||1;
+    }
+    frozen.appendChild(fr);
+  }
+  frozen.querySelectorAll("th[data-k]").forEach(th=>{
+    th.onclick=()=>{const orig=[...table.rows[0].cells].find(c=>c.dataset.k===th.dataset.k); orig?.click();};
+    th.tabIndex=0; th.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();th.onclick();}};
+  });
+  const wrap=document.createElement("div"); wrap.className="frozen"; wrap.appendChild(frozen);
+  container.insertBefore(wrap,scroller);
+  syncFreeze(container);
+}
+// Iguala la altura de cada renglón entre la tabla congelada y la que se desliza (si alguno quedó más
+// alto, por ejemplo un comentario largo, se desalinearían). Solo se puede medir si la tabla está visible.
+function syncFreeze(container){
+  const f=container?.querySelector(":scope>.frozen>table"), t=container?.querySelector(":scope>.tbl-scroll>table");
+  if(!f||!t||!container.offsetParent) return;
+  const fr=[...f.rows], tr=[...t.rows];
+  fr.forEach((r,i)=>{r.style.height=""; if(tr[i]) tr[i].style.height="";});
+  const hs=fr.map((r,i)=>Math.max(r.getBoundingClientRect().height, tr[i]?tr[i].getBoundingClientRect().height:0));
+  fr.forEach((r,i)=>{r.style.height=hs[i]+"px"; if(tr[i]) tr[i].style.height=hs[i]+"px";});
+}
+const resyncFreeze=()=>document.querySelectorAll(".tbl.tbl-split").forEach(syncFreeze);
+window.addEventListener("resize",()=>requestAnimationFrame(resyncFreeze));
 function table(el, cols, rows, state){
   const sorted=[...rows].sort((a,b)=>{const x=a[state.k],y=b[state.k];
     if(x==null) return 1; if(y==null) return -1;
     return (typeof x==="string"? x.localeCompare(y): x-y)*(state.dir==="asc"?1:-1)});
+  el.dataset.freeze="2";
   el.innerHTML = `<thead><tr><th class="l" aria-label="Posición"></th>${cols.map(c=>`<th tabindex="0" class="${c.l?'l':''}" data-k="${c.k}" ${c.k===state.k?`aria-sort="${state.dir==='asc'?'ascending':'descending'}"`:''} title="${c.tip||''}">${c.h}</th>`).join("")}</tr></thead>
   <tbody>${sorted.slice(0,state.limit||25).map((r,i)=>`<tr><td class="rk">${i+1}</td>${cols.map(c=>`<td class="${c.l?'l':''}">${c.f?c.f(r):r[c.k]}</td>`).join("")}</tr>`).join("")}</tbody>`;
   el.querySelectorAll("th[data-k]").forEach(th=>{const go=()=>{const k=th.dataset.k;
     state.dir = state.k===k ? (state.dir==="asc"?"desc":"asc") : (cols.find(c=>c.k===k).asc?"asc":"desc"); state.k=k; state.render();};
     th.onclick=go; th.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}}});
-  const wrap=el.parentElement; let more=wrap.nextElementSibling;
+  freezeTable(el.closest(".tbl"));
+  const wrap=el.closest(".tbl"); let more=wrap.nextElementSibling;
   if(!more||!more.classList.contains("more")){more=document.createElement("button");more.className="more";wrap.after(more);}
   const lim=state.limit||25;
   more.hidden = sorted.length<=lim;
@@ -902,7 +959,7 @@ function openNfl(id){
     h+=`<h3>Estadísticas de equipo</h3><div class="tbl"><table class="cmp"><thead><tr><th class="l">${x.a}</th><th></th><th>${x.h}</th></tr></thead><tbody>${TS.map(([l,k])=>`<tr><td>${b.ts[x.a]?.[k]??"–"}</td><td>${l}</td><td>${b.ts[x.h]?.[k]??"–"}</td></tr>`).join("")}</tbody></table></div>`;
     // Cada tipo de jugada en su propia tabla, con sus propias columnas y solo quien la jugó —
     // igual que Apple Sports — en vez de una sola tabla mezclada con "–" para lo que no aplica.
-    const statCat=(title,rows,cols)=>rows.length?`<h4 class="stat-cat">${title}</h4><div class="tbl"><table><thead><tr><th class="l">Jugador</th>${cols.map(c=>`<th>${c[0]}</th>`).join("")}</tr></thead><tbody>${rows.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span><span class="tm">${p.p}</span></td>${cols.map(c=>`<td>${c[1](p)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`:"";
+    const statCat=(title,rows,cols)=>rows.length?`<h4 class="stat-cat">${title}</h4><div class="tbl"><table data-freeze="1"><thead><tr><th class="l">Jugador</th>${cols.map(c=>`<th>${c[0]}</th>`).join("")}</tr></thead><tbody>${rows.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span><span class="tm">${p.p}</span></td>${cols.map(c=>`<td>${c[1](p)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`:"";
     for(const tm of [x.a,x.h]){
       const P=b.pl[tm]||[], T=NT[tm]||{n:tm};
       const pass=P.filter(p=>p.pa).sort((p,q)=>q.pa[2]-p.pa[2]);
@@ -924,6 +981,7 @@ function openNfl(id){
       <tr><td colspan="3" style="text-align:center" id="dwx">${(x.roof==="dome"||x.roof==="closed")?"Estadio techado":""}</td></tr></tbody></table></div>`;
   }
   $("#gbody").innerHTML=h; dlg.showModal(); $("#gbody").scrollTop=0;
+  $("#gbody").querySelectorAll(".tbl").forEach(freezeTable);
   if(!b&&x.roof!=="dome"&&x.roof!=="closed"&&!x.tbd) fillWeather($("#dwx"),x.lat,x.lon,when?.getTime());
 }
 
@@ -957,7 +1015,8 @@ function renderMxBracket(rows){
   const mv=r=>r.prev==null?"–":r.prev>r.r?`<span class="up">▲${r.prev-r.r}</span>`:r.prev<r.r?`<span class="down">▼${r.r-r.prev}</span>`:"=";
   const ep=v=>v==null?"–":(v>0?"+":"")+v.toFixed(3);
   $("#prNfl").innerHTML=`<thead><tr><th class="l">#</th><th class="l"></th><th class="l">Equipo</th><th>Récord</th><th class="l">Índice</th><th>EPA of.</th><th>EPA def.</th><th>Pts a favor</th><th>Pts en contra</th><th>Forma</th><th>Calendario</th></tr></thead><tbody>${R.map(r=>{const T=NT[r.t]||{n:r.t};
-    return `<tr><td class="rk">${r.r}</td><td class="mv">${mv(r)}</td><td class="l">${logoImg(T.logo,"tlogo")}<span class="nm">${T.name||T.n}</span></td><td>${r.w}-${r.l}</td><td class="l"><span class="idx" style="width:${Math.max(4,r.sc*0.8)}px"></span>${Math.round(r.sc)}</td><td>${ep(r.off)}</td><td>${ep(r.de)}</td><td>${fmt(r.pf,1)}</td><td>${fmt(r.pa,1)}</td><td>${ep(r.rec)}</td><td>${ep(r.sos)}</td></tr>${r.c?`<tr class="cmr"><td></td><td></td><td class="cm" colspan="9">${r.c}</td></tr>`:""}`;}).join("")}</tbody>`;
+    return `<tr><td class="rk">${r.r}</td><td class="mv">${mv(r)}</td><td class="l">${logoImg(T.logo,"tlogo")}<span class="nm nm-full">${T.name||T.n}</span><span class="nm nm-short">${T.n}</span></td><td>${r.w}-${r.l}</td><td class="l"><span class="idx" style="width:${Math.max(4,r.sc*0.8)}px"></span>${Math.round(r.sc)}</td><td>${ep(r.off)}</td><td>${ep(r.de)}</td><td>${fmt(r.pf,1)}</td><td>${fmt(r.pa,1)}</td><td>${ep(r.rec)}</td><td>${ep(r.sos)}</td></tr>${r.c?`<tr class="cmr"><td></td><td></td><td class="cm" colspan="9">${r.c}</td></tr>`:""}`;}).join("")}</tbody>`;
+  freezeTable($("#prNfl").closest(".tbl"));
 })();
 
 // ---------- Liga MX (ESPN) ----------
@@ -1180,11 +1239,12 @@ async function openMx(id){
         const pl=(r.roster||[]).filter(p=>p.starter||p.subbedIn).map(p=>({n:p.athlete?.displayName,pos:p.position?.abbreviation||"",st:Object.fromEntries((p.stats||[]).map(s=>[s.name,s.value]))}));
         const cols=SC.filter(([k])=>pl.some(p=>p.st[k]!=null));
         if(!cols.length) continue;
-        h+=`<h3>${logoImg(r.team?.logo||r.team?.logos?.[0]?.href,"tlogo")}${r.team?.displayName||""}</h3><div class="tbl"><table><thead><tr><th class="l">Jugador</th>${cols.map(([,l])=>`<th>${l}</th>`).join("")}</tr></thead><tbody>${pl.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span><span class="tm">${p.pos}</span></td>${cols.map(([k])=>`<td>${p.st[k]??"–"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+        h+=`<h3>${logoImg(r.team?.logo||r.team?.logos?.[0]?.href,"tlogo")}${r.team?.displayName||""}</h3><div class="tbl"><table data-freeze="1"><thead><tr><th class="l">Jugador</th>${cols.map(([,l])=>`<th>${l}</th>`).join("")}</tr></thead><tbody>${pl.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span><span class="tm">${p.pos}</span></td>${cols.map(([k])=>`<td>${p.st[k]??"–"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
       }
     } else if(e.status?.type?.state==="pre") h+=`<p class="note" style="text-align:center;margin-top:18px">Las alineaciones se publican cerca de la hora del partido.</p>`;
   }
   $("#gbody").innerHTML=h;
+  $("#gbody").querySelectorAll(".tbl").forEach(freezeTable);
   if(c.probs&&!c.tbd){const g=await geocode(c.city); if(g) fillWeather($("#dwx"),g.latitude,g.longitude,c.when.getTime());}
 }
 
@@ -1221,8 +1281,9 @@ async function loadMxPR(){
     const mn=Math.min(...cur.map(s=>s.score)), mx=Math.max(...cur.map(s=>s.score));
     const tbody=cur.map((s,i)=>{const r=i+1,p=prev.length?prevRank[s.id]:null; const mvv=p==null?"–":p>r?`<span class="up">▲${p-r}</span>`:p<r?`<span class="down">▼${r-p}</span>`:"=";
       const sc=(s.score-mn)/((mx-mn)||1)*100; const c=com[s.team?.abbreviation];
-      return `<tr><td class="rk">${r}</td><td class="mv">${mvv}</td><td class="l">${logoImg(s.team?.logo,"tlogo")}<span class="nm">${s.team?.displayName||""}</span></td><td>${s.w}-${s.d}-${s.l}</td><td>${s.pts}</td><td class="l"><span class="idx" style="width:${Math.max(4,sc*0.8)}px"></span>${Math.round(sc)}</td><td>${s.ppg.toFixed(2)}</td><td>${s.gfp.toFixed(2)}</td><td>${s.gap.toFixed(2)}</td><td>${s.res.slice(-5).map(p=>p===3?"G":p===1?"E":"P").join("")}</td><td>${s.sos.toFixed(2)}</td></tr>${c?`<tr class="cmr"><td></td><td></td><td class="cm" colspan="9">${c}</td></tr>`:""}`;}).join("");
+      return `<tr><td class="rk">${r}</td><td class="mv">${mvv}</td><td class="l">${logoImg(s.team?.logo,"tlogo")}<span class="nm nm-full">${s.team?.displayName||""}</span><span class="nm nm-short">${s.team?.shortDisplayName||s.team?.displayName||""}</span></td><td>${s.w}-${s.d}-${s.l}</td><td>${s.pts}</td><td class="l"><span class="idx" style="width:${Math.max(4,sc*0.8)}px"></span>${Math.round(sc)}</td><td>${s.ppg.toFixed(2)}</td><td>${s.gfp.toFixed(2)}</td><td>${s.gap.toFixed(2)}</td><td>${s.res.slice(-5).map(p=>p===3?"G":p===1?"E":"P").join("")}</td><td>${s.sos.toFixed(2)}</td></tr>${c?`<tr class="cmr"><td></td><td></td><td class="cm" colspan="9">${c}</td></tr>`:""}`;}).join("");
     $("#prMx").innerHTML=`<thead><tr><th class="l">#</th><th class="l"></th><th class="l">Equipo</th><th>G-E-P</th><th>Pts</th><th class="l">Índice</th><th>Pts por partido</th><th>GF por partido</th><th>GC por partido</th><th>Forma</th><th>Calendario</th></tr></thead><tbody>${tbody}</tbody>`;
+    freezeTable($("#prMx").closest(".tbl"));
     $("#mxprMsg").textContent="";
   }catch(e){mxprLoaded=false;$("#mxprMsg").textContent="No pudimos calcular el ranking. Intenta recargar la página en un momento.";}
 }
