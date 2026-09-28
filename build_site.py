@@ -101,7 +101,57 @@ PALMARES = {
     ("Nice",4),("Stade Helvétique",3),("Le Havre",3),("RC Paris",2),("Sochaux",2),("Sète",2),
     ("Lens",1),("Strasbourg",1),("Auxerre",1),("Montpellier",1)],
 }
+# Champions League (Copa de Europa + Champions): títulos por club. Fuente: Wikipedia "List of European Cup
+# and UEFA Champions League finals" (actualizada con la final de 2026), cruzada con UEFA.com.
+PALMARES['ucl']=[("Real Madrid",15),("Milan",7),("Bayern Munich",6),("Liverpool",6),("Barcelona",5),("Ajax",4),
+    ("Inter",3),("Manchester United",3),("Juventus",2),("Benfica",2),("Chelsea",2),("Paris Saint-Germain",2),
+    ("Nottingham Forest",2),("Porto",2),("Borussia Dortmund",1),("Celtic",1),("Hamburgo",1),("Steaua București",1),
+    ("Olympique de Marsella",1),("Manchester City",1),("Feyenoord",1),("Aston Villa",1),("PSV Eindhoven",1),("Estrella Roja",1)]
 out['palmares']=PALMARES
+# Selección mexicana: palmarés y récords (datos fijos). Fuentes: Wikipedia "Mexico national football
+# team" y "... records and statistics" (al 5 jul 2026), cruzado con Récord / Mediotiempo para los goles
+# de Raúl Jiménez (48 oficiales FIFA; 49 contando el de Martinica). Actualizar a mano.
+SEL_HIST = {
+  "al": "5 de julio de 2026",
+  "titulos": [  # [competición, [años]] — títulos oficiales (FIFA o confederación)
+    ["Copa Oro / Campeonato de Concacaf", [1965, 1971, 1977, 1993, 1996, 1998, 2003, 2009, 2011, 2015, 2019, 2023, 2025]],
+    ["Copa Confederaciones", [1999]],
+    ["Nations League de Concacaf", [2025]],
+    ["Copa Concacaf", [2015]],
+    ["Campeonato NAFC", [1947, 1949]],
+  ],
+  "otros": [  # otros títulos de la selección mayor
+    ["Copa de Naciones de Norteamérica", [1991]],
+    ["Juegos Centroamericanos y del Caribe", [1935, 1938]],
+  ],
+  "resultados": [  # mejores resultados sin título
+    ["Mundial", "Cuartos de final (1970 y 1986)"],
+    ["Copa América", "Subcampeón (1993 y 2001)"],
+    ["Juegos Olímpicos (Sub-23)", "Medalla de oro (Londres 2012)"],
+  ],
+  "goleadores": [  # [jugador, goles, años]
+    ["Javier Hernández", 52, "2009–2019"], ["Raúl Jiménez", 48, "2013–"], ["Jared Borgetti", 46, "1997–2008"],
+    ["Cuauhtémoc Blanco", 38, "1995–2014"], ["Luis Hernández", 35, "1995–2002"], ["Carlos Hermosillo", 34, "1984–1997"],
+    ["Enrique Borja", 31, "1966–1975"],
+  ],
+  "partidos": [  # [jugador, partidos, años]
+    ["Andrés Guardado", 180, "2005–2024"], ["Claudio Suárez", 178, "1992–2006"], ["Guillermo Ochoa", 153, "2005–2026"],
+    ["Pável Pardo", 147, "1996–2009"], ["Rafael Márquez", 147, "1997–2018"], ["Gerardo Torrado", 144, "1999–2013"],
+    ["Héctor Moreno", 132, "2007–2023"], ["Jorge Campos", 129, "1991–2003"], ["Raúl Jiménez", 128, "2013–"],
+    ["Jesús Gallardo", 126, "2016–"],
+  ],
+  "equipo": [  # [récord, valor]
+    ["Mundiales jugados", "18 (desde Uruguay 1930)"],
+    ["Mejor lugar en el ranking FIFA", "4º (1998, 2003, 2004 y 2006)"],
+    ["Mayor goleada a favor", "México 13–0 Bahamas (Toluca, 1987)"],
+    ["Peor derrota", "Inglaterra 8–0 México (Londres, 1961)"],
+    ["Primer partido", "México 2–1 Guatemala (Ciudad de México, 1923)"],
+    ["Historial contra Estados Unidos", "79 partidos: 38 ganados, 17 empates, 24 perdidos"],
+    ["Mundial 2026", "Octavos de final: 4 ganados, 1 perdido (10 goles a favor, 3 en contra)"],
+    ["Antonio Carbajal", "Primer jugador en disputar 5 Mundiales seguidos (1950–1966)"],
+  ],
+}
+out['sel_hist']=SEL_HIST
 
 # QB
 db=pbp[(pbp.qb_dropback==1)&pbp.passer_player_id.notna()]
@@ -397,6 +447,8 @@ aqui=os.path.dirname(os.path.abspath(__file__))
 try: RJ=json.load(open(os.path.join(aqui,'ranking.json'),encoding='utf-8'))
 except Exception: RJ={}
 out['ranking_mx']=RJ.get('ligamx',{})
+# Ajustes del power ranking de fútbol, una sección por liga (la página escoge la de la liga activa)
+out['ranking_fut']={k:RJ.get(k,{}) for k in ['ligamx','premier','laliga','seriea','bundesliga','ligue1']}
 out['mx_jfix']=RJ.get('jornadas_mx',[])  # correcciones manuales de jornada para partidos aplazados que se confunden con la Liguilla
 
 order=list(M.index)
