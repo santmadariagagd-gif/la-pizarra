@@ -1545,24 +1545,38 @@ function histRender(key,pfx){
 // Lo que ESPN tiene cambia según la época: los recientes traen marcador por cuarto y líderes; los viejos
 // (probado: 1967 y 1986) solo el marcador final. Se muestra lo que haya, sin rellenar.
 // Los partidos terminados no cambian: se guardan en el navegador (pz_sb_<temporada>).
+// Respaldo: si ESPN no le puso la nota "Super Bowl" al partido, se busca el que enfrentó al campeón y al
+// subcampeón de la Historia. ESPN usa nombres actuales ("Los Angeles Rams" para los St. Louis Rams), así que
+// se compara por apodo (Rams) o ciudad (Washington).
+function sbTeamMatch(t,ours){const o=(ours||"").toLowerCase(); return !!t&&((t.name&&o.split(" ").includes(t.name.toLowerCase()))||(t.location&&o.includes(t.location.toLowerCase())));}
+function sbRow(season){return (D.historia?.nfl||[]).find(r=>r.t===String(season));}
 async function findSB(season){
   const ck=`pz_sb_${season}`;
   try{const c=JSON.parse(localStorage.getItem(ck)||"null"); if(c) return c;}catch(e){}
   const y=+season+1, days=[];
   for(let d=new Date(Date.UTC(y,0,7)); d<=new Date(Date.UTC(y,1,16)); d=new Date(d.getTime()+864e5)) if(d.getUTCDay()===0) days.push(d.toISOString().slice(0,10).replace(/-/g,""));
   const res=await Promise.all(days.map(d=>fetch(`${ESPN}/site/v2/sports/football/nfl/scoreboard?dates=${d}&seasontype=3`).then(r=>r.json()).catch(()=>({events:[]}))));
-  const e=res.flatMap(r=>r.events||[]).find(ev=>(ev.competitions?.[0]?.notes||[]).some(n=>/super bowl/i.test(n.headline||"")));
+  const all=res.flatMap(r=>r.events||[]);
+  let e=all.find(ev=>(ev.competitions?.[0]?.notes||[]).some(n=>/super bowl/i.test(n.headline||"")));
+  if(!e){const r=sbRow(season); if(r) e=all.filter(ev=>{const ts=(ev.competitions?.[0]?.competitors||[]).map(c=>c.team);
+      return ts.length===2&&[r.c,r.s].every(n=>ts.some(t=>sbTeamMatch(t,n)));}).sort((a,b)=>new Date(b.date)-new Date(a.date))[0]||null;}
   if(e&&e.status?.type?.completed){try{localStorage.setItem(ck,JSON.stringify(e));}catch(err){}}
   return e||null;
 }
 async function openSB(season){
   $("#gbody").innerHTML=`<p class="note" style="text-align:center">Cargando el Super Bowl de la temporada ${season}…</p>`; dlg.showModal();
   let e=null; try{e=await findSB(season);}catch(err){}
-  if(!e){$("#gbody").innerHTML=`<p class="note" style="text-align:center">No pudimos cargar este Super Bowl. Intenta de nuevo en un momento.</p>`; return;}
+  if(!e){
+    const r=sbRow(season);
+    if(!r){$("#gbody").innerHTML=`<p class="note" style="text-align:center">No pudimos cargar este Super Bowl. Intenta de nuevo en un momento.</p>`; return;}
+    const m=(r.f||"").match(/^(Super Bowl [^:]+):\s*(\d+)-(\d+)/);
+    $("#gbody").innerHTML=mheadHTML({n:r.c},{n:r.s},m?m[2]:null,m?m[3]:null,"Final")+`<p class="meta">${m?m[1]:"Super Bowl"} · Temporada ${r.t}</p>`;
+    return;
+  }
   const c=e.competitions?.[0]||{}, cs=c.competitors||[];
   const H=cs.find(x=>x.homeAway==="home")||cs[0]||{}, A=cs.find(x=>x.homeAway==="away")||cs[1]||{};
   const T=x=>({n:x.team?.displayName||"",logo:x.team?.logo});
-  const title=(c.notes||[]).map(n=>n.headline).find(h=>/super bowl/i.test(h||""))||"Super Bowl";
+  const title=(c.notes||[]).map(n=>n.headline).find(h=>/super bowl/i.test(h||""))||((sbRow(season)?.f||"").match(/^Super Bowl [^:]+/)||["Super Bowl"])[0];
   const fecha=new Date(e.date).toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric",timeZone:"UTC"});
   const v=c.venue||{}, lugar=[v.fullName,v.address?.city].filter(Boolean).join(" · ");
   let h=mheadHTML(T(A),T(H),A.score,H.score,"Final")+`<p class="meta">${title} · ${fecha}${lugar?` · ${lugar}`:""}${c.attendance>0?` · ${c.attendance.toLocaleString("es-MX")} asistentes`:""}</p>`;
@@ -1576,7 +1590,6 @@ async function openSB(season){
   const ab=id=>cs.find(x=>x.team?.id===id)?.team?.abbreviation||"";
   const L=(c.leaders||[]).map(g=>{const x=g.leaders?.[0]; return x?[LBL[g.name]||g.displayName,x.athlete?.displayName,ab(x.team?.id||x.athlete?.team?.id),es(x.displayValue)]:null;}).filter(Boolean);
   if(L.length) h+=`<h3>Líderes del partido</h3><ul class="hon">${L.map(([l,n,t,d])=>`<li><span class="hn"><b>${l}: ${n}${t?` (${t})`:""}</b><small>${d}</small></span></li>`).join("")}</ul>`;
-  if(!ls&&!L.length) h+=`<p class="note">ESPN solo tiene el marcador final de este Super Bowl; no hay marcador por cuarto ni estadísticas.</p>`;
   $("#gbody").innerHTML=h; $("#gbody").scrollTop=0;
 }
 function loadMxHist(){ $("#mxhistTitle").textContent=`Historia · ${flLabel()}`; histRender(FLIG,"mx"); }
