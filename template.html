@@ -187,6 +187,12 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 .live{color:var(--alt);font-weight:700}
 .headrow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
 .headrow h2{margin:0}
+.hq{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:inherit;margin:4px 0 6px}
+.hon.hist li{display:block}
+.hist .ht{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.hist .ht span{font-size:13px;color:var(--muted);white-space:nowrap}
+.hist .hc2{display:block;font:800 18px var(--display);margin:2px 0}
+.hist small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 .zn{display:inline-block;width:4px;height:18px;border-radius:2px;vertical-align:-4px;margin-right:8px}
 .zlegend{display:flex;flex-wrap:wrap;gap:6px 16px}
 .zlegend span{white-space:nowrap}
@@ -325,7 +331,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
     <option value="ger">Bundesliga</option>
     <option value="fra">Ligue 1</option>
     <option value="ucl">Champions League</option>
-  </select><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla">Liguilla</button><button data-tab="mxko" hidden>Eliminatoria</button><button data-tab="mxpr">Power Ranking</button><button data-tab="mxsquad" hidden>Plantel</button><button data-tab="mxhonors">Palmarés</button><button data-tab="mxrecords" hidden>Récords</button>
+  </select><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla">Liguilla</button><button data-tab="mxko" hidden>Eliminatoria</button><button data-tab="mxpr">Power Ranking</button><button data-tab="mxsquad" hidden>Plantel</button><button data-tab="mxhonors">Palmarés</button><button data-tab="mxhist" hidden>Historia</button><button data-tab="mxrecords" hidden>Récords</button>
 </nav>
 
 <div class="hero">
@@ -384,6 +390,12 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <p class="note" id="mxhonorsNote">Campeonatos de liga ganados por equipo, de mayor a menor. No incluye copas ni torneos internacionales.</p>
   <div class="tbl" id="mxHonorsWrap"><table id="mxHonorsTable"></table></div>
   <div id="selHonors"></div>
+</section>
+<section class="panel hidden" id="mxhist">
+  <h2 id="mxhistTitle">Historia</h2>
+  <input type="search" id="mxhistQ" class="hq" placeholder="Buscar equipo, jugador o año" aria-label="Buscar en la historia">
+  <p class="note" id="mxhistMsg" aria-live="polite"></p>
+  <ul class="hon hist" id="mxHist"></ul>
 </section>
 <section class="panel hidden" id="mxrecords">
   <h2>Récords de México</h2>
@@ -546,7 +558,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["nflgames","stats","nflpr","nflpo","nflhonors","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko"];
+const SECTIONS=["nflgames","stats","nflpr","nflpo","nflhonors","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -575,7 +587,7 @@ function loadNflPlayoffs(){
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
+  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
@@ -600,6 +612,7 @@ function applyLeagueTabs(){
   $('.subnav[data-for=mx] button[data-tab=mxrecords]').hidden=!L.nat;
   $('.subnav[data-for=mx] button[data-tab=mxsquad]').hidden=!L.nat;
   $('.subnav[data-for=mx] button[data-tab=mxko]').hidden=!L.cup;
+  $('.subnav[data-for=mx] button[data-tab=mxhist]').hidden=!(D.historia?.[FLIG]?.length);
   $("#mxgames .weeknav").style.display=L.nat?"none":""; // .weeknav tiene display:flex, que le gana a "hidden"
 }
 applyLeagueTabs();
@@ -607,7 +620,7 @@ $("#flSel").value=FLIG;
 $("#flSel").onchange=e=>{
   FLIG=e.target.value; try{localStorage.setItem("pz_flig",FLIG)}catch(err){}
   applyLeagueTabs();
-  mxLoaded=false; mxtLoaded=false; mxLgLoaded=false; mxpLoaded=false; mxprLoaded=false; selLoaded=false; uclKoLoaded=false; $("#mxGames").dataset.src=""; MXJ=[]; curJ=0; MXP=[]; MX_TABLE_ROWS=null;
+  mxLoaded=false; mxtLoaded=false; mxLgLoaded=false; mxpLoaded=false; mxprLoaded=false; selLoaded=false; uclKoLoaded=false; $("#mxhistQ").value=""; $("#mxGames").dataset.src=""; MXJ=[]; curJ=0; MXP=[]; MX_TABLE_ROWS=null;
   if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true"){ $("#heroTitle").textContent=flLabel(); if(LEAGUES[FLIG].nat) setLogo(pickLogo(SEL_LOGOS)); }
   const cur=document.querySelector('.subnav[data-for=mx] button[aria-current]');
   const id=cur&&!cur.hidden?cur.dataset.tab:"mxgames";
@@ -1489,6 +1502,26 @@ async function loadUclKo(){
         +`<p class="note">En los playoffs, los cabezas de serie (9º–16º) enfrentan por sorteo a los 17º–24º; los ganadores van a octavos contra los 8 primeros.</p>`;
     }
   }catch(e){uclKoLoaded=false; if(key===FLIG) $("#mxkoMsg").textContent="No pudimos cargar la eliminatoria. Intenta recargar la página en un momento.";}
+}
+
+// ----- Historia por temporada (datos fijos en build_site.py, HISTORIA) -----
+function loadMxHist(){
+  const L=D.historia?.[FLIG]||[];
+  $("#mxhistTitle").textContent=`Historia · ${flLabel()}`;
+  const norm=s=>(s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  // Apodos para que la búsqueda encuentre "chivas", "rayados", "la máquina", etc.
+  const APODO={"Guadalajara":"chivas rebano sagrado","América":"aguilas azulcremas","Cruz Azul":"la maquina cementeros","Pumas UNAM":"universidad","Tigres UANL":"felinos","Monterrey":"rayados","Pachuca":"tuzos","Toluca":"diablos rojos","Atlas":"zorros rojinegros","Necaxa":"rayos","León":"panzas verdes esmeraldas fiera","Santos Laguna":"guerreros","Atlante":"potros de hierro","Puebla":"camoteros la franja","Veracruz":"tiburones rojos","Zacatepec":"canero","Morelia":"monarcas","Tijuana":"xolos","Querétaro":"gallos blancos","Tecos":"uag","Leones Negros UdeG":"udeg"};
+  const scor=r=>r.g.length?`Goleo: ${r.g.map(([p,c])=>`${p} (${c})`).join(", ")}${r.n!=null?` · ${r.n} goles`:""}`:"";
+  const draw=()=>{
+    const q=norm($("#mxhistQ").value.trim());
+    const rows=[...L].reverse().filter(r=>!q||norm([r.t,r.c,r.s,APODO[r.c],APODO[r.s],...r.g.flat()].join(" ")).includes(q));
+    $("#mxHist").innerHTML=rows.map(r=>r.c
+      ?`<li><div class="ht"><b>${r.t}</b>${r.f?`<span>${r.f}</span>`:""}</div><span class="hc2">🏆 ${r.c}</span><small>Subcampeón: ${r.s}</small>${r.g.length?`<small>${scor(r)}</small>`:""}</li>`
+      :`<li><div class="ht"><b>${r.t}</b></div><small>${r.f||"Sin campeón"}</small></li>`).join("");
+    $("#mxhistMsg").textContent=q?(rows.length?`${rows.length} de ${L.length} temporadas`:"No encontramos nada con esa búsqueda."):`${L.filter(r=>r.c).length} campeonatos, del más reciente al más antiguo.`;
+  };
+  $("#mxhistQ").oninput=draw;
+  draw();
 }
 
 // ----- Power ranking de fútbol (Liga MX y las 5 ligas europeas; misma fórmula) -----
