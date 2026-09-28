@@ -37,7 +37,7 @@ def wd_query_text(country_qid):
 }}"""
 def wd_photos(q):
     url="https://query.wikidata.org/sparql?format=json&query="+urllib.parse.quote(q)
-    req=urllib.request.Request(url,headers={"User-Agent":"LaPizarra/1.0 (https://santmadariagagd-gif.github.io/la-pizarra/)","Accept":"application/sparql-results+json"})
+    req=urllib.request.Request(url,headers={"User-Agent":"LaPizarra/1.0 (https://lapizarra.mx)","Accept":"application/sparql-results+json"})
     with urllib.request.urlopen(req,timeout=90) as r: j=json.loads(r.read().decode("utf-8"))
     P={}
     for b in j["results"]["bindings"]:
