@@ -187,6 +187,7 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 .live{color:var(--alt);font-weight:700}
 .headrow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
 .headrow h2{margin:0}
+.games>.grp-h{grid-column:1/-1;margin:8px 0 0}
 .weeknav{display:flex;gap:6px;align-items:center}
 .weeknav select{font:600 16px var(--display)}
 .arrow{font:700 22px/1 var(--display);width:38px;height:38px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
@@ -307,12 +308,13 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 <nav class="subnav" data-for="mx" aria-label="Secciones Liga MX" hidden>
   <select id="flSel" class="league" aria-label="Competición">
     <option value="mx">Liga MX</option>
+    <option value="sel">Selección mexicana</option>
     <option value="eng">Premier League</option>
     <option value="esp">La Liga</option>
     <option value="ita">Serie A</option>
     <option value="ger">Bundesliga</option>
     <option value="fra">Ligue 1</option>
-  </select><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla">Liguilla</button><button data-tab="mxpr">Power Ranking</button><button data-tab="mxhonors">Palmarés</button>
+  </select><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla">Liguilla</button><button data-tab="mxpr">Power Ranking</button><button data-tab="mxsquad" hidden>Plantel</button><button data-tab="mxhonors">Palmarés</button>
 </nav>
 
 <div class="hero">
@@ -354,6 +356,11 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <div class="headrow"><h2 id="mxgTitle">Partidos de Liga MX</h2><div class="weeknav"><button class="arrow" id="jPrev" aria-label="Semana anterior">‹</button><select id="jSel" aria-label="Semana"></select><button class="arrow" id="jNext" aria-label="Semana siguiente">›</button></div></div>
   <p class="note" id="mxMsg" aria-live="polite">Cargando partidos…</p>
   <div class="games" id="mxGames"></div>
+</section>
+<section class="panel hidden" id="mxsquad">
+  <h2>Plantel de México</h2>
+  <p class="note" id="mxsqMsg" aria-live="polite">Cargando plantel…</p>
+  <div id="mxSquad"></div>
 </section>
 <section class="panel hidden" id="mxtable">
   <h2 id="mxtTitle">Tabla general</h2>
@@ -499,10 +506,14 @@ const LEAGUES={
   ita:{slug:"ita.1",label:"Serie A",liguilla:false,players:true,pr:true,photos:true,rk:"seriea"},
   ger:{slug:"ger.1",label:"Bundesliga",liguilla:false,players:true,pr:true,photos:true,rk:"bundesliga"},
   fra:{slug:"fra.1",label:"Ligue 1",liguilla:false,players:true,pr:true,photos:true,rk:"ligue1"},
+  // Selección: no es una liga. Sus partidos salen del calendario del equipo (id 203) en varios torneos
+  // y tiene su propia pestaña de Plantel; no lleva Tabla, Jugadores, Power Ranking ni Palmarés.
+  sel:{slug:"fifa.friendly",label:"Selección mexicana",liguilla:false,players:false,pr:false,photos:false,rk:null,nat:true},
 };
 let FLIG=localStorage.getItem("pz_flig")||"mx"; if(!LEAGUES[FLIG]) FLIG="mx";
 const flSlug=()=>LEAGUES[FLIG].slug, flLabel=()=>LEAGUES[FLIG].label;
 let MX_LOGOS=D.mx_logos||[];
+const SEL_LOGOS=[{href:"https://a.espncdn.com/i/teamlogos/countries/500/mex.png",rel:["full","default"]},{href:"https://a.espncdn.com/i/teamlogos/countries/500-dark/mex.png",rel:["full","dark"]}];
 function pickLogo(ls){ if(!ls||!ls.length) return null; const dark=document.documentElement.dataset.theme==="dark"||(document.documentElement.dataset.theme!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);
   const f=ls.find(l=>(l.rel||[]).includes(dark?"dark":"default"))||ls[0]; return f.href;}
 function setLogo(u){const im=$("#leagueLogo"); if(u){im.onerror=()=>{im.hidden=true};im.src=u;im.hidden=false;} else im.hidden=true;}
@@ -510,7 +521,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["nflgames","stats","nflpr","nflpo","nflhonors","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxhonors"];
+const SECTIONS=["nflgames","stats","nflpr","nflpo","nflhonors","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -535,13 +546,13 @@ function loadNflPlayoffs(){
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
+  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
   $(".nflart").toggleAttribute("hidden",sp==="mx"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
   $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:sp==="mx"?flLabel():`Fantasy Football · Semana ${D.gweek}`;
-  setLogo(sp==="mx"?pickLogo(MX_LOGOS):D.nfl_logo);
+  setLogo(sp==="mx"?(LEAGUES[FLIG].nat?pickLogo(SEL_LOGOS):pickLogo(MX_LOGOS)):D.nfl_logo);
   $("#heroSub").textContent= sp==="mx"?"":`Datos actualizados hasta la semana ${D.week}.`;
   showTab(sp==="nfl"?"nflgames":sp==="mx"?"mxgames":"fliga");
 }
@@ -556,14 +567,18 @@ function applyLeagueTabs(){
   $('.subnav[data-for=mx] button[data-tab=mxplayers]').hidden=!L.players;
   $('.subnav[data-for=mx] button[data-tab=mxpr]').hidden=!L.pr;
   $('.subnav[data-for=mx] button[data-tab=mxliguilla]').hidden=!L.liguilla;
+  $('.subnav[data-for=mx] button[data-tab=mxtable]').hidden=!!L.nat;
+  $('.subnav[data-for=mx] button[data-tab=mxhonors]').hidden=!!L.nat;
+  $('.subnav[data-for=mx] button[data-tab=mxsquad]').hidden=!L.nat;
+  $("#mxgames .weeknav").style.display=L.nat?"none":""; // .weeknav tiene display:flex, que le gana a "hidden"
 }
 applyLeagueTabs();
 $("#flSel").value=FLIG;
 $("#flSel").onchange=e=>{
   FLIG=e.target.value; try{localStorage.setItem("pz_flig",FLIG)}catch(err){}
   applyLeagueTabs();
-  mxLoaded=false; mxtLoaded=false; mxLgLoaded=false; mxpLoaded=false; mxprLoaded=false; MXJ=[]; curJ=0; MXP=[]; MX_TABLE_ROWS=null;
-  if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") $("#heroTitle").textContent=flLabel();
+  mxLoaded=false; mxtLoaded=false; mxLgLoaded=false; mxpLoaded=false; mxprLoaded=false; selLoaded=false; $("#mxGames").dataset.src=""; MXJ=[]; curJ=0; MXP=[]; MX_TABLE_ROWS=null;
+  if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true"){ $("#heroTitle").textContent=flLabel(); if(LEAGUES[FLIG].nat) setLogo(pickLogo(SEL_LOGOS)); }
   const cur=document.querySelector('.subnav[data-for=mx] button[aria-current]');
   const id=cur&&!cur.hidden?cur.dataset.tab:"mxgames";
   showTab(id);
@@ -1108,6 +1123,7 @@ function mxCard(e,i){
 }
 let mxLoaded=false, curJ=0, MXJ=[];
 async function loadMxGames(){
+  if(LEAGUES[FLIG].nat) return loadSelGames();
   if(mxLoaded) return; mxLoaded=true;
   try{
     $("#mxgTitle").textContent=`Partidos de ${flLabel()}`;
@@ -1195,14 +1211,14 @@ function mxSubs(r,K,R){
   return res;
 }
 async function openMx(id){
-  const {ev}=await mxSeason(); const e=ev.find(x=>x.id===id); if(!e) return;
+  const {ev}=LEAGUES[FLIG].nat?await selSeason():await mxSeason(); const e=ev.find(x=>x.id===id); if(!e) return;
   const c=mxCard(e,0), comp=e.competitions?.[0]||{}, cs=comp.competitors||[];
   const H=cs.find(x=>x.homeAway==="home")||{}, A=cs.find(x=>x.homeAway==="away")||{};
-  const T=x=>({n:x.team?.shortDisplayName||x.team?.displayName,logo:x.team?.logo});
+  const T=x=>({n:esTeam(x.team?.shortDisplayName||x.team?.displayName),logo:x.team?.logo});
   const hs=c.teams[0].score, as=c.teams[1].score;
   let h=mheadHTML(T(H),T(A),hs,as,c.status||(c.tbd?"Por definir horario":fHour(c.when)))+`<p class="meta">${cap(fDay(c.when))}${c.tbd?" · Por definir horario":" · "+fHour(c.when)} · ${c.place}</p>`;
   $("#gbody").innerHTML=h+`<p class="note" style="text-align:center">Cargando detalle…</p>`; dlg.showModal();
-  let sm=null; try{sm=await fetch(`${ESPN}/site/v2/sports/soccer/${flSlug()}/summary?event=${id}`).then(r=>r.json());}catch(err){}
+  let sm=null; try{sm=await fetch(`${ESPN}/site/v2/sports/soccer/${e._slug||flSlug()}/summary?event=${id}`).then(r=>r.json());}catch(err){}
   if(c.probs){h+=`<h3>Previa</h3><div class="tbl"><table class="cmp"><tbody><tr><td>${mlTxt(c.teams[0].ml)}</td><td>Momio</td><td>${mlTxt(c.teams[1].ml)}</td></tr><tr><td>${Math.round(c.probs[0].p*100)}%</td><td>Probabilidad (empate ${Math.round(c.probs[1].p*100)}%)</td><td>${Math.round(c.probs[2].p*100)}%</td></tr><tr><td colspan="3" style="text-align:center" id="dwx"></td></tr></tbody></table></div>`;}
   if(sm){
     const K=(sm.keyEvents||[]).map(k=>({m:k.clock?.displayValue||"",tp:EVT(k.type?.text||""),txt:k.text||"",tm:k.team?.displayName||"",who:(k.participants||[]).map(p=>p.athlete?.displayName).filter(Boolean)}))
@@ -1233,7 +1249,7 @@ async function openMx(id){
         const subOut={}; S.forEach(x=>{if(x.outP&&st.has(x.outP)) subOut[x.outP.athlete?.displayName]={m:x.m,inn:x.inP?.athlete?.displayName||x.inName};});
         const rest=S.filter(x=>!(x.outP&&st.has(x.outP)));
         const nm=(p,n)=>p?.athlete?.displayName||n||"";
-        return `<div class="pitch"><h4><span>${r.team?.shortDisplayName||r.team?.displayName||""}</span><span class="tm">${r.formation||""}</span></h4>${pitchSVG(r,subOut)}${rest.length?`<div class="subs">${rest.map(x=>`<span>${x.m?`<b>${x.m}</b>`:""}<span class="in">↑ ${nm(x.inP,x.inName)}</span>${nm(x.outP,x.outName)?` · <span class="out">↓ ${nm(x.outP,x.outName)}</span>`:""}</span>`).join("")}</div>`:""}</div>`;}).join("")}</div>`;
+        return `<div class="pitch"><h4><span>${esTeam(r.team?.shortDisplayName||r.team?.displayName||"")}</span><span class="tm">${r.formation||""}</span></h4>${pitchSVG(r,subOut)}${rest.length?`<div class="subs">${rest.map(x=>`<span>${x.m?`<b>${x.m}</b>`:""}<span class="in">↑ ${nm(x.inP,x.inName)}</span>${nm(x.outP,x.outName)?` · <span class="out">↓ ${nm(x.outP,x.outName)}</span>`:""}</span>`).join("")}</div>`:""}</div>`;}).join("")}</div>`;
       // Igual que en NFL (Pase/Carrera/Recepción): una tabla por posición, cada una con sus propias
       // columnas y solo con quien jugó ahí. Una columna se omite si nadie de ese grupo tiene dato
       // (o todos traen 0), salvo las dos primeras de cada grupo, que siempre se muestran.
@@ -1261,13 +1277,100 @@ async function openMx(id){
           if(!cols.length) continue;
           block+=`<h4 class="stat-cat">${title}</h4><div class="tbl"><table data-freeze="1"><thead><tr><th class="l">Jugador</th>${cols.map(k=>`<th>${LBL[k]}</th>`).join("")}</tr></thead><tbody>${rows.map(p=>`<tr><td class="l"><span class="nm">${p.n}</span>${p.pos&&p.pos!=="SUB"?`<span class="tm">${p.pos}</span>`:""}</td>${cols.map(k=>`<td>${p.st[k]??"–"}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
         }
-        if(block) h+=`<h3>${logoImg(r.team?.logo||r.team?.logos?.[0]?.href,"tlogo")}${r.team?.displayName||""}</h3>`+block;
+        if(block) h+=`<h3>${logoImg(r.team?.logo||r.team?.logos?.[0]?.href,"tlogo")}${esTeam(r.team?.displayName||"")}</h3>`+block;
       }
     } else if(e.status?.type?.state==="pre") h+=`<p class="note" style="text-align:center;margin-top:18px">Las alineaciones se publican cerca de la hora del partido.</p>`;
   }
   $("#gbody").innerHTML=h;
   $("#gbody").querySelectorAll(".tbl").forEach(freezeTable);
   if(c.probs&&!c.tbd){const g=await geocode(c.city); if(g) fillWeather($("#dwx"),g.latitude,g.longitude,c.when.getTime());}
+}
+
+// ----- Selección mexicana -----
+// ESPN da el calendario de un equipo por torneo: /teams/203/schedule (jugados) y ?fixture=true (próximos).
+// Se piden varios torneos y se juntan; si alguno no existe o falla, simplemente no aporta partidos.
+// El marcador aquí viene como objeto {value, displayValue} (no como texto, como en el scoreboard) y
+// el escudo viene en "logos", así que se normaliza para reutilizar mxCard/gameCard/openMx tal cual.
+const SEL_ID="203";
+const SEL_COMPS=[["fifa.friendly","Amistoso"],["fifa.world","Mundial"],["concacaf.gold","Copa Oro"],["concacaf.nations.league","Nations League"],["fifa.worldq.concacaf","Eliminatoria"]];
+const SEL_COMP=Object.fromEntries(SEL_COMPS);
+// Nombres de selecciones en español (ESPN los da en inglés). Si no está en la lista, se deja igual.
+const ES_TEAM={"Mexico":"México","United States":"Estados Unidos","USA":"Estados Unidos","Peru":"Perú","Belgium":"Bélgica","Iceland":"Islandia","Panama":"Panamá","Brazil":"Brasil","Canada":"Canadá","Germany":"Alemania","Spain":"España","France":"Francia","England":"Inglaterra","Italy":"Italia","Netherlands":"Países Bajos","Japan":"Japón","South Korea":"Corea del Sur","Korea Republic":"Corea del Sur","Haiti":"Haití","Trinidad and Tobago":"Trinidad y Tobago","Curacao":"Curazao","Curaçao":"Curazao","Morocco":"Marruecos","South Africa":"Sudáfrica","Switzerland":"Suiza","Croatia":"Croacia","Norway":"Noruega","Sweden":"Suecia","Denmark":"Dinamarca","Poland":"Polonia","Turkey":"Turquía","Türkiye":"Turquía","Saudi Arabia":"Arabia Saudita","Iran":"Irán","Egypt":"Egipto","New Zealand":"Nueva Zelanda","Scotland":"Escocia","Wales":"Gales","Czechia":"Chequia","Czech Republic":"Chequia","Ukraine":"Ucrania","Cameroon":"Camerún","Ivory Coast":"Costa de Marfil","Côte d'Ivoire":"Costa de Marfil","Tunisia":"Túnez","Algeria":"Argelia","Uzbekistan":"Uzbekistán","Jordan":"Jordania","Cape Verde":"Cabo Verde","Cape Verde Islands":"Cabo Verde","Ireland":"Irlanda","Republic of Ireland":"Irlanda","Northern Ireland":"Irlanda del Norte","Greece":"Grecia","Hungary":"Hungría","Romania":"Rumania","Russia":"Rusia","Finland":"Finlandia","Slovakia":"Eslovaquia","Slovenia":"Eslovenia","Albania":"Albania","Bosnia and Herzegovina":"Bosnia y Herzegovina","Dominican Republic":"República Dominicana","Suriname":"Surinam","Guadeloupe":"Guadalupe","Martinique":"Martinica","Iraq":"Irak","China PR":"China","Paraguay":"Paraguay"};
+const esTeam=n=>ES_TEAM[n]||n;
+let SEL_CACHE=null;
+function selSeason(){
+  if(SEL_CACHE) return SEL_CACHE;
+  SEL_CACHE=(async()=>{
+    const get=(slug,fx)=>fetch(`${ESPN}/site/v2/sports/soccer/${slug}/teams/${SEL_ID}/schedule${fx?"?fixture=true":""}`).then(r=>r.ok?r.json():{events:[]}).then(j=>(j.events||[]).map(e=>{e._slug=e.league?.slug||slug; return e;})).catch(()=>[]);
+    const lists=await Promise.all(SEL_COMPS.flatMap(([s])=>[get(s,false),get(s,true)]));
+    const byId=new Map(); lists.flat().forEach(e=>{if(e?.id) byId.set(e.id,e);});
+    const ev=[...byId.values()].map(e=>{
+      if(!e.status) e.status=e.competitions?.[0]?.status; // en el calendario del equipo el estado viene dentro de competitions
+      for(const c of e.competitions?.[0]?.competitors||[]){
+        if(c.score&&typeof c.score==="object") c.score=c.score.displayValue??c.score.value??null;
+        if(c.team&&!c.team.logo) c.team.logo=pickLogo(c.team.logos)||c.team.logos?.[0]?.href;
+        if(!Array.isArray(c.records)) c.records=[]; // aquí "record" no trae G-E-P útil
+      }
+      return e;}).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    if(!ev.length) throw new Error("sin partidos");
+    return {ev};
+  })();
+  SEL_CACHE.catch(()=>{SEL_CACHE=null;});
+  return SEL_CACHE;
+}
+let selLoaded=false;
+async function loadSelGames(){
+  if(selLoaded&&$("#mxGames").dataset.src==="sel") return; selLoaded=true;
+  $("#mxgTitle").textContent="Partidos de México"; $("#mxGames").innerHTML=""; $("#mxGames").dataset.src="sel";
+  $("#mxMsg").textContent="Cargando partidos…";
+  try{
+    const {ev}=await selSeason(); if(!LEAGUES[FLIG].nat) return;
+    const up=ev.filter(e=>e.status?.type?.state!=="post");
+    const done=ev.filter(e=>e.status?.type?.state==="post").reverse(); // del más reciente al más viejo
+    let i=0;
+    const cards=list=>list.map(e=>{const c=mxCard(e,i++); c.place=[SEL_COMP[e._slug]||e.league?.name||"",c.place].filter(Boolean).join(" · ");
+      c.teams.forEach(t=>{t.n=esTeam(t.n); t.sub=t.sub.replace(/ · $/,"");}); return c;});
+    const cu=cards(up), cd=cards(done);
+    $("#mxGames").innerHTML=(cu.length?`<h3 class="grp-h">Próximos</h3>${cu.map(gameCard).join("")}`:"")+(cd.length?`<h3 class="grp-h">Resultados</h3>${cd.map(gameCard).join("")}`:"");
+    $("#mxMsg").textContent="";
+    for(const c of cu){ if(c.status||c.tbd) continue; const g=await geocode(c.city); if(g) fillWeather(document.getElementById(c.wxId),g.latitude,g.longitude,c.when.getTime()); }
+  }catch(e){selLoaded=false; if(LEAGUES[FLIG].nat) $("#mxMsg").textContent="No pudimos cargar los partidos de México. Intenta recargar la página en un momento.";}
+}
+// Plantel: lista del equipo en ESPN (/teams/203/roster), agrupada por posición. El club sale de
+// "defaultTeam" (solo trae el id) y se busca su nombre y escudo en la tabla de su liga
+// (/apis/v2/.../standings, la misma que usa Tabla). Si la liga no tiene tabla en ESPN, se muestra el
+// nombre de la liga.
+const LIGA_NOM={"mex.1":"Liga MX","eng.1":"Premier League","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","usa.1":"MLS","ned.1":"Eredivisie","por.1":"Liga Portugal","rus.1":"Liga Premier de Rusia","gre.1":"Superliga de Grecia","bel.1":"Liga de Bélgica","tur.1":"Superliga de Turquía","sco.1":"Liga de Escocia","eng.2":"Championship","esp.2":"Segunda División","ksa.1":"Liga de Arabia Saudita"};
+const CLUBS_CACHE={};
+function clubsOf(slug){
+  if(!CLUBS_CACHE[slug]) CLUBS_CACHE[slug]=fetch(`${ESPN}/v2/sports/soccer/${slug}/standings`).then(r=>r.json()).then(j=>{
+    const m={}; const walk=o=>{if(!o||typeof o!=="object") return; if(Array.isArray(o)) return o.forEach(walk);
+      if(o.team?.id&&o.team?.displayName) m[o.team.id]={n:o.team.shortDisplayName||o.team.displayName,logo:o.team.logos?.[0]?.href};
+      if(o.children) walk(o.children); if(o.standings) walk(o.standings); if(o.entries) walk(o.entries);};
+    walk(j); return m;}).catch(()=>({}));
+  return CLUBS_CACHE[slug];
+}
+let selSqLoaded=false;
+async function loadSelSquad(){
+  if(selSqLoaded) return; selSqLoaded=true;
+  try{
+    const j=await (await fetch(`${ESPN}/site/v2/sports/soccer/fifa.friendly/teams/${SEL_ID}/roster`)).json();
+    const A=(j.athletes||[]).filter(a=>a.status?.type!=="inactive");
+    if(!A.length) throw new Error("vacío");
+    const ref=(a,k,re)=>(a[k]?.$ref||"").match(re)?.[1];
+    A.forEach(a=>{a._lg=ref(a,"defaultLeague",/leagues\/([^?/]+)/); a._tm=ref(a,"defaultTeam",/teams\/(\d+)/);});
+    const slugs=[...new Set(A.map(a=>a._lg).filter(Boolean))];
+    const maps=Object.fromEntries(await Promise.all(slugs.map(async s=>[s,await clubsOf(s)])));
+    const G=[["G","Porteros"],["D","Defensas"],["M","Medios"],["F","Delanteros"]];
+    const gOf=a=>{const p=(a.position?.abbreviation||"").toUpperCase()[0]; return ["G","D","M","F"].includes(p)?p:"M";};
+    const row=a=>{const cl=maps[a._lg]?.[a._tm]; const lg=LIGA_NOM[a._lg]||"";
+      const club=cl?`${logoImg(cl.logo,"tlogo")}<span class="nm">${cl.n}</span>`:`<span class="nm">${lg||"–"}</span>`;
+      return `<tr><td class="l"><span class="nm">${a.displayName||""}</span></td><td class="l">${club}</td><td>${a.age??"–"}</td></tr>`;};
+    $("#mxSquad").innerHTML=G.map(([g,t])=>{const L=A.filter(a=>gOf(a)===g); if(!L.length) return "";
+      return `<h4 class="stat-cat">${t}</h4><div class="tbl"><table data-freeze="1"><thead><tr><th class="l">Jugador</th><th class="l">Club</th><th>Edad</th></tr></thead><tbody>${L.map(row).join("")}</tbody></table></div>`;}).join("");
+    $("#mxSquad").querySelectorAll(".tbl").forEach(freezeTable);
+    $("#mxsqMsg").textContent=""; // ESPN también manda "coach", pero trae más de uno sin decir cuál es el actual: no se muestra
+  }catch(e){selSqLoaded=false;$("#mxsqMsg").textContent="No pudimos cargar el plantel. Intenta recargar la página en un momento.";}
 }
 
 // ----- Power ranking de fútbol (Liga MX y las 5 ligas europeas; misma fórmula) -----
