@@ -330,8 +330,53 @@ for (t,c,s,f) in _PRE:
 for i,(c,s,f) in enumerate(_SBR):
     y=1966+i; HIST_NFL.append((str(y),c,s,f"Super Bowl {_SB[i]}: {f}",_MVP.get(y,[]),None))
 
+# Premios de AP por temporada: año -> (jugador, equipo). Fuente: Wikipedia "AP NFL Offensive/Defensive
+# Player of the Year" (cada año respaldado por la nota de AP de esa fecha; lista de ganadores múltiples coherente).
+_OPOY={1972:("Larry Brown","Washington"),1973:("O. J. Simpson","Buffalo Bills"),1974:("Ken Stabler","Oakland Raiders"),
+ 1975:("Fran Tarkenton","Minnesota Vikings"),1976:("Bert Jones","Baltimore Colts"),1977:("Walter Payton","Chicago Bears"),
+ 1978:("Earl Campbell","Houston Oilers"),1979:("Earl Campbell","Houston Oilers"),1980:("Earl Campbell","Houston Oilers"),
+ 1981:("Ken Anderson","Cincinnati Bengals"),1982:("Dan Fouts","San Diego Chargers"),1983:("Joe Theismann","Washington"),
+ 1984:("Dan Marino","Miami Dolphins"),1985:("Marcus Allen","Los Angeles Raiders"),1986:("Eric Dickerson","Los Angeles Rams"),
+ 1987:("Jerry Rice","San Francisco 49ers"),1988:("Roger Craig","San Francisco 49ers"),1989:("Joe Montana","San Francisco 49ers"),
+ 1990:("Warren Moon","Houston Oilers"),1991:("Thurman Thomas","Buffalo Bills"),1992:("Steve Young","San Francisco 49ers"),
+ 1993:("Jerry Rice","San Francisco 49ers"),1994:("Barry Sanders","Detroit Lions"),1995:("Brett Favre","Green Bay Packers"),
+ 1996:("Terrell Davis","Denver Broncos"),1997:("Barry Sanders","Detroit Lions"),1998:("Terrell Davis","Denver Broncos"),
+ 1999:("Marshall Faulk","St. Louis Rams"),2000:("Marshall Faulk","St. Louis Rams"),2001:("Marshall Faulk","St. Louis Rams"),
+ 2002:("Priest Holmes","Kansas City Chiefs"),2003:("Jamal Lewis","Baltimore Ravens"),2004:("Peyton Manning","Indianapolis Colts"),
+ 2005:("Shaun Alexander","Seattle Seahawks"),2006:("LaDainian Tomlinson","San Diego Chargers"),2007:("Tom Brady","New England Patriots"),
+ 2008:("Drew Brees","New Orleans Saints"),2009:("Chris Johnson","Tennessee Titans"),2010:("Tom Brady","New England Patriots"),
+ 2011:("Drew Brees","New Orleans Saints"),2012:("Adrian Peterson","Minnesota Vikings"),2013:("Peyton Manning","Denver Broncos"),
+ 2014:("DeMarco Murray","Dallas Cowboys"),2015:("Cam Newton","Carolina Panthers"),2016:("Matt Ryan","Atlanta Falcons"),
+ 2017:("Todd Gurley","Los Angeles Rams"),2018:("Patrick Mahomes","Kansas City Chiefs"),2019:("Michael Thomas","New Orleans Saints"),
+ 2020:("Derrick Henry","Tennessee Titans"),2021:("Cooper Kupp","Los Angeles Rams"),2022:("Justin Jefferson","Minnesota Vikings"),
+ 2023:("Christian McCaffrey","San Francisco 49ers"),2024:("Saquon Barkley","Philadelphia Eagles"),2025:("Jaxon Smith-Njigba","Seattle Seahawks")}
+_DPOY={1971:("Alan Page","Minnesota Vikings"),1972:("Joe Greene","Pittsburgh Steelers"),1973:("Dick Anderson","Miami Dolphins"),
+ 1974:("Joe Greene","Pittsburgh Steelers"),1975:("Mel Blount","Pittsburgh Steelers"),1976:("Jack Lambert","Pittsburgh Steelers"),
+ 1977:("Harvey Martin","Dallas Cowboys"),1978:("Randy Gradishar","Denver Broncos"),1979:("Lee Roy Selmon","Tampa Bay Buccaneers"),
+ 1980:("Lester Hayes","Oakland Raiders"),1981:("Lawrence Taylor","New York Giants"),1982:("Lawrence Taylor","New York Giants"),
+ 1983:("Doug Betters","Miami Dolphins"),1984:("Kenny Easley","Seattle Seahawks"),1985:("Mike Singletary","Chicago Bears"),
+ 1986:("Lawrence Taylor","New York Giants"),1987:("Reggie White","Philadelphia Eagles"),1988:("Mike Singletary","Chicago Bears"),
+ 1989:("Keith Millard","Minnesota Vikings"),1990:("Bruce Smith","Buffalo Bills"),1991:("Pat Swilling","New Orleans Saints"),
+ 1992:("Cortez Kennedy","Seattle Seahawks"),1993:("Rod Woodson","Pittsburgh Steelers"),1994:("Deion Sanders","San Francisco 49ers"),
+ 1995:("Bryce Paup","Buffalo Bills"),1996:("Bruce Smith","Buffalo Bills"),1997:("Dana Stubblefield","San Francisco 49ers"),
+ 1998:("Reggie White","Green Bay Packers"),1999:("Warren Sapp","Tampa Bay Buccaneers"),2000:("Ray Lewis","Baltimore Ravens"),
+ 2001:("Michael Strahan","New York Giants"),2002:("Derrick Brooks","Tampa Bay Buccaneers"),2003:("Ray Lewis","Baltimore Ravens"),
+ 2004:("Ed Reed","Baltimore Ravens"),2005:("Brian Urlacher","Chicago Bears"),2006:("Jason Taylor","Miami Dolphins"),
+ 2007:("Bob Sanders","Indianapolis Colts"),2008:("James Harrison","Pittsburgh Steelers"),2009:("Charles Woodson","Green Bay Packers"),
+ 2010:("Troy Polamalu","Pittsburgh Steelers"),2011:("Terrell Suggs","Baltimore Ravens"),2012:("J. J. Watt","Houston Texans"),
+ 2013:("Luke Kuechly","Carolina Panthers"),2014:("J. J. Watt","Houston Texans"),2015:("J. J. Watt","Houston Texans"),
+ 2016:("Khalil Mack","Oakland Raiders"),2017:("Aaron Donald","Los Angeles Rams"),2018:("Aaron Donald","Los Angeles Rams"),
+ 2019:("Stephon Gilmore","New England Patriots"),2020:("Aaron Donald","Los Angeles Rams"),2021:("T. J. Watt","Pittsburgh Steelers"),
+ 2022:("Nick Bosa","San Francisco 49ers"),2023:("Myles Garrett","Cleveland Browns"),2024:("Patrick Surtain II","Denver Broncos"),
+ 2025:("Myles Garrett","Cleveland Browns")}
+# Premios por temporada en el orden en que se muestran: [etiqueta, jugador, equipo]
+AW_NFL={}
+for lbl,dd in [("Jugador Ofensivo del Año",_OPOY),("Jugador Defensivo del Año",_DPOY)]:
+    for y,(p,t) in dd.items(): AW_NFL.setdefault(str(y),[]).append([lbl,p,t])
+
 HISTORIA = {"mx": HIST_MX, "nfl": HIST_NFL}
-out['historia']={k:[{"t":t,"c":c,"s":s,"f":f,"g":[list(x) for x in g],"n":n} for (t,c,s,f,g,n) in v] for k,v in HISTORIA.items()}
+HIST_AW = {"nfl": AW_NFL}  # premios extra por temporada (se muestran debajo del MVP)
+out['historia']={k:[{"t":t,"c":c,"s":s,"f":f,"g":[list(x) for x in g],"n":n,"a":HIST_AW.get(k,{}).get(t,[])} for (t,c,s,f,g,n) in v] for k,v in HISTORIA.items()}
 # Selección mexicana: palmarés y récords (datos fijos). Fuentes: Wikipedia "Mexico national football
 # team" y "... records and statistics" (al 5 jul 2026), cruzado con Récord / Mediotiempo para los goles
 # de Raúl Jiménez (48 oficiales FIFA; 49 contando el de Martinica). Actualizar a mano.
