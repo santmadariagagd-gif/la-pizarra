@@ -369,10 +369,101 @@ _DPOY={1971:("Alan Page","Minnesota Vikings"),1972:("Joe Greene","Pittsburgh Ste
  2019:("Stephon Gilmore","New England Patriots"),2020:("Aaron Donald","Los Angeles Rams"),2021:("T. J. Watt","Pittsburgh Steelers"),
  2022:("Nick Bosa","San Francisco 49ers"),2023:("Myles Garrett","Cleveland Browns"),2024:("Patrick Surtain II","Denver Broncos"),
  2025:("Myles Garrett","Cleveland Browns")}
+# Novatos de AP: año -> (jugador, equipo) o lista si hubo empate. Fuentes: Wikipedia "AP NFL Rookie of the Year"
+# cruzada con Pro-Football-Reference (coinciden año por año). De 1957 a 1966 AP daba un solo "Novato del Año"
+# (se muestra así); desde 1967 hay ofensivo y defensivo. 1960: PFR dice que AP no dio premios ese año y
+# Wikipedia sí pone ganador -> no cuadran, no se muestra (igual que el MVP).
+_ROY={1957:("Jim Brown","Cleveland Browns"),1958:("Jimmy Orr","Pittsburgh Steelers"),1959:("Boyd Dowler","Green Bay Packers"),
+ 1961:("Mike Ditka","Chicago Bears"),1962:("Ronnie Bull","Chicago Bears"),1963:("Paul Flatley","Minnesota Vikings"),
+ 1964:("Charley Taylor","Washington"),1965:("Gale Sayers","Chicago Bears"),1966:("Johnny Roland","St. Louis Cardinals")}
+_OROY={1967:("Mel Farr","Detroit Lions"),1968:("Earl McCullouch","Detroit Lions"),1969:("Calvin Hill","Dallas Cowboys"),
+ 1970:("Dennis Shaw","Buffalo Bills"),1971:("John Brockington","Green Bay Packers"),1972:("Franco Harris","Pittsburgh Steelers"),
+ 1973:("Chuck Foreman","Minnesota Vikings"),1974:("Don Woods","San Diego Chargers"),1975:("Mike Thomas","Washington"),
+ 1976:("Sammy White","Minnesota Vikings"),1977:("Tony Dorsett","Dallas Cowboys"),1978:("Earl Campbell","Houston Oilers"),
+ 1979:("Ottis Anderson","St. Louis Cardinals"),1980:("Billy Sims","Detroit Lions"),1981:("George Rogers","New Orleans Saints"),
+ 1982:("Marcus Allen","Los Angeles Raiders"),1983:("Eric Dickerson","Los Angeles Rams"),1984:("Louis Lipps","Pittsburgh Steelers"),
+ 1985:("Eddie Brown","Cincinnati Bengals"),1986:("Rueben Mayes","New Orleans Saints"),1987:("Troy Stradford","Miami Dolphins"),
+ 1988:("John Stephens","New England Patriots"),1989:("Barry Sanders","Detroit Lions"),1990:("Emmitt Smith","Dallas Cowboys"),
+ 1991:("Leonard Russell","New England Patriots"),1992:("Carl Pickens","Cincinnati Bengals"),1993:("Jerome Bettis","Los Angeles Rams"),
+ 1994:("Marshall Faulk","Indianapolis Colts"),1995:("Curtis Martin","New England Patriots"),1996:("Eddie George","Houston Oilers"),
+ 1997:("Warrick Dunn","Tampa Bay Buccaneers"),1998:("Randy Moss","Minnesota Vikings"),1999:("Edgerrin James","Indianapolis Colts"),
+ 2000:("Mike Anderson","Denver Broncos"),2001:("Anthony Thomas","Chicago Bears"),2002:("Clinton Portis","Denver Broncos"),
+ 2003:("Anquan Boldin","Arizona Cardinals"),2004:("Ben Roethlisberger","Pittsburgh Steelers"),2005:("Cadillac Williams","Tampa Bay Buccaneers"),
+ 2006:("Vince Young","Tennessee Titans"),2007:("Adrian Peterson","Minnesota Vikings"),2008:("Matt Ryan","Atlanta Falcons"),
+ 2009:("Percy Harvin","Minnesota Vikings"),2010:("Sam Bradford","St. Louis Rams"),2011:("Cam Newton","Carolina Panthers"),
+ 2012:("Robert Griffin III","Washington"),2013:("Eddie Lacy","Green Bay Packers"),2014:("Odell Beckham Jr.","New York Giants"),
+ 2015:("Todd Gurley","St. Louis Rams"),2016:("Dak Prescott","Dallas Cowboys"),2017:("Alvin Kamara","New Orleans Saints"),
+ 2018:("Saquon Barkley","New York Giants"),2019:("Kyler Murray","Arizona Cardinals"),2020:("Justin Herbert","Los Angeles Chargers"),
+ 2021:("Ja'Marr Chase","Cincinnati Bengals"),2022:("Garrett Wilson","New York Jets"),2023:("C. J. Stroud","Houston Texans"),
+ 2024:("Jayden Daniels","Washington"),2025:("Tetairoa McMillan","Carolina Panthers")}
+_DROY={1967:("Lem Barney","Detroit Lions"),1968:("Claude Humphrey","Atlanta Falcons"),1969:("Joe Greene","Pittsburgh Steelers"),
+ 1970:("Bruce Taylor","San Francisco 49ers"),1971:("Isiah Robertson","Los Angeles Rams"),1972:("Willie Buchanon","Green Bay Packers"),
+ 1973:("Wally Chambers","Chicago Bears"),1974:("Jack Lambert","Pittsburgh Steelers"),1975:("Robert Brazile","Houston Oilers"),
+ 1976:("Mike Haynes","New England Patriots"),1977:("A. J. Duhe","Miami Dolphins"),1978:("Al Baker","Detroit Lions"),
+ 1979:("Jim Haslett","Buffalo Bills"),1980:[("Buddy Curry","Atlanta Falcons"),("Al Richardson","Atlanta Falcons")],
+ 1981:("Lawrence Taylor","New York Giants"),1982:("Chip Banks","Cleveland Browns"),1983:("Vernon Maxwell","Baltimore Colts"),
+ 1984:("Bill Maas","Kansas City Chiefs"),1985:("Duane Bickett","Indianapolis Colts"),1986:("Leslie O'Neal","San Diego Chargers"),
+ 1987:("Shane Conlan","Buffalo Bills"),1988:("Erik McMillan","New York Jets"),1989:("Derrick Thomas","Kansas City Chiefs"),
+ 1990:("Mark Carrier","Chicago Bears"),1991:("Mike Croel","Denver Broncos"),1992:("Dale Carter","Kansas City Chiefs"),
+ 1993:("Dana Stubblefield","San Francisco 49ers"),1994:("Tim Bowens","Miami Dolphins"),1995:("Hugh Douglas","New York Jets"),
+ 1996:("Simeon Rice","Arizona Cardinals"),1997:("Peter Boulware","Baltimore Ravens"),1998:("Charles Woodson","Oakland Raiders"),
+ 1999:("Jevon Kearse","Tennessee Titans"),2000:("Brian Urlacher","Chicago Bears"),2001:("Kendrell Bell","Pittsburgh Steelers"),
+ 2002:("Julius Peppers","Carolina Panthers"),2003:("Terrell Suggs","Baltimore Ravens"),2004:("Jonathan Vilma","New York Jets"),
+ 2005:("Shawne Merriman","San Diego Chargers"),2006:("DeMeco Ryans","Houston Texans"),2007:("Patrick Willis","San Francisco 49ers"),
+ 2008:("Jerod Mayo","New England Patriots"),2009:("Brian Cushing","Houston Texans"),2010:("Ndamukong Suh","Detroit Lions"),
+ 2011:("Von Miller","Denver Broncos"),2012:("Luke Kuechly","Carolina Panthers"),2013:("Sheldon Richardson","New York Jets"),
+ 2014:("Aaron Donald","St. Louis Rams"),2015:("Marcus Peters","Kansas City Chiefs"),2016:("Joey Bosa","San Diego Chargers"),
+ 2017:("Marshon Lattimore","New Orleans Saints"),2018:("Shaquille Leonard","Indianapolis Colts"),2019:("Nick Bosa","San Francisco 49ers"),
+ 2020:("Chase Young","Washington"),2021:("Micah Parsons","Dallas Cowboys"),2022:("Sauce Gardner","New York Jets"),
+ 2023:("Will Anderson Jr.","Houston Texans"),2024:("Jared Verse","Los Angeles Rams"),2025:("Carson Schwesinger","Cleveland Browns")}
+# Regreso del Año (AP Comeback Player). Fuentes: Wikipedia "AP NFL Comeback Player of the Year" + PFR + NFL.com (2025).
+# AP lo dio en 1963-1966 (aquí solo el ganador de la NFL; el de la AFL no) y desde 1998. PFR pone ganadores en
+# 1972-1997 que Wikipedia dice que no eran de AP -> no cuadran, no se muestran. 2005: compartido.
+_CPOY={1963:("Jim Martin","Baltimore Colts"),1964:("Lenny Moore","Baltimore Colts"),1965:("John Brodie","San Francisco 49ers"),
+ 1966:("Dick Bass","Los Angeles Rams"),
+ 1998:("Doug Flutie","Buffalo Bills"),1999:("Bryant Young","San Francisco 49ers"),2000:("Joe Johnson","New Orleans Saints"),
+ 2001:("Garrison Hearst","San Francisco 49ers"),2002:("Tommy Maddox","Pittsburgh Steelers"),2003:("Jon Kitna","Cincinnati Bengals"),
+ 2004:("Drew Brees","San Diego Chargers"),2005:[("Tedy Bruschi","New England Patriots"),("Steve Smith Sr.","Carolina Panthers")],
+ 2006:("Chad Pennington","New York Jets"),2007:("Greg Ellis","Dallas Cowboys"),2008:("Chad Pennington","Miami Dolphins"),
+ 2009:("Tom Brady","New England Patriots"),2010:("Michael Vick","Philadelphia Eagles"),2011:("Matthew Stafford","Detroit Lions"),
+ 2012:("Peyton Manning","Denver Broncos"),2013:("Philip Rivers","San Diego Chargers"),2014:("Rob Gronkowski","New England Patriots"),
+ 2015:("Eric Berry","Kansas City Chiefs"),2016:("Jordy Nelson","Green Bay Packers"),2017:("Keenan Allen","Los Angeles Chargers"),
+ 2018:("Andrew Luck","Indianapolis Colts"),2019:("Ryan Tannehill","Tennessee Titans"),2020:("Alex Smith","Washington"),
+ 2021:("Joe Burrow","Cincinnati Bengals"),2022:("Geno Smith","Seattle Seahawks"),2023:("Joe Flacco","Cleveland Browns"),
+ 2024:("Joe Burrow","Cincinnati Bengals"),2025:("Christian McCaffrey","San Francisco 49ers")}
+# Entrenador del Año (AP). Fuentes: Wikipedia "AP NFL Coach of the Year" + PFR (coinciden; 1960 igual que arriba,
+# no se muestra). 1967: compartido.
+_COY={1957:("George Wilson","Detroit Lions"),1958:("Weeb Ewbank","Baltimore Colts"),1959:("Vince Lombardi","Green Bay Packers"),
+ 1961:("Allie Sherman","New York Giants"),1962:("Allie Sherman","New York Giants"),1963:("George Halas","Chicago Bears"),
+ 1964:("Don Shula","Baltimore Colts"),1965:("George Halas","Chicago Bears"),1966:("Tom Landry","Dallas Cowboys"),
+ 1967:[("George Allen","Los Angeles Rams"),("Don Shula","Baltimore Colts")],1968:("Don Shula","Baltimore Colts"),
+ 1969:("Bud Grant","Minnesota Vikings"),1970:("Paul Brown","Cincinnati Bengals"),1971:("George Allen","Washington"),
+ 1972:("Don Shula","Miami Dolphins"),1973:("Chuck Knox","Los Angeles Rams"),1974:("Don Coryell","St. Louis Cardinals"),
+ 1975:("Ted Marchibroda","Baltimore Colts"),1976:("Forrest Gregg","Cleveland Browns"),1977:("Red Miller","Denver Broncos"),
+ 1978:("Jack Patera","Seattle Seahawks"),1979:("Jack Pardee","Washington"),1980:("Chuck Knox","Buffalo Bills"),
+ 1981:("Bill Walsh","San Francisco 49ers"),1982:("Joe Gibbs","Washington"),1983:("Joe Gibbs","Washington"),
+ 1984:("Chuck Knox","Seattle Seahawks"),1985:("Mike Ditka","Chicago Bears"),1986:("Bill Parcells","New York Giants"),
+ 1987:("Jim Mora","New Orleans Saints"),1988:("Mike Ditka","Chicago Bears"),1989:("Lindy Infante","Green Bay Packers"),
+ 1990:("Jimmy Johnson","Dallas Cowboys"),1991:("Wayne Fontes","Detroit Lions"),1992:("Bill Cowher","Pittsburgh Steelers"),
+ 1993:("Dan Reeves","New York Giants"),1994:("Bill Parcells","New England Patriots"),1995:("Ray Rhodes","Philadelphia Eagles"),
+ 1996:("Dom Capers","Carolina Panthers"),1997:("Jim Fassel","New York Giants"),1998:("Dan Reeves","Atlanta Falcons"),
+ 1999:("Dick Vermeil","St. Louis Rams"),2000:("Jim Haslett","New Orleans Saints"),2001:("Dick Jauron","Chicago Bears"),
+ 2002:("Andy Reid","Philadelphia Eagles"),2003:("Bill Belichick","New England Patriots"),2004:("Marty Schottenheimer","San Diego Chargers"),
+ 2005:("Lovie Smith","Chicago Bears"),2006:("Sean Payton","New Orleans Saints"),2007:("Bill Belichick","New England Patriots"),
+ 2008:("Mike Smith","Atlanta Falcons"),2009:("Marvin Lewis","Cincinnati Bengals"),2010:("Bill Belichick","New England Patriots"),
+ 2011:("Jim Harbaugh","San Francisco 49ers"),2012:("Bruce Arians","Indianapolis Colts"),2013:("Ron Rivera","Carolina Panthers"),
+ 2014:("Bruce Arians","Arizona Cardinals"),2015:("Ron Rivera","Carolina Panthers"),2016:("Jason Garrett","Dallas Cowboys"),
+ 2017:("Sean McVay","Los Angeles Rams"),2018:("Matt Nagy","Chicago Bears"),2019:("John Harbaugh","Baltimore Ravens"),
+ 2020:("Kevin Stefanski","Cleveland Browns"),2021:("Mike Vrabel","Tennessee Titans"),2022:("Brian Daboll","New York Giants"),
+ 2023:("Kevin Stefanski","Cleveland Browns"),2024:("Kevin O'Connell","Minnesota Vikings"),2025:("Mike Vrabel","New England Patriots")}
 # Premios por temporada en el orden en que se muestran: [etiqueta, jugador, equipo]
+# Cada año: agregar una línea en cada diccionario. Si hay empate, poner una lista: 2005:[("A","Eq"),("B","Eq")]
 AW_NFL={}
-for lbl,dd in [("Jugador Ofensivo del Año",_OPOY),("Jugador Defensivo del Año",_DPOY)]:
-    for y,(p,t) in dd.items(): AW_NFL.setdefault(str(y),[]).append([lbl,p,t])
+for lbl,dd in [("Jugador Ofensivo del Año",_OPOY),("Jugador Defensivo del Año",_DPOY),("Novato del Año",_ROY),
+               ("Novato Ofensivo del Año",_OROY),("Novato Defensivo del Año",_DROY),("Regreso del Año",_CPOY),
+               ("Entrenador del Año",_COY)]:
+    for y,v in sorted(dd.items()):
+        for (p,t) in (v if isinstance(v,list) else [v]): AW_NFL.setdefault(str(y),[]).append([lbl,p,t])
 
 HISTORIA = {"mx": HIST_MX, "nfl": HIST_NFL}
 HIST_AW = {"nfl": AW_NFL}  # premios extra por temporada (se muestran debajo del MVP)

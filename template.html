@@ -1525,11 +1525,13 @@ function histRender(key,pfx){
   const Q=$(`#${pfx}histQ`), M=$(`#${pfx}histMsg`), U=$(`#${pfx}Hist`);
   const norm=s=>(s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
   const who=r=>r.g.length?`${lbl}: ${r.g.map(([p,c])=>`${p} (${c})`).join(", ")}${r.n!=null?` · ${r.n}${unit}`:""}`:"";
+  // Premios extra (r.a = [[etiqueta, nombre, equipo], ...]): si un premio fue compartido, va en un solo renglón
+  const awd=r=>{const G=[]; for(const [l,p,c] of (r.a||[])){const g=G.find(x=>x[0]===l), t=`${p} (${c})`; g?g[1].push(t):G.push([l,[t]]);} return G.map(([l,v])=>`<small>${l}: ${v.join(", ")}</small>`).join("");};
   const draw=()=>{
     const q=norm(Q.value.trim());
     const rows=[...L].reverse().filter(r=>!q||norm([r.t,r.c,r.s,APODO[r.c],APODO[r.s],...r.g.flat(),...(r.a||[]).flat()].join(" ")).includes(q));
     U.innerHTML=rows.map(r=>r.c
-      ?`<li${nfl&&+r.t>=1966?` class="sbk" role="button" tabindex="0" data-sb="${r.t}"`:""}><div class="ht"><b>${r.t}</b>${r.f?`<span>${r.f}</span>`:""}</div><span class="hc2">🏆 ${r.c}</span><small>Subcampeón: ${r.s}</small>${r.g.length?`<small>${who(r)}</small>`:""}${(r.a||[]).map(([l,p,c])=>`<small>${l}: ${p} (${c})</small>`).join("")}${nfl&&+r.t>=1966?`<small class="sbl">Ver scorecard del Super Bowl ›</small>`:""}</li>`
+      ?`<li${nfl&&+r.t>=1966?` class="sbk" role="button" tabindex="0" data-sb="${r.t}"`:""}><div class="ht"><b>${r.t}</b>${r.f?`<span>${r.f}</span>`:""}</div><span class="hc2">🏆 ${r.c}</span><small>Subcampeón: ${r.s}</small>${r.g.length?`<small>${who(r)}</small>`:""}${awd(r)}${nfl&&+r.t>=1966?`<small class="sbl">Ver scorecard del Super Bowl ›</small>`:""}</li>`
       :`<li><div class="ht"><b>${r.t}</b></div><small>${r.f||"Sin campeón"}</small></li>`).join("");
     M.textContent=q?(rows.length?`${rows.length} de ${L.length} temporadas`:"No encontramos nada con esa búsqueda."):`${L.filter(r=>r.c).length} campeonatos, del más reciente al más antiguo.`;
   };
