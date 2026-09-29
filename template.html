@@ -195,6 +195,7 @@ input[type=search].hq{width:100%;max-width:440px}
 .qtop{color:var(--mark);font-weight:700}
 .game.qlock{opacity:.6}
 .qln{flex-wrap:wrap;gap:4px 16px}
+.qdisc{margin:0 0 14px;padding:12px 14px;background:var(--hl);border:1px solid var(--line);border-left:4px solid var(--mark);border-radius:10px;font-size:15px;line-height:1.45;color:var(--ink)}
 .qsv .qrk{font:700 18px var(--display);color:var(--muted);min-width:1.2em}
 .qsv .qlg{width:32px;height:32px;object-fit:contain}
 .hist .ht{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
@@ -441,6 +442,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 </section>
 <section class="panel hidden" id="nflq">
   <div class="headrow"><h2 id="qTitle">Quiniela</h2><div class="seg" id="qSeg"><button aria-pressed="true" data-m="ats">Con spread</button><button aria-pressed="false" data-m="su">Sin spread</button><button aria-pressed="false" data-m="surv">Survivor</button></div></div>
+  <p class="qdisc"><b>Aviso:</b> los picks son predicciones basadas en estadísticas, no una recomendación de apuesta. La Pizarra no se hace responsable de los resultados. Juega con responsabilidad.</p>
   <p class="note" id="qMsg"></p>
   <div class="games" id="qGames"></div>
 </section>
