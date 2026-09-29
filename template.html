@@ -1284,13 +1284,30 @@ function mxSeason(){
   MXS_CACHE[key].catch(()=>{delete MXS_CACHE[key];});
   return MXS_CACHE[key];
 }
+// Momios 1X2 de fútbol de The Odds API (D.odds_fut, los baja build_site.py). Se empatan con el partido de ESPN
+// por hora de inicio (±3 h) y parecido de nombres (palabras en común, sin acentos ni "FC", "Club", etc.).
+// Si no se encuentra, se queda lo que traiga ESPN. Los que no empatan salen en la consola del navegador.
+const OD_STOP=new Set(["fc","cf","club","de","del","la","el","ac","sc","cd","ud","afc","sd","ssc","as","us","rc","and","the","1","calcio","sv","vfb","vfl","tsg","fk","ca","og","osc","stade","ogc","rcd","sad","real","united","city","borussia","olympique"]);  // palabras que comparten muchos equipos
+const OD_ALIAS={internazionale:"inter",munchen:"munich",koln:"cologne",wolves:"wolverhampton",spurs:"tottenham",man:"manchester",psg:"paris",atleti:"atletico",chivas:"guadalajara",gallos:"queretaro",rayados:"monterrey",tuzos:"pachuca",bravos:"juarez",xolos:"tijuana",unam:"pumas",uanl:"tigres"};
+const odNorm=s=>new Set(String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").split(" ").filter(w=>w&&!OD_STOP.has(w)).map(w=>OD_ALIAS[w]||w));
+const odTeamWords=t=>{const W=new Set(); [t?.displayName,t?.shortDisplayName,t?.name,t?.location,t?.abbreviation].forEach(x=>odNorm(x).forEach(w=>W.add(w))); return W;};
+const odScore=(W,name)=>{const N=odNorm(name); if(!N.size) return 0; let k=0; N.forEach(w=>{if(W.has(w)) k++;}); return k/N.size;};
+function odFind(H,A,date){
+  const L=D.odds_fut||[]; if(!L.length||!date) return null; const t0=+new Date(date);
+  let best=null,bs=0; const WH=odTeamWords(H.team), WA=odTeamWords(A.team);
+  for(const g of L){ if(Math.abs(+new Date(g.t)-t0)>3*36e5) continue;
+    const sh=odScore(WH,g.h), sa=odScore(WA,g.a); if(sh>=0.5&&sa>=0.5&&sh+sa>bs){bs=sh+sa;best=g;} }
+  if(!best&&L.some(g=>Math.abs(+new Date(g.t)-t0)<=3*36e5)) console.warn("Momios fútbol: sin pareja para",H.team?.displayName,"vs",A.team?.displayName);
+  return best;
+}
 function mxCard(e,i){
   const c=e.competitions?.[0]||{}, cs=c.competitors||[];
   const H=cs.find(x=>x.homeAway==="home")||cs[0]||{}, A=cs.find(x=>x.homeAway==="away")||cs[1]||{};
   const state=e.status?.type?.state, done=state==="post", live=state==="in";
   const o=(c.odds||[])[0]||{};
   const ml=x=>x?.moneyLine??x?.current?.moneyLine?.american??null;
-  const hm=ml(o.homeTeamOdds), am=ml(o.awayTeamOdds), dm=ml(o.drawOdds);
+  let hm=ml(o.homeTeamOdds), am=ml(o.awayTeamOdds), dm=ml(o.drawOdds);
+  if(state==="pre"){const og=odFind(H,A,e.date); if(og){[hm,dm,am]=og.ml;}}   // 1X2 completo de The Odds API
   const pr=probs([hm,dm,am]);
   const hs=state!=="pre"&&H.score!=null?+H.score:null, as=state!=="pre"&&A.score!=null?+A.score:null;
   const col=t=>t.team?.color?"#"+t.team.color:"var(--muted)";

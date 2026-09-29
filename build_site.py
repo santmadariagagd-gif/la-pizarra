@@ -1032,6 +1032,58 @@ try:
     out['nfl_seeds']=nfl_seeds()
 except Exception as ex:
     print("Postemporada NFL: no se pudo calcular:",ex); out['nfl_seeds']={}
+# ----- Momios de fútbol (1X2) de The Odds API -----
+# ESPN casi nunca trae el momio local/visita en fútbol. The Odds API sí (plan gratis: 500 créditos al mes;
+# cada liga cuesta 1 crédito con 1 mercado y 1 región). Para no gastar de más, solo se piden momios nuevos en
+# las corridas programadas y en la manual ("Run workflow"); las demás (subir archivos, notas, ranking)
+# reutilizan momios.json, que la automatización guarda en el repositorio. La clave va en el secret ODDS_API_KEY.
+# El emparejamiento con los partidos de ESPN se hace en el navegador (ESPN bloquea a GitHub).
+ODDS_KEYS={"mx":"soccer_mexico_ligamx","eng":"soccer_epl","esp":"soccer_spain_la_liga","ita":"soccer_italy_serie_a",
+           "ger":"soccer_germany_bundesliga","fra":"soccer_france_ligue_one","ucl":"soccer_uefa_champs_league"}
+def _odds_fut():
+    from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+    import urllib.request as _ur, statistics as _st
+    ruta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'momios.json')
+    viejo=None
+    try: viejo=json.load(open(ruta,encoding='utf-8'))
+    except Exception: pass
+    clave=os.environ.get("ODDS_API_KEY","").strip(); evento=os.environ.get("GITHUB_EVENT_NAME","")
+    nuevo=[]
+    if clave and (evento in ("schedule","workflow_dispatch") or viejo is None):
+        def am(d): return None if not d or d<=1 else (round((d-1)*100) if d>=2 else round(-100/(d-1)))
+        quedan=None
+        for lg,sk in ODDS_KEYS.items():
+            try:
+                url=f"https://api.the-odds-api.com/v4/sports/{sk}/odds?regions=us&markets=h2h&oddsFormat=decimal&apiKey={clave}"
+                with _ur.urlopen(_ur.Request(url,headers={"User-Agent":"LaPizarra/1.0"}),timeout=25) as r:
+                    quedan=r.headers.get("x-requests-remaining",quedan); ev=json.loads(r.read().decode("utf-8"))
+                n=0
+                for g in ev:
+                    h,a=g.get("home_team"),g.get("away_team"); P={h:[],"Draw":[],a:[]}
+                    for b in g.get("bookmakers",[]):
+                        for m in b.get("markets",[]):
+                            if m.get("key")!="h2h": continue
+                            for o in m.get("outcomes",[]):
+                                if o.get("name") in P and o.get("price"): P[o["name"]].append(float(o["price"]))
+                    if not (P[h] and P["Draw"] and P[a]): continue
+                    nuevo.append(dict(k=lg,t=g.get("commence_time"),h=h,a=a,ml=[am(_st.median(P[x])) for x in (h,"Draw",a)])); n+=1
+                print(f"Momios fútbol: {lg} {n} partidos")
+            except Exception as ex:
+                print(f"Momios fútbol: {lg} falló ({str(ex).replace(clave,'***')})")
+        print(f"Momios fútbol: créditos que quedan este mes: {quedan}")
+        if nuevo:
+            json.dump(dict(t=_dt.now(_tz.utc).isoformat(timespec='minutes'),games=nuevo),open(ruta,'w',encoding='utf-8'),ensure_ascii=False)
+    elif not clave:
+        print("Momios fútbol: falta el secret ODDS_API_KEY; se usan los guardados (si hay)")
+    else:
+        print(f"Momios fútbol: corrida '{evento}', se reutiliza momios.json del {viejo.get('t') if viejo else '—'} (sin gastar créditos)")
+    G=nuevo or (viejo or {}).get("games",[])
+    corte=(_dt.now(_tz.utc)-_td(hours=6)).isoformat()
+    return [g for g in G if (g.get("t") or "")>=corte[:16]]
+try:
+    out['odds_fut']=_odds_fut()
+except Exception as ex:
+    print("Momios fútbol: no se pudieron preparar:",ex); out['odds_fut']=[]
 out['week']=wk; out['winners']=sorted(winners)
 data=json.dumps(out,ensure_ascii=False,allow_nan=False)
 aqui=os.path.dirname(os.path.abspath(__file__))
