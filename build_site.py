@@ -825,6 +825,35 @@ out['pr_nfl']=[dict(r=i+1,t=t,prev=int(prevM.loc[t,'rank']) if prevM is not None
 out['pr_wprev']=round(wprev*100)
 print(f"Power ranking NFL: semana {wk}, peso temporada pasada {round(wprev*100)}%")
 
+# ----- Quiniela NFL: modelo de línea propia + líneas de ESPN Pick'em -----
+# Margen esperado del local = k × (EPA neto local − EPA neto visita) + hfa. El EPA neto es el mismo del power
+# ranking (ofensiva − defensiva, mezclado con la temporada pasada). k y hfa se calibran cada corrida con las
+# líneas de cierre de la temporada pasada (qué tanto mueve el mercado la línea por cada punto de EPA neto).
+qk,qh=23.0,1.5   # respaldo (calibración 2024-2025: k≈22-24, local≈1.5)
+try:
+    if pbp_prev is not None:
+        _pm=team_metrics(pbp_prev,sch_prev,99); _net=_pm['off']-_pm['de']
+        _s=sch_prev[sch_prev.spread_line.notna()]
+        _x=(_s.home_team.map(_net)-_s.away_team.map(_net)).astype(float); _ok=_x.notna()
+        if _ok.sum()>100:
+            _k,_b=np.polyfit(_x[_ok],_s.spread_line[_ok].astype(float),1)
+            if 10<_k<45 and -1<_b<4: qk,qh=float(_k),float(_b)
+except Exception as ex:
+    print("Quiniela: calibración con respaldo:",ex)
+out['qmodel']=dict(k=round(qk,2),hfa=round(qh,2),net={t:rnd(M.loc[t,'off']-M.loc[t,'de'],4) for t in M.index})
+print(f"Quiniela: modelo k={qk:.1f}, ventaja de local={qh:.1f} pts")
+# Líneas de la quiniela de ESPN (NFL Pick'em). La página las pide directo al navegador; esto es solo respaldo
+# por si el navegador no puede (si ESPN también bloquea a GitHub, aquí no sale nada y no pasa nada).
+try:
+    import urllib.request as _ur
+    _rq=_ur.Request("https://gambit-api.fantasy.espn.com/apis/v1/challenges/pigskinpickem",headers={"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Version/17.0 Safari/605.1.15","Accept":"application/json"})
+    with _ur.urlopen(_rq,timeout=20) as _r: _pk=json.loads(_r.read().decode("utf-8"))
+    _keep=lambda o:{k:o.get(k) for k in ("abbrev","subType","additionalInfo","choiceCounters")}|{"mappings":[m for m in o.get("mappings",[]) if m.get("type")=="BETTING_LINE"]}
+    out['pickem']=dict(currentScoringPeriod=_pk.get("currentScoringPeriod"),propositions=[{k:p.get(k) for k in ("name","date","lockDate","status","spread")}|{"possibleOutcomes":[_keep(o) for o in p.get("possibleOutcomes",[])]} for p in _pk.get("propositions",[])])
+    print(f"Quiniela: ESPN Pick'em {_pk.get('currentScoringPeriod',{}).get('label')} con {len(out['pickem']['propositions'])} partidos")
+except Exception as ex:
+    print("Quiniela: ESPN Pick'em no respondió desde GitHub (la página lo intenta desde el navegador):",ex)
+
 # ---------- Liga MX: estadísticas de jugadores partido por partido (ESPN) ----------
 import urllib.request
 from datetime import date, timedelta

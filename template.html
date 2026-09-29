@@ -192,6 +192,11 @@ input[type=search].hq{width:100%;max-width:440px}
 .hon.hist li{display:block}
 .hist li.sbk{cursor:pointer}
 .hist .sbl{color:var(--mark);font-weight:600}
+.qtop{color:var(--mark);font-weight:700}
+.game.qlock{opacity:.6}
+.qln{flex-wrap:wrap;gap:4px 16px}
+.qsv .qrk{font:700 18px var(--display);color:var(--muted);min-width:1.2em}
+.qsv .qlg{width:32px;height:32px;object-fit:contain}
 .hist .ht{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 .hist .ht span{font-size:13px;color:var(--muted);text-align:right}
 .hist .hc2{display:block;font:800 18px var(--display);margin:2px 0}
@@ -319,7 +324,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   </nav>
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL">
-  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
+  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="nflq">Quiniela</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
   <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
@@ -433,6 +438,11 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <h2>Power Ranking NFL</h2>
   <p class="note" id="prNote"></p>
   <div class="tbl"><table id="prNfl" class="prt" data-freeze="3"></table></div>
+</section>
+<section class="panel hidden" id="nflq">
+  <div class="headrow"><h2 id="qTitle">Quiniela</h2><div class="seg" id="qSeg"><button aria-pressed="true" data-m="ats">Con spread</button><button aria-pressed="false" data-m="su">Sin spread</button><button aria-pressed="false" data-m="surv">Survivor</button></div></div>
+  <p class="note" id="qMsg"></p>
+  <div class="games" id="qGames"></div>
 </section>
 <section class="panel hidden" id="nflpo">
   <h2>Playoffs</h2>
@@ -567,7 +577,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["nflgames","stats","nflpr","nflpo","nflhonors","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
+const SECTIONS=["nflgames","nflq","stats","nflpr","nflpo","nflhonors","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -596,7 +606,7 @@ function loadNflPlayoffs(){
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
+  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
@@ -1013,6 +1023,103 @@ document.addEventListener("click",e=>{const c=e.target.closest(".game.click"); i
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches?.(".game.click")){e.preventDefault();openCard(e.target);}});
 const logoImg=(u,cls="")=>u?`<img src="${u}" alt="" class="${cls}" onerror="this.style.visibility='hidden'">`:"";
 function mheadHTML(A,H,sA,sH,sub){return `<div class="mhead"><div class="tm2">${logoImg(A.logo)}<span>${A.n}</span></div><div class="res">${sA!=null?`${sA} – ${sH}`:"vs"}<small>${sub}</small></div><div class="tm2">${logoImg(H.logo)}<span>${H.n}</span></div></div>`;}
+// ---------- NFL: Quiniela (con spread / sin spread) y Survivor ----------
+// Líneas: ESPN NFL Pick'em (las mismas de la quiniela de Santiago, siempre terminan en .5). Se piden desde el
+// navegador; si no se puede, se usa la copia que trae el script (D.pickem) y, si tampoco, las líneas de nflverse
+// (esas sí pueden ser enteras y se marca "puede empatar"). Modelo: margen del local = k·(EPA neto L − EPA neto V) + hfa
+// (D.qmodel, calibrado en build_site.py). Probabilidad = normal con desviación de 13.45 puntos.
+const QN_URL="https://gambit-api.fantasy.espn.com/apis/v1/challenges/pigskinpickem";
+const QN_MAP={WSH:"WAS",LAR:"LA"};           // abreviaturas de ESPN → nflverse
+let qnMode=(()=>{try{return localStorage.getItem("pz_qmode")||"ats";}catch(e){return "ats";}})();
+let qnCache=null;
+function qnPhi(x){const t=1/(1+0.2316419*Math.abs(x)), d=0.3989423*Math.exp(-x*x/2), p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274)))); return x>0?1-p:p;}
+const qnLine=v=>v==null?"–":v===0?"Pick":(v>0?"+":"−")+Math.abs(v);
+function qnParse(pk){ // JSON de ESPN (completo o la copia recortada del script) → lista de partidos
+  const bl=o=>{const m=(o.mappings||[]).find(z=>z.type==="BETTING_LINE"); const v=m?parseFloat(m.value):NaN; return isNaN(v)?null:v;};
+  const pct=(o,f)=>{const c=(o.choiceCounters||[]).find(z=>z.scoringFormatId===f); return c?c.percentage:null;};
+  const G=(pk.propositions||[]).map(p=>{
+    const O=p.possibleOutcomes||[], A=O.find(o=>o.subType==="AWAY")||O[0], H=O.find(o=>o.subType==="HOME")||O[1];
+    if(!A||!H||p.spread==null) return null;
+    return {a:QN_MAP[A.abbrev]||A.abbrev,h:QN_MAP[H.abbrev]||H.abbrev,ko:p.date?new Date(p.date):null,
+      lock:(p.lockDate&&p.lockDate<Date.now())||(p.status&&p.status!=="OPEN"),L:+p.spread,aml:bl(A),hml:bl(H),
+      ra:A.additionalInfo||"",rh:H.additionalInfo||"",su:[pct(A,1),pct(H,1)],ats:[pct(A,3),pct(H,3)]};
+  }).filter(Boolean).sort((x,y)=>(x.ko||0)-(y.ko||0));
+  const w=pk.currentScoringPeriod?.id; return {src:"espn",label:w?`Semana ${w}`:"",games:G};
+}
+function qnFromSched(){ // respaldo: líneas de nflverse de la semana actual
+  const rec={}; (D.pr_nfl||[]).forEach(r=>rec[r.t]=`${r.w}-${r.l}`);
+  const G=(D.sched||[]).filter(g=>g.w===D.gweek&&g.sp!=null).map(g=>({a:g.a,h:g.h,ko:g.ko?new Date(g.ko):null,
+    lock:g.hs!=null||(g.ko&&new Date(g.ko)<Date.now()),L:-g.sp,aml:g.aml,hml:g.hml,ra:rec[g.a]||"",rh:rec[g.h]||"",su:[null,null],ats:[null,null]}));
+  return {src:"nflverse",label:`Semana ${D.gweek}`,games:G};
+}
+async function qnGet(){
+  if(qnCache) return qnCache;
+  try{const c=JSON.parse(localStorage.getItem("pz_pickem")||"null"); if(c&&Date.now()-c.t<30*60e3){qnCache=qnParse(c.d); if(qnCache.games.length) return qnCache;}}catch(e){}
+  try{
+    const ctl=new AbortController(), tm=setTimeout(()=>ctl.abort(),9000);
+    const r=await fetch(QN_URL,{signal:ctl.signal}); clearTimeout(tm);
+    if(r.ok){const j=await r.json(); const P=qnParse(j);
+      if(P.games.length){qnCache=P; try{localStorage.setItem("pz_pickem",JSON.stringify({t:Date.now(),d:{currentScoringPeriod:j.currentScoringPeriod,propositions:j.propositions}}));}catch(e){} return P;}}
+  }catch(e){console.warn("Quiniela: ESPN Pick'em desde el navegador:",e);}
+  if(D.pickem){const P=qnParse(D.pickem); if(P.games.length) return (qnCache=P);}
+  return (qnCache=qnFromSched());
+}
+function qnATS(){ // récord contra el spread en la temporada (líneas de cierre de nflverse)
+  const R={}; const add=(t,k)=>{(R[t]=R[t]||{w:0,l:0,p:0})[k]++;};
+  (D.sched||[]).forEach(g=>{if(g.hs==null||g.sp==null) return; const d=(g.hs-g.as_)-g.sp;
+    if(d===0){add(g.h,"p");add(g.a,"p");} else if(d>0){add(g.h,"w");add(g.a,"l");} else {add(g.a,"w");add(g.h,"l");}});
+  return t=>{const r=R[t]; return r?`${r.w}-${r.l}${r.p?`-${r.p}`:""} vs spread`:"";};
+}
+function qnModel(g){ // margen esperado del local según nuestro modelo (null si no hay datos)
+  const Q=D.qmodel; if(!Q||!Q.net) return null; const nh=Q.net[g.h], na=Q.net[g.a];
+  return nh==null||na==null?null:Q.k*(nh-na)+Q.hfa;
+}
+function qnProb(g){ // [p visita, p local]: promedio entre Las Vegas y nuestro modelo
+  const m=qnModel(g), pm=m==null?null:qnPhi(m/13.45), pv=probs([g.aml,g.hml]);
+  const ph=pm!=null&&pv?(pm+pv[1])/2:pm!=null?pm:pv?pv[1]:null;
+  return ph==null?null:{p:[1-ph,ph],pm,pv:pv?pv[1]:null};
+}
+async function loadQuiniela(){
+  document.querySelectorAll("#qSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===qnMode));
+  const box=$("#qGames"); if(!qnCache) box.innerHTML=`<p class="note">Cargando…</p>`;
+  const P=await qnGet(), G=P.games, ats=qnATS();
+  $("#qTitle").textContent=qnMode==="surv"?`Survivor · ${P.label}`:`Quiniela · ${P.label}`;
+  $("#qMsg").textContent=P.src==="nflverse"?"No pudimos traer las líneas de tu quiniela de ESPN; estas son las líneas de Las Vegas.":"";
+  if(!G.length){box.className=""; box.innerHTML=`<p class="note">Todavía no hay partidos para esta semana.</p>`; return;}
+  const T=t=>NT[t]||{n:t}, pc=v=>v==null?"":`${Math.round(v*100)}%`;
+  if(qnMode==="surv"){
+    const L=[]; G.filter(g=>!g.lock).forEach(g=>{const q=qnProb(g); if(!q) return;
+      L.push({t:g.a,o:g.h,p:q.p[0],home:false}); L.push({t:g.h,o:g.a,p:q.p[1],home:true});});
+    L.sort((x,y)=>y.p-x.p);
+    box.className=""; box.innerHTML=L.length?`<ul class="hon qsv">${L.slice(0,5).map((x,i)=>`<li><span class="qrk">${i+1}</span>${logoImg(T(x.t).logo,"qlg")}<div class="hn"><b>${T(x.t).n}</b><small>${x.home?"vs":"en"} ${T(x.o).n}</small></div><span class="hc">${pc(x.p)}</span></li>`).join("")}</ul>`
+      :`<p class="note">Ya empezaron todos los partidos de la semana.</p>`;
+    return;
+  }
+  const rows=G.map(g=>{const m=qnModel(g), q=qnProb(g);
+    const edge=m==null?null:m+g.L;                      // puntos a favor del local contra la línea
+    return {g,m,q,edge,pick:qnMode==="ats"?(edge==null?null:edge>0?g.h:g.a):(q?(q.p[1]>=q.p[0]?g.h:g.a):null)};});
+  const top=new Set(rows.filter(r=>!r.g.lock&&r.edge!=null).sort((x,y)=>Math.abs(y.edge)-Math.abs(x.edge)).slice(0,3).map(r=>r.g));
+  box.className="games";
+  box.innerHTML=rows.map(({g,m,q,edge,pick})=>{
+    const A=T(g.a), H=T(g.h), sp=qnMode==="ats", popA=sp?g.ats[0]:g.su[0], popH=sp?g.ats[1]:g.su[1];
+    const tag=g.lock?`<span>Ya empezó</span>`:sp&&top.has(g)?`<span class="qtop">Más valor</span>`:"";
+    const hora=g.ko?`<b>${cap(fDay(g.ko))}</b> · ${fHour(g.ko)}`:"<b>Fecha por definir</b>";
+    const team=(t,X,home)=>{const right=sp?qnLine(home?g.L:-g.L):pc(q?.p[home?1:0]);
+      const sub=[home?"local":"",sp?ats(t):(home?g.rh:g.ra)].filter(Boolean).join(" · ");
+      return `<div class="team${pick===t?" win":""}">${logoImg(X.logo)||"<span></span>"}<span class="tn">${X.n}${pick===t?" ✓":""}<small>${sub}</small></span><span class="ml">${right}</span></div>`;};
+    let lines=[];
+    if(sp){ if(m!=null){const fav=m>=0?g.h:g.a; lines.push(["Nuestra línea",Math.abs(m)<0.25?"Pick":`${fav} −${Math.abs(m).toFixed(1)}`],["Diferencia",`${Math.abs(edge).toFixed(1)} pts`]);}
+            if(Math.abs(g.L%1)===0) lines.push(["Ojo","línea entera, puede empatar"]); }
+    else if(q){ const fv=p=>p>=0.5?`${g.h} ${pc(p)}`:`${g.a} ${pc(1-p)}`; if(q.pv!=null) lines.push(["Las Vegas",fv(q.pv)]); if(q.pm!=null) lines.push(["Nuestro modelo",fv(q.pm)]); }
+    const pop=popA!=null&&popH!=null?(popA>=popH?`En ESPN: ${pc(popA)} va con ${g.a}`:`En ESPN: ${pc(popH)} va con ${g.h}`):"";
+    return `<article class="game${g.lock?" qlock":""}"><div class="when"><span>${hora}</span>${tag}</div>
+      ${team(g.a,A,false)}${team(g.h,H,true)}
+      ${!sp&&q?`<div class="prob"><i style="width:${(q.p[0]*100).toFixed(1)}%;background:${A.c||"#888"}"></i><i style="width:${(q.p[1]*100).toFixed(1)}%;background:${H.c||"#555"}"></i></div>`:""}
+      ${lines.length?`<div class="lines qln">${lines.map(([k,v])=>`<span>${k} <b>${v}</b></span>`).join("")}</div>`:""}
+      <div class="where"><span>${pick?`Pick: <b>${T(pick).n}</b>`:""}</span><span>${pop}</span></div></article>`;}).join("");
+}
+document.querySelectorAll("#qSeg button").forEach(b=>b.onclick=()=>{qnMode=b.dataset.m; try{localStorage.setItem("pz_qmode",qnMode);}catch(e){} loadQuiniela();});
+
 function openNfl(id){
   const x=(D.sched||[]).find(g=>g.id===id); if(!x) return;
   const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, b=(D.box||{})[id], when=x.ko?new Date(x.ko):null;
