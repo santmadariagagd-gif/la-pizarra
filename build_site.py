@@ -629,6 +629,18 @@ try:
         out['sleeper'][_sid]=[_p.get("full_name") or f"{_p.get('first_name','')} {_p.get('last_name','')}".strip(),_p.get("position"),_p.get("team") or "",_g]
         _n+=1
     print(f"Sleeper: {_n} jugadores en el mapa")
+    # Titulares para el análisis de la Quiniela: orden 1 en la tabla de profundidad de Sleeper
+    # (campos depth_chart_order / depth_chart_position). Se imprimen ejemplos para confirmarlo en Actions.
+    _TFIX={"LAR":"LA","WSH":"WAS","JAC":"JAX"}
+    _st={}
+    for _p in _spl.values():
+        _t=_p.get("team")
+        if not _t or _p.get("depth_chart_order")!=1: continue
+        _nm=_p.get("full_name") or f"{_p.get('first_name','')} {_p.get('last_name','')}".strip()
+        _st.setdefault(_TFIX.get(_t,_t),[]).append([_nm,_p.get("depth_chart_position") or _p.get("position") or "",_p.get("position") or ""])
+    out['starters']=_st
+    _ej=sorted(_st.items())[:2]
+    print(f"Titulares Sleeper: {len(_st)} equipos, {sum(len(v) for v in _st.values())} jugadores; ej.: "+" | ".join(f"{t}: "+", ".join(f"{x[1]} {x[0]}" for x in v[:6]) for t,v in _ej))
 except Exception as _ex:
     print("Sleeper: no se pudo descargar la lista de jugadores:",_ex)
 heads=ps.groupby('player_id').headshot_url.last()
@@ -842,6 +854,21 @@ except Exception as ex:
     print("Quiniela: calibración con respaldo:",ex)
 out['qmodel']=dict(k=round(qk,2),hfa=round(qh,2),net={t:rnd(M.loc[t,'off']-M.loc[t,'de'],4) for t in M.index})
 print(f"Quiniela: modelo k={qk:.1f}, ventaja de local={qh:.1f} pts")
+# Duelos previos para el análisis de la Quiniela: últimos 5 partidos entre cada pareja de la semana actual y la
+# siguiente (desde 1999, temporada regular y playoffs). Equipos que se mudaron, con su abreviatura de hoy.
+try:
+    _hs=nfl.load_schedules(True).to_pandas()
+    for _c in ("home_team","away_team"): _hs[_c]=_hs[_c].replace({"OAK":"LV","SD":"LAC","STL":"LA"})
+    _hs=_hs[_hs.home_score.notna()].sort_values("gameday")
+    _pairs={tuple(sorted((r.away_team,r.home_team))) for r in full[full.week.isin([gw,gw+1])].itertuples()}
+    _h2h={}
+    for _a,_b in _pairs:
+        _m=_hs[((_hs.home_team==_a)&(_hs.away_team==_b))|((_hs.home_team==_b)&(_hs.away_team==_a))].tail(5)
+        _h2h[f"{_a}|{_b}"]=[dict(s=int(r.season),w=int(r.week),gt=r.game_type,a=r.away_team,h=r.home_team,as_=int(r.away_score),hs=int(r.home_score),sp=rnd(r.spread_line,1)) for r in _m[::-1].itertuples()]
+    out['h2h']=_h2h
+    print(f"Quiniela: duelos previos de {len(_h2h)} parejas")
+except Exception as ex:
+    print("Quiniela: no se pudieron armar los duelos previos:",ex)
 # Líneas de la quiniela de ESPN (NFL Pick'em). La página las pide directo al navegador; esto es solo respaldo
 # por si el navegador no puede (si ESPN también bloquea a GitHub, aquí no sale nada y no pasa nada).
 try:

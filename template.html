@@ -195,6 +195,16 @@ input[type=search].hq{width:100%;max-width:440px}
 .qtop{color:var(--mark);font-weight:700}
 .game.qlock{opacity:.6}
 .qln{flex-wrap:wrap;gap:4px 16px}
+.qalert{margin-top:8px;font-weight:600;font-size:14px;color:var(--bad)}
+.qan{margin-top:10px;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--mark);font:600 15px var(--body,inherit);cursor:pointer;text-align:center}
+.qan:hover{background:var(--hl)}
+.qinj{list-style:none;margin:0 0 6px;padding:0}
+.qinj li{display:grid;grid-template-columns:52px 1fr auto;gap:8px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px}
+.qh2h li,.qinj li:has(> span:nth-child(2):last-child){grid-template-columns:52px 1fr}
+.qinj .qp{font:600 14px var(--display);color:var(--muted)}
+.qinj .qs{font-size:14px;text-align:right}
+.qinj .qs.out{color:var(--bad);font-weight:600}.qinj .qs.dbt{color:var(--alt);font-weight:600}.qinj .qs.q{color:var(--muted)}
+.qsum{margin:6px 0 10px;font-size:15px;line-height:1.5}
 .qdisc{margin:0 0 14px;padding:12px 14px;background:var(--hl);border:1px solid var(--line);border-left:4px solid var(--mark);border-radius:10px;font-size:15px;line-height:1.45;color:var(--ink)}
 .qsv .qrk{font:700 18px var(--display);color:var(--muted);min-width:1.2em}
 .qsv .qlg{width:32px;height:32px;object-fit:contain}
@@ -968,7 +978,7 @@ const WX={0:"Despejado",1:"Mayormente despejado",2:"Parcialmente nublado",3:"Nub
 const wxCache={};
 async function forecast(lat,lon){
   const k=lat.toFixed(2)+","+lon.toFixed(2);
-  if(!wxCache[k]) wxCache[k]=fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,weather_code&timezone=UTC&forecast_days=16`).then(r=>r.json()).catch(()=>null);
+  if(!wxCache[k]) wxCache[k]=fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m&timezone=UTC&forecast_days=16`).then(r=>r.json()).catch(()=>null);
   return wxCache[k];
 }
 async function fillWeather(el,lat,lon,when){
@@ -1089,7 +1099,7 @@ function qnProb(g){ // [p visita, p local]: promedio entre Las Vegas y nuestro m
 async function loadQuiniela(){
   document.querySelectorAll("#qSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===qnMode));
   const box=$("#qGames"); if(!qnCache) box.innerHTML=`<p class="note">Cargando…</p>`;
-  const P=await qnGet(), G=P.games, ats=qnATS();
+  const [P,INJ]=await Promise.all([qnGet(),qnMode==="surv"?null:qnInj()]), G=P.games, ats=qnATS();
   $("#qTitle").textContent=qnMode==="surv"?`Survivor · ${P.label}`:`Quiniela · ${P.label}`;
   $("#qMsg").textContent=P.src==="nflverse"?"No pudimos traer las líneas de tu quiniela de ESPN; estas son las líneas de Las Vegas.":"";
   if(!G.length){box.className=""; box.innerHTML=`<p class="note">Todavía no hay partidos para esta semana.</p>`; return;}
@@ -1106,8 +1116,8 @@ async function loadQuiniela(){
     const edge=m==null?null:m+g.L;                      // puntos a favor del local contra la línea
     return {g,m,q,edge,pick:qnMode==="ats"?(edge==null?null:edge>0?g.h:g.a):(q?(q.p[1]>=q.p[0]?g.h:g.a):null)};});
   const top=new Set(rows.filter(r=>!r.g.lock&&r.edge!=null).sort((x,y)=>Math.abs(y.edge)-Math.abs(x.edge)).slice(0,3).map(r=>r.g));
-  box.className="games";
-  box.innerHTML=rows.map(({g,m,q,edge,pick})=>{
+  box.className="games"; qnRows=rows;
+  box.innerHTML=rows.map(({g,m,q,edge,pick},qi)=>{
     const A=T(g.a), H=T(g.h), sp=qnMode==="ats", popA=sp?g.ats[0]:g.su[0], popH=sp?g.ats[1]:g.su[1];
     const tag=g.lock?`<span>Ya empezó</span>`:sp&&top.has(g)?`<span class="qtop">Más valor</span>`:"";
     const hora=g.ko?`<b>${cap(fDay(g.ko))}</b> · ${fHour(g.ko)}`:"<b>Fecha por definir</b>";
@@ -1123,8 +1133,109 @@ async function loadQuiniela(){
       ${team(g.a,A,false)}${team(g.h,H,true)}
       ${!sp&&q?`<div class="prob"><i style="width:${(q.p[0]*100).toFixed(1)}%;background:${A.c||"#888"}"></i><i style="width:${(q.p[1]*100).toFixed(1)}%;background:${H.c||"#555"}"></i></div>`:""}
       ${lines.length?`<div class="lines qln">${lines.map(([k,v])=>`<span>${k} <b>${v}</b></span>`).join("")}</div>`:""}
-      <div class="where"><span>${pick?`Pick: <b>${T(pick).n}</b>`:""}</span><span>${pop}</span></div></article>`;}).join("");
+      ${(al=>al?`<div class="qalert">${al}</div>`:"")(qnAlert(g,INJ))}
+      <div class="where"><span>${pick?`Pick: <b>${T(pick).n}</b>`:""}</span><span>${pop}</span></div>
+      <button class="qan" type="button" data-qi="${qi}">Ver análisis ›</button></article>`;}).join("");
 }
+// ---------- Quiniela: análisis por partido (bajas, duelos previos, descanso, racha, clima) ----------
+// Lesiones: ESPN en vivo (una sola consulta para los 32 equipos; se guarda 15 min en el navegador, ya recortada).
+// Titulares: tabla de profundidad de Sleeper (D.starters, la baja el script una vez al día).
+// Duelos previos: D.h2h (nflverse desde 1999). Descanso y racha: D.sched de esta temporada.
+const QN_INJ_URL="https://site.api.espn.com/apis/site/v2/sports/football/nfl/injuries";
+const QN_ST={"Out":"Fuera","Doubtful":"Dudoso","Questionable":"En duda","Injured Reserve":"Lista de lesionados","Suspension":"Suspendido","Day-To-Day":"Día a día","Physically Unable to Perform":"No apto (PUP)","Non Football Injury":"Lesión fuera del futbol"};
+const QN_BODY={Knee:"rodilla",Ankle:"tobillo",Hamstring:"isquiotibial",Shoulder:"hombro",Concussion:"conmoción",Foot:"pie",Back:"espalda",Hip:"cadera",Groin:"ingle",Calf:"pantorrilla",Toe:"dedo del pie",Hand:"mano",Wrist:"muñeca",Elbow:"codo",Neck:"cuello",Quadriceps:"cuádriceps",Achilles:"tendón de Aquiles",Chest:"pecho",Ribs:"costillas",Illness:"enfermedad",Thumb:"pulgar",Finger:"dedo",Abdomen:"abdomen",Pectoral:"pectoral",Oblique:"oblicuo",Forearm:"antebrazo",Heel:"talón",Shin:"espinilla",Personal:"asunto personal",Undisclosed:"no revelada",Head:"cabeza",Face:"cara",Eye:"ojo",Knee_:"rodilla",Leg:"pierna",Arm:"brazo",Biceps:"bíceps",Triceps:"tríceps",Shoulder_:"hombro",Lower_Leg:"pierna",Jaw:"mandíbula",Glute:"glúteo",Rest:"descanso",Thigh:"muslo","Coach's Decision":"decisión del entrenador",Coach_s_Decision:"decisión del entrenador",Kidney:"riñón",Lung:"pulmón",Spine:"columna",Collarbone:"clavícula",Clavicle:"clavícula"};
+const qnNN=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\b(jr|sr|ii|iii|iv|v)\b\.?/g,"").replace(/[^a-z]/g,"");
+const qnBody=t=>{const [b,x]=String(t).split(" - "); const e=QN_BODY[b]||QN_BODY[b.replace(/ /g,"_")]||b.toLowerCase(); return x?`${e} (${x})`:e;};
+let qnInjCache=null, qnRows=[];
+async function qnInj(){
+  if(qnInjCache) return qnInjCache;
+  try{const c=JSON.parse(localStorage.getItem("pz_inj")||"null"); if(c&&Date.now()-c.t<15*60e3) return (qnInjCache=c.d);}catch(e){}
+  try{
+    const j=await fetch(QN_INJ_URL).then(r=>r.json()), T={};
+    for(const t of j.injuries||[]) for(const i of t.injuries||[]){
+      const st=i.status; if(!st||st==="Active") continue;
+      const ab0=i.athlete?.team?.abbreviation, ab=QN_MAP[ab0]||ab0; if(!ab) continue;
+      (T[ab]=T[ab]||[]).push({n:i.athlete?.displayName||"",p:i.athlete?.position?.abbreviation||"",st,ty:i.details?.type||"",ret:i.details?.returnDate||"",d:i.date||""});
+    }
+    qnInjCache=T; try{localStorage.setItem("pz_inj",JSON.stringify({t:Date.now(),d:T}));}catch(e){}
+    return T;
+  }catch(e){console.warn("Quiniela: lesiones de ESPN",e); return (qnInjCache=null);}
+}
+function qnKeyInj(team,INJ){ // bajas que importan: titulares (según Sleeper) o, si no hay tabla, posiciones clave
+  const L=(INJ&&INJ[team])||[], S=(D.starters||{})[team], set=new Map((S||[]).map(x=>[qnNN(x[0]),x[1]]));
+  const recent=d=>d&&Date.now()-new Date(d).getTime()<14*864e5;
+  const out=[];
+  for(const i of L){
+    if(/coach/i.test(i.ty)) continue;                  // "decisión del entrenador": no es lesión
+    const dp=set.get(qnNN(i.n)), starter=!!S&&dp!=null, key=S?starter:["QB","RB","WR","TE"].includes(i.p);
+    if(i.st==="Injured Reserve"?(key||recent(i.d)):key) out.push({...i,dp:dp||i.p,starter});
+  }
+  const ord={"Out":0,"Suspension":0,"Doubtful":1,"Injured Reserve":2,"Questionable":3};
+  return out.sort((a,b)=>(ord[a.st]??4)-(ord[b.st]??4)||(b.p==="QB")-(a.p==="QB"));
+}
+function qnAlert(g,INJ){ // aviso corto para la tarjeta
+  if(!INJ) return "";
+  for(const t of [g.a,g.h]){const q=qnKeyInj(t,INJ).find(i=>i.p==="QB"&&i.starter&&["Out","Doubtful","Injured Reserve","Suspension"].includes(i.st)); if(q) return `⚠️ ${t}: QB titular ${q.st==="Doubtful"?"dudoso":"fuera"} (${q.n})`;}
+  const c=[g.a,g.h].map(t=>[t,qnKeyInj(t,INJ).filter(i=>i.starter&&["Out","Doubtful","Suspension"].includes(i.st)).length]).sort((x,y)=>y[1]-x[1])[0];
+  return c[1]>=2?`⚠️ ${c[0]}: ${c[1]} titulares fuera o dudosos`:"";
+}
+function qnSchedGame(g){ // el partido de nflverse que corresponde (estadio, techo, coordenadas)
+  return (D.sched||[]).find(x=>x.a===g.a&&x.h===g.h&&(!g.ko||!x.ko||Math.abs(new Date(x.ko)-g.ko)<3*864e5));
+}
+function qnRest(t,ko){
+  if(!ko) return null;
+  const prev=(D.sched||[]).filter(x=>(x.a===t||x.h===t)&&x.ko&&new Date(x.ko)<ko-36e5).sort((x,y)=>new Date(y.ko)-new Date(x.ko))[0];
+  if(!prev) return "Primer partido de la temporada";
+  const d=Math.round((ko-new Date(prev.ko))/864e5);
+  return `${d} días${d>=13?" (viene de semana de descanso)":d<=5?" (semana corta)":""}`;
+}
+function qnForm(t){ // últimos 3 contra el spread
+  const G=(D.sched||[]).filter(x=>(x.a===t||x.h===t)&&x.hs!=null&&x.sp!=null).sort((x,y)=>new Date(y.ko||0)-new Date(x.ko||0)).slice(0,3);
+  if(!G.length) return "Sin partidos todavía";
+  let w=0,l=0;
+  const s=G.map(x=>{const d=(x.hs-x.as_)-x.sp, home=x.h===t, r=d===0?"=":((d>0)===home?"✓":"✗"); if(r==="✓")w++; else if(r==="✗")l++; return `${home?"vs":"en"} ${home?x.a:x.h} ${r}`;});
+  return `${s.join(" · ")} (${w}-${l})`;
+}
+async function qnWeather(x){
+  if(!x) return "";
+  if(x.roof==="dome"||x.roof==="closed") return "Techado";
+  const when=x.ko?new Date(x.ko).getTime():null;
+  if(x.lat==null||!when) return "";
+  if(when-Date.now()>15.5*864e5) return "El pronóstico sale más cerca del partido.";
+  const f=await forecast(x.lat,x.lon); if(!f?.hourly) return "";
+  const h=new Date(when); h.setUTCMinutes(0,0,0); const i=f.hourly.time.indexOf(h.toISOString().slice(0,13)+":00"); if(i<0) return "";
+  const t=Math.round(f.hourly.temperature_2m[i]), pp=f.hourly.precipitation_probability?.[i], c=f.hourly.weather_code?.[i], w=f.hourly.wind_speed_10m?.[i];
+  return `${t}°C · ${WX[c]||""}${pp!=null?` · ${pp}% lluvia`:""}${w!=null?` · viento ${Math.round(w)} km/h`:""}${w>=25?`<br><b>El viento puede afectar el juego aéreo y el total de puntos.</b>`:""}`;
+}
+async function qnAnalysis(r){
+  const g=r.g, A=NT[g.a]||{n:g.a}, H=NT[g.h]||{n:g.h}, x=qnSchedGame(g);
+  DLG_CUR=null;
+  const hora=g.ko?`${cap(fDay(g.ko))} · ${fHour(g.ko)}`:"Fecha por definir";
+  let h=mheadHTML(A,H,null,null,`${g.h} ${qnLine(g.L)}`)+`<p class="meta">${hora}${x?.st?` · ${x.st}`:""}</p>`;
+  const INJ=await qnInj();
+  h+=`<h3>Bajas de titulares</h3>`;
+  if(!INJ) h+=`<p class="note">No pudimos traer el reporte de lesiones en este momento.</p>`;
+  else for(const [t,T] of [[g.a,A],[g.h,H]]){
+    const L=qnKeyInj(t,INJ);
+    h+=`<h4 class="stat-cat">${logoImg(T.logo,"tlogo")}${T.name||T.n}</h4>`+(L.length?`<ul class="qinj">${L.map(i=>`<li><span class="qp">${i.dp||i.p}</span><span>${i.n}</span><span class="qs ${["Out","Injured Reserve","Suspension"].includes(i.st)?"out":i.st==="Doubtful"?"dbt":"q"}">${QN_ST[i.st]||i.st}${i.ty?` · ${qnBody(i.ty)}`:""}</span></li>`).join("")}</ul>`:`<p class="note">Sin bajas de titulares reportadas.</p>`);
+  }
+  const hh=(D.h2h||{})[[g.a,g.h].sort().join("|")]||[];
+  h+=`<h3>Duelos previos</h3>`;
+  if(!hh.length) h+=`<p class="note">No se han enfrentado desde 1999.</p>`;
+  else{
+    const win={[g.a]:0,[g.h]:0}, cov={[g.a]:0,[g.h]:0};
+    const li=hh.map(m=>{const wn=m.hs>m.as_?m.h:m.as_>m.hs?m.a:null; if(wn&&win[wn]!=null) win[wn]++;
+      let c=""; if(m.sp!=null){const d=(m.hs-m.as_)-m.sp, ct=d>0?m.h:d<0?m.a:null; if(ct&&cov[ct]!=null) cov[ct]++; c=ct?` · cubrió ${ct}`:" · empate vs spread";}
+      return `<li><span class="qp">${m.s}</span><span>${m.gt==="REG"?`Semana ${m.w}`:"Playoffs"}: <b>${m.a} ${m.as_} – ${m.hs} ${m.h}</b>${c}</span></li>`;}).join("");
+    h+=`<p class="qsum">Últimos ${hh.length}: ${g.a} ${win[g.a]}-${win[g.h]} ${g.h} · contra el spread ${g.a} ${cov[g.a]}-${cov[g.h]}</p><ul class="qinj qh2h">${li}</ul>`;
+  }
+  h+=`<h3>Descanso</h3><ul class="qinj">${[g.a,g.h].map(t=>`<li><span class="qp">${t}</span><span>${qnRest(t,g.ko)||"–"}</span></li>`).join("")}</ul>`;
+  h+=`<h3>Racha contra el spread</h3><ul class="qinj">${[g.a,g.h].map(t=>`<li><span class="qp">${t}</span><span>${qnForm(t)}</span></li>`).join("")}</ul>`;
+  const wx=await qnWeather(x);
+  if(wx) h+=`<h3>Clima</h3><p class="qsum">${wx}</p>`;
+  $("#gbody").innerHTML=h; if(!dlg.open) dlg.showModal(); $("#gbody").scrollTop=0;
+}
+$("#qGames").addEventListener("click",e=>{const b=e.target.closest(".qan"); if(b){const r=qnRows[+b.dataset.qi]; if(r) qnAnalysis(r);}});
 document.querySelectorAll("#qSeg button").forEach(b=>b.onclick=()=>{qnMode=b.dataset.m; try{localStorage.setItem("pz_qmode",qnMode);}catch(e){} loadQuiniela();});
 
 function openNfl(id){
