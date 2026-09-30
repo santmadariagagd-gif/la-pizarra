@@ -356,6 +356,17 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   input[type=search]{width:100%}
 }
 </style>
+<script>
+// Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
+// si no hay ID, no se carga nada. pzTrack() manda eventos propios (sección vista, picks, cuentas).
+window.PZ_GA="__GA_ID__";
+window.pzTrack=function(n,p){try{if(window.gtag) gtag("event",n,p||{});}catch(e){}};
+if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
+  window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments);};
+  gtag("js",new Date()); gtag("config",window.PZ_GA);
+  var s=document.createElement("script"); s.async=true; s.src="https://www.googletagmanager.com/gtag/js?id="+window.PZ_GA; document.head.appendChild(s);
+}
+</script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -668,6 +679,7 @@ function loadNflPlayoffs(){
   }
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
+  pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
   if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp){
@@ -1184,7 +1196,7 @@ $("#qGames").addEventListener("click",e=>{
   const r=qnRows[+el.dataset.qi]; if(!r||r.g.lock) return;
   const all=qnPicksAll(), S=all[D.season]=all[D.season]||{}, W=S[el.dataset.qw]=S[el.dataset.qw]||{}, k=`${r.g.a}@${r.g.h}`, G=W[k]=W[k]||{};
   const t=el.dataset.qt;
-  if(G[qnMode]?.t===t) delete G[qnMode]; else G[qnMode]=qnMode==="ats"?{t,L:r.g.L}:{t};
+  if(G[qnMode]?.t===t) delete G[qnMode]; else {G[qnMode]=qnMode==="ats"?{t,L:r.g.L}:{t}; pzTrack("hacer_pick",{modo:qnMode});}
   if(!Object.keys(G).length) delete W[k];
   qnPicksSave(all); loadQuiniela();
 });
@@ -2440,15 +2452,15 @@ async function acctRun(f){
   try{await f();}catch(e){ if(!["auth/popup-closed-by-user","auth/cancelled-popup-request"].includes(e?.code)){console.warn("Cuentas:",e?.code||e); acctMsg(acctErr(e));} }
   finally{ACCT.busy=false; $("#abody").querySelectorAll("button").forEach(b=>b.disabled=false);}
 }
-const acctGoogle=()=>acctRun(async()=>{const p=new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt:"select_account"}); await ACCT.auth.signInWithPopup(p);});
+const acctGoogle=()=>acctRun(async()=>{const p=new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt:"select_account"}); const r=await ACCT.auth.signInWithPopup(p); pzTrack(r?.additionalUserInfo?.isNewUser?"sign_up":"login",{method:"Google"});});
 const acctEmail=()=>acctRun(async()=>{
   const m=$("#aMail").value.trim(), pw=$("#aPass").value;
   if(!m) return acctMsg("Escribe tu correo."); if(!pw) return acctMsg("Escribe tu contraseña.");
   if(ACCT.mode==="up"){
     if(pw.length<ACCT_MIN) return acctMsg(`La contraseña necesita al menos ${ACCT_MIN} caracteres.`);
-    const r=await ACCT.auth.createUserWithEmailAndPassword(m,pw);
+    const r=await ACCT.auth.createUserWithEmailAndPassword(m,pw); pzTrack("sign_up",{method:"correo"});
     try{await r.user.sendEmailVerification(ACCT_BACK);}catch(e){console.warn("Cuentas: no se mandó la confirmación",e?.code||e);}
-  } else await ACCT.auth.signInWithEmailAndPassword(m,pw);
+  } else {await ACCT.auth.signInWithEmailAndPassword(m,pw); pzTrack("login",{method:"correo"});}
 });
 const acctForgot=()=>acctRun(async()=>{
   const m=$("#aMail").value.trim(); if(!m) return acctMsg("Escribe tu correo y vuelve a tocar “Olvidé mi contraseña”.");

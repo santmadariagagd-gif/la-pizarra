@@ -1135,7 +1135,20 @@ data=json.dumps(out,ensure_ascii=False,allow_nan=False)
 aqui=os.path.dirname(os.path.abspath(__file__))
 notas=json.load(open(os.path.join(aqui,'notas.json'),encoding='utf-8'))
 notas_js=json.dumps([[n['jugador'],n['posicion'],n['equipo'],n['texto']] for n in notas['notas']],ensure_ascii=False)
-html=open(os.path.join(aqui,'template.html'),encoding='utf-8').read().replace('__DATA__',data).replace('__NOTES__',notas_js)
+# Google Analytics: google_analytics.txt con el ID de medición (G-XXXXXXX). Es público por diseño.
+def _ga_id():
+    import re as _re
+    ruta=os.path.join(aqui,'google_analytics.txt')
+    if not os.path.exists(ruta):
+        print("Analytics: no hay google_analytics.txt; no se mide"); return ""
+    m=_re.search(r'G-[A-Z0-9]{4,}',open(ruta,encoding='utf-8').read().upper())
+    print(f"Analytics: {m.group(0)}" if m else "Analytics: google_analytics.txt no tiene un ID tipo G-XXXXXXX; no se mide")
+    return m.group(0) if m else ""
+try:
+    ga_id=_ga_id()
+except Exception as ex:
+    print("Analytics: no se pudo leer google_analytics.txt:",ex); ga_id=""
+html=open(os.path.join(aqui,'template.html'),encoding='utf-8').read().replace('__DATA__',data).replace('__NOTES__',notas_js).replace('__GA_ID__',ga_id)
 os.makedirs(os.path.join(aqui,'docs'),exist_ok=True)
 open(os.path.join(aqui,'docs','index.html'),'w',encoding='utf-8').write(html)
 print(f'Listo: docs/index.html (temporada {S}, semana {wk})')
