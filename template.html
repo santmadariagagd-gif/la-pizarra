@@ -208,6 +208,12 @@ input[type=search].hq{width:100%;max-width:440px}
 .fchips{display:inline-flex;gap:3px;margin-left:8px;vertical-align:middle}
 .fchip{display:inline-block;width:20px;height:20px;line-height:20px;border-radius:5px;text-align:center;font:700 12px var(--display);font-style:normal;color:var(--surface);background:var(--muted)}
 .fchip.g{background:var(--good)}.fchip.p{background:var(--bad)}
+.qmine{display:flex;flex-direction:column;gap:3px;margin:0 0 14px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;font-size:15px}
+.qmine small{color:var(--muted);font-size:13px;margin-top:3px}
+#qGames .team.pickable{cursor:pointer;border-radius:8px}
+#qGames .team.pickable:hover{background:var(--hl)}
+#qGames .team.mine{background:var(--hl);border-radius:8px;box-shadow:inset 3px 0 0 var(--mark)}
+.qres{font-weight:700}.qres.ok{color:var(--good)}.qres.ko{color:var(--bad)}
 .qdisc{margin:0 0 14px;padding:12px 14px;background:var(--hl);border:1px solid var(--line);border-left:4px solid var(--mark);border-radius:10px;font-size:15px;line-height:1.45;color:var(--ink)}
 .qsv .qrk{font:700 18px var(--display);color:var(--muted);min-width:1.2em}
 .qsv .qlg{width:32px;height:32px;object-fit:contain}
@@ -457,6 +463,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <div class="headrow"><h2 id="qTitle">Quiniela</h2><div class="seg" id="qSeg"><button aria-pressed="true" data-m="ats">Con spread</button><button aria-pressed="false" data-m="su">Sin spread</button><button aria-pressed="false" data-m="surv">Survivor</button></div></div>
   <p class="qdisc"><b>Aviso:</b> los picks son predicciones basadas en estadísticas, no una recomendación de apuesta. La Pizarra no se hace responsable de los resultados. Juega con responsabilidad.</p>
   <p class="note" id="qMsg"></p>
+  <div id="qMine"></div>
   <div class="games" id="qGames"></div>
 </section>
 <section class="panel hidden" id="nflpo">
@@ -1064,13 +1071,13 @@ function qnParse(pk){ // JSON de ESPN (completo o la copia recortada del script)
       lock:(p.lockDate&&p.lockDate<Date.now())||(p.status&&p.status!=="OPEN"),L:+p.spread,aml:bl(A),hml:bl(H),
       ra:A.additionalInfo||"",rh:H.additionalInfo||"",su:[pct(A,1),pct(H,1)],ats:[pct(A,3),pct(H,3)]};
   }).filter(Boolean).sort((x,y)=>(x.ko||0)-(y.ko||0));
-  const w=pk.currentScoringPeriod?.id; return {src:"espn",label:w?`Semana ${w}`:"",games:G};
+  const w=pk.currentScoringPeriod?.id; return {src:"espn",label:w?`Semana ${w}`:"",week:w||D.gweek,games:G};
 }
 function qnFromSched(){ // respaldo: líneas de nflverse de la semana actual
   const rec={}; (D.pr_nfl||[]).forEach(r=>rec[r.t]=`${r.w}-${r.l}`);
   const G=(D.sched||[]).filter(g=>g.w===D.gweek&&g.sp!=null).map(g=>({a:g.a,h:g.h,ko:g.ko?new Date(g.ko):null,
     lock:g.hs!=null||(g.ko&&new Date(g.ko)<Date.now()),L:-g.sp,aml:g.aml,hml:g.hml,ra:rec[g.a]||"",rh:rec[g.h]||"",su:[null,null],ats:[null,null]}));
-  return {src:"nflverse",label:`Semana ${D.gweek}`,games:G};
+  return {src:"nflverse",label:`Semana ${D.gweek}`,week:D.gweek,games:G};
 }
 async function qnGet(){
   if(qnCache) return qnCache;
@@ -1099,6 +1106,48 @@ function qnProb(g){ // [p visita, p local]: promedio entre Las Vegas y nuestro m
   const ph=pm!=null&&pv?(pm+pv[1])/2:pm!=null?pm:pv?pv[1]:null;
   return ph==null?null:{p:[1-ph,ph],pm,pv:pv?pv[1]:null};
 }
+// ---------- Mis picks ----------
+// Se guardan en este navegador (localStorage "pz_mispicks"): {temporada:{semana:{"VIS@LOC":{ats:{t,L},su:{t}}}}}.
+// En "con spread" se guarda la línea del momento (L = ventaja del local) para calificar con esa misma línea.
+// Calificación: resultado final de nflverse (D.sched) o, mientras tanto, el de ESPN en vivo (NLIVE).
+const QN_PK="pz_mispicks";
+let qnLiveAsked=false;
+const qnPicksAll=()=>{try{return JSON.parse(localStorage.getItem(QN_PK)||"{}");}catch(e){return {};}};
+const qnPicksSave=o=>{try{localStorage.setItem(QN_PK,JSON.stringify(o));}catch(e){}};
+function qnResult(w,a,h){
+  const x=(D.sched||[]).find(g=>g.w===+w&&g.a===a&&g.h===h); if(!x) return null;
+  if(x.hs!=null) return {as:x.as_,hs:x.hs};
+  const L=NLIVE[x.id]; return L?.done?{as:L.as,hs:L.hs}:null;
+}
+function qnGrade(p,mode,a,h,r){
+  if(!p||!r) return null;
+  if(mode==="ats"){const d=(r.hs-r.as)+p.L, c=d>0?h:d<0?a:null; return c==null?"push":c===p.t?"win":"loss";}
+  const wn=r.hs>r.as?h:r.as>r.hs?a:null; return wn==null?"push":wn===p.t?"win":"loss";
+}
+function qnRecord(mode,onlyWeek){
+  const all=qnPicksAll()[D.season]||{}; const R={w:0,l:0,p:0,pend:0};
+  for(const [wk,G] of Object.entries(all)){ if(onlyWeek!=null&&+wk!==+onlyWeek) continue;
+    for(const [k,v] of Object.entries(G)){const p=v[mode]; if(!p) continue; const [a,h]=k.split("@"), g=qnGrade(p,mode,a,h,qnResult(wk,a,h));
+      if(g==="win")R.w++; else if(g==="loss")R.l++; else if(g==="push")R.p++; else R.pend++;}}
+  return R;
+}
+const qnRecTxt=R=>`${R.w}-${R.l}${R.p?`-${R.p}`:""}${R.w+R.l?` (${Math.round(100*R.w/(R.w+R.l))}%)`:""}`;
+function qnMineBox(P){
+  const box=$("#qMine"); if(qnMode==="surv"){box.innerHTML=""; return;}
+  const mode=qnMode, wk=P.week, W=(qnPicksAll()[D.season]||{})[wk]||{}, n=Object.values(W).filter(v=>v[mode]).length;
+  const Rw=qnRecord(mode,wk), Rs=qnRecord(mode), lbl=mode==="ats"?"contra el spread":"sin spread";
+  box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${n?"":`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. Se guardan en este navegador.</small>`}</div>`;
+}
+$("#qGames").addEventListener("click",e=>{
+  const el=e.target.closest(".team[data-qt]"); if(!el||qnMode==="surv") return;
+  const r=qnRows[+el.dataset.qi]; if(!r||r.g.lock) return;
+  const all=qnPicksAll(), S=all[D.season]=all[D.season]||{}, W=S[el.dataset.qw]=S[el.dataset.qw]||{}, k=`${r.g.a}@${r.g.h}`, G=W[k]=W[k]||{};
+  const t=el.dataset.qt;
+  if(G[qnMode]?.t===t) delete G[qnMode]; else G[qnMode]=qnMode==="ats"?{t,L:r.g.L}:{t};
+  if(!Object.keys(G).length) delete W[k];
+  qnPicksSave(all); loadQuiniela();
+});
+$("#qGames").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches?.(".team[data-qt]")){e.preventDefault(); e.target.click();}});
 async function loadQuiniela(){
   document.querySelectorAll("#qSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===qnMode));
   const box=$("#qGames"); if(!qnCache) box.innerHTML=`<p class="note">Cargando…</p>`;
@@ -1119,14 +1168,20 @@ async function loadQuiniela(){
     const edge=m==null?null:m+g.L;                      // puntos a favor del local contra la línea
     return {g,m,q,edge,pick:qnMode==="ats"?(edge==null?null:edge>0?g.h:g.a):(q?(q.p[1]>=q.p[0]?g.h:g.a):null)};});
   const top=new Set(rows.filter(r=>!r.g.lock&&r.edge!=null).sort((x,y)=>Math.abs(y.edge)-Math.abs(x.edge)).slice(0,3).map(r=>r.g));
+  qnMineBox(P);
+  const MW=((qnPicksAll()[D.season]||{})[P.week])||{};
+  if(!qnLiveAsked&&G.some(g=>g.lock&&!qnResult(P.week,g.a,g.h))){qnLiveAsked=true; nflLiveUpdate(true,+P.week).then(ok=>{if(ok) loadQuiniela();}).catch(()=>{});}
   box.className="games"; qnRows=rows;
   box.innerHTML=rows.map(({g,m,q,edge,pick},qi)=>{
     const A=T(g.a), H=T(g.h), sp=qnMode==="ats", popA=sp?g.ats[0]:g.su[0], popH=sp?g.ats[1]:g.su[1];
-    const tag=g.lock?`<span>Ya empezó</span>`:sp&&top.has(g)?`<span class="qtop">Más valor</span>`:"";
+    const mine=MW[`${g.a}@${g.h}`]?.[qnMode], res=qnResult(P.week,g.a,g.h), gr=qnGrade(mine,qnMode,g.a,g.h,res);
+    const tag=gr==="win"?`<span class="qres ok">✓ Acertaste</span>`:gr==="loss"?`<span class="qres ko">✗ Fallaste</span>`:gr==="push"?`<span class="qres">Empate</span>`
+      :res?`<span>Final ${g.a} ${res.as}-${res.hs} ${g.h}</span>`:g.lock?`<span>Ya empezó</span>`:sp&&top.has(g)?`<span class="qtop">Más valor</span>`:"";
     const hora=g.ko?`<b>${cap(fDay(g.ko))}</b> · ${fHour(g.ko)}`:"<b>Fecha por definir</b>";
     const team=(t,X,home)=>{const right=sp?qnLine(home?g.L:-g.L):pc(q?.p[home?1:0]);
       const sub=[home?"local":"",sp?ats(t):(home?g.rh:g.ra)].filter(Boolean).join(" · ");
-      return `<div class="team${pick===t?" win":""}">${logoImg(X.logo)||"<span></span>"}<span class="tn">${X.n}${pick===t?" ✓":""}<small>${sub}</small></span><span class="ml">${right}</span></div>`;};
+      const my=mine?.t===t, sub2=my?`Tu pick${sp&&mine.L!==g.L?` (con ${qnLine(home?mine.L:-mine.L)})`:""}`+(sub?" · "+sub:""):sub;
+      return `<div class="team${pick===t?" win":""}${my?" mine":""}${g.lock?"":" pickable"}" data-qt="${t}" data-qi="${qi}" data-qw="${P.week}" role="button" tabindex="0" aria-pressed="${my}">${logoImg(X.logo)||"<span></span>"}<span class="tn">${X.n}${pick===t?" ✓":""}<small>${sub2}</small></span><span class="ml">${right}</span></div>`;};
     let lines=[];
     if(sp){ if(m!=null){const fav=m>=0?g.h:g.a; lines.push(["Nuestra línea",Math.abs(m)<0.25?"Pick":`${fav} −${Math.abs(m).toFixed(1)}`],["Diferencia",`${Math.abs(edge).toFixed(1)} pts`]);}
             if(Math.abs(g.L%1)===0) lines.push(["Ojo","línea entera, puede empatar"]); }
@@ -1137,7 +1192,7 @@ async function loadQuiniela(){
       ${!sp&&q?`<div class="prob"><i style="width:${(q.p[0]*100).toFixed(1)}%;background:${A.c||"#888"}"></i><i style="width:${(q.p[1]*100).toFixed(1)}%;background:${H.c||"#555"}"></i></div>`:""}
       ${lines.length?`<div class="lines qln">${lines.map(([k,v])=>`<span>${k} <b>${v}</b></span>`).join("")}</div>`:""}
       ${(al=>al?`<div class="qalert">${al}</div>`:"")(qnAlert(g,INJ))}
-      <div class="where"><span>${pick?`Pick: <b>${T(pick).n}</b>`:""}</span><span>${pop}</span></div>
+      <div class="where"><span>${pick?`Pick de La Pizarra: <b>${T(pick).n}</b>`:""}</span><span>${pop}</span></div>
       <button class="qan" type="button" data-qi="${qi}">Ver análisis ›</button></article>`;}).join("");
 }
 // ---------- Quiniela: análisis por partido (bajas, duelos previos, descanso, racha, clima) ----------
@@ -2161,10 +2216,10 @@ function nflClock(st){const t=st?.type?.name||"", p=st?.period||0, c=st?.display
   if(/HALFTIME/.test(t)) return "Medio tiempo"; if(/END_PERIOD/.test(t)) return p>=4?"Fin del 4º cuarto":`Fin del ${ORD[p]||p+"º"} cuarto`;
   return p>4?`Tiempo extra · ${c}`:`${ORD[p]||p+"º"} cuarto · ${c}`;}
 const liveHot=(t,done)=>{const now=Date.now(); return !done&&t&&t<=now+5*60e3&&t>now-5*3600e3;};
-async function nflLiveUpdate(force){
-  const G=(D.sched||[]).filter(g=>g.w===curW);
+async function nflLiveUpdate(force,wk=curW){
+  const G=(D.sched||[]).filter(g=>g.w===wk);
   if(!force&&!G.some(g=>liveHot(g.ko?+new Date(g.ko):0,g.hs!=null||NLIVE[g.id]?.done))) return false;
-  const j=await fetch(`${ESPN}/site/v2/sports/football/nfl/scoreboard?seasontype=2&week=${curW}&dates=${D.season}`).then(r=>r.json()).catch(()=>null);
+  const j=await fetch(`${ESPN}/site/v2/sports/football/nfl/scoreboard?seasontype=2&week=${wk}&dates=${D.season}`).then(r=>r.json()).catch(()=>null);
   if(!j) return false;
   for(const e of j.events||[]){
     const c=e.competitions?.[0], cs=c?.competitors||[], H=cs.find(x=>x.homeAway==="home"), A=cs.find(x=>x.homeAway==="away"); if(!H||!A) continue;
@@ -2172,7 +2227,7 @@ async function nflLiveUpdate(force){
     const s=e.status?.type?.state; if(s!=="in"&&s!=="post"){delete NLIVE[x.id]; continue;}
     NLIVE[x.id]={as:+A.score||0,hs:+H.score||0,live:s==="in",done:s==="post",st:s==="in"?nflClock(e.status):"Final"};
   }
-  renderNflWeek(); return true;
+  if(wk===curW) renderNflWeek(); return true;
 }
 async function mxLiveUpdate(){
   if(!MXJ.length||!MXJ[curJ]||LEAGUES[FLIG]?.nat) return false;
@@ -2192,6 +2247,7 @@ async function liveTick(){
     const onNfl=!$("#nflgames").classList.contains("hidden"), onMx=!$("#mxgames").classList.contains("hidden");
     if(onNfl) await nflLiveUpdate();
     if(onMx) await mxLiveUpdate();
+    if(!$("#nflq").classList.contains("hidden")&&qnMode!=="surv"&&(qnCache?.games||[]).some(g=>liveHot(g.ko?+g.ko:0,false))){ if(await nflLiveUpdate(true,+(qnCache.week||D.gweek))) loadQuiniela(); }
     if(dlg.open&&DLG_CUR){
       if(DLG_CUR.k==="nfl"){ if(NLIVE[DLG_CUR.id]?.live){ if(!onNfl) await nflLiveUpdate(true); openNfl(DLG_CUR.id);} }
       else{ const e=MXJ.flatMap(w=>w.games).find(x=>x.id===DLG_CUR.id);
