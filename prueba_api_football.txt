@@ -1,98 +1,144 @@
-=== PRUEBA API-FOOTBALL · Liga MX temporada 2024 ===
-Cuenta: Free · pedidos hoy: {'current': 0, 'limit_day': 100}
+=== PRUEBA API-FOOTBALL · ligas europeas y Champions ===
+Cuenta: Free · pedidos hoy: {'current': 12, 'limit_day': 100}
 
---- 1. Liga y cobertura ---
-Liga: Liga MX · Mexico
-Temporada 2024 : 2024-07-05 a 2025-05-24
-Cobertura según la API:
-  Sí · Eventos del partido (goles, tarjetas)
-  Sí · Alineaciones
-  Sí · Estadísticas de partido
-  Sí · Estadísticas de jugadores por partido
-  Sí · Tabla
-  Sí · Jugadores (temporada)
-  Sí · Goleadores
-  Sí · Asistidores
-  No · Lesiones
-  Sí · Predicciones
-  No · Momios
-Temporadas disponibles en la liga: [2021, 2022, 2023, 2024, 2025, 2026]
+=========== Premier League (id 39) · temporada 2024-25 ===========
+Cobertura sí: eventos, alineaciones, stats de partido, stats de jugadores por partido, lesiones, predicciones
+Cobertura no: —
+Goleadores (top 5 de 20; con más de 38 partidos, imposible: 5):
+  Matheus Cunha (Manchester United): 30 en 66 partidos
+  Mohamed Salah (Liverpool): 29 en 38 partidos
+  A. Isak (Newcastle): 23 en 34 partidos
+  E. Haaland (Manchester City): 22 en 32 partidos
+  C. Wood (Nottingham Forest): 20 en 36 partidos
+  RARO: Matheus Cunha (Manchester United) 66 partidos
+  RARO: João Pedro (Chelsea) 54 partidos
+  RARO: D. Ouattara (Brentford) 64 partidos
+Asistidores (top 5 de 19; con más de 38 partidos, imposible: 0):
+  Mohamed Salah (Liverpool): 18 en 38 partidos
+  J. Murphy (Newcastle): 11 en 35 partidos
+  A. Elanga (Newcastle): 11 en 38 partidos
+  M. Rogers (Aston Villa): 10 en 37 partidos
+  Bruno Fernandes (Manchester United): 10 en 36 partidos
+Muestra de jugadores: 60 (38 con minutos; con partidos imposibles: 0)
+Datos completos: calificación 100%, tiros 82%, pases clave 84%, entradas 92%, duelos 100%, regates 89%
+Lesiones registradas: 3168 · tipos: {'Missing Fixture': 2786, 'Questionable': 382}
+  W. Fish (Manchester United): Missing Fixture · Ankle Injury · 2024-08-16
+  R. Hojlund (Manchester United): Missing Fixture · Muscle Injury · 2024-08-16
 
---- 2. Partidos de la temporada ---
-Partidos: 340
-Del 2024-07-05 al 2025-05-26
-Fases: {'Apertura': 170, 'Clausura': 170}
+=========== LaLiga (id 140) · temporada 2024-25 ===========
+Cobertura sí: eventos, alineaciones, stats de partido, stats de jugadores por partido, lesiones, predicciones
+Cobertura no: —
+Goleadores (top 5 de 20; con más de 38 partidos, imposible: 2):
+  Kylian Mbappé (Real Madrid): 31 en 34 partidos
+  R. Lewandowski (Barcelona): 26 en 35 partidos
+  A. Budimir (Osasuna): 21 en 38 partidos
+  A. Sørloth (Atletico Madrid): 20 en 35 partidos
+  Ayoze Pérez (Villarreal): 19 en 30 partidos
+  RARO: Álex Baena (Atletico Madrid) 64 partidos
+  RARO: Alfon González (Sevilla) 61 partidos
+Asistidores (top 5 de 19; con más de 38 partidos, imposible: 0):
+  Lamine Yamal (Barcelona): 13 en 34 partidos
+  Raphinha (Barcelona): 9 en 36 partidos
+  Álex Baena (Atletico Madrid): 9 en 32 partidos
+  Vinícius Júnior (Real Madrid): 8 en 30 partidos
+  J. Bellingham (Real Madrid): 8 en 31 partidos
+Muestra de jugadores: 60 (39 con minutos; con partidos imposibles: 0)
+Datos completos: calificación 100%, tiros 67%, pases clave 82%, entradas 90%, duelos 100%, regates 87%
+Lesiones registradas: 2424 · tipos: {'Missing Fixture': 2362, 'Questionable': 62}
+  J. Agirrezabala (Athletic Club): Missing Fixture · Back Injury · 2024-08-15
+  A. Djalo (Athletic Club): Missing Fixture · Muscle Injury · 2024-08-15
 
---- 3. Partido de muestra: Toluca 2-0 Club America (2025-05-26, Clausura - Final) ---
-Eventos: 13 · tipos: {'subst': 8, 'Goal': 2, 'Card': 3}
-  49' subst Substitution 1 · H. Martín (Club America)
-  65' Goal Normal Goal · Luan (Toluca)
-  72' subst Substitution 1 · Paulinho (Toluca)
-  72' subst Substitution 2 · R. Juárez (Club America)
-  72' subst Substitution 3 · J. dos Santos (Club America)
-  76' subst Substitution 2 · Jesús Ricardo Angulo (Toluca)
-Alineación Toluca: formación 5-3-2, titulares 11, banca 10, DT A. Mohamed
-Alineación Club America: formación 5-3-2, titulares 11, banca 10, DT André Jardine
-Estadísticas Toluca: Shots on Goal=3, Shots off Goal=7, Total Shots=15, Blocked Shots=5, Shots insidebox=9, Shots outsidebox=6, Fouls=12, Corner Kicks=4, Offsides=2, Ball Possession=37%
-Estadísticas Club America: Shots on Goal=0, Shots off Goal=2, Total Shots=4, Blocked Shots=2, Shots insidebox=4, Shots outsidebox=0, Fouls=10, Corner Kicks=1, Offsides=1, Ball Possession=63%
-Jugadores Toluca: 21 (14 con minutos)
-  Luis García: 98 min, calif. 6.3, tiros None, pases 23 (9 buenos), entradas None
-  Diego Barbosa: 98 min, calif. 7, tiros 1, pases 26 (18 buenos), entradas 3
-  Bruno Méndez: 98 min, calif. 7, tiros 1, pases 29 (20 buenos), entradas 1
-Jugadores Club America: 21 (16 con minutos)
-  Luis Malagón: 98 min, calif. 6.3, tiros None, pases 27 (24 buenos), entradas None
-  Kevin Álvarez: 83 min, calif. 6.6, tiros 1, pases 26 (19 buenos), entradas None
-  Israel Reyes: 98 min, calif. 6.9, tiros 1, pases 58 (48 buenos), entradas 5
+=========== Serie A (id 135) · temporada 2024-25 ===========
+Cobertura sí: eventos, alineaciones, stats de partido, stats de jugadores por partido, lesiones, predicciones
+Cobertura no: —
+Goleadores (top 5 de 20; con más de 38 partidos, imposible: 2):
+  M. Retegui (Genoa): 25 en 36 partidos
+  M. Kean (Fiorentina): 19 en 32 partidos
+  S. Esposito (Inter): 16 en 67 partidos
+  A. Lookman (Atalanta): 15 en 33 partidos
+  R. Orsolini (Bologna): 15 en 30 partidos
+  RARO: S. Esposito (Inter) 67 partidos
+  RARO: L. Colombo (AC Milan) 74 partidos
+Asistidores (top 5 de 18; con más de 38 partidos, imposible: 0):
+  R. Lukaku (Napoli): 10 en 36 partidos
+  C. Pulišić (AC Milan): 9 en 34 partidos
+  R. Bellanova (Atalanta): 9 en 34 partidos
+  M. Retegui (Atalanta): 8 en 36 partidos
+  Rafael Leão (AC Milan): 8 en 34 partidos
+Muestra de jugadores: 60 (46 con minutos; con partidos imposibles: 0)
+Datos completos: calificación 100%, tiros 80%, pases clave 83%, entradas 91%, duelos 100%, regates 85%
+Lesiones registradas: 3036 · tipos: {'Missing Fixture': 2422, 'Questionable': 614}
+  A. Benedyczak (Parma): Missing Fixture · Ankle Injury · 2024-08-17
+  E. Del Prato (Parma): Missing Fixture · Yellow Cards · 2024-08-17
 
---- 4. Goleadores y asistidores de la temporada ---
-Goleadores (20):
-  R. Zúñiga (Club America): 40 en 72 partidos
-  J. Cádiz (Leon): 26 en 69 partidos
-  Paulinho (Toluca): 25 en 37 partidos
-  G. Berterame (Monterrey): 20 en 38 partidos
-  Sergio Canales (Monterrey): 17 en 39 partidos
-  A. Vega (Toluca): 16 en 42 partidos
-  I. Rivero (Cruz Azul): 15 en 37 partidos
-  S. Rondón (CF Pachuca): 14 en 32 partidos
-  Á. Sepúlveda (Cruz Azul): 14 en 39 partidos
-  J. Paradela (Cruz Azul): 14 en 52 partidos
-Asistidores (19):
-  A. Vega (Toluca): 14 en 42 partidos
-  J. Paradela (Cruz Azul): 13 en 35 partidos
-  Sergio Canales (Monterrey): 12 en 39 partidos
-  A. Zendejas (Club America): 12 en 40 partidos
-  C. Rotondi (Cruz Azul): 9 en 38 partidos
-  H. Martín (Club America): 9 en 35 partidos
-  M. Ruiz (Toluca): 9 en 39 partidos
-  O. Idrissi (CF Pachuca): 9 en 33 partidos
-  J. Corona (Monterrey): 9 en 34 partidos
-  J. Angulo (Toluca): 8 en 40 partidos
+=========== Bundesliga (id 78) · temporada 2024-25 ===========
+Cobertura sí: eventos, alineaciones, stats de partido, stats de jugadores por partido, lesiones, predicciones
+Cobertura no: —
+Goleadores (top 5 de 20; con más de 34 partidos, imposible: 2):
+  H. Kane (Bayern München): 26 en 31 partidos
+  S. Machino (Borussia Mönchengladbach): 22 en 66 partidos
+  P. Schick (Bayer Leverkusen): 21 en 33 partidos
+  S. Guirassy (Borussia Dortmund): 21 en 30 partidos
+  R. Dōan (Eintracht Frankfurt): 20 en 68 partidos
+  RARO: S. Machino (Borussia Mönchengladbach) 66 partidos
+  RARO: R. Dōan (Eintracht Frankfurt) 68 partidos
+Asistidores (top 5 de 19; con más de 34 partidos, imposible: 0):
+  M. Olise (Bayern München): 15 en 34 partidos
+  F. Wirtz (Bayer Leverkusen): 12 en 31 partidos
+  V. Grifo (SC Freiburg): 11 en 34 partidos
+  J. Brandt (Borussia Dortmund): 10 en 30 partidos
+  Omar Marmoush (Eintracht Frankfurt): 9 en 17 partidos
+Muestra de jugadores: 60 (54 con minutos; con partidos imposibles: 0)
+Datos completos: calificación 100%, tiros 85%, pases clave 93%, entradas 87%, duelos 98%, regates 91%
+Lesiones registradas: 2638 · tipos: {'Missing Fixture': 2327, 'Questionable': 311}
+  Y. Borges Sanches (Borussia Mönchengladbach): Missing Fixture · Knee Injury · 2024-08-23
+  J. Olschowsky (Borussia Mönchengladbach): Missing Fixture · Knee Injury · 2024-08-23
 
---- 5. Estadísticas de temporada de jugadores (muestra de 10 páginas) ---
-  ! players {'league': 262, 'season': 2024, 'page': 4}: {'plan': 'Free plans are limited to a maximum value of 3 for the Page parameter'}
-Páginas totales en la API: 1 (≈20 jugadores; todo costaría 1 pedidos)
-Jugadores en la muestra: 60 · con minutos: 51
-Qué tan completos vienen los datos (jugadores con minutos):
-  Minutos: 100%
-  Posición: 100%
-  Calificación: 100%
-  Tiros: 88%
-  Pases: 100%
-  Pases clave: 96%
-  Entradas: 100%
-  Duelos: 100%
-  Regates: 94%
-  Faltas: 94%
-  Foto: 100%
-  Fecha de nacimiento: 100%
-  Nacionalidad: 100%
-  Ej.: Sergio Canales (Monterrey, Midfielder): 3378 min, 17 goles, 12 asist., calif. 7.644736
-  Ej.: Álvaro Fidalgo (Club America, Midfielder): 3315 min, 8 goles, 8 asist., calif. 7.422500
-  Ej.: A. Vega (Toluca, Attacker): 3238 min, 16 goles, 14 asist., calif. 7.547500
-  Ej.: C. Rodríguez (Cruz Azul, Midfielder): 3139 min, None goles, 8 asist., calif. 7.232500
-  Ej.: H. González (Mazatlán, Goalkeeper): 3016 min, 0 goles, 0 asist., calif. 7.128125
+=========== Ligue 1 (id 61) · temporada 2024-25 ===========
+Cobertura sí: eventos, alineaciones, stats de partido, stats de jugadores por partido, lesiones, predicciones
+Cobertura no: —
+Goleadores (top 5 de 20; con más de 34 partidos, imposible: 1):
+  M. Greenwood (Marseille): 22 en 34 partidos
+  O. Dembélé (Paris Saint Germain): 21 en 30 partidos
+  A. Gouiri (Rennes): 20 en 28 partidos
+  A. Kalimuendo (Rennes): 17 en 33 partidos
+  J. David (Lille): 16 en 32 partidos
+  RARO: M. Camara (Rennes) 68 partidos
+Asistidores (top 5 de 19; con más de 34 partidos, imposible: 0):
+  G. Perrin (Auxerre): 11 en 34 partidos
+  R. Cherki (Lyon): 11 en 30 partidos
+  B. Barcola (Paris Saint Germain): 10 en 34 partidos
+  M. Simon (Nantes): 10 en 32 partidos
+  M. Akliouche (Monaco): 10 en 32 partidos
+Muestra de jugadores: 60 (42 con minutos; con partidos imposibles: 0)
+Datos completos: calificación 100%, tiros 93%, pases clave 95%, entradas 100%, duelos 100%, regates 95%
+Lesiones registradas: 2460 · tipos: {'Missing Fixture': 2305, 'Questionable': 155}
+  A. Logbo (LE Havre): Missing Fixture · Knee Injury · 2024-08-16
+  L. Hernandez (Paris Saint Germain): Missing Fixture · Knee Injury · 2024-08-16
 
---- 6. Lesiones ---
-Registros: 0
+=========== Champions League (id 2) · temporada 2024-25 ===========
+Cobertura sí: eventos, alineaciones, stats de partido, stats de jugadores por partido, lesiones, predicciones
+Cobertura no: —
+Goleadores (top 5 de 20; con más de 17 partidos, imposible: 4):
+  J. David (Juventus): 18 en 28 partidos
+  Raphinha (Barcelona): 13 en 14 partidos
+  S. Guirassy (Borussia Dortmund): 13 en 14 partidos
+  F. Wirtz (Liverpool): 12 en 18 partidos
+  L. Bonis (Larne): 11 en 35 partidos
+  RARO: J. David (Juventus) 28 partidos
+  RARO: F. Wirtz (Liverpool) 18 partidos
+  RARO: L. Bonis (Larne) 35 partidos
+Asistidores (top 5 de 19; con más de 17 partidos, imposible: 1):
+  Raphinha (Barcelona): 8 en 14 partidos
+  O. Dembélé (Paris Saint Germain): 6 en 15 partidos
+  A. Hakimi (Paris Saint Germain): 5 en 17 partidos
+  C. De Ketelaere (Atalanta): 5 en 10 partidos
+  J. Brandt (Borussia Dortmund): 5 en 13 partidos
+  RARO: L. Bonis (Larne) 35 partidos
+Muestra de jugadores: 60 (47 con minutos; con partidos imposibles: 0)
+Datos completos: calificación 100%, tiros 79%, pases clave 70%, entradas 83%, duelos 94%, regates 72%
+Lesiones registradas: 1687 · tipos: {'Missing Fixture': 1562, 'Questionable': 125}
+  R. Gaffney (Shamrock Rovers): Missing Fixture · Injury · 2024-07-23
+  K. Kairinen (Sparta Praha): Missing Fixture · Convalescence · 2024-07-23
 
-Pedidos usados en esta prueba: 14
+Pedidos usados en esta prueba: 43
