@@ -345,6 +345,51 @@ dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 .averify{display:flex;flex-direction:column;gap:8px;margin:0 0 18px;padding:12px 14px;border-radius:10px;background:var(--hl);border-left:4px solid var(--mark);font-size:15px}
 .averify span{color:var(--ink)}
 .averify .alink{align-self:flex-start}
+/* Fantasy: matchup */
+#slMatch{max-width:780px}
+.fmnav{display:flex;align-items:center;gap:10px;margin:4px 0 12px}
+.fmnav h2{margin:0;flex:1}
+.fmarr{font:700 22px/1 var(--display);width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.fmarr:disabled{opacity:.35;cursor:default}
+.fm{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 8px;margin-bottom:26px}
+.fmhead{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding-bottom:12px;border-bottom:2px solid var(--ink)}
+.fmt b{display:block;font:700 18px/1.1 var(--display)}
+.fmt small{color:var(--muted);font-size:13px}
+.fmt.op{text-align:right}
+.fmt.me b{color:var(--mark)}
+.fmsc{display:grid;grid-template-columns:auto auto;gap:0 14px;justify-items:center;font:700 40px/1 var(--display);color:var(--muted)}
+.fmsc .lead{color:var(--ink)}
+.fmsc em{grid-column:1/-1;grid-row:2;font:600 13px/1.6 var(--display);font-style:normal;color:var(--muted);letter-spacing:.02em}
+.fmlive{color:var(--bad);font-weight:600}
+.fmbye{color:var(--bad)}
+.fmal{list-style:none;margin:12px 0 4px;padding:0;display:grid;gap:6px}
+.fmal li{padding:9px 12px;border-radius:8px;font-size:14px;background:var(--hl);border-left:4px solid var(--mark)}
+.fmal li.bad{border-left-color:var(--bad)}
+.fmok{margin:12px 0 4px;font-size:14px;color:var(--good)}
+.fmrows{display:grid}
+.fmrow{display:grid;grid-template-columns:minmax(0,1fr) 48px 44px 48px minmax(0,1fr);align-items:center;gap:6px;padding:9px 0;border-bottom:1px solid var(--line)}
+.fmrow:last-child{border-bottom:0}
+.fmp{display:flex;flex-direction:column;min-width:0}
+.fmp.r{align-items:flex-end;text-align:right}
+.fmnm{display:flex;align-items:center;gap:5px;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.fmp.r .fmnm{flex-direction:row-reverse}
+.fmempty{color:var(--bad)}
+.fmlg{width:18px;height:18px;object-fit:contain;flex:none}
+.fmmeta{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.fmtag{font:600 11px/1 var(--display);padding:1px 4px;border-radius:4px;border:1.3px solid var(--mark);color:var(--mark)}
+.fmtag.bad{border-color:var(--bad);color:var(--bad)}
+.fmpt{font:600 18px/1 var(--display);text-align:center;color:var(--muted)}
+.fmpt.win{color:var(--ink)}
+.fmslot{font:700 12px/1 var(--display);text-align:center;color:var(--muted);background:var(--bg);border-radius:5px;padding:5px 0}
+.fmbench{margin-top:8px;border-top:1px solid var(--line)}
+.fmbench summary{cursor:pointer;padding:10px 0;font:600 16px var(--display);color:var(--muted)}
+.fmbrow{display:grid;grid-template-columns:minmax(0,1fr) 48px;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}
+.fmother{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fmother li{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px}
+.fmother li span:last-child{text-align:right}
+.fmother .lead{font-weight:600}
+.fmother b{font:600 16px var(--display)}
+@media (max-width:720px){.fm{padding:12px 10px 6px}.fmnav h2{font-size:26px}.fmsc{font-size:30px;gap:0 8px}.fmt b{font-size:15px}.fmt small{font-size:12px}.fmrow{grid-template-columns:minmax(0,1fr) 36px 34px 36px minmax(0,1fr);gap:4px}.fmnm{font-size:14px;gap:4px}.fmlg{width:15px;height:15px}.fmpt{font-size:16px}.fmmeta{font-size:11px}.fmslot{font-size:11px}}
 footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color:var(--muted);font-size:13px}
 @media (max-width:720px){
   .hero{grid-template-columns:1fr}.play{display:none}
@@ -574,6 +619,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
     <p class="note" id="slMsg" aria-live="polite"></p>
     <p class="note" id="slAcct" hidden></p>
     <div id="slDash" hidden>
+      <div id="slMatch"></div>
       <div class="kpis" id="slKpis"></div>
       <div class="grid2">
         <div><h3>Tu roster</h3><div class="tbl"><table id="slRoster"></table></div></div>
@@ -976,7 +1022,7 @@ async function slLoad(id){
   SL.mine=rosters.find(r=>r.owner_id===SL.user.user_id)||rosters.find(r=>(r.co_owners||[]).includes(SL.user.user_id));
   SL.taken=new Set(rosters.flatMap(r=>r.players||[]));
   msg(`${league.name} · ${rosters.length} equipos`);
-  $("#slDash").hidden=false; slRender(); acctSlHint();
+  $("#slDash").hidden=false; slRender(); acctSlHint(); slMatchLoad();
 }
 const teamName=r=>SL.users[r.owner_id]||("Equipo "+r.roster_id);
 const rosterVal=r=>(r.players||[]).reduce((a,id)=>a+val(slPlayer(id)),0);
@@ -2311,6 +2357,121 @@ async function liveTick(){
 setInterval(liveTick,45e3);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden) liveTick();});
 setTimeout(()=>nflLiveUpdate(true).catch(()=>{}),800);   // al abrir: marcadores de la jornada aunque nflverse no los tenga todavía
+
+// ---------- Fantasy: matchup de la semana (Sleeper) ----------
+// API documentada de Sleeper: /state/nfl → semana actual; /league/{id}/matchups/{semana} → una fila por equipo:
+// {roster_id, matchup_id, points, starters[], starters_points[], players[], players_points{}}. Mismo matchup_id = juegan entre sí.
+// league.roster_positions trae los lugares en el mismo orden que starters ("BN" = banca, "0" = lugar vacío).
+// Estado de cada partido: D.sched (nflverse) + NLIVE (ESPN en vivo). Lesiones: qnInj() (ESPN, las mismas de la Quiniela).
+// Alertas solo para tu equipo y solo de partidos que no han empezado (después ya no se puede cambiar la alineación).
+const FM={state:null,stateT:0,week:null,mu:null,lid:null,busy:false};
+const FM_TEAM={LAR:"LA",WSH:"WAS",JAC:"JAX"};
+const FM_SLOT={QB:"QB",RB:"RB",WR:"WR",TE:"TE",FLEX:"FLEX",WRRB_FLEX:"W/R",REC_FLEX:"W/T",SUPER_FLEX:"SF",K:"K",DEF:"DEF",DL:"DL",LB:"LB",DB:"DB",IDP_FLEX:"IDP"};
+const FM_ELIG={QB:["QB"],RB:["RB"],WR:["WR"],TE:["TE"],K:["K"],DEF:["DEF"],FLEX:["RB","WR","TE"],WRRB_FLEX:["WR","RB"],REC_FLEX:["WR","TE"],SUPER_FLEX:["QB","RB","WR","TE"]};
+const FM_BAD=new Set(["Out","Injured Reserve","Doubtful","Suspension","Physically Unable to Perform","Non Football Injury"]);
+const fmNorm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\b(jr|sr|ii|iii|iv|v)\b\.?/g,"").replace(/[^a-z]/g,"");
+const fmTm=t=>FM_TEAM[t]||t||"";
+const fmShort=n=>{const w=String(n||"").split(" "); return w.length>1&&!/D\/ST$/.test(n)?`${w[0][0]}. ${w.slice(1).join(" ")}`:n;};
+const fmPts=v=>v==null?"–":String(Math.round(v*100)/100);
+function fmGame(t,w){
+  const g=(D.sched||[]).find(x=>x.w===+w&&(x.a===t||x.h===t)); if(!g) return {bye:true};
+  const L=NLIVE[g.id], ko=g.ko?new Date(g.ko):null;
+  const st=g.hs!=null||L?.done?"post":L?.live?"in":(ko&&ko<new Date()?"in":"pre");
+  return {g,ko,st,clock:L?.clock||""};
+}
+function fmInj(p,INJ){
+  if(!INJ||p.p==="DEF") return null; const L=INJ[fmTm(p.t)]||[], k=fmNorm(p.n);
+  return L.find(i=>fmNorm(i.n)===k)||null;
+}
+function fmCard(sid,pts,w,INJ,side,slot){
+  if(!sid||sid==="0") return {html:`<div class="fmp ${side}"><span class="fmnm fmempty">Vacío</span></div>`,empty:true};
+  const p=slPlayer(sid), t=fmTm(p.t), G=fmGame(t,w), I=fmInj(p,INJ), T=NT[t]||{};
+  const when=G.bye?"Descansa":G.st==="post"?"Final":G.st==="in"?(G.clock||"En juego"):G.ko?`${cap(new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"short"}).format(G.ko)).replace(".","")} ${fHour(G.ko)}`:"";
+  const tag=I?`<span class="fmtag${FM_BAD.has(I.st)?" bad":""}">${QN_ST[I.st]||I.st}</span>`:"";
+  const html=`<div class="fmp ${side}"><span class="fmnm">${logoImg(T.logo,"fmlg")}${fmShort(p.n)}</span><span class="fmmeta">${slot&&!FM_ELIG[slot]?.length||slot&&FM_ELIG[slot].length===1?"":p.p+" · "}${tag||t||"–"} · <span class="${G.st==="in"?"fmlive":G.bye?"fmbye":""}">${when}</span></span></div>`;
+  return {html,p,G,I};
+}
+function fmAlerts(me,slots,w,INJ){
+  const A=[], starters=me.starters||[], bench=(me.players||[]).filter(x=>!starters.includes(x));
+  const benchOk=bench.map(sid=>({sid,p:slPlayer(sid)})).filter(({p})=>{const G=fmGame(fmTm(p.t),w), I=fmInj(p,INJ);
+    return !G.bye&&G.st==="pre"&&!(I&&FM_BAD.has(I.st));});
+  const used=new Set();   // cada jugador de la banca se sugiere una sola vez
+  const alt=slot=>{const E=FM_ELIG[slot]||[slot]; const c=benchOk.filter(({sid,p})=>E.includes(p.p)&&!used.has(sid)).sort((a,b)=>(b.p.ppg||0)-(a.p.ppg||0))[0];
+    if(c) used.add(c.sid); return c?` Opción en tu banca: <b>${c.p.n}</b>${c.p.ppg!=null?` (${fmPts(c.p.ppg)} PPR/j)`:""}.`:"";};
+  slots.forEach((slot,i)=>{const sid=starters[i];
+    if(!sid||sid==="0"){A.push({lv:"bad",t:`Tienes vacío tu lugar de ${FM_SLOT[slot]||slot}.${alt(slot)}`}); return;}
+    const p=slPlayer(sid), G=fmGame(fmTm(p.t),w), I=fmInj(p,INJ);
+    if(G.bye){A.push({lv:"bad",t:`<b>${p.n}</b> descansa esta semana.${alt(slot)}`}); return;}
+    if(G.st!=="pre"||!I) return;
+    const body=QN_BODY[(I.ty||"").split(" - ")[0]]||"";
+    if(FM_BAD.has(I.st)) A.push({lv:"bad",t:`<b>${p.n}</b> está ${(QN_ST[I.st]||I.st).toLowerCase()}${body?` (${body})`:""}.${alt(slot)}`});
+    else A.push({lv:"warn",t:`<b>${p.n}</b> está ${(QN_ST[I.st]||I.st).toLowerCase()}${body?` (${body})`:""}. Revisa antes de su partido.`});
+  });
+  return A;
+}
+async function slMatchLoad(quiet){
+  const box=$("#slMatch"); if(!box||!SL.league||!SL.mine){ if(box) box.innerHTML=""; return; }
+  if(FM.busy) return; FM.busy=true;
+  try{
+    const lid=SL.league.league_id;
+    if(FM.lid!==lid){FM.lid=lid; FM.week=null; FM.mu=null;}
+    if(!FM.state||Date.now()-FM.stateT>3600e3){FM.state=await getJ("/state/nfl").catch(()=>null); FM.stateT=Date.now();}
+    const st=FM.state||{}, last=Math.min(18,(SL.league.settings?.playoff_week_start||15)+2);
+    if(FM.week==null) FM.week=Math.max(1,Math.min(last,+(st.display_week||st.week)||D.gweek||1));
+    if(!quiet) box.innerHTML=`<p class="note">Cargando tu matchup…</p>`;
+    const w=FM.week, [mu,INJ]=await Promise.all([getJ(`/league/${lid}/matchups/${w}`),qnInj()]);
+    if(FM.week!==w||SL.league?.league_id!==lid) return;
+    FM.mu=mu; fmRender(mu,w,INJ,last);
+  }catch(e){ console.warn("Matchup:",e); if(!quiet) box.innerHTML=`<p class="note">No pudimos traer tu matchup de Sleeper. Intenta de nuevo en un momento.</p>`; }
+  finally{FM.busy=false;}
+}
+function fmRender(mu,w,INJ,last){
+  const box=$("#slMatch"), me=SL.mine, rid=me.roster_id;
+  const M=(mu||[]).find(x=>x.roster_id===rid);
+  const nav=`<div class="fmnav"><button class="fmarr" data-fw="-1" ${w<=1?"disabled":""} aria-label="Semana anterior">‹</button><h2>Matchup · Semana ${w}</h2><button class="fmarr" data-fw="1" ${w>=last?"disabled":""} aria-label="Semana siguiente">›</button></div>`;
+  if(!M||M.matchup_id==null){box.innerHTML=nav+`<p class="note">No tienes matchup en la semana ${w}.</p>`; return;}
+  const O=mu.find(x=>x.matchup_id===M.matchup_id&&x.roster_id!==rid);
+  const slots=(SL.league.roster_positions||[]).filter(s=>s!=="BN"&&s!=="TAXI"&&s!=="IR");
+  const R=id=>SL.rosters.find(r=>r.roster_id===id), rec=r=>{const s=r?.settings||{}; return `${s.wins||0}-${s.losses||0}${s.ties?"-"+s.ties:""}`;};
+  const pts=(m,sid)=>m?.players_points?.[sid];
+  const left=(m)=>{let n=0,l=0; (m?.starters||[]).forEach(sid=>{if(!sid||sid==="0")return; const G=fmGame(fmTm(slPlayer(sid).t),w); if(G.bye)return; if(G.st==="pre")n++; else if(G.st==="in")l++;}); return {n,l};};
+  const a=M.points??0, b=O?.points??0, lm=left(M), lo=left(O);
+  const anyLive=lm.l+lo.l>0, allDone=lm.n+lm.l+lo.n+lo.l===0;
+  const stat=allDone?"Final":anyLive?`<span class="fmlive">● En vivo</span>`:"Por empezar";
+  const head=`<div class="fmhead">
+    <div class="fmt me"><b>${teamName(me)}</b><small>${rec(me)} · ${lm.n+lm.l?`${lm.n+lm.l} por jugar`:"ya jugaron todos"}</small></div>
+    <div class="fmsc"><span class="${a>=b&&(a||b)?"lead":""}">${fmPts(a)}</span><em>${stat}</em><span class="${b>a?"lead":""}">${fmPts(b)}</span></div>
+    <div class="fmt op"><b>${O?teamName(R(O.roster_id)):"Sin rival"}</b><small>${O?`${rec(R(O.roster_id))} · ${lo.n+lo.l?`${lo.n+lo.l} por jugar`:"ya jugaron todos"}`:""}</small></div></div>`;
+  const rows=slots.map((slot,i)=>{
+    const s1=M.starters?.[i], s2=O?.starters?.[i], p1=pts(M,s1), p2=pts(O,s2);
+    const c1=fmCard(s1,p1,w,INJ,"l",slot), c2=O?fmCard(s2,p2,w,INJ,"r",slot):{html:`<div class="fmp r"></div>`};
+    const w1=(p1||0)>(p2||0)&&p1, w2=(p2||0)>(p1||0)&&p2;
+    return `<div class="fmrow">${c1.html}<span class="fmpt${w1?" win":""}">${c1.empty?"":fmPts(p1??0)}</span><span class="fmslot">${FM_SLOT[slot]||slot}</span><span class="fmpt${w2?" win":""}">${O&&!c2.empty?fmPts(p2??0):""}</span>${c2.html}</div>`;
+  }).join("");
+  const benchIds=(M.players||[]).filter(x=>!(M.starters||[]).includes(x));
+  const bench=benchIds.map(sid=>{const c=fmCard(sid,pts(M,sid),w,INJ,"l"); return `<div class="fmbrow">${c.html}<span class="fmpt">${fmPts(pts(M,sid)??0)}</span></div>`;}).join("");
+  const cur=+(FM.state?.display_week||FM.state?.week)||D.gweek, AL=w>=cur?fmAlerts(M,slots,w,INJ):[], anyPre=lm.n>0&&w>=cur;   // semanas pasadas: sin alertas
+  const alerts=AL.length?`<ul class="fmal">${AL.map(x=>`<li class="${x.lv}">${x.t}</li>`).join("")}</ul>`
+    :anyPre?`<p class="fmok">Tu alineación está completa: ninguno de tus titulares descansa ni aparece lesionado.</p>`:"";
+  const others=[...new Set(mu.filter(x=>x.matchup_id!=null&&x.matchup_id!==M.matchup_id).map(x=>x.matchup_id))].map(id=>{
+    const [x,y]=mu.filter(z=>z.matchup_id===id); if(!x) return "";
+    const px=x.points??0, py=y?.points??0;
+    return `<li><span class="${px>py?"lead":""}">${teamName(R(x.roster_id))}</span><b>${fmPts(px)} – ${fmPts(py)}</b><span class="${py>px?"lead":""}">${y?teamName(R(y.roster_id)):"–"}</span></li>`;}).join("");
+  box.innerHTML=nav+`<div class="fm">${head}${alerts}<div class="fmrows">${rows}</div>
+    ${bench?`<details class="fmbench"><summary>Tu banca (${benchIds.length})</summary><div class="fmrows">${bench}</div></details>`:""}</div>
+    ${others?`<h3 style="margin-top:22px">Otros matchups de tu liga</h3><ul class="fmother">${others}</ul>`:""}`;
+}
+document.addEventListener("click",e=>{const b=e.target.closest?.(".fmarr"); if(!b||b.disabled) return; FM.week+=+b.dataset.fw; slMatchLoad();});
+// En vivo: mientras se ve Mi liga y hay partidos de NFL en curso en esa semana, se actualiza cada 45 s (junto con liveTick).
+async function fmLiveTick(){
+  if(document.hidden||!SL.league||$("#fliga").classList.contains("hidden")||FM.week==null) return;
+  const G=(D.sched||[]).filter(g=>g.w===FM.week);
+  if(!G.some(g=>liveHot(g.ko?+new Date(g.ko):0,g.hs!=null||NLIVE[g.id]?.done))) return;
+  try{ await nflLiveUpdate(true,FM.week); }catch(e){}
+  slMatchLoad(true);
+}
+setInterval(fmLiveTick,45e3);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden) fmLiveTick();});
 
 // ---------- Cuentas (Firebase: Authentication + Firestore) ----------
 // Con cuenta se guardan en la nube la liga de Sleeper (pizarra_sleeper, pizarra_league) y Mis picks (pz_mispicks),
