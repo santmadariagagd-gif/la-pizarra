@@ -1,6 +1,6 @@
 const firebaseConfig = {
   apiKey: "AIzaSyAvnlNs0DyFeSW3gwc4ZDF7E4wvDOukD5g",
-  authDomain: "la-pizarra-e2119.firebaseapp.com",
+  authDomain: "auth.lapizarra.mx",
   projectId: "la-pizarra-e2119",
   storageBucket: "la-pizarra-e2119.firebasestorage.app",
   messagingSenderId: "996181546819",
