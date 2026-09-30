@@ -708,6 +708,42 @@ for r in full.sort_values(['week','gameday','gametime']).itertuples():
         sp=rnd(r.spread_line,1),tot=rnd(r.total_line,1),as_=_i(r.away_score),hs=_i(r.home_score)))
 out['sched']=sched
 
+# ---------- Arranca o banca: consenso semanal de expertos (FantasyPros vía ffverse / nflreadpy) ----------
+# load_ff_rankings('week'): ranking de consenso de la semana (formato PPR) con calificación de arranque
+# (start_sit_grade A+…F), proyección en puntos (r2p_pts), rival y mejor/peor ranking de los expertos.
+# Se manda como D.ffw = {w: semana, p: {llave: [lugar en su posición, calificación, proyección, rival, ecr, mejor, peor]}}.
+# Llave: gsis_id (se cruza con D.sleeper[sid][3]); "DEF:KC" para defensas; "n|nombre|equipo" si no hay gsis.
+def _ffw():
+    import unicodedata as _ud, re as _re
+    w=nfl.load_ff_rankings('week').to_pandas()
+    w=w[w.page.isin(['qb','ppr-rb','ppr-wr','ppr-te','k','dst'])].copy()
+    if not len(w): return None
+    sd=str(w.scrape_date.iloc[0])[:10]
+    semanas=[g['w'] for g in sched if g.get('ko') and g['ko'][:10]>=sd]
+    if not semanas: return None
+    fx={"JAC":"JAX","LAR":"LA","WSH":"WAS"}
+    g_of=dict(zip(mp.fantasypros_id,mp.gsis_id))
+    def norm(s):
+        s=_ud.normalize('NFD',str(s or '')); s=''.join(c for c in s if _ud.category(c)!='Mn').lower()
+        s=_re.sub(r'\b(jr|sr|ii|iii|iv|v)\b\.?','',s); return _re.sub(r'[^a-z]','',s)
+    P={}
+    for r in w.itertuples():
+        tm=fx.get(r.team,r.team)
+        try: pr=int(''.join(ch for ch in str(r.pos_rank) if ch.isdigit()))
+        except Exception: pr=None
+        val=[pr,r.start_sit_grade if isinstance(r.start_sit_grade,str) else "",rnd(r.r2p_pts,1),
+             r.player_opponent if isinstance(r.player_opponent,str) else "",rnd(r.ecr,1),_i(r.best),_i(r.worst)]
+        if r.pos=='DST': P["DEF:"+str(tm)]=val; continue
+        try: g=g_of.get(int(r.fantasypros_id))
+        except Exception: g=None
+        P[g if isinstance(g,str) else f"n|{norm(r.player_name)}|{tm}"]=val
+    return dict(w=min(semanas),fecha=sd,p=P)
+try:
+    out['ffw']=_ffw()
+    print(f"Arranca o banca: semana {out['ffw']['w']}, {len(out['ffw']['p'])} jugadores (consenso del {out['ffw']['fecha']})" if out['ffw'] else "Arranca o banca: sin datos de la semana")
+except Exception as ex:
+    print("Arranca o banca: no se pudo cargar el consenso semanal:",ex); out['ffw']=None
+
 box={}
 done_ids=set(full[full.home_score.notna()].game_id)
 pg=pbp[pbp.game_id.isin(done_ids)]
