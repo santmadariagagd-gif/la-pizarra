@@ -995,17 +995,21 @@ function gameCard(g){
 const NT=D.nflteams||{};
 const weeks=[...new Set((D.sched||[]).map(g=>g.w))].sort((a,b)=>a-b);
 let curW=D.gweek;
+// Marcadores en vivo de NFL: nflverse (D.sched) solo trae resultados al día siguiente; mientras tanto, lo que
+// diga ESPN en el navegador se guarda aquí por id de partido de nflverse y se sobrepone en la tarjeta.
+let NLIVE={};
 function renderNflWeek(){
   $("#gTitle").textContent=`Semana ${curW}`;
   $("#wSel").innerHTML=weeks.map(w=>`<option value="${w}"${w===curW?" selected":""}>Semana ${w}</option>`).join("");
   $("#wPrev").disabled=curW===weeks[0]; $("#wNext").disabled=curW===weeks[weeks.length-1];
   const cards=(D.sched||[]).filter(g=>g.w===curW).map((x,i)=>{
-    const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, when=x.ko?new Date(x.ko):null, done=x.hs!=null;
+    const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, when=x.ko?new Date(x.ko):null, L=x.hs==null?NLIVE[x.id]:null;
+    const done=x.hs!=null||!!L?.done, live=!!L?.live, sa=x.hs!=null?x.as_:L?.as, sh=x.hs!=null?x.hs:L?.hs;
     const pr=probs([x.aml,x.hml]); const fav=x.sp==null?null:(x.sp>0?x.h:x.a);
-    return {when,tbd:x.tbd,status:done?"Final":"",wxId:"wx"+i,gid:x.id,kind:"nfl",
-      teams:[{n:A.n,sub:x.a,logo:A.logo,ml:x.aml,score:x.as_,win:done&&x.as_>x.hs},{n:H.n,sub:x.h+" · local",logo:H.logo,ml:x.hml,score:x.hs,win:done&&x.hs>x.as_}],
-      probs:done||!pr?null:[{p:pr[0],c:A.c,l:x.a},{p:pr[1],c:H.c,l:x.h}],
-      lines:done||x.sp==null?[]:[["Línea",fav?`${fav} −${Math.abs(x.sp)}`:"Pick"],["Total",x.tot??"–"]],
+    return {when,tbd:x.tbd,status:live?L.st:done?"Final":"",live,wxId:"wx"+i,gid:x.id,kind:"nfl",
+      teams:[{n:A.n,sub:x.a,logo:A.logo,ml:x.aml,score:sa,win:done&&sa>sh},{n:H.n,sub:x.h+" · local",logo:H.logo,ml:x.hml,score:sh,win:done&&sh>sa}],
+      probs:done||live||!pr?null:[{p:pr[0],c:A.c,l:x.a},{p:pr[1],c:H.c,l:x.h}],
+      lines:done||live||x.sp==null?[]:[["Línea",fav?`${fav} −${Math.abs(x.sp)}`:"Pick"],["Total",x.tot??"–"]],
       place:x.st,wxNote:(x.roof==="dome"||x.roof==="closed")?"Techado":"",_x:x};
   });
   $("#nflGames").innerHTML=cards.map(gameCard).join("");
@@ -1020,7 +1024,8 @@ renderNflWeek();
 const dlg=$("#gdlg");
 $("#gClose").onclick=()=>dlg.close();
 dlg.addEventListener("click",e=>{if(e.target===dlg) dlg.close();});
-function openCard(el){const k=el.dataset.kind,id=el.dataset.gid; if(k==="nfl") openNfl(id); else openMx(id);}
+let DLG_CUR=null;   // partido abierto en la ventana de detalle (para refrescarlo en vivo)
+function openCard(el){const k=el.dataset.kind,id=el.dataset.gid; DLG_CUR={k,id}; if(k==="nfl") openNfl(id); else openMx(id);}
 document.addEventListener("click",e=>{const c=e.target.closest(".game.click"); if(c) openCard(c);});
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches?.(".game.click")){e.preventDefault();openCard(e.target);}});
 const logoImg=(u,cls="")=>u?`<img src="${u}" alt="" class="${cls}" onerror="this.style.visibility='hidden'">`:"";
@@ -1126,7 +1131,9 @@ function openNfl(id){
   const x=(D.sched||[]).find(g=>g.id===id); if(!x) return;
   const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, b=(D.box||{})[id], when=x.ko?new Date(x.ko):null;
   const fecha=when?`${cap(fDay(when))}${x.tbd?" · Por definir horario":" · "+fHour(when)}`:"Fecha por definir";
-  let h=mheadHTML(A,H,x.as_,x.hs,x.hs!=null?"Final":(x.tbd?"Por definir horario":fHour(when)))+`<p class="meta">${fecha} · ${x.st||""}</p>`;
+  const L=x.hs==null?NLIVE[id]:null;
+  let h=mheadHTML(A,H,x.hs!=null?x.as_:L?.as,x.hs!=null?x.hs:L?.hs,x.hs!=null?"Final":L?(L.live?L.st:"Final"):(x.tbd?"Por definir horario":fHour(when)))+`<p class="meta">${fecha} · ${x.st||""}</p>`;
+  if(!b&&L) h+=`<p class="note" style="text-align:center">${L.live?"El marcador se actualiza solo mientras dura el partido. ":""}Las estadísticas completas del partido aparecen al día siguiente.</p>`;
   if(b){
     const qs=Math.max(b.q[x.a].length,4);
     h+=`<h3>Marcador por cuarto</h3><div class="tbl"><table><thead><tr><th>Equipo</th>${Array.from({length:qs},(_,i)=>`<th>${i<4?i+1:"TE"}</th>`).join("")}<th>Total</th></tr></thead><tbody>${[x.a,x.h].map(t=>`<tr><td><span class="nm">${(NT[t]||{}).n||t}</span></td>${Array.from({length:qs},(_,i)=>`<td>${b.q[t][i]??0}</td>`).join("")}<td><b>${t===x.a?x.as_:x.hs}</b></td></tr>`).join("")}</tbody></table></div>`;
@@ -1156,7 +1163,7 @@ function openNfl(id){
       <tr><td colspan="3" style="text-align:center">Línea ${x.sp==null?"–":(x.sp>0?`${x.h} −${x.sp}`:`${x.a} −${Math.abs(x.sp)}`)} · Total ${x.tot??"–"}</td></tr>
       <tr><td colspan="3" style="text-align:center" id="dwx">${(x.roof==="dome"||x.roof==="closed")?"Estadio techado":""}</td></tr></tbody></table></div>`;
   }
-  $("#gbody").innerHTML=h; dlg.showModal(); $("#gbody").scrollTop=0;
+  const keep=dlg.open?$("#gbody").scrollTop:0; $("#gbody").innerHTML=h; if(!dlg.open) dlg.showModal(); $("#gbody").scrollTop=keep;
   $("#gbody").querySelectorAll(".tbl").forEach(freezeTable);
   if(!b&&x.roof!=="dome"&&x.roof!=="closed"&&!x.tbd) fillWeather($("#dwx"),x.lat,x.lon,when?.getTime());
 }
@@ -1409,14 +1416,15 @@ function mxSubs(r,K,R){
   for(const x of res) if(!x.outP) x.outName=hasOut?"":x.outName;
   return res;
 }
-async function openMx(id){
+async function openMx(id,quiet){
   const {ev}=LEAGUES[FLIG].nat?await selSeason():await mxSeason(); const e=ev.find(x=>x.id===id); if(!e) return;
   const c=mxCard(e,0), comp=e.competitions?.[0]||{}, cs=comp.competitors||[];
   const H=cs.find(x=>x.homeAway==="home")||{}, A=cs.find(x=>x.homeAway==="away")||{};
   const T=x=>({n:esTeam(x.team?.shortDisplayName||x.team?.displayName),logo:x.team?.logo});
   const hs=c.teams[0].score, as=c.teams[1].score;
   let h=mheadHTML(T(H),T(A),hs,as,c.status||(c.tbd?"Por definir horario":fHour(c.when)))+`<p class="meta">${cap(fDay(c.when))}${c.tbd?" · Por definir horario":" · "+fHour(c.when)} · ${c.place}</p>`;
-  $("#gbody").innerHTML=h+`<p class="note" style="text-align:center">Cargando detalle…</p>`; dlg.showModal();
+  const keep=quiet?$("#gbody").scrollTop:0;
+  if(!quiet){$("#gbody").innerHTML=h+`<p class="note" style="text-align:center">Cargando detalle…</p>`; dlg.showModal();}
   let sm=null; try{sm=await fetch(`${ESPN}/site/v2/sports/soccer/${e._slug||flSlug()}/summary?event=${id}`).then(r=>r.json());}catch(err){}
   if(c.probs){h+=`<h3>Previa</h3><div class="tbl"><table class="cmp"><tbody><tr><td>${mlTxt(c.teams[0].ml)}</td><td>Momio</td><td>${mlTxt(c.teams[1].ml)}</td></tr><tr><td>${Math.round(c.probs[0].p*100)}%</td><td>Probabilidad (empate ${Math.round(c.probs[1].p*100)}%)</td><td>${Math.round(c.probs[2].p*100)}%</td></tr><tr><td colspan="3" style="text-align:center" id="dwx"></td></tr></tbody></table></div>`;}
   if(sm){
@@ -1480,7 +1488,8 @@ async function openMx(id){
       }
     } else if(e.status?.type?.state==="pre") h+=`<p class="note" style="text-align:center;margin-top:18px">Las alineaciones se publican cerca de la hora del partido.</p>`;
   }
-  $("#gbody").innerHTML=h;
+  if(quiet&&(!dlg.open||DLG_CUR?.id!==id)) return;   // lo cerraron o abrieron otro mientras se actualizaba
+  $("#gbody").innerHTML=h; if(quiet) $("#gbody").scrollTop=keep;
   $("#gbody").querySelectorAll(".tbl").forEach(freezeTable);
   if(c.probs&&!c.tbd){const g=await geocode(c.city); if(g) fillWeather($("#dwx"),g.latitude,g.longitude,c.when.getTime());}
 }
@@ -1970,6 +1979,59 @@ const mxpState={k:"g",dir:"desc",pos:"ALL",team:"",q:"",render(){
 document.querySelectorAll("#mxpSeg button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#mxpSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));mxpState.pos=b.dataset.p;mxpState.k=b.dataset.p==="G"?"sv":"g";mxpState.limit=25;mxpState.render();});
 $("#mxpTeam").onchange=e=>{mxpState.team=e.target.value;mxpState.render();};
 $("#mxpSearch").oninput=e=>{mxpState.q=e.target.value;mxpState.render();};
+
+// ---------- En vivo: refresco automático ----------
+// Cada 45 s, solo si la pestaña del navegador está visible y hay un partido en curso (o por empezar en
+// los próximos 5 min) en la semana que se está viendo. Todo sale de ESPN desde el navegador: no gasta
+// créditos de ninguna API. NFL: marcador y reloj en las tarjetas y en la ventana de detalle; las
+// estadísticas completas siguen llegando de nflverse al día siguiente. Fútbol: tarjetas y detalle completo.
+const NFL_AB={WSH:"WAS",LAR:"LA"};
+const ORD=["","1º","2º","3º","4º"];
+function nflClock(st){const t=st?.type?.name||"", p=st?.period||0, c=st?.displayClock||"";
+  if(/HALFTIME/.test(t)) return "Medio tiempo"; if(/END_PERIOD/.test(t)) return p>=4?"Fin del 4º cuarto":`Fin del ${ORD[p]||p+"º"} cuarto`;
+  return p>4?`Tiempo extra · ${c}`:`${ORD[p]||p+"º"} cuarto · ${c}`;}
+const liveHot=(t,done)=>{const now=Date.now(); return !done&&t&&t<=now+5*60e3&&t>now-5*3600e3;};
+async function nflLiveUpdate(force){
+  const G=(D.sched||[]).filter(g=>g.w===curW);
+  if(!force&&!G.some(g=>liveHot(g.ko?+new Date(g.ko):0,g.hs!=null||NLIVE[g.id]?.done))) return false;
+  const j=await fetch(`${ESPN}/site/v2/sports/football/nfl/scoreboard?seasontype=2&week=${curW}&dates=${D.season}`).then(r=>r.json()).catch(()=>null);
+  if(!j) return false;
+  for(const e of j.events||[]){
+    const c=e.competitions?.[0], cs=c?.competitors||[], H=cs.find(x=>x.homeAway==="home"), A=cs.find(x=>x.homeAway==="away"); if(!H||!A) continue;
+    const ab=t=>NFL_AB[t?.abbreviation]||t?.abbreviation, x=G.find(g=>g.h===ab(H.team)&&g.a===ab(A.team)); if(!x) continue;
+    const s=e.status?.type?.state; if(s!=="in"&&s!=="post"){delete NLIVE[x.id]; continue;}
+    NLIVE[x.id]={as:+A.score||0,hs:+H.score||0,live:s==="in",done:s==="post",st:s==="in"?nflClock(e.status):"Final"};
+  }
+  renderNflWeek(); return true;
+}
+async function mxLiveUpdate(){
+  if(!MXJ.length||!MXJ[curJ]||LEAGUES[FLIG]?.nat) return false;
+  const G=MXJ[curJ].games, hot=G.filter(e=>{const s=e.status?.type?.state; return s==="in"||(s==="pre"&&liveHot(+new Date(e.date),false));});
+  if(!hot.length) return false;
+  const ymd=t=>new Date(t).toISOString().slice(0,10).replace(/-/g,""), days=new Set();
+  hot.forEach(e=>{const t=+new Date(e.date); days.add(ymd(t)); days.add(ymd(t-864e5));});   // ESPN agrupa por día de EE. UU.
+  const slug=LEAGUES[FLIG].slug;
+  const res=await Promise.all([...days].map(d=>fetch(`${ESPN}/site/v2/sports/soccer/${slug}/scoreboard?dates=${d}`).then(r=>r.json()).catch(()=>({events:[]}))));
+  let n=0;
+  for(const f of res.flatMap(r=>r.events||[])){const o=G.find(e=>e.id===f.id); if(o){o.status=f.status; o.competitions=f.competitions; n++;}}
+  if(n) renderMxJ(); return n>0;
+}
+async function liveTick(){
+  if(document.hidden) return;
+  try{
+    const onNfl=!$("#nflgames").classList.contains("hidden"), onMx=!$("#mxgames").classList.contains("hidden");
+    if(onNfl) await nflLiveUpdate();
+    if(onMx) await mxLiveUpdate();
+    if(dlg.open&&DLG_CUR){
+      if(DLG_CUR.k==="nfl"){ if(NLIVE[DLG_CUR.id]?.live){ if(!onNfl) await nflLiveUpdate(true); openNfl(DLG_CUR.id);} }
+      else{ const e=MXJ.flatMap(w=>w.games).find(x=>x.id===DLG_CUR.id);
+        if(e&&e.status?.type?.state==="in"){ if(!onMx) await mxLiveUpdate(); openMx(DLG_CUR.id,true);} }
+    }
+  }catch(err){console.warn("En vivo:",err);}
+}
+setInterval(liveTick,45e3);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden) liveTick();});
+setTimeout(()=>nflLiveUpdate(true).catch(()=>{}),800);   // al abrir: marcadores de la jornada aunque nflverse no los tenga todavía
 </script>
 </body>
 </html>
