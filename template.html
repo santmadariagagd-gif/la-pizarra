@@ -205,6 +205,9 @@ input[type=search].hq{width:100%;max-width:440px}
 .qinj .qs{font-size:14px;text-align:right}
 .qinj .qs.out{color:var(--bad);font-weight:600}.qinj .qs.dbt{color:var(--alt);font-weight:600}.qinj .qs.q{color:var(--muted)}
 .qsum{margin:6px 0 10px;font-size:15px;line-height:1.5}
+.fchips{display:inline-flex;gap:3px;margin-left:8px;vertical-align:middle}
+.fchip{display:inline-block;width:20px;height:20px;line-height:20px;border-radius:5px;text-align:center;font:700 12px var(--display);font-style:normal;color:var(--surface);background:var(--muted)}
+.fchip.g{background:var(--good)}.fchip.p{background:var(--bad)}
 .qdisc{margin:0 0 14px;padding:12px 14px;background:var(--hl);border:1px solid var(--line);border-left:4px solid var(--mark);border-radius:10px;font-size:15px;line-height:1.45;color:var(--ink)}
 .qsv .qrk{font:700 18px var(--display);color:var(--muted);min-width:1.2em}
 .qsv .qlg{width:32px;height:32px;object-fit:contain}
@@ -1207,30 +1210,42 @@ async function qnWeather(x){
   const t=Math.round(f.hourly.temperature_2m[i]), pp=f.hourly.precipitation_probability?.[i], c=f.hourly.weather_code?.[i], w=f.hourly.wind_speed_10m?.[i];
   return `${t}°C · ${WX[c]||""}${pp!=null?` · ${pp}% lluvia`:""}${w!=null?` · viento ${Math.round(w)} km/h`:""}${w>=25?`<br><b>El viento puede afectar el juego aéreo y el total de puntos.</b>`:""}`;
 }
+function qnFormSU(t){ // últimos 3 resultados (ganó/perdió), para Partidos
+  const G=(D.sched||[]).filter(x=>(x.a===t||x.h===t)&&x.hs!=null).sort((x,y)=>new Date(y.ko||0)-new Date(x.ko||0)).slice(0,3);
+  if(!G.length) return "Sin partidos todavía";
+  return G.map(x=>{const home=x.h===t, pf=home?x.hs:x.as_, pa=home?x.as_:x.hs; return `${home?"vs":"en"} ${home?x.a:x.h} <b>${pf>pa?"G":pf<pa?"P":"E"}</b> ${pf}-${pa}`;}).join(" · ");
+}
+// Secciones de la previa de NFL (las usa el análisis de la Quiniela y la ventana de detalle de Partidos).
+// ats=true: racha contra el spread; ats=false: racha de resultados.
+async function nflPreviaHTML(a,hm,ko,ats){
+  const A=NT[a]||{n:a}, H=NT[hm]||{n:hm};
+  let h=`<h3>Bajas de titulares</h3>`;
+  const INJ=await qnInj();
+  if(!INJ) h+=`<p class="note">No pudimos traer el reporte de lesiones en este momento.</p>`;
+  else for(const [t,T] of [[a,A],[hm,H]]){
+    const L=qnKeyInj(t,INJ);
+    h+=`<h4 class="stat-cat">${logoImg(T.logo,"tlogo")}${T.name||T.n}</h4>`+(L.length?`<ul class="qinj">${L.map(i=>`<li><span class="qp">${i.dp||i.p}</span><span>${i.n}</span><span class="qs ${["Out","Injured Reserve","Suspension"].includes(i.st)?"out":i.st==="Doubtful"?"dbt":"q"}">${QN_ST[i.st]||i.st}${i.ty?` · ${qnBody(i.ty)}`:""}</span></li>`).join("")}</ul>`:`<p class="note">Sin bajas de titulares reportadas.</p>`);
+  }
+  const hh=(D.h2h||{})[[a,hm].sort().join("|")]||[];
+  h+=`<h3>Duelos previos</h3>`;
+  if(!hh.length) h+=`<p class="note">${D.h2h?"No se han enfrentado desde 1999.":"Sin datos por ahora."}</p>`;
+  else{
+    const win={[a]:0,[hm]:0}, cov={[a]:0,[hm]:0};
+    const li=hh.map(m=>{const wn=m.hs>m.as_?m.h:m.as_>m.hs?m.a:null; if(wn&&win[wn]!=null) win[wn]++;
+      let c=""; if(ats&&m.sp!=null){const d=(m.hs-m.as_)-m.sp, ct=d>0?m.h:d<0?m.a:null; if(ct&&cov[ct]!=null) cov[ct]++; c=ct?` · cubrió ${ct}`:" · empate vs spread";}
+      return `<li><span class="qp">${m.s}</span><span>${m.gt==="REG"?`Semana ${m.w}`:"Playoffs"}: <b>${m.a} ${m.as_} – ${m.hs} ${m.h}</b>${c}</span></li>`;}).join("");
+    h+=`<p class="qsum">Últimos ${hh.length}: ${a} ${win[a]}-${win[hm]} ${hm}${ats?` · contra el spread ${a} ${cov[a]}-${cov[hm]}`:""}</p><ul class="qinj qh2h">${li}</ul>`;
+  }
+  h+=`<h3>Descanso</h3><ul class="qinj">${[a,hm].map(t=>`<li><span class="qp">${t}</span><span>${qnRest(t,ko)||"–"}</span></li>`).join("")}</ul>`;
+  h+=`<h3>${ats?"Racha contra el spread":"Últimos resultados"}</h3><ul class="qinj">${[a,hm].map(t=>`<li><span class="qp">${t}</span><span>${ats?qnForm(t):qnFormSU(t)}</span></li>`).join("")}</ul>`;
+  return h;
+}
 async function qnAnalysis(r){
   const g=r.g, A=NT[g.a]||{n:g.a}, H=NT[g.h]||{n:g.h}, x=qnSchedGame(g);
   DLG_CUR=null;
   const hora=g.ko?`${cap(fDay(g.ko))} · ${fHour(g.ko)}`:"Fecha por definir";
   let h=mheadHTML(A,H,null,null,`${g.h} ${qnLine(g.L)}`)+`<p class="meta">${hora}${x?.st?` · ${x.st}`:""}</p>`;
-  const INJ=await qnInj();
-  h+=`<h3>Bajas de titulares</h3>`;
-  if(!INJ) h+=`<p class="note">No pudimos traer el reporte de lesiones en este momento.</p>`;
-  else for(const [t,T] of [[g.a,A],[g.h,H]]){
-    const L=qnKeyInj(t,INJ);
-    h+=`<h4 class="stat-cat">${logoImg(T.logo,"tlogo")}${T.name||T.n}</h4>`+(L.length?`<ul class="qinj">${L.map(i=>`<li><span class="qp">${i.dp||i.p}</span><span>${i.n}</span><span class="qs ${["Out","Injured Reserve","Suspension"].includes(i.st)?"out":i.st==="Doubtful"?"dbt":"q"}">${QN_ST[i.st]||i.st}${i.ty?` · ${qnBody(i.ty)}`:""}</span></li>`).join("")}</ul>`:`<p class="note">Sin bajas de titulares reportadas.</p>`);
-  }
-  const hh=(D.h2h||{})[[g.a,g.h].sort().join("|")]||[];
-  h+=`<h3>Duelos previos</h3>`;
-  if(!hh.length) h+=`<p class="note">No se han enfrentado desde 1999.</p>`;
-  else{
-    const win={[g.a]:0,[g.h]:0}, cov={[g.a]:0,[g.h]:0};
-    const li=hh.map(m=>{const wn=m.hs>m.as_?m.h:m.as_>m.hs?m.a:null; if(wn&&win[wn]!=null) win[wn]++;
-      let c=""; if(m.sp!=null){const d=(m.hs-m.as_)-m.sp, ct=d>0?m.h:d<0?m.a:null; if(ct&&cov[ct]!=null) cov[ct]++; c=ct?` · cubrió ${ct}`:" · empate vs spread";}
-      return `<li><span class="qp">${m.s}</span><span>${m.gt==="REG"?`Semana ${m.w}`:"Playoffs"}: <b>${m.a} ${m.as_} – ${m.hs} ${m.h}</b>${c}</span></li>`;}).join("");
-    h+=`<p class="qsum">Últimos ${hh.length}: ${g.a} ${win[g.a]}-${win[g.h]} ${g.h} · contra el spread ${g.a} ${cov[g.a]}-${cov[g.h]}</p><ul class="qinj qh2h">${li}</ul>`;
-  }
-  h+=`<h3>Descanso</h3><ul class="qinj">${[g.a,g.h].map(t=>`<li><span class="qp">${t}</span><span>${qnRest(t,g.ko)||"–"}</span></li>`).join("")}</ul>`;
-  h+=`<h3>Racha contra el spread</h3><ul class="qinj">${[g.a,g.h].map(t=>`<li><span class="qp">${t}</span><span>${qnForm(t)}</span></li>`).join("")}</ul>`;
+  h+=await nflPreviaHTML(g.a,g.h,g.ko,true);
   const wx=await qnWeather(x);
   if(wx) h+=`<h3>Clima</h3><p class="qsum">${wx}</p>`;
   $("#gbody").innerHTML=h; if(!dlg.open) dlg.showModal(); $("#gbody").scrollTop=0;
@@ -1277,6 +1292,9 @@ function openNfl(id){
   const keep=dlg.open?$("#gbody").scrollTop:0; $("#gbody").innerHTML=h; if(!dlg.open) dlg.showModal(); $("#gbody").scrollTop=keep;
   $("#gbody").querySelectorAll(".tbl").forEach(freezeTable);
   if(!b&&x.roof!=="dome"&&x.roof!=="closed"&&!x.tbd) fillWeather($("#dwx"),x.lat,x.lon,when?.getTime());
+  if(!b&&!L&&x.hs==null&&!$("#gbody .npv")){   // previa: bajas, duelos previos, descanso y últimos resultados
+    nflPreviaHTML(x.a,x.h,when,false).then(p=>{ if(dlg.open&&DLG_CUR?.id===id&&!$("#gbody .npv")) $("#gbody").insertAdjacentHTML("beforeend",`<div class="npv">${p}</div>`); }).catch(()=>{});
+  }
 }
 
 // ---------- Brackets de postemporada, calculados con la tabla de hoy (provisional) ----------
@@ -1527,6 +1545,46 @@ function mxSubs(r,K,R){
   for(const x of res) if(!x.outP) x.outName=hasOut?"":x.outName;
   return res;
 }
+// Previa de fútbol (partidos que no han empezado), con lo que trae el "summary" de ESPN antes del partido:
+// standings (posición), lastFiveGames (forma; el campo score viene ganador-primero, por eso se usan
+// homeTeamScore/awayTeamScore), seasonseries (últimos 5 enfrentamientos) y leaders (goleador y asistidor).
+// ESPN no trae bajas ni alineaciones probables antes del partido.
+function mxPreviaHTML(sm,H,A){
+  const ids=[H.team?.id,A.team?.id], nm=c=>esTeam(c.team?.shortDisplayName||c.team?.displayName||""), lg=c=>logoImg(c.team?.logo,"tlogo");
+  let h="";
+  const ent=(sm.standings?.groups||[]).flatMap(g=>g.standings?.entries||[]);
+  const row=id=>{const e=ent.find(x=>String(x.id)===String(id)); if(!e) return null; const s=Object.fromEntries((e.stats||[]).map(x=>[x.name,x.displayValue])); return s;};
+  const sH=row(ids[0]), sA=row(ids[1]);
+  if(sH&&sA) h+=`<h3>En la tabla</h3><ul class="qinj">${[[H,sH],[A,sA]].map(([c,s])=>`<li><span class="qp">${s.rank?s.rank+"º":""}</span><span>${nm(c)} · <b>${s.points} pts</b> en ${s.gamesPlayed} partidos</span><span class="qs">${s.wins}G ${s.ties}E ${s.losses}P · DG ${s.pointDifferential}</span></li>`).join("")}</ul>`;
+  const L5=sm.lastFiveGames||[];
+  const forma=c=>{const t=L5.find(x=>String(x.team?.id)===String(c.team?.id)); if(!t||!t.events?.length) return "";
+    const R={W:["G","g"],D:["E","e"],L:["P","p"]};
+    return `<h4 class="stat-cat">${lg(c)}${nm(c)} <span class="fchips">${[...t.events].reverse().map(x=>`<i class="fchip ${R[x.gameResult]?.[1]||""}">${R[x.gameResult]?.[0]||"–"}</i>`).join("")}</span></h4><ul class="qinj">${[...t.events].reverse().map(x=>{
+      const home=String(x.homeTeamId)===String(c.team?.id), gf=home?x.homeTeamScore:x.awayTeamScore, gc=home?x.awayTeamScore:x.homeTeamScore;
+      const comp=/liga|premier|la ?liga|serie a|bundesliga|ligue 1|champions/i.test(x.competitionName||"")?"":` · ${x.competitionName}`;
+      return `<li><span class="qp">${new Intl.DateTimeFormat("es-MX",{timeZone:TZ,day:"numeric",month:"short"}).format(new Date(x.gameDate))}</span><span>${home?"vs":"en"} ${esTeam(x.opponent?.displayName||"")}${comp}</span><span class="qs"><b>${gf}-${gc}</b> ${R[x.gameResult]?.[0]||""}</span></li>`;}).join("")}</ul>`;};
+  const f=forma(H)+forma(A);
+  if(f) h+=`<h3>Forma (últimos 5, del más reciente al más viejo)</h3>${f}`;
+  const S=(sm.seasonseries||[]).find(x=>x.type==="head-to-head")||sm.seasonseries?.[0];
+  if(S?.events?.length){
+    const cnt={[ids[0]]:0,[ids[1]]:0,x:0}, nmS=c=>String(c.team?.id)===String(ids[0])?nm(H):String(c.team?.id)===String(ids[1])?nm(A):nm(c);
+    const li=S.events.map(ev=>{const cH=ev.competitors?.find(c=>c.homeAway==="home")||{}, cA=ev.competitors?.find(c=>c.homeAway==="away")||{};
+      const gh=+cH.score, ga=+cA.score, pen=/PEN/i.test(ev.statusType?.name||"");
+      if(gh>ga) cnt[cH.team?.id]!=null&&cnt[cH.team.id]++; else if(ga>gh) cnt[cA.team?.id]!=null&&cnt[cA.team.id]++; else cnt.x++;
+      const pw=pen?(cH.winner?nmS(cH):cA.winner?nmS(cA):""):"";
+      return `<li><span class="qp">${new Date(ev.date).getUTCFullYear()}</span><span><b>${nmS(cH)} ${cH.score} – ${cA.score} ${nmS(cA)}</b>${pen&&pw?` · se definió en penales (ganó ${pw})`:""}</span></li>`;}).join("");
+    h+=`<h3>Enfrentamientos previos</h3><p class="qsum">Últimos ${S.events.length}: ${nm(H)} ${cnt[ids[0]]} · empates ${cnt.x} · ${nm(A)} ${cnt[ids[1]]}</p><ul class="qinj qh2h">${li}</ul>`;
+  }
+  const LD=sm.leaders||[];
+  const lead=c=>{const t=LD.find(x=>String(x.team?.id)===String(c.team?.id)); if(!t) return "";
+    const get=(k,lbl)=>{const cat=(t.leaders||[]).find(x=>x.name===k); const p=cat?.leaders?.[0]; if(!p) return "";
+      const n=(p.displayValue||"").match(new RegExp(lbl+":\\s*(\\d+)"))?.[1]??(p.displayValue||""), m=(p.displayValue||"").match(/Matches:\s*(\d+)/)?.[1];
+      return `<li><span class="qp">${k==="goalsLeaders"?"Goles":"Asist."}</span><span>${p.athlete?.displayName||""}</span><span class="qs"><b>${n}</b>${m?` en ${m} PJ`:""}</span></li>`;};
+    const x=get("goalsLeaders","Goals")+get("assistsLeaders","Assists"); return x?`<h4 class="stat-cat">${lg(c)}${nm(c)}</h4><ul class="qinj">${x}</ul>`:"";};
+  const l=lead(H)+lead(A);
+  if(l) h+=`<h3>Líderes de la temporada</h3>${l}`;
+  return h;
+}
 async function openMx(id,quiet){
   const {ev}=LEAGUES[FLIG].nat?await selSeason():await mxSeason(); const e=ev.find(x=>x.id===id); if(!e) return;
   const c=mxCard(e,0), comp=e.competitions?.[0]||{}, cs=comp.competitors||[];
@@ -1560,6 +1618,7 @@ async function openMx(id,quiet){
       const keys=Object.keys(MXSTAT).filter(k=>mh[k]||ma[k]);
       h+=`<h3>Estadísticas del partido</h3><div class="tbl"><table class="cmp"><thead><tr><th class="l">${T(H).n}</th><th></th><th>${T(A).n}</th></tr></thead><tbody>${keys.map(k=>`<tr><td>${mh[k]?.displayValue??"–"}</td><td>${MXSTAT[k]}</td><td>${ma[k]?.displayValue??"–"}</td></tr>`).join("")}</tbody></table></div>`;
     }
+    if(e.status?.type?.state==="pre") h+=mxPreviaHTML(sm,H,A);
     const R=sm.rosters||[];
     if(R.length&&R.some(r=>(r.roster||[]).some(p=>p.starter))){
       const rH=R.find(r=>r.homeAway==="home")||R[0], rA=R.find(r=>r.homeAway==="away")||R[1]||R[0];

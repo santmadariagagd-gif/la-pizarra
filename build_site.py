@@ -854,13 +854,13 @@ except Exception as ex:
     print("Quiniela: calibración con respaldo:",ex)
 out['qmodel']=dict(k=round(qk,2),hfa=round(qh,2),net={t:rnd(M.loc[t,'off']-M.loc[t,'de'],4) for t in M.index})
 print(f"Quiniela: modelo k={qk:.1f}, ventaja de local={qh:.1f} pts")
-# Duelos previos para el análisis de la Quiniela: últimos 5 partidos entre cada pareja de la semana actual y la
-# siguiente (desde 1999, temporada regular y playoffs). Equipos que se mudaron, con su abreviatura de hoy.
+# Duelos previos (análisis de la Quiniela y previa de Partidos): últimos 5 partidos entre cada pareja que falta
+# por jugarse esta temporada (desde 1999, temporada regular y playoffs). Equipos que se mudaron, con su abreviatura de hoy.
 try:
     _hs=nfl.load_schedules(True).to_pandas()
     for _c in ("home_team","away_team"): _hs[_c]=_hs[_c].replace({"OAK":"LV","SD":"LAC","STL":"LA"})
     _hs=_hs[_hs.home_score.notna()].sort_values("gameday")
-    _pairs={tuple(sorted((r.away_team,r.home_team))) for r in full[full.week.isin([gw,gw+1])].itertuples()}
+    _pairs={tuple(sorted((r.away_team,r.home_team))) for r in full[full.week>=gw].itertuples()}
     _h2h={}
     for _a,_b in _pairs:
         _m=_hs[((_hs.home_team==_a)&(_hs.away_team==_b))|((_hs.home_team==_b)&(_hs.away_team==_a))].tail(5)
