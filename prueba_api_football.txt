@@ -1,0 +1,98 @@
+=== PRUEBA API-FOOTBALL · Liga MX temporada 2024 ===
+Cuenta: Free · pedidos hoy: {'current': 0, 'limit_day': 100}
+
+--- 1. Liga y cobertura ---
+Liga: Liga MX · Mexico
+Temporada 2024 : 2024-07-05 a 2025-05-24
+Cobertura según la API:
+  Sí · Eventos del partido (goles, tarjetas)
+  Sí · Alineaciones
+  Sí · Estadísticas de partido
+  Sí · Estadísticas de jugadores por partido
+  Sí · Tabla
+  Sí · Jugadores (temporada)
+  Sí · Goleadores
+  Sí · Asistidores
+  No · Lesiones
+  Sí · Predicciones
+  No · Momios
+Temporadas disponibles en la liga: [2021, 2022, 2023, 2024, 2025, 2026]
+
+--- 2. Partidos de la temporada ---
+Partidos: 340
+Del 2024-07-05 al 2025-05-26
+Fases: {'Apertura': 170, 'Clausura': 170}
+
+--- 3. Partido de muestra: Toluca 2-0 Club America (2025-05-26, Clausura - Final) ---
+Eventos: 13 · tipos: {'subst': 8, 'Goal': 2, 'Card': 3}
+  49' subst Substitution 1 · H. Martín (Club America)
+  65' Goal Normal Goal · Luan (Toluca)
+  72' subst Substitution 1 · Paulinho (Toluca)
+  72' subst Substitution 2 · R. Juárez (Club America)
+  72' subst Substitution 3 · J. dos Santos (Club America)
+  76' subst Substitution 2 · Jesús Ricardo Angulo (Toluca)
+Alineación Toluca: formación 5-3-2, titulares 11, banca 10, DT A. Mohamed
+Alineación Club America: formación 5-3-2, titulares 11, banca 10, DT André Jardine
+Estadísticas Toluca: Shots on Goal=3, Shots off Goal=7, Total Shots=15, Blocked Shots=5, Shots insidebox=9, Shots outsidebox=6, Fouls=12, Corner Kicks=4, Offsides=2, Ball Possession=37%
+Estadísticas Club America: Shots on Goal=0, Shots off Goal=2, Total Shots=4, Blocked Shots=2, Shots insidebox=4, Shots outsidebox=0, Fouls=10, Corner Kicks=1, Offsides=1, Ball Possession=63%
+Jugadores Toluca: 21 (14 con minutos)
+  Luis García: 98 min, calif. 6.3, tiros None, pases 23 (9 buenos), entradas None
+  Diego Barbosa: 98 min, calif. 7, tiros 1, pases 26 (18 buenos), entradas 3
+  Bruno Méndez: 98 min, calif. 7, tiros 1, pases 29 (20 buenos), entradas 1
+Jugadores Club America: 21 (16 con minutos)
+  Luis Malagón: 98 min, calif. 6.3, tiros None, pases 27 (24 buenos), entradas None
+  Kevin Álvarez: 83 min, calif. 6.6, tiros 1, pases 26 (19 buenos), entradas None
+  Israel Reyes: 98 min, calif. 6.9, tiros 1, pases 58 (48 buenos), entradas 5
+
+--- 4. Goleadores y asistidores de la temporada ---
+Goleadores (20):
+  R. Zúñiga (Club America): 40 en 72 partidos
+  J. Cádiz (Leon): 26 en 69 partidos
+  Paulinho (Toluca): 25 en 37 partidos
+  G. Berterame (Monterrey): 20 en 38 partidos
+  Sergio Canales (Monterrey): 17 en 39 partidos
+  A. Vega (Toluca): 16 en 42 partidos
+  I. Rivero (Cruz Azul): 15 en 37 partidos
+  S. Rondón (CF Pachuca): 14 en 32 partidos
+  Á. Sepúlveda (Cruz Azul): 14 en 39 partidos
+  J. Paradela (Cruz Azul): 14 en 52 partidos
+Asistidores (19):
+  A. Vega (Toluca): 14 en 42 partidos
+  J. Paradela (Cruz Azul): 13 en 35 partidos
+  Sergio Canales (Monterrey): 12 en 39 partidos
+  A. Zendejas (Club America): 12 en 40 partidos
+  C. Rotondi (Cruz Azul): 9 en 38 partidos
+  H. Martín (Club America): 9 en 35 partidos
+  M. Ruiz (Toluca): 9 en 39 partidos
+  O. Idrissi (CF Pachuca): 9 en 33 partidos
+  J. Corona (Monterrey): 9 en 34 partidos
+  J. Angulo (Toluca): 8 en 40 partidos
+
+--- 5. Estadísticas de temporada de jugadores (muestra de 10 páginas) ---
+  ! players {'league': 262, 'season': 2024, 'page': 4}: {'plan': 'Free plans are limited to a maximum value of 3 for the Page parameter'}
+Páginas totales en la API: 1 (≈20 jugadores; todo costaría 1 pedidos)
+Jugadores en la muestra: 60 · con minutos: 51
+Qué tan completos vienen los datos (jugadores con minutos):
+  Minutos: 100%
+  Posición: 100%
+  Calificación: 100%
+  Tiros: 88%
+  Pases: 100%
+  Pases clave: 96%
+  Entradas: 100%
+  Duelos: 100%
+  Regates: 94%
+  Faltas: 94%
+  Foto: 100%
+  Fecha de nacimiento: 100%
+  Nacionalidad: 100%
+  Ej.: Sergio Canales (Monterrey, Midfielder): 3378 min, 17 goles, 12 asist., calif. 7.644736
+  Ej.: Álvaro Fidalgo (Club America, Midfielder): 3315 min, 8 goles, 8 asist., calif. 7.422500
+  Ej.: A. Vega (Toluca, Attacker): 3238 min, 16 goles, 14 asist., calif. 7.547500
+  Ej.: C. Rodríguez (Cruz Azul, Midfielder): 3139 min, None goles, 8 asist., calif. 7.232500
+  Ej.: H. González (Mazatlán, Goalkeeper): 3016 min, 0 goles, 0 asist., calif. 7.128125
+
+--- 6. Lesiones ---
+Registros: 0
+
+Pedidos usados en esta prueba: 14
