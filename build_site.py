@@ -1112,6 +1112,25 @@ try:
 except Exception as ex:
     print("Momios fútbol: no se pudieron preparar:",ex); out['odds_fut']=[]
 out['week']=wk; out['winners']=sorted(winners)
+# Cuentas de usuario (Firebase). firebase_config.txt tiene el bloque que da Firebase al registrar la app web
+# ("const firebaseConfig = { apiKey: ..., ... }"), pegado tal cual. Esos valores son públicos por diseño
+# (lo que protege los datos son las reglas de Firestore). Si el archivo no existe, las cuentas no aparecen.
+def _fb_config():
+    import re as _re
+    ruta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'firebase_config.txt')
+    if not os.path.exists(ruta):
+        print("Cuentas: no hay firebase_config.txt; las cuentas quedan apagadas"); return None
+    txt=open(ruta,encoding='utf-8').read()
+    C=dict(_re.findall(r'["\']?(apiKey|authDomain|projectId|storageBucket|messagingSenderId|appId)["\']?\s*:\s*["\']([^"\']+)["\']',txt))
+    falta=[k for k in ('apiKey','authDomain','projectId','appId') if not C.get(k)]
+    if falta:
+        print("Cuentas: a firebase_config.txt le falta "+", ".join(falta)+"; las cuentas quedan apagadas"); return None
+    print(f"Cuentas: Firebase, proyecto {C['projectId']}")
+    return C
+try:
+    out['fb']=_fb_config()
+except Exception as ex:
+    print("Cuentas: no se pudo leer firebase_config.txt:",ex); out['fb']=None
 data=json.dumps(out,ensure_ascii=False,allow_nan=False)
 aqui=os.path.dirname(os.path.abspath(__file__))
 notas=json.load(open(os.path.join(aqui,'notas.json'),encoding='utf-8'))

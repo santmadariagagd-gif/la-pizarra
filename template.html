@@ -309,12 +309,50 @@ dialog#gdlg::backdrop{background:rgba(0,0,0,.55)}
 .bgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
 @media (max-width:720px){.bgrid{grid-template-columns:1fr}}
 @media (max-width:720px){.tl li{gap:8px}.tl .e{gap:6px}.tl .who,.tl li.g .who{font-size:14px}.tl .who small{font-size:12px}.pitches{grid-template-columns:1fr}.mhead .res{font-size:34px}.mhead .tm2 img{width:44px;height:44px}}
+/* Cuentas */
+.acct{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;font:600 16px/1 var(--display);letter-spacing:.02em;background:none;color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer;min-height:40px}
+.acct[hidden]{display:none}
+.acct.in{padding:0;width:40px;height:40px;border-color:var(--mark);background:var(--surface);color:var(--mark);font-size:18px;overflow:hidden}
+.acct.in img{width:100%;height:100%;object-fit:cover}
+dialog#adlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(420px,94vw);max-height:92vh}
+dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
+#adlg h2{margin:4px 0 6px}
+#adlg .note{margin:0 0 18px}
+.aform{display:flex;flex-direction:column;gap:10px}
+.aform input{font:400 16px/1.2 var(--body);padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);width:100%}
+.aform .btn{width:100%;padding:13px 18px}
+.agoogle{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;font:500 16px/1 var(--body);background:#fff;color:#1f1f1f;border:1px solid #747775;border-radius:8px;padding:12px 16px;cursor:pointer}
+.agoogle svg{width:18px;height:18px;flex:none}
+.aor{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px;margin:6px 0}
+.aor::before,.aor::after{content:"";flex:1;border-top:1px solid var(--line)}
+.amsg{min-height:1.4em;margin:2px 0 0;font-size:14px;color:var(--bad)}
+.amsg.ok{color:var(--good)}
+.amsg:empty{display:none}
+.alinks{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px}
+.alink{font:inherit;font-size:14px;background:none;border:0;padding:0;color:var(--mark);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.alink.danger{color:var(--bad)}
+.aid{display:flex;align-items:center;gap:12px;margin:8px 0 18px}
+.aid .av{width:48px;height:48px;border-radius:50%;background:var(--surface);border:1.5px solid var(--mark);color:var(--mark);display:flex;align-items:center;justify-content:center;font:700 22px/1 var(--display);overflow:hidden;flex:none}
+.aid .av img{width:100%;height:100%;object-fit:cover}
+.aid b{display:block;font-size:17px}
+.aid small{color:var(--muted);font-size:14px;word-break:break-all}
+.asaved{list-style:none;margin:0 0 18px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.asaved li{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;font-size:15px}
+.asaved li+li{border-top:1px solid var(--line)}
+.asaved span{color:var(--muted)}
+.asaved b{text-align:right}
+#slAcct{margin-top:-6px}
+.averify{display:flex;flex-direction:column;gap:8px;margin:0 0 18px;padding:12px 14px;border-radius:10px;background:var(--hl);border-left:4px solid var(--mark);font-size:15px}
+.averify span{color:var(--ink)}
+.averify .alink{align-self:flex-start}
 footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color:var(--muted);font-size:13px}
 @media (max-width:720px){
   .hero{grid-template-columns:1fr}.play{display:none}
   .trade{grid-template-columns:1fr}.vs{justify-self:center}
   .leaders{grid-template-columns:1fr 1fr}.leader .v{font-size:32px}
   header.top{flex-wrap:wrap}
+  header.top .logo{flex:1}
+  header.top nav.tabs{order:3}
   input[type=search]{width:100%}
 }
 </style>
@@ -342,6 +380,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
     <button aria-selected="true" data-sport="nfl">NFL</button>
     <button aria-selected="false" data-sport="ff">Fantasy</button>
   </nav>
+  <button class="acct" id="acctBtn" aria-label="Tu cuenta" hidden>Entrar</button>
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL">
   <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="nflq">Quiniela</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
@@ -488,6 +527,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   <p class="note" id="mxprMsg" aria-live="polite">Calculando…</p>
   <div class="tbl"><table id="prMx" class="prt" data-freeze="3"></table></div>
 </section>
+<dialog id="adlg" aria-label="Tu cuenta"><div class="dlg"><button class="x" id="aClose" aria-label="Cerrar">×</button><div id="abody"></div></div></dialog>
 <dialog id="gdlg" aria-label="Detalle del partido"><div class="dlg"><button class="x" id="gClose" aria-label="Cerrar">×</button><div id="gbody"></div></div></dialog>
 
 <!-- ESTADÍSTICAS -->
@@ -521,6 +561,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
       <select id="slLeague" aria-label="Liga" hidden></select>
     </div>
     <p class="note" id="slMsg" aria-live="polite"></p>
+    <p class="note" id="slAcct" hidden></p>
     <div id="slDash" hidden>
       <div class="kpis" id="slKpis"></div>
       <div class="grid2">
@@ -905,7 +946,7 @@ async function slConnect(){
   $("#slGo").disabled=true; msg("Buscando tu usuario…");
   try{
     const user=await getJ("/user/"+encodeURIComponent(u)); if(!user) throw new Error("nouser");
-    SL.user=user; try{localStorage.setItem("pizarra_sleeper",u)}catch(e){}
+    SL.user=user; try{localStorage.setItem("pizarra_sleeper",u)}catch(e){} acctPush();
     const leagues=await getJ(`/user/${user.user_id}/leagues/nfl/${D.season}`);
     if(!leagues.length){msg(`${user.display_name} no tiene ligas de NFL en ${D.season}.`);return;}
     const sel=$("#slLeague"); sel.innerHTML=leagues.map(l=>`<option value="${l.league_id}">${l.name}</option>`).join(""); sel.hidden=leagues.length<2;
@@ -916,14 +957,14 @@ async function slConnect(){
   finally{$("#slGo").disabled=false;}
 }
 async function slLoad(id){
-  msg("Cargando tu liga…"); try{localStorage.setItem("pizarra_league",id)}catch(e){}
+  msg("Cargando tu liga…"); try{localStorage.setItem("pizarra_league",id)}catch(e){} acctPush();
   const [league,rosters,users,trend]=await Promise.all([getJ("/league/"+id),getJ(`/league/${id}/rosters`),getJ(`/league/${id}/users`),getJ("/players/nfl/trending/add?lookback_hours=24&limit=25").catch(()=>[])]);
   SL.league=league; SL.rosters=rosters; SL.trend=trend;
   SL.users=Object.fromEntries(users.map(u=>[u.user_id,u.metadata?.team_name||u.display_name]));
   SL.mine=rosters.find(r=>r.owner_id===SL.user.user_id)||rosters.find(r=>(r.co_owners||[]).includes(SL.user.user_id));
   SL.taken=new Set(rosters.flatMap(r=>r.players||[]));
   msg(`${league.name} · ${rosters.length} equipos`);
-  $("#slDash").hidden=false; slRender();
+  $("#slDash").hidden=false; slRender(); acctSlHint();
 }
 const teamName=r=>SL.users[r.owner_id]||("Equipo "+r.roster_id);
 const rosterVal=r=>(r.players||[]).reduce((a,id)=>a+val(slPlayer(id)),0);
@@ -1113,7 +1154,7 @@ function qnProb(g){ // [p visita, p local]: promedio entre Las Vegas y nuestro m
 const QN_PK="pz_mispicks";
 let qnLiveAsked=false;
 const qnPicksAll=()=>{try{return JSON.parse(localStorage.getItem(QN_PK)||"{}");}catch(e){return {};}};
-const qnPicksSave=o=>{try{localStorage.setItem(QN_PK,JSON.stringify(o));}catch(e){}};
+const qnPicksSave=o=>{try{localStorage.setItem(QN_PK,JSON.stringify(o));}catch(e){} acctPush();};
 function qnResult(w,a,h){
   const x=(D.sched||[]).find(g=>g.w===+w&&g.a===a&&g.h===h); if(!x) return null;
   if(x.hs!=null) return {as:x.as_,hs:x.hs};
@@ -1136,7 +1177,7 @@ function qnMineBox(P){
   const box=$("#qMine"); if(qnMode==="surv"){box.innerHTML=""; return;}
   const mode=qnMode, wk=P.week, W=(qnPicksAll()[D.season]||{})[wk]||{}, n=Object.values(W).filter(v=>v[mode]).length;
   const Rw=qnRecord(mode,wk), Rs=qnRecord(mode), lbl=mode==="ats"?"contra el spread":"sin spread";
-  box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${n?"":`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. Se guardan en este navegador.</small>`}</div>`;
+  box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${n?(acctHint(true)?`<small>${acctHint(true)}</small>`:""):`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. ${acctHint(false)}</small>`}</div>`;
 }
 $("#qGames").addEventListener("click",e=>{
   const el=e.target.closest(".team[data-qt]"); if(!el||qnMode==="surv") return;
@@ -2258,6 +2299,201 @@ async function liveTick(){
 setInterval(liveTick,45e3);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden) liveTick();});
 setTimeout(()=>nflLiveUpdate(true).catch(()=>{}),800);   // al abrir: marcadores de la jornada aunque nflverse no los tenga todavía
+
+// ---------- Cuentas (Firebase: Authentication + Firestore) ----------
+// Con cuenta se guardan en la nube la liga de Sleeper (pizarra_sleeper, pizarra_league) y Mis picks (pz_mispicks),
+// en el documento usuarios/{uid} = {picks, sleeper, liga, t}. La página sigue leyendo localStorage; la nube es la copia
+// maestra: al abrir la página (y al volver a la pestaña, máx. cada 60 s) se baja y reemplaza la copia local.
+// - Primera vez que se entra en un navegador (pz_cuenta ≠ uid): se juntan los picks locales con los de la nube (gana la nube).
+// - Cambio sin subir (pz_cuenta_sucio = 1, p. ej. se cerró la pestaña o no había internet): gana la copia local y se sube.
+// - Cerrar sesión borra esos datos de este navegador (siguen en la cuenta).
+// - Cuentas con correo: contraseña de 8+ caracteres y hay que confirmar el correo antes de usar la nube (las reglas de
+//   Firestore lo exigen con email_verified). Mientras no se confirme, todo se queda en este navegador y se sube al confirmar.
+// - Las contraseñas nunca pasan por aquí más que en el formulario: las guarda Firebase (con hash), no nosotros.
+// Sin firebase_config.txt en el repositorio (D.fb vacío) no aparece nada de esto y todo queda como antes.
+var ACCT={ready:false,user:null,auth:null,db:null,last:0,pushT:null,mode:"in",busy:false};
+const ACCT_V="12.19.0", ACCT_KEYS=["pz_mispicks","pizarra_sleeper","pizarra_league","pz_cuenta","pz_cuenta_sucio"];
+const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
+const acctLsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
+const acctLsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
+const acctEsc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const adlg=$("#adlg");
+const ACCT_ERR={"auth/invalid-email":"Ese correo no es válido.","auth/missing-email":"Escribe tu correo.","auth/missing-password":"Escribe tu contraseña.",
+  "auth/weak-password":"La contraseña necesita al menos 8 caracteres.","auth/email-already-in-use":"Ya hay una cuenta con ese correo. Entra con él.",
+  "auth/invalid-credential":"Correo o contraseña incorrectos.","auth/wrong-password":"Correo o contraseña incorrectos.","auth/user-not-found":"Correo o contraseña incorrectos.",
+  "auth/invalid-login-credentials":"Correo o contraseña incorrectos.","auth/too-many-requests":"Demasiados intentos. Espera unos minutos y vuelve a intentar.",
+  "auth/popup-blocked":"Tu navegador bloqueó la ventana de Google. Permite las ventanas emergentes en lapizarra.mx.",
+  "auth/network-request-failed":"No hay conexión. Revisa tu internet.","auth/unauthorized-domain":"Este dominio todavía no está autorizado en Firebase.",
+  "auth/operation-not-allowed":"Esta forma de entrar no está activada.","auth/account-exists-with-different-credential":"Ese correo ya tiene cuenta con otra forma de entrar.",
+  "auth/requires-recent-login":"Por seguridad, cierra sesión, vuelve a entrar y luego borra tu cuenta.","auth/user-disabled":"Esta cuenta está desactivada."};
+const ACCT_MIN=8, acctOk=()=>!!(ACCT&&ACCT.user&&ACCT.user.emailVerified);
+const ACCT_BACK={url:"https://lapizarra.mx"};   // botón "Continuar" después de confirmar el correo
+const acctErr=e=>ACCT_ERR[e?.code]||"No se pudo. Intenta de nuevo.";
+const ACCT_G=`<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>`;
+
+function acctLoadJS(f){return new Promise((ok,no)=>{
+  const urls=[`https://www.gstatic.com/firebasejs/${ACCT_V}/${f}`,`https://cdn.jsdelivr.net/npm/firebase@${ACCT_V}/${f}`];
+  const go=i=>{if(i>=urls.length) return no(new Error("No cargó "+f)); const s=document.createElement("script"); s.src=urls[i]; s.async=true;
+    s.onload=ok; s.onerror=()=>{s.remove(); go(i+1);}; document.head.appendChild(s);};
+  go(0);});}
+const acctLocal=()=>({picks:qnPicksAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||""});
+function acctMerge(nube,local){   // {temporada:{semana:{"VIS@LOC":{ats,su}}}}: gana la nube; lo local llena lo que falte
+  const R=JSON.parse(JSON.stringify(nube||{}));
+  for(const [s,S] of Object.entries(local||{})) for(const [w,W] of Object.entries(S||{})) for(const [k,G] of Object.entries(W||{})) for(const [m,p] of Object.entries(G||{})){
+    const x=((R[s]=R[s]||{})[w]=R[s][w]||{})[k]=R[s][w][k]||{}; if(!x[m]) x[m]=p;}
+  return R;
+}
+function acctPush(now){
+  if(!acctOk()) return;
+  acctLsSet("pz_cuenta_sucio","1"); clearTimeout(ACCT.pushT);
+  ACCT.pushT=setTimeout(acctSend,now?0:400);
+}
+async function acctSend(){
+  const u=ACCT.user; if(!acctOk()) return false;
+  try{await ACCT.db.collection("usuarios").doc(u.uid).set({...acctLocal(),t:firebase.firestore.FieldValue.serverTimestamp()});
+    if(ACCT.user===u){acctLsDel("pz_cuenta_sucio"); ACCT.last=Date.now();} return true;}
+  catch(e){console.warn("Cuentas: no se pudo guardar",e?.code||e); return false;}
+}
+const acctOnQ=()=>!$("#nflq").classList.contains("hidden");
+function acctSlClear(){
+  SL.user=null; SL.league=null; SL.mine=null; $("#slUser").value=""; $("#slDash").hidden=true;
+  $("#slLeague").hidden=true; $("#slLeague").innerHTML=""; msg(""); acctSlHint();
+}
+async function acctPull(){
+  const u=ACCT.user; if(!acctOk()) return; ACCT.last=Date.now();
+  let C={}, exists=false;
+  try{const s=await ACCT.db.collection("usuarios").doc(u.uid).get(); exists=s.exists; C=s.data()||{};}
+  catch(e){console.warn("Cuentas: no se pudo leer la cuenta",e?.code||e); return;}
+  if(ACCT.user!==u) return;
+  const L=acctLocal(), linked=acctLsGet("pz_cuenta")===u.uid, dirty=acctLsGet("pz_cuenta_sucio")==="1";
+  const cloud={picks:C.picks||{},sleeper:C.sleeper||"",liga:C.liga||""};
+  let N;
+  if(linked&&exists&&!dirty) N=cloud;                         // navegador ya ligado: manda la nube
+  else if(linked) N=L;                                         // cambios locales sin subir (o cuenta nueva): manda lo local
+  else N={picks:acctMerge(cloud.picks,L.picks),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga};
+  acctLsSet("pz_cuenta",u.uid);
+  const pc=JSON.stringify(N.picks)!==JSON.stringify(L.picks), sc=N.sleeper!==L.sleeper||N.liga!==L.liga;
+  acctLsSet(QN_PK,JSON.stringify(N.picks));
+  if(N.sleeper) acctLsSet("pizarra_sleeper",N.sleeper); else acctLsDel("pizarra_sleeper");
+  if(N.liga) acctLsSet("pizarra_league",N.liga); else acctLsDel("pizarra_league");
+  if(sc){ if(N.sleeper){$("#slUser").value=N.sleeper; slConnect();} else acctSlClear(); }
+  if(pc&&acctOnQ()) loadQuiniela();
+  if(JSON.stringify(N)!==JSON.stringify(cloud)||!exists) acctPush(true);
+  if(adlg.open) acctRender();
+}
+function acctHint(hasPicks){   // texto para el recuadro de Mis picks
+  if(!D.fb||!ACCT.ready) return hasPicks?"":"Se guardan en este navegador.";
+  if(ACCT.user&&!acctOk()) return `<button class="alink" data-acct>Confirma tu correo</button> para guardarlos en tu cuenta.`;
+  if(ACCT.user) return hasPicks?"":"Se guardan en tu cuenta.";
+  return hasPicks?`<button class="alink" data-acct>Entra a tu cuenta</button> para verlos también en tu teléfono o tu computadora.`
+    :`Se guardan en este navegador; <button class="alink" data-acct>entra a tu cuenta</button> para verlos en todos tus dispositivos.`;
+}
+function acctSlHint(){
+  const p=$("#slAcct"), show=!!(D.fb&&ACCT.ready&&!ACCT.user&&SL.user);
+  p.hidden=!show; p.innerHTML=show?`<button class="alink" data-acct>Entra a tu cuenta</button> para que tu liga se abra sola en cualquier dispositivo.`:"";
+}
+function acctBtn(){
+  const b=$("#acctBtn"), u=ACCT.user; b.hidden=!ACCT.ready; b.classList.toggle("in",!!u);
+  if(!u){b.textContent="Entrar"; b.setAttribute("aria-label","Entrar a tu cuenta"); return;}
+  const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase();
+  b.innerHTML=u.photoURL?`<img src="${acctEsc(u.photoURL)}" alt="" referrerpolicy="no-referrer">`:acctEsc(ini);
+  b.setAttribute("aria-label","Tu cuenta");
+}
+function acctRender(){
+  const u=ACCT.user, box=$("#abody");
+  if(u){
+    const P=(qnPicksAll()[D.season])||{}; let n=0; Object.values(P).forEach(W=>Object.values(W).forEach(G=>{n+=Object.keys(G).length;}));
+    const sl=acctLsGet("pizarra_sleeper"), lg=SL.league&&String(SL.league.league_id)===acctLsGet("pizarra_league")?SL.league.name:"";
+    const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase();
+    box.innerHTML=`<h2>Tu cuenta</h2>
+      <div class="aid"><div class="av">${u.photoURL?`<img src="${acctEsc(u.photoURL)}" alt="" referrerpolicy="no-referrer">`:acctEsc(ini)}</div><div><b>${acctEsc(u.displayName||u.email||"")}</b>${u.displayName&&u.email?`<small>${acctEsc(u.email)}</small>`:""}</div></div>
+      ${acctOk()?"":`<div class="averify"><b>Confirma tu correo</b><span>Te mandamos un link a ${acctEsc(u.email)}. Hasta que lo abras, tu liga y tus picks se guardan solo en este navegador. Revisa también spam.</span>
+        <button class="btn" id="aChk">Ya lo confirmé</button><button class="alink" id="aResend">Reenviar el correo</button></div>`}
+      <ul class="asaved"><li><span>Liga de Sleeper</span><b>${sl?acctEsc(lg||sl):"Sin conectar"}</b></li><li><span>Picks de la temporada ${D.season}</span><b>${n}</b></li></ul>
+      <div class="aform"><button class="btn" id="aOut">Cerrar sesión</button><p class="amsg" id="aMsg" aria-live="polite"></p>
+      <div class="alinks"><button class="alink danger" id="aDel">Borrar mi cuenta</button></div></div>`;
+    $("#aOut").onclick=acctOut; $("#aDel").onclick=acctDelete;
+    if(!acctOk()){ $("#aChk").onclick=()=>acctRun(async()=>{ if(!await acctCheck()) acctMsg("Todavía no aparece confirmado. Abre el link del correo y vuelve a intentar."); });
+      $("#aResend").onclick=()=>acctRun(async()=>{ await ACCT.user.sendEmailVerification(ACCT_BACK); acctMsg("Listo, te lo volvimos a mandar.",true); }); }
+    return;
+  }
+  const up=ACCT.mode==="up";
+  box.innerHTML=`<h2>${up?"Crea tu cuenta":"Entra a tu cuenta"}</h2>
+    <p class="note">Guarda tu liga de Sleeper y tus picks de la quiniela en todos tus dispositivos.</p>
+    <div class="aform">
+      <button class="agoogle" id="aGoogle">${ACCT_G}Continuar con Google</button>
+      <div class="aor">o con tu correo</div>
+      <input type="email" id="aMail" placeholder="Correo" autocomplete="email" inputmode="email" aria-label="Correo">
+      <input type="password" id="aPass" placeholder="Contraseña${up?` (mínimo ${ACCT_MIN} caracteres)`:""}" autocomplete="${up?"new-password":"current-password"}" aria-label="Contraseña">
+      <button class="btn" id="aGo">${up?"Crear cuenta":"Entrar"}</button>
+      <p class="amsg" id="aMsg" aria-live="polite"></p>
+      <div class="alinks"><button class="alink" id="aSwap">${up?"Ya tengo cuenta":"Crear una cuenta"}</button>${up?"":`<button class="alink" id="aForgot">Olvidé mi contraseña</button>`}</div>
+    </div>`;
+  $("#aGoogle").onclick=acctGoogle; $("#aGo").onclick=acctEmail;
+  $("#aPass").onkeydown=e=>{if(e.key==="Enter") acctEmail();};
+  $("#aSwap").onclick=()=>{ACCT.mode=up?"in":"up"; const m=$("#aMail").value; acctRender(); $("#aMail").value=m;};
+  if(!up) $("#aForgot").onclick=acctForgot;
+}
+const acctMsg=(t,ok)=>{const p=$("#aMsg"); if(p){p.textContent=t; p.classList.toggle("ok",!!ok);}};
+async function acctRun(f){
+  if(ACCT.busy) return; ACCT.busy=true; $("#abody").querySelectorAll("button").forEach(b=>b.disabled=true);
+  try{await f();}catch(e){ if(!["auth/popup-closed-by-user","auth/cancelled-popup-request"].includes(e?.code)){console.warn("Cuentas:",e?.code||e); acctMsg(acctErr(e));} }
+  finally{ACCT.busy=false; $("#abody").querySelectorAll("button").forEach(b=>b.disabled=false);}
+}
+const acctGoogle=()=>acctRun(async()=>{const p=new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt:"select_account"}); await ACCT.auth.signInWithPopup(p);});
+const acctEmail=()=>acctRun(async()=>{
+  const m=$("#aMail").value.trim(), pw=$("#aPass").value;
+  if(!m) return acctMsg("Escribe tu correo."); if(!pw) return acctMsg("Escribe tu contraseña.");
+  if(ACCT.mode==="up"){
+    if(pw.length<ACCT_MIN) return acctMsg(`La contraseña necesita al menos ${ACCT_MIN} caracteres.`);
+    const r=await ACCT.auth.createUserWithEmailAndPassword(m,pw);
+    try{await r.user.sendEmailVerification(ACCT_BACK);}catch(e){console.warn("Cuentas: no se mandó la confirmación",e?.code||e);}
+  } else await ACCT.auth.signInWithEmailAndPassword(m,pw);
+});
+const acctForgot=()=>acctRun(async()=>{
+  const m=$("#aMail").value.trim(); if(!m) return acctMsg("Escribe tu correo y vuelve a tocar “Olvidé mi contraseña”.");
+  await ACCT.auth.sendPasswordResetEmail(m); acctMsg("Listo: si ese correo tiene cuenta, te llegará un link para cambiar tu contraseña (revisa también spam).",true);
+});
+async function acctForget(){   // quita de este navegador lo que pertenece a la cuenta
+  ACCT_KEYS.forEach(acctLsDel); acctSlClear(); if(acctOnQ()) loadQuiniela();
+}
+const acctOut=()=>acctRun(async()=>{
+  if(acctLsGet("pz_cuenta_sucio")==="1"){clearTimeout(ACCT.pushT); await acctSend();}
+  const ok=acctOk(); await ACCT.auth.signOut(); if(ok) await acctForget(); adlg.close();
+});
+const acctDelete=()=>acctRun(async()=>{
+  if(!confirm("¿Borrar tu cuenta con tu liga y tus picks guardados? No se puede deshacer.")) return;
+  const u=ACCT.user; clearTimeout(ACCT.pushT);
+  const ok=acctOk(); if(ok) await ACCT.db.collection("usuarios").doc(u.uid).delete();
+  try{await u.delete();}catch(e){ if(ok) await acctSend(); throw e; }   // si Firebase pide volver a entrar, se restaura lo guardado
+  if(ok) await acctForget(); adlg.close();
+});
+function acctOpen(){ if(!ACCT.ready) return; ACCT.mode="in"; acctRender(); if(!adlg.open) adlg.showModal(); }
+$("#acctBtn").onclick=acctOpen;
+$("#aClose").onclick=()=>adlg.close();
+adlg.addEventListener("click",e=>{if(e.target===adlg) adlg.close();});
+document.addEventListener("click",e=>{if(e.target.closest?.("[data-acct]")){e.preventDefault(); acctOpen();}});
+async function acctCheck(){   // ¿ya abrió el link? recarga el usuario y su token (las reglas leen email_verified del token)
+  const u=ACCT.user; if(!u||u.emailVerified) return acctOk();
+  try{await u.reload(); if(ACCT.auth.currentUser?.emailVerified){await ACCT.auth.currentUser.getIdToken(true);}}catch(e){return false;}
+  ACCT.user=ACCT.auth.currentUser; if(!acctOk()) return false;
+  acctBtn(); acctSlHint(); await acctPull(); if(acctOnQ()) loadQuiniela(); if(adlg.open) acctRender(); acctMsg("Listo, tu correo quedó confirmado.",true);
+  return true;
+}
+async function acctInit(){
+  if(!D.fb||!D.fb.apiKey) return;
+  try{await acctLoadJS("firebase-app-compat.js"); await Promise.all([acctLoadJS("firebase-auth-compat.js"),acctLoadJS("firebase-firestore-compat.js")]);
+    firebase.initializeApp(D.fb); ACCT.auth=firebase.auth(); ACCT.auth.languageCode="es"; ACCT.db=firebase.firestore();}
+  catch(e){console.warn("Cuentas: no se pudo cargar Firebase",e); return;}
+  ACCT.auth.onAuthStateChanged(u=>{
+    const was=ACCT.user; ACCT.user=u||null; ACCT.ready=true; acctBtn(); acctSlHint();
+    if(u&&(!was||was.uid!==u.uid)){ if(u.emailVerified){ acctPull(); if(adlg.open) adlg.close(); } else if(adlg.open) acctRender(); }
+    if(acctOnQ()) loadQuiniela();
+  });
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden||!ACCT.user) return;
+    if(!acctOk()) acctCheck(); else if(Date.now()-ACCT.last>60e3) acctPull(); });   // al volver del correo se revisa solo
+}
+acctInit();
 </script>
 </body>
 </html>
