@@ -755,11 +755,11 @@ const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
 // "rk" = nombre de la sección de ajustes manuales en ranking.json.
 const LEAGUES={
   mx:{slug:"mex.1",label:"Liga MX",liguilla:true,players:true,pr:true,photos:false,rk:"ligamx",sm:743},   // sm = id de la liga en Sportmonks
-  eng:{slug:"eng.1",label:"Premier League",liguilla:false,players:true,pr:true,photos:true,rk:"premier"},
-  esp:{slug:"esp.1",label:"La Liga",liguilla:false,players:true,pr:true,photos:true,rk:"laliga"},
-  ita:{slug:"ita.1",label:"Serie A",liguilla:false,players:true,pr:true,photos:true,rk:"seriea"},
-  ger:{slug:"ger.1",label:"Bundesliga",liguilla:false,players:true,pr:true,photos:true,rk:"bundesliga"},
-  fra:{slug:"fra.1",label:"Ligue 1",liguilla:false,players:true,pr:true,photos:true,rk:"ligue1"},
+  eng:{slug:"eng.1",label:"Premier League",liguilla:false,players:true,pr:true,photos:true,rk:"premier",sm:8},
+  esp:{slug:"esp.1",label:"La Liga",liguilla:false,players:true,pr:true,photos:true,rk:"laliga",sm:564},
+  ita:{slug:"ita.1",label:"Serie A",liguilla:false,players:true,pr:true,photos:true,rk:"seriea",sm:384},
+  ger:{slug:"ger.1",label:"Bundesliga",liguilla:false,players:true,pr:true,photos:true,rk:"bundesliga",sm:82},
+  fra:{slug:"fra.1",label:"Ligue 1",liguilla:false,players:true,pr:true,photos:true,rk:"ligue1",sm:301},
   // Champions: fase de liga de 36 + eliminación directa. Sin Power Ranking ni fotos (clubes de muchos
   // países); tiene pestaña propia de Eliminatoria y zonas de color en la Tabla.
   ucl:{slug:"uefa.champions",label:"Champions League",liguilla:false,players:true,pr:false,photos:false,rk:null,cup:true},
@@ -2620,9 +2620,14 @@ async function loadMxPlayers(){
     $("#mxpTitle").textContent=`Líderes de ${flLabel()}`;
     const pk="pizarra_mxp3_"+FLIG; // caché de líderes, separado por competencia
     let cached=null; try{cached=JSON.parse(localStorage.getItem(pk)||"null")}catch(e){}
-    if(FLIG==="mx"&&D.mxp&&D.mxp.length){MXP=D.mxp.map(r=>({...r,ga:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null,g90:r.g90??null}));}
+    if(LEAGUES[FLIG].sm){
+      // Ligas de Sportmonks: las estadísticas las arma build_site.py una vez al día (docs/datos/jugadores_<liga>.json)
+      const key=FLIG, j=await fetch(`datos/jugadores_${key}.json`,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null); if(key!==FLIG) return;
+      const E=j?.equipos||{};
+      MXP=(j?.filas||[]).map(r=>({...r,tn:E[r.t]?.[0]||"",logo:E[r.t]?.[1]||null,ga:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null,g90:r.g90??null}));
+    }
+    else if(FLIG==="mx"&&D.mxp&&D.mxp.length){MXP=D.mxp.map(r=>({...r,ga:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null,g90:r.g90??null}));}
     else if(cached&&Date.now()-cached.t<6*3600e3){MXP=cached.rows;}
-    else if(LEAGUES[FLIG].sm){MXP=[];}   // Liga MX (Sportmonks): las estadísticas las arma build_site.py (D.mxp)
     else if((MXP=await mxFromSummaries())&&MXP.length){ try{localStorage.setItem(pk,JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){} }
     else{
       $("#mxpMsg").textContent="Sumando los partidos del torneo…";

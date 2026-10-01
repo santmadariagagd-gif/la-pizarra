@@ -1100,14 +1100,25 @@ def sm_player_stats(liga_id,nombre,con_liguilla):
         res.append(r)
     print(f"{nombre} (Sportmonks): {len(F)} partidos terminados, {len(res)} jugadores")
     return res
-try:
-    if SMK:
-        out['mxp']=sm_player_stats(743,"Liga MX",True); out['mx_logos']=[]
-    else:
-        print("Liga MX: falta el secret SPORTMONKS_KEY; se intenta con ESPN")
-        out['mxp']=mx_player_stats()
-except Exception as ex:
-    print("Liga MX: no se pudieron obtener estadísticas de jugadores:",ex); out['mxp']=[]
+# Ligas que salen de Sportmonks: clave en la página → (id en Sportmonks, nombre, ¿tiene Liguilla?)
+SM_LIGAS={"mx":(743,"Liga MX",True),"eng":(8,"Premier League",False),"esp":(564,"La Liga",False),
+          "ita":(384,"Serie A",False),"ger":(82,"Bundesliga",False),"fra":(301,"Ligue 1",False)}
+# Las estadísticas de jugadores van en archivos aparte (docs/datos/jugadores_<liga>.json) que la página
+# pide solo cuando abres la pestaña Jugadores, para no hacer pesada la página principal.
+out['mxp']=[]; out['mx_logos']=[]
+if SMK:
+    os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'),exist_ok=True)
+    for clave,(lid,nombre,lig) in SM_LIGAS.items():
+        try:
+            filas=sm_player_stats(lid,nombre,lig)
+            equipos={}
+            for r in filas: equipos[r["t"]]=[r.pop("tn"),r.pop("logo")]
+            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos',f'jugadores_{clave}.json'),'w',encoding='utf-8') as f:
+                json.dump({"t":datetime.now(ZoneInfo("America/Mexico_City")).isoformat(timespec="minutes"),"equipos":equipos,"filas":filas},f,ensure_ascii=False,separators=(",",":"))
+        except Exception as ex:
+            print(f"{nombre} (Sportmonks): no se pudieron obtener estadísticas de jugadores:",ex)
+else:
+    print("Sportmonks: falta el secret SPORTMONKS_KEY; las estadísticas de jugadores de fútbol no se actualizan")
 # ---------- Postemporada NFL, si la temporada terminara hoy ----------
 # Sigue el orden oficial de desempate de la NFL (nfl.com/standings/tie-breaking-procedures):
 # cabeza a cabeza → récord de división (empates de división) o de conferencia (comodines) → rivales en
