@@ -1,0 +1,205 @@
+<!doctype html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>El Pizarrón de Danny Dimes 2.0 · Semana 3</title><meta property='og:title' content='El Pizarrón de Danny Dimes 2.0 · Semana 3'><meta property='og:description' content='¡steelmannn se la llevó con 165.2!'>
+<link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cabin+Sketch:wght@700&family=Caveat:wght@500;600&display=swap' rel='stylesheet'>
+<style>
+:root{--board:#1F332D;--board2:#263D36;--deep:#15241F;--chalk:#ECEFE7;--dim:#A8B8AF;--line:#3A554C;--yellow:#F2D466;--blue:#9CC7E6;
+--red:#F29C8C;--green:#8FD6A6;--wood:#7A5232;--paper:#F6F0DF;--ink:#1B2A38;--disp:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+--body:"Barlow","Helvetica Neue",Arial,sans-serif;--gis:"Cabin Sketch","Barlow Condensed",sans-serif;--mano:"Caveat",cursive}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#101c18;color:var(--chalk);font:17px/1.6 var(--body)}
+.hoja{max-width:940px;margin:18px auto;background:radial-gradient(ellipse at 20% 0%,rgba(255,255,255,.05),transparent 55%),radial-gradient(ellipse at 90% 60%,rgba(255,255,255,.035),transparent 50%),var(--board);
+ border:14px solid var(--wood);border-radius:6px;box-shadow:inset 0 0 60px rgba(0,0,0,.45),0 10px 40px rgba(0,0,0,.5);padding:0 0 28px;position:relative}
+@media(max-width:640px){.hoja{margin:0;border-width:7px;border-radius:0}}
+.pad{padding:0 24px}@media(max-width:640px){.pad{padding:0 16px}}
+.cab{text-align:center;padding:26px 16px 10px;position:relative}
+.cab .marca{display:inline-flex;align-items:center;gap:8px;font:600 15px var(--disp);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.cab h1{margin:6px 0 0;font:700 clamp(54px,13vw,104px)/.9 var(--gis);color:var(--chalk);letter-spacing:.01em}
+.cab h2{margin:4px 0 0;font:700 clamp(22px,5vw,34px)/1.1 var(--gis);color:var(--yellow)}
+.cab .ed{margin:14px auto 0;max-width:720px;border-top:2px dashed rgba(236,239,231,.35);border-bottom:2px dashed rgba(236,239,231,.35);padding:8px 0;font:600 14px var(--disp);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.cab svg.jug{position:absolute;opacity:.45}
+.tit{margin:26px 0 8px;text-align:center;font:700 clamp(34px,7vw,60px)/1 var(--disp);text-transform:uppercase;color:var(--yellow);letter-spacing:.01em;text-shadow:0 0 1px rgba(0,0,0,.3)}
+.sub{text-align:center;font:500 19px/1.4 var(--mano);font-size:24px;color:var(--chalk);margin:0 0 16px}
+.res{font-size:18px}
+h3.sec{font:700 30px/1.1 var(--gis);color:var(--yellow);margin:36px 0 12px;display:flex;align-items:center;gap:10px}
+h3.sec::after{content:"";flex:1;border-bottom:2px dashed rgba(242,212,102,.45);margin-top:8px}
+p.nota{color:var(--dim);font-style:italic;margin:-6px 0 12px;font-size:15px}
+.marcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:10px}
+.mc{background:var(--board2);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.mc .r{display:flex;justify-content:space-between;gap:10px;font:600 19px/1.35 var(--disp)}.mc .r.g b{color:var(--yellow)}.mc .r.p{color:var(--dim)}
+.mc i{display:block;font:500 20px/1.2 var(--mano);color:var(--blue);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:16px}th,td{padding:8px 6px;border-bottom:1px dashed var(--line);text-align:right}
+th{font:600 13px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}td.l,th.l{text-align:left}
+.up{color:var(--green);font-weight:700}.dn{color:var(--red);font-weight:700}
+.cajas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}
+.caja{border:2px solid rgba(236,239,231,.55);border-radius:12px;text-align:center;padding:12px 8px}
+.caja .k{font:600 13px var(--disp);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}.caja .v{font:700 36px/1.1 var(--gis);color:var(--yellow)}.caja .s{font-size:14px;color:var(--chalk)}
+.fichas{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.ficha{background:var(--board2);border:1px solid var(--line);border-radius:10px;text-align:center;padding:12px 8px}
+.ficha b{display:block;font:700 18px/1.15 var(--disp)}.ficha small{color:var(--dim);display:block;font-size:13px}
+.ficha .v{font:700 36px/1.1 var(--gis);color:var(--yellow)}.ficha.mal .v{color:var(--red)}
+.ficha .sello{display:inline-block;transform:rotate(-6deg);border:2px solid var(--red);color:var(--red);border-radius:4px;font:700 12px var(--disp);letter-spacing:.14em;padding:1px 8px;margin:4px 0 2px}
+.ficha .est{display:block;color:var(--yellow);font-size:18px;line-height:1}
+.barras .b{display:grid;grid-template-columns:minmax(0,1.3fr) 3fr auto;gap:10px;align-items:center;margin:6px 0;font-size:15px}
+.barras .b span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barras .b i{display:block;height:14px;border-radius:7px;background:var(--yellow)}.barras .b em{font:700 18px var(--disp);font-style:normal;color:var(--yellow)}
+.barras small{display:block;color:var(--dim);grid-column:1/-1;margin:-4px 0 4px;font-size:13px}
+.cron{margin-top:26px;padding-top:16px;border-top:2px dashed rgba(236,239,231,.3)}
+.et{display:inline-block;font:700 13px var(--disp);letter-spacing:.14em;padding:3px 10px;border-radius:4px;color:#1B2A38;background:var(--yellow)}
+.et.NOTA{background:var(--red)}.et.CHISME{background:#F4B6D2}.et.ESPECTÁCULOS{background:var(--blue)}.et.DEPORTES{background:var(--green)}
+.cron h4{margin:8px 0 4px;font:700 clamp(26px,5vw,36px)/1.05 var(--disp);text-transform:uppercase;color:var(--chalk)}
+.cron .baj{font:500 22px/1.25 var(--mano);color:var(--blue)}
+.marc{display:flex;justify-content:space-between;align-items:center;background:var(--deep);border-radius:10px;padding:10px 14px;margin:12px 0;gap:10px}
+.marc b{font:700 20px var(--disp);display:block}.marc small{color:var(--dim)}.marc .m{font:700 26px var(--gis);color:var(--yellow);white-space:nowrap}
+.cita{font:600 clamp(24px,4.5vw,30px)/1.2 var(--mano);color:var(--yellow);margin:14px 0 0;padding-left:16px;border-left:4px solid var(--yellow)}
+.cita small{display:block;font:400 14px var(--body);color:var(--dim);margin-top:4px}
+.papel{background:var(--paper);color:var(--ink);border-radius:4px;padding:18px 22px;margin:30px auto;max-width:720px;transform:rotate(-1deg);box-shadow:0 8px 20px rgba(0,0,0,.4);position:relative}
+.papel::before{content:"";position:absolute;top:-12px;left:50%;width:110px;height:26px;margin-left:-55px;background:rgba(255,255,230,.55);transform:rotate(2deg)}
+.papel h4{margin:0 0 8px;font:700 24px var(--disp);letter-spacing:.08em;color:#B53A2E;text-transform:uppercase}
+.premios{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:640px){.premios{grid-template-columns:1fr}}
+.premio{background:var(--board2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.premio .ic{font-size:30px}.premio h5{margin:2px 0 0;font:700 22px/1.1 var(--disp);color:var(--yellow);text-transform:uppercase}
+.premio i{color:var(--dim);font-size:14px;display:block}.premio p{margin:8px 0 0}
+.lot{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}@media(max-width:760px){.lot{grid-template-columns:repeat(2,1fr)}}
+.carta{background:var(--paper);color:var(--ink);border:6px solid #fff;outline:3px solid #B53A2E;outline-offset:-12px;border-radius:6px;padding:16px 12px 12px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.35);position:relative}
+.carta .n{position:absolute;top:10px;left:14px;font:700 22px var(--disp);color:#B53A2E}
+.carta .nom{font:700 21px/1.05 var(--disp);text-transform:uppercase;margin:16px 0 6px;letter-spacing:.03em}
+.carta .eq{font:600 15px var(--body);border-top:1px solid #c9bfa6;padding-top:6px}.carta .ver{font:500 18px/1.15 var(--mano);color:#5a4632;margin-top:4px}
+.carta small{display:block;color:#7b6a55;font-size:12px}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:28px}@media(max-width:700px){.dos{grid-template-columns:1fr}}
+.esq{border:2px solid rgba(236,239,231,.5);border-radius:6px;padding:12px 14px;margin-bottom:10px;text-align:center}
+.esq b{font:700 20px var(--disp)}.esq small{display:block;color:var(--dim);font-style:italic}
+.prev{background:var(--board2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
+.prev b{font:700 17px/1.1 var(--disp)}.prev small{display:block;color:var(--dim)}.prev .ln{font:700 30px var(--gis);color:var(--yellow)}
+.prev .tag{grid-column:1/-1;font:600 12px var(--disp);letter-spacing:.1em;color:var(--dim)}
+.rec{border-bottom:1px dashed var(--line);padding:8px 0;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.rec .v{font:700 30px var(--gis);color:var(--yellow)}.rec small{color:var(--dim);font:600 12px var(--disp);letter-spacing:.1em}
+.nuevo{background:var(--yellow);color:#1B2A38;font:700 10px var(--disp);letter-spacing:.1em;padding:1px 6px;border-radius:3px;margin-left:6px}
+.tx{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;background:var(--board2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px}
+.tx ul{margin:4px 0;padding-left:18px}.tx .fl{font-size:26px;color:var(--yellow);align-self:center}
+.mv{display:grid;grid-template-columns:130px 1fr;gap:10px;border-bottom:1px dashed var(--line);padding:8px 0;font-size:15px}
+.mv span{font:700 12px var(--disp);letter-spacing:.1em;color:var(--blue)}small.pe{color:var(--dim);font-size:12px}
+.posts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:6px}
+.post{background:#F7E58A;color:#2b2a1f;padding:14px 14px 12px;box-shadow:0 6px 14px rgba(0,0,0,.35);transform:rotate(-1.5deg)}
+.post:nth-child(2n){transform:rotate(1.2deg);background:#F9C9D9}.post:nth-child(3n){background:#BFE3F5;transform:rotate(-.6deg)}
+.post b{display:block;font:700 18px var(--disp);text-transform:uppercase}.post i{display:block;font:500 18px var(--mano);margin-top:4px}
+.cta{text-align:center;margin:36px 0 0;padding:20px;border:2px dashed rgba(236,239,231,.4);border-radius:14px}
+.cta b{display:block;font:700 26px var(--gis);color:var(--yellow)}
+.compartir{display:inline-block;margin-top:12px;background:#25D366;color:#0b2b17;text-decoration:none;font:700 17px var(--disp);letter-spacing:.04em;padding:12px 22px;border-radius:999px}
+.pie{text-align:center;color:var(--dim);font-size:13px;margin-top:18px}.pie a{color:var(--yellow)}
+</style></head><body><div class='hoja'>
+<header class='cab'><svg class="jug" style="top:18px;left:16px" width="150" height="90" viewBox="0 0 150 90" fill="none" stroke="#ECEFE7" stroke-width="2.5" stroke-linecap="round"><circle cx="20" cy="70" r="7"/><circle cx="50" cy="70" r="7"/><circle cx="80" cy="70" r="7"/><path d="M30 20 l10 10 M40 20 l-10 10 M100 15 l10 10 M110 15 l-10 10"/><path d="M50 62 C55 35 90 30 120 40 M114 34 l6 6 -8 3" stroke="#F2D466"/></svg><svg class="jug" style="top:18px;right:16px;transform:scaleX(-1)" width="150" height="90" viewBox="0 0 150 90" fill="none" stroke="#ECEFE7" stroke-width="2.5" stroke-linecap="round"><circle cx="20" cy="70" r="7"/><circle cx="50" cy="70" r="7"/><circle cx="80" cy="70" r="7"/><path d="M30 20 l10 10 M40 20 l-10 10 M100 15 l10 10 M110 15 l-10 10"/><path d="M50 62 C55 35 90 30 120 40 M114 34 l6 6 -8 3" stroke="#F2D466"/></svg>
+<div class='marca'><svg viewBox="0 0 64 64" width="38" height="38" aria-hidden="true">
+<rect x="6.5" y="7.5" width="51" height="39" rx="3" style="fill:#1F332D;stroke:#F2D466;stroke-width:4.5"></rect>
+<rect x="12.5" y="55" width="39" height="4" rx="2" style="fill:#F2D466"></rect>
+<g transform="translate(32 27.5) scale(0.84) translate(-32 -29)">
+<circle cx="15" cy="15" r="3" style="fill:none;stroke:#F2D466;stroke-width:2.8"></circle>
+<path d="M15 20 V40 H26 M22.5 36.5 L26 40 L22.5 43.5" style="fill:none;stroke:#EFEBDD;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round"></path>
+<path d="M36 37 V14 H40 C50 14 50 29 40 29 H37.5 M41.5 25 L37.5 29 L41.5 33" style="fill:none;stroke:#EFEBDD;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round"></path>
+<path d="M33.5 41 L38.5 46 M38.5 41 L33.5 46" style="fill:none;stroke:#F2D466;stroke-width:2.8;stroke-linecap:round"></path>
+</g>
+</svg>La Pizarra presenta</div>
+<h1>El Pizarrón</h1>
+<h2>Danny Dimes 2.0</h2>
+<div class='ed'>Semana 3 · 01/10/2026 · Edición con gis y sin filtro</div></header><div class='pad'>
+<div class='tit'>¡steelmannn se la llevó con 165.2!</div><p class='sub'>The Hamptons 🌴🌴 sobrevivió por 0.5 · steelmannn ganó por 69.5</p>
+<h3 class='sec'>Los marcadores</h3><div class='marcs'>
+<div class='mc'><div class='r g'><span>steelmannn</span><b>165.2</b></div><div class='r p'><span>Jjneta</span><span>95.6</span></div></div>
+<div class='mc'><div class='r g'><span>Ja’Marrio Bros.</span><b>132.3</b></div><div class='r p'><span>Chupamel Waiver</span><span>100.0</span></div></div>
+<div class='mc'><div class='r g'><span>Gaini for tha Lains</span><b>120.2</b></div><div class='r p'><span>One Hit Wonders</span><span>90.3</span></div></div>
+<div class='mc'><div class='r g'><span>my ass Hurts</span><b>117.8</b></div><div class='r p'><span>La mera punta del tren</span><span>98.1</span></div></div>
+<div class='mc'><div class='r g'><span>Lights Kamara Jaxon</span><b>137.9</b></div><div class='r p'><span>MADAFAKA</span><span>119.1</span></div></div>
+<div class='mc'><div class='r g'><span>The Hamptons 🌴🌴</span><b>105.3</b></div><div class='r p'><span>Commish Dictador</span><span>104.8</span></div></div>
+</div>
+<div class='cajas'><div class='caja'><div class='k'>🏆 La más alta</div><div class='v'>165.2</div><div class='s'>steelmannn</div></div><div class='caja'><div class='k'>🥶 La más baja</div><div class='v'>90.3</div><div class='s'>One Hit Wonders</div></div><div class='caja'><div class='k'>😰 De panzazo</div><div class='v'>0.5</div><div class='s'>The Hamptons 🌴🌴 sobrevivió</div></div><div class='caja'><div class='k'>🔨 La madriza</div><div class='v'>69.5</div><div class='s'>steelmannn no tuvo piedad</div></div><div class='caja'><div class='k'>📊 Promedio</div><div class='v'>115.6</div><div class='s'>de la liga</div></div></div>
+<h3 class='sec'>La tabla</h3><table><thead><tr><th class='l'>#</th><th class='l'>Equipo</th><th>G-P</th><th>Esta semana</th><th>Racha</th></tr></thead><tbody>
+<tr><td class='l'>1</td><td class='l'>Lights Kamara Jaxon</td><td>3-0</td><td>137.9</td><td><span class='up'>▲ 3</span></td></tr>
+<tr><td class='l'>2</td><td class='l'>Gaini for tha Lains</td><td>3-0</td><td>120.2</td><td><span class='up'>▲ 3</span></td></tr>
+<tr><td class='l'>3</td><td class='l'>steelmannn</td><td>2-1</td><td>165.2</td><td><span class='up'>▲ 1</span></td></tr>
+<tr><td class='l'>4</td><td class='l'>my ass Hurts</td><td>2-1</td><td>117.8</td><td><span class='up'>▲ 2</span></td></tr>
+<tr><td class='l'>5</td><td class='l'>Ja’Marrio Bros.</td><td>2-1</td><td>132.3</td><td><span class='up'>▲ 2</span></td></tr>
+<tr><td class='l'>6</td><td class='l'>MADAFAKA</td><td>2-1</td><td>119.1</td><td><span class='dn'>▼ 1</span></td></tr>
+<tr><td class='l'>7</td><td class='l'>The Hamptons 🌴🌴</td><td>2-1</td><td>105.3</td><td><span class='up'>▲ 1</span></td></tr>
+<tr><td class='l'>8</td><td class='l'>One Hit Wonders</td><td>1-2</td><td>90.3</td><td><span class='dn'>▼ 1</span></td></tr>
+<tr><td class='l'>9</td><td class='l'>Commish Dictador</td><td>1-2</td><td>104.8</td><td><span class='dn'>▼ 2</span></td></tr>
+<tr><td class='l'>10</td><td class='l'>Jjneta</td><td>0-3</td><td>95.6</td><td><span class='dn'>▼ 3</span></td></tr>
+<tr><td class='l'>11</td><td class='l'>La mera punta del tren</td><td>0-3</td><td>98.1</td><td><span class='dn'>▼ 3</span></td></tr>
+<tr><td class='l'>12</td><td class='l'>Chupamel Waiver</td><td>0-3</td><td>100.0</td><td><span class='dn'>▼ 3</span></td></tr>
+</tbody></table>
+<h3 class='sec'>Cuadro de honor</h3><p class='nota'>Los titulares que más anotaron, de cualquier equipo</p><div class='fichas'>
+<div class='ficha'><span class='est'>★</span><b>Jahmyr Gibbs</b><small>RB · Gaini for tha Lains</small><div class='v'>41.4</div><small></small></div>
+<div class='ficha'><span class='est'>★</span><b>Jaxon Smith-Njigba</b><small>WR · Lights Kamara Jaxon</small><div class='v'>35.4</div><small></small></div>
+<div class='ficha'><span class='est'>★</span><b>Bijan Robinson</b><small>RB · steelmannn</small><div class='v'>35.3</div><small></small></div>
+<div class='ficha'><span class='est'>★</span><b>Drake London</b><small>WR · Commish Dictador</small><div class='v'>28.4</div><small></small></div>
+<div class='ficha'><span class='est'>★</span><b>Brock Bowers</b><small>TE · MADAFAKA</small><div class='v'>27.6</div><small></small></div>
+</div>
+<h3 class='sec'>La banca de los lamentos</h3><p class='nota'>Puntos que cada quien dejó sentados (mejor alineación posible contra la que puso)</p>
+<div class='barras'>
+<div class='b'><span>Lights Kamara Jaxon</span><i style='width:100%'></i><em>36.4</em><small>Juwan Johnson (23.3) en la banca y Tucker Kraft (6.6) de titular</small></div>
+<div class='b'><span>Jjneta</span><i style='width:87%'></i><em>31.6</em><small>Jordan Addison (20.0) en la banca y Tetairoa McMillan (3.7) de titular</small></div>
+<div class='b'><span>La mera punta del tren</span><i style='width:78%'></i><em>28.3</em><small>Sam Darnold (27.7) en la banca y Drake Maye (3.8) de titular</small></div>
+<div class='b'><span>Gaini for tha Lains</span><i style='width:76%'></i><em>27.7</em><small>Michael Wilson (25.9) en la banca y Malik Nabers (7.6) de titular</small></div>
+<div class='b'><span>One Hit Wonders</span><i style='width:71%'></i><em>26.0</em><small>Harold Fannin (24.1) en la banca y T.J. Hockenson (3.1) de titular</small></div>
+<div class='b'><span>Commish Dictador</span><i style='width:52%'></i><em>19.1</em><small>Bo Nix (24.1) en la banca y C.J. Stroud (11.7) de titular</small></div>
+<div class='b'><span>MADAFAKA</span><i style='width:38%'></i><em>13.8</em><small>Rachaad White (11.1) en la banca y TreVeyon Henderson (3.9) de titular</small></div>
+<div class='b'><span>steelmannn</span><i style='width:28%'></i><em>10.2</em><small>Jakobi Meyers (19.4) en la banca y Rashee Rice (15.8) de titular</small></div>
+<div class='b'><span>Chupamel Waiver</span><i style='width:28%'></i><em>10.1</em><small>LV D/ST (12.0) en la banca y LA D/ST (3.0) de titular</small></div>
+<div class='b'><span>my ass Hurts</span><i style='width:15%'></i><em>5.6</em><small>Rhamondre Stevenson (6.8) en la banca y Jadarian Price (1.2) de titular</small></div>
+<div class='b'><span>Ja’Marrio Bros.</span><i style='width:10%'></i><em>3.7</em><small>Tony Pollard (13.6) en la banca y Quinshon Judkins (9.9) de titular</small></div>
+<div class='b'><span>The Hamptons 🌴🌴</span><i style='width:4%'></i><em>1.0</em><small>PIT D/ST (4.0) en la banca y CIN D/ST (3.0) de titular</small></div>
+</div>
+<h3 class='sec'>Premios de la semana</h3><div class='premios'><div class='premio'><div class='ic'>😶</div><h5>Premio «Ni sus luces»</h5><i>El titular que no hizo absolutamente nada</i><p><b>Jadarian Price (my ass Hurts): 1.2 pts</b></p></div><div class='premio'><div class='ic'>🪑</div><h5>Premio «¿Pa' qué lo banqueas?»</h5><i>La mejor actuación desde la banca</i><p><b>Brock Purdy (Lights Kamara Jaxon): 31.3 pts</b></p></div><div class='premio'><div class='ic'>💀</div><h5>Premio «Murió en la raya»</h5><i>La mejor puntuación en una derrota</i><p><b>MADAFAKA: 119.1 pts y perdió por 18.8</b></p></div></div>
+<h3 class='sec'>La lotería del power ranking</h3><p class='nota'>¡Corre y se va corriendo! El orden es nuestro power ranking de la semana</p><div class='lot'>
+<div class='carta'><span class='n'>1</span><div class='nom'>El Valiente</div><div class='eq'>Lights Kamara Jaxon</div><small>3-0 · Le ganó a MADAFAKA, 137.9-119.1. Smith-Njigba con 35.4.</small></div>
+<div class='carta'><span class='n'>2</span><div class='nom'>—</div><div class='eq'>Gaini for tha Lains</div><small>3-0 · Le ganó a One Hit Wonders, 120.2-90.3. Gibbs con 41.4.</small></div>
+<div class='carta'><span class='n'>3</span><div class='nom'>—</div><div class='eq'>steelmannn</div><small>2-1 · Le ganó a Jjneta, 165.2-95.6. Robinson con 35.3.</small></div>
+<div class='carta'><span class='n'>4</span><div class='nom'>—</div><div class='eq'>my ass Hurts</div><small>2-1 · Le ganó a La mera punta del tren, 117.8-98.1. Kittle con 26.2.</small></div>
+<div class='carta'><span class='n'>5</span><div class='nom'>—</div><div class='eq'>Ja’Marrio Bros.</div><small>2-1 · Le ganó a Chupamel Waiver, 132.3-100.0. Chase con 24.8.</small></div>
+<div class='carta'><span class='n'>6</span><div class='nom'>—</div><div class='eq'>MADAFAKA</div><small>2-1 · Perdió con Lights Kamara Jaxon, 119.1-137.9. Bowers con 27.6.</small></div>
+<div class='carta'><span class='n'>7</span><div class='nom'>—</div><div class='eq'>The Hamptons 🌴🌴</div><small>2-1 · Le ganó a Commish Dictador, 105.3-104.8. Wilson con 26.7.</small></div>
+<div class='carta'><span class='n'>8</span><div class='nom'>—</div><div class='eq'>One Hit Wonders</div><small>1-2 · Perdió con Gaini for tha Lains, 90.3-120.2. Adams con 20.7.</small></div>
+<div class='carta'><span class='n'>9</span><div class='nom'>—</div><div class='eq'>Commish Dictador</div><small>1-2 · Perdió con The Hamptons 🌴🌴, 104.8-105.3. London con 28.4.</small></div>
+<div class='carta'><span class='n'>10</span><div class='nom'>—</div><div class='eq'>La mera punta del tren</div><small>0-3 · Perdió con my ass Hurts, 98.1-117.8. McCaffrey con 21.6.</small></div>
+<div class='carta'><span class='n'>11</span><div class='nom'>—</div><div class='eq'>Jjneta</div><small>0-3 · Perdió con steelmannn, 95.6-165.2. Higgins con 21.0.</small></div>
+<div class='carta'><span class='n'>12</span><div class='nom'>—</div><div class='eq'>Chupamel Waiver</div><small>0-3 · Perdió con Ja’Marrio Bros., 100.0-132.3. Goff con 19.4.</small></div>
+</div>
+<div class='dos'><div><h3 class='sec'>Minuto de silencio</h3><div class='esq'>🕯️<br><b>Jadarian Price</b><small>Dio 1.2</small>Se nos fue con 1.2 puntos. Lo llora my ass Hurts.</div><div class='esq'>🕯️<br><b>De&#x27;Von Achane</b><small>Dio 1.7</small>Se nos fue con 1.7 puntos. Lo llora Jjneta.</div><div class='esq'>🕯️<br><b>T.J. Hockenson</b><small>Dio 3.1</small>Se nos fue con 3.1 puntos. Lo llora One Hit Wonders.</div></div><div><h3 class='sec'>La línea de la semana 4</h3><p class='nota'>Sale de las proyecciones. Aquí no se aceptan apuestas, solo carrilla.</p><div class='prev'><div><b>Lights Kamara Jaxon</b><small>68.2</small></div><div class='ln'>−52.5</div><div><b>Jjneta</b><small>15.7</small></div><span class='tag'>FAVORITO: LIGHTS KAMARA JAXON · O/U 84.0</span></div><div class='prev'><div><b>Commish Dictador</b><small>60.2</small></div><div class='ln'>−44.0</div><div><b>Gaini for tha Lains</b><small>16.0</small></div><span class='tag'>FAVORITO: COMMISH DICTADOR · O/U 76.0</span></div><div class='prev'><div><b>Chupamel Waiver</b><small>48.6</small></div><div class='ln'>−40.0</div><div><b>The Hamptons 🌴🌴</b><small>8.4</small></div><span class='tag'>FAVORITO: CHUPAMEL WAIVER · O/U 57.0</span></div><div class='prev'><div><b>La mera punta del tren</b><small>76.1</small></div><div class='ln'>−37.0</div><div><b>Ja’Marrio Bros.</b><small>38.9</small></div><span class='tag'>FAVORITO: LA MERA PUNTA DEL TREN · O/U 115.0</span></div><div class='prev'><div><b>One Hit Wonders</b><small>45.3</small></div><div class='ln'>−25.0</div><div><b>steelmannn</b><small>20.3</small></div><span class='tag'>FAVORITO: ONE HIT WONDERS · O/U 65.5</span></div><div class='prev'><div><b>MADAFAKA</b><small>47.3</small></div><div class='ln'>−18.0</div><div><b>my ass Hurts</b><small>29.3</small></div><span class='tag'>FAVORITO: MADAFAKA · O/U 76.5</span></div><h3 class='sec'>Libro de récords</h3><div class='rec'><div><small>PUNTUACIÓN MÁS ALTA</small><br>Gaini for tha Lains vs Ja’Marrio Bros. · Sem. 1</div><div class='v'>187.0</div></div><div class='rec'><div><small>PUNTUACIÓN MÁS BAJA</small><br>Commish Dictador vs Ja’Marrio Bros. · Sem. 2</div><div class='v'>68.0</div></div><div class='rec'><div><small>LA MADRIZA MÁS GRANDE</small><br>Lights Kamara Jaxon vs Chupamel Waiver · Sem. 1</div><div class='v'>+95.7</div></div><div class='rec'><div><small>EL PARTIDO MÁS CERRADO</small><span class=nuevo>¡NUEVO!</span><br>The Hamptons 🌴🌴 vs Commish Dictador · Sem. 3</div><div class='v'>+0.5</div></div><div class='rec'><div><small>MÁS PUNTOS EN UNA DERROTA</small><br>my ass Hurts vs Commish Dictador · Sem. 1</div><div class='v'>146.3</div></div><div class='rec'><div><small>RACHA GANADORA</small><br>Gaini for tha Lains</div><div class='v'>3</div></div><div class='rec'><div><small>RACHA PERDEDORA</small><br>Jjneta</div><div class='v'>3</div></div></div></div>
+<h3 class='sec'>El tianguis de intercambios</h3>
+<div class='tx'><div><b>Commish Dictador</b> se lleva<ul><li>Blake Corum <small class='pe'>RB/LA</small></li><li>Patrick Mahomes <small class='pe'>QB/KC</small></li></ul></div><div class='fl'>⇄</div><div><b>MADAFAKA</b> se lleva<ul><li>David Montgomery <small class='pe'>RB/HOU</small></li></ul></div></div>
+<div class='tx'><div><b>One Hit Wonders</b> se lleva<ul><li>Tony Pollard <small class='pe'>RB/TEN</small></li></ul></div><div class='fl'>⇄</div><div><b>Ja’Marrio Bros.</b> se lleva<ul><li>Stefon Diggs <small class='pe'>WR/WAS</small></li></ul></div></div>
+<div class='tx'><div><b>Commish Dictador</b> se lleva<ul><li>DJ Moore <small class='pe'>WR/BUF</small></li><li>Rico Dowdle <small class='pe'>RB/PIT</small></li><li>Jaylen Waddle <small class='pe'>WR/DEN</small></li></ul></div><div class='fl'>⇄</div><div><b>The Hamptons 🌴🌴</b> se lleva<ul><li>Drake London <small class='pe'>WR/ATL</small></li></ul></div></div>
+<div class='tx'><div><b>Lights Kamara Jaxon</b> se lleva<ul><li>Mike Evans <small class='pe'>WR/SF</small></li></ul></div><div class='fl'>⇄</div><div><b>my ass Hurts</b> se lleva<ul><li>Rhamondre Stevenson <small class='pe'>RB/NE</small></li><li>Josh Downs <small class='pe'>WR/IND</small></li></ul></div></div>
+<h3 class='sec'>Altas y bajas</h3>
+<div class='mv'><span>WAIVER</span><div><b>Lights Kamara Jaxon</b> agrega Kalif Raymond <small class='pe'>WR/CHI</small>, suelta Quentin Johnston <small class='pe'>WR/LAC</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>Gaini for tha Lains</b> agrega Keenan Allen <small class='pe'>WR/IND</small>, suelta Terrance Ferguson <small class='pe'>TE/LA</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>The Hamptons 🌴🌴</b> agrega Jaylen Wright <small class='pe'>RB/MIA</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>One Hit Wonders</b> agrega Tyreek Hill <small class='pe'>WR/</small>, suelta Rashod Bateman <small class='pe'>WR/BAL</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>Commish Dictador</b> agrega BUF D/ST <small class='pe'>DEF/BUF</small>, suelta CAR D/ST <small class='pe'>DEF/CAR</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>MADAFAKA</b> agrega Wan&#x27;Dale Robinson <small class='pe'>WR/TEN</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>Chupamel Waiver</b> agrega Keaton Mitchell <small class='pe'>RB/LAC</small>, suelta Zach Ertz <small class='pe'>TE/PHI</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>Commish Dictador</b> agrega Braelon Allen <small class='pe'>RB/NYJ</small>, suelta Kaelon Black <small class='pe'>RB/SF</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>Chupamel Waiver</b> agrega Roman Wilson <small class='pe'>WR/PIT</small>, suelta Keon Coleman <small class='pe'>WR/BUF</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>my ass Hurts</b> agrega TB D/ST <small class='pe'>DEF/TB</small>, suelta KC Concepcion <small class='pe'>WR/CLE</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>One Hit Wonders</b> agrega Kenyon Sadiq <small class='pe'>TE/NYJ</small>, suelta T.J. Hockenson <small class='pe'>TE/MIN</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>Lights Kamara Jaxon</b> agrega CLE D/ST <small class='pe'>DEF/CLE</small>, suelta NYG D/ST <small class='pe'>DEF/NYG</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>Chupamel Waiver</b> agrega Ollie Gordon <small class='pe'>RB/MIA</small>, suelta Tank Bigsby <small class='pe'>RB/PHI</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>The Hamptons 🌴🌴</b> suelta CIN D/ST <small class='pe'>DEF/CIN</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Commish Dictador</b> suelta C.J. Stroud <small class='pe'>QB/HOU</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Commish Dictador</b> suelta Malachi Fields <small class='pe'>WR/NYG</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>The Hamptons 🌴🌴</b> agrega PIT D/ST <small class='pe'>DEF/PIT</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Commish Dictador</b> agrega CAR D/ST <small class='pe'>DEF/CAR</small>, suelta SF D/ST <small class='pe'>DEF/SF</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Chupamel Waiver</b> agrega Marcus Mariota <small class='pe'>QB/WAS</small>, suelta Jonah Coleman <small class='pe'>RB/DEN</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Gaini for tha Lains</b> agrega Malik Washington <small class='pe'>WR/MIA</small>, suelta Dallas Goedert <small class='pe'>TE/PHI</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>Lights Kamara Jaxon</b> agrega Juwan Johnson <small class='pe'>TE/NO</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>Lights Kamara Jaxon</b> agrega Quentin Johnston <small class='pe'>WR/LAC</small>, suelta Ted Hurst <small class='pe'>WR/TB</small></div></div>
+<div class='mv'><span>WAIVER</span><div><b>MADAFAKA</b> agrega RJ Harvey <small class='pe'>RB/DEN</small>, suelta Chris Rodriguez <small class='pe'>RB/JAX</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Chupamel Waiver</b> agrega Zach Ertz <small class='pe'>TE/PHI</small>, suelta Mack Hollins <small class='pe'>WR/NE</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Commish Dictador</b> agrega C.J. Stroud <small class='pe'>QB/HOU</small>, suelta Drew Lock <small class='pe'>QB/SEA</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Ja’Marrio Bros.</b> agrega Emmett Johnson <small class='pe'>RB/KC</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Lights Kamara Jaxon</b> agrega Daniel Carlson <small class='pe'>K/NO</small>, suelta Trey Smack <small class='pe'>K/GB</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Commish Dictador</b> agrega Malachi Fields <small class='pe'>WR/NYG</small>, suelta Pat Bryant <small class='pe'>WR/DEN</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>MADAFAKA</b> agrega Matt Gay <small class='pe'>K/LV</small>, suelta Chase McLaughlin <small class='pe'>K/TB</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>MADAFAKA</b> suelta Juwan Johnson <small class='pe'>TE/NO</small></div></div>
+<div class='mv'><span>AGENTE LIBRE</span><div><b>Chupamel Waiver</b> agrega LV D/ST <small class='pe'>DEF/LV</small>, suelta Kalif Raymond <small class='pe'>WR/CHI</small></div></div>
+<div class='cta'><b>¿Ya lo viste? Pásalo al grupo</b><a class='compartir' href='https://wa.me/?text=El%20Pizarr%C3%B3n%20de%20Danny%20Dimes%202.0%20%C2%B7%20Semana%203%3A%20%C2%A1steelmannn%20se%20la%20llev%C3%B3%20con%20165.2%21%20https%3A//lapizarra.mx/periodico/1383551364243660800/2026-3.html' target='_blank' rel='noopener'>Compartir por WhatsApp</a><p class='pie'>¿Quieres El Pizarrón para tu liga? Pídelo en <a href='https://lapizarra.mx'>lapizarra.mx</a></p></div>
+<p class='pie'>Hecho con los datos reales de la liga por La Pizarra. Los textos los escribe una IA con mucha carrilla; los números son reales.</p>
+</div></div></body></html>
