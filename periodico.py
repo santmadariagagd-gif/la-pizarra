@@ -161,6 +161,7 @@ def calcular(L, PROJ, PROJ_SIG):
         t["lugar"] = i + 1; t["mov"] = (pos0.get(t["rid"], i) - i) if w > 1 else 0
         t["racha"] = racha(t["rid"], w); t["sem"] = next((x["pts"] for x in hist.get(t["rid"], []) if x["w"] == w), 0)
     out["tabla"] = T
+    out["historial"] = {L.equipo(rid): [f"S{x['w']}: {r1(x['pts'])} ({x['res']})" for x in h] for rid, h in hist.items()}
     # --- jugadores de la semana
     titulares, banca, por_equipo = [], [], {}
     for f in filas:
@@ -312,44 +313,66 @@ def calcular(L, PROJ, PROJ_SIG):
 
 
 # ---------------------------------------------------------------- IA (Claude)
-REGLAS = """Eres el redactor de un periódico semanal de una liga de fantasy football entre amigos en México.
-Escribe en español de México, con humor de cuates, sarcasmo y "carrilla" como en un grupo de WhatsApp de amigos:
-burlas sobre decisiones de alineación, rachas, malas compras de waivers y jugadores que no rindieron.
+LOTERIA = ["El Gallo", "El Diablito", "La Dama", "El Catrín", "El Paraguas", "La Sirena", "La Escalera", "La Botella",
+           "El Barril", "El Árbol", "El Melón", "El Valiente", "El Gorrito", "La Muerte", "La Pera", "La Bandera",
+           "El Bandolón", "El Violoncello", "La Garza", "El Pájaro", "La Mano", "La Bota", "La Luna", "El Cotorro",
+           "El Borracho", "El Corazón", "La Sandía", "El Tambor", "El Camarón", "Las Jaras", "El Músico", "La Araña",
+           "El Soldado", "La Estrella", "El Cazo", "El Mundo", "El Nopal", "El Alacrán", "La Rosa", "La Calavera",
+           "La Campana", "El Cantarito", "El Venado", "El Sol", "La Corona", "La Chalupa", "El Pino", "El Pescado",
+           "La Palma", "La Maceta", "El Arpa", "La Rana"]
+PICANTE = {
+    "familiar": "Tono: carrilla de cuates pero apto para todo público: sin groserías ni doble sentido.",
+    "normal": "Tono: carrilla de cuates con groserías suaves ocasionales (\"no manches\", \"qué oso\", \"le dieron baile\") y algo de doble sentido ligero.",
+    "albur": ("Tono: carrilla pesada de cuates CON ALBURES MEXICANOS. Mete albures y doble sentido ingeniosos con frecuencia "
+              "(juegos de palabras al estilo del albur chilango), y groserías mexicanas moderadas cuando sumen al chiste. "
+              "El albur debe ser ingenioso y de juego de palabras: nada explícito ni gráfico, no describas actos sexuales, "
+              "y nada homofóbico, machista o que se burle de alguien por lo que es."),
+}
+REGLAS = """Eres el redactor estrella de "El Pizarrón", el periódico semanal de una liga de fantasy football entre amigos en México.
+Tu estilo mezcla la nota roja y los encabezados de periódico popular mexicano ("¡LO HICIERON CACHITOS!", "¡SE LE APARECIÓ EL DIABLO!"),
+el chisme de espectáculos y la narración de un cronista deportivo mexicano apasionado. Usa referencias de la cultura popular mexicana
+(dichos, refranes, telenovelas, el futbol mexicano, la lotería, la taquería de la esquina, el tráfico de la CDMX) cuando caigan bien.
+Sé creativo y variado: cada crónica con un ángulo distinto, nada de repetir fórmulas, apodos ni remates.
+
+{picante}
 
 Reglas firmes:
-- Usa SOLO los datos que te doy. No inventes marcadores, puntos, lesiones, jugadas, noticias ni récords. Si un dato no está, no lo menciones.
+- Usa SOLO los datos que te doy. No inventes marcadores, puntos, lesiones, jugadas, noticias, intercambios ni récords. Si un dato no está, no lo menciones.
 - Los números que escribas deben coincidir exactamente con los datos.
-- Nada de groserías fuertes, insultos personales, ni chistes sobre la vida privada, físico, familia, religión, orientación,
-  nacionalidad o cualquier cosa fuera del fantasy. Las burlas son solo sobre fantasy. Puedes usar expresiones como
-  "no manches", "qué oso", "se la jugó", "le dieron baile".
-- Los nombres de equipos y de jugadores van tal cual. Puedes referirte a los managers por su nombre de usuario.
-- Los nombres de los premios (Tony Snell, Kyle Pitts, Nick Foles, Joe Burrow) se quedan así.
+- La carrilla es solo sobre el fantasy (decisiones, banca, rachas, jugadores, waivers). Nada sobre la vida privada, el físico, la familia,
+  la religión, la orientación sexual, la nacionalidad, el dinero o el trabajo de nadie.
+- Los nombres de equipos y de jugadores van tal cual. A los managers puedes llamarlos por su nombre de usuario.
 - Respuesta: SOLO un objeto JSON válido, sin texto antes ni después y sin ```.
 """
 FORMATO = """Devuelve exactamente este JSON:
 {
- "titular": "titular principal de la edición (máx. 70 caracteres)",
+ "titular": "titular principal estilo periódico popular mexicano (máx. 70 caracteres)",
  "subtitulo": "una línea con 2 o 3 datos de la semana",
- "resumen": "un párrafo de 4-6 frases que repase todos los matchups",
- "partidos": [ {"id": <id del matchup>, "etiqueta": "COMEDIA|DRAMA|ÚLTIMA HORA|CRÓNICA",
+ "resumen": "un párrafo de 4-6 frases que repase todos los matchups con mucho sabor",
+ "partidos": [ {"id": <id del matchup>, "etiqueta": "NOTA ROJA|CHISME|ESPECTÁCULOS|DEPORTES|ÚLTIMA HORA",
                "titular": "máx. 80 caracteres", "bajada": "una frase corta y graciosa",
-               "historia": ["párrafo sobre el ganador", "párrafo sobre el perdedor (menciona puntos dejados en la banca si los hay)"],
-               "cita": "una frase inventada del ganador después del partido (en tono de broma)"} ],
- "sospecha": "si hay dato de 'sospecha', un párrafo estilo expediente policiaco; si no, null",
+               "historia": ["párrafo sobre el ganador", "párrafo sobre el perdedor (si dejó puntos en la banca, restriégaselo)"],
+               "cita": "una frase inventada del ganador después del partido"} ],
+ "banca": "2-3 frases sobre la tabla de puntos dejados en la banca (quién dejó más)",
+ "sospecha": "si hay dato de 'sospecha', un párrafo estilo citatorio de la dirección de la escuela; si no, null",
  "premios": {"snell": "2-3 frases", "pitts": "2-3 frases", "foles": "2-3 frases", "burrow": "2-3 frases"},
+ "loteria": [ {"eq": "nombre exacto del equipo", "carta": "una carta de la lista", "verso": "un verso corto estilo gritón de lotería sobre su semana"} ],
  "obituarios": [ {"n": "nombre del jugador", "texto": "2-3 frases estilo esquela"} ],
- "avisos": [ {"titulo": "SE BUSCA / SE VENDE / SE PERDIÓ / etc.", "texto": "1-2 frases", "pie": "remate corto"} ]  (3 avisos)
+ "avisos": [ {"titulo": "SE BUSCA / SE VENDE / SE RENTA / SE PERDIÓ / etc.", "texto": "1-2 frases", "pie": "remate corto"} ]  (4 avisos)
 }
-Un objeto en "partidos" por cada matchup, en el mismo orden que te los doy."""
+- Un objeto en "partidos" por cada matchup, en el mismo orden que te los doy.
+- "loteria": un objeto por cada equipo del power ranking, en ese orden; cada equipo con una carta DISTINTA de esta lista: {cartas}."""
 
-def escribir(datos, liga_nombre, w):
+def escribir(datos, liga_nombre, w, picante="normal"):
     if os.environ.get("SIN_IA") == "1" or not os.environ.get("ANTHROPIC_API_KEY"):
         print("Periódico: sin IA (SIN_IA=1 o falta ANTHROPIC_API_KEY); se publica solo con datos"); return None, 0
     hechos = {k: datos.get(k) for k in ("matchups", "alta", "baja", "cerrado", "paliza", "promedio", "honor", "castigados",
-                                         "premios", "obituarios", "sospecha", "banca_total", "intercambios")}
+                                         "premios", "obituarios", "sospecha", "banca_total", "intercambios", "historial")}
     hechos["tabla"] = [{k: t[k] for k in ("lugar", "eq", "g", "p", "racha", "mov")} for t in datos.get("tabla", [])]
-    msg = f"Liga: {liga_nombre}. Semana {w}.\n\nDATOS:\n{json.dumps(hechos, ensure_ascii=False)}\n\n{FORMATO}"
-    body = dict(model=MODELO, max_tokens=16000, system=REGLAS, messages=[dict(role="user", content=msg)])
+    hechos["power_ranking"] = [x["eq"] for x in datos.get("power", [])]
+    sistema = REGLAS.replace("{picante}", PICANTE.get(picante, PICANTE["normal"]))
+    msg = f"Liga: {liga_nombre}. Semana {w}.\n\nDATOS:\n{json.dumps(hechos, ensure_ascii=False)}\n\n" + FORMATO.replace("{cartas}", ", ".join(LOTERIA))
+    body = dict(model=MODELO, max_tokens=16000, system=sistema, messages=[dict(role="user", content=msg)])
     req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=json.dumps(body).encode("utf-8"), method="POST",
                                  headers={"content-type": "application/json", "x-api-key": os.environ["ANTHROPIC_API_KEY"],
                                           "anthropic-version": "2023-06-01"})
@@ -368,156 +391,229 @@ def escribir(datos, liga_nombre, w):
         except Exception: print("Periódico: la IA no regresó JSON válido; se publica solo con datos"); return None, costo
 
 
-# ---------------------------------------------------------------- HTML
+# ---------------------------------------------------------------- HTML (estilo La Pizarra: pizarrón verde, gis y amarillo)
+def logo_svg():
+    try:
+        t = open(os.path.join(AQUI, "template.html"), encoding="utf-8").read()
+        m = re.search(r'<symbol id="lp-logo" viewBox="0 0 64 64">(.*?)</symbol>', t, re.S)
+        if m: return f'<svg viewBox="0 0 64 64" width="38" height="38" aria-hidden="true">{m.group(1)}</svg>'
+    except Exception: pass
+    return ""
+
 CSS = """
-:root{--ink:#161616;--muted:#5b5b5b;--line:#d8d4c8;--paper:#fbfaf6;--red:#b8121b;--green:#1f6b3a}
+:root{--board:#1F332D;--board2:#263D36;--deep:#15241F;--chalk:#ECEFE7;--dim:#A8B8AF;--line:#3A554C;--yellow:#F2D466;--blue:#9CC7E6;
+--red:#F29C8C;--green:#8FD6A6;--wood:#7A5232;--paper:#F6F0DF;--ink:#1B2A38;--disp:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+--body:"Barlow","Helvetica Neue",Arial,sans-serif;--gis:"Cabin Sketch","Barlow Condensed",sans-serif;--mano:"Caveat",cursive}
 *{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
-body{margin:0;background:#ece9e0;color:var(--ink);font:17px/1.55 Georgia,"Times New Roman",serif}
-.hoja{max-width:900px;margin:0 auto;background:var(--paper);padding:0 0 30px;box-shadow:0 0 30px rgba(0,0,0,.08)}
-.cab{background:var(--red);color:#fff;text-align:center;padding:26px 16px 14px;border-bottom:6px solid var(--ink)}
-.cab h1{margin:0;font:900 clamp(34px,8vw,64px)/1 Georgia,serif;letter-spacing:.02em;text-transform:uppercase;text-shadow:3px 3px 0 #000}
-.cab p{margin:12px 0 0;font:700 12px/1.4 Georgia,serif;letter-spacing:.18em;text-transform:uppercase;border-top:1px solid rgba(255,255,255,.4);padding-top:10px}
-.pad{padding:0 22px}
-.tit{text-align:center;margin:26px 0 10px;font:900 clamp(28px,6vw,48px)/1.08 Georgia,serif;text-transform:uppercase}
-.sub{text-align:center;font-style:italic;font-weight:700;border-top:2px solid var(--ink);border-bottom:1px solid var(--line);padding:10px 0;margin:0 0 18px}
-h2.sec{font:700 13px/1 Georgia,serif;letter-spacing:.2em;text-transform:uppercase;color:var(--red);border-bottom:2px solid var(--red);padding-bottom:6px;margin:30px 0 12px}
-h3.band{text-align:center;font:700 15px/1 Georgia,serif;letter-spacing:.2em;text-transform:uppercase;background:#f1ede2;border-top:3px solid var(--ink);border-bottom:2px solid var(--ink);padding:9px;margin:30px 0 12px}
-.mu{border-bottom:1px solid var(--line);padding:12px 0}.mu b{text-transform:uppercase}.mu i{color:var(--red);display:block}.mu small{color:var(--muted)}
-table{width:100%;border-collapse:collapse;font-size:15px}th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right}th{font-size:11px;letter-spacing:.12em;text-transform:uppercase}
-td.l,th.l{text-align:left}.up{color:var(--green);font-weight:700}.dn{color:var(--red);font-weight:700}
+body{margin:0;background:#101c18;color:var(--chalk);font:17px/1.6 var(--body)}
+.hoja{max-width:940px;margin:18px auto;background:radial-gradient(ellipse at 20% 0%,rgba(255,255,255,.05),transparent 55%),radial-gradient(ellipse at 90% 60%,rgba(255,255,255,.035),transparent 50%),var(--board);
+ border:14px solid var(--wood);border-radius:6px;box-shadow:inset 0 0 60px rgba(0,0,0,.45),0 10px 40px rgba(0,0,0,.5);padding:0 0 28px;position:relative}
+@media(max-width:640px){.hoja{margin:0;border-width:7px;border-radius:0}}
+.pad{padding:0 24px}@media(max-width:640px){.pad{padding:0 16px}}
+.cab{text-align:center;padding:26px 16px 10px;position:relative}
+.cab .marca{display:inline-flex;align-items:center;gap:8px;font:600 15px var(--disp);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.cab h1{margin:6px 0 0;font:700 clamp(54px,13vw,104px)/.9 var(--gis);color:var(--chalk);letter-spacing:.01em}
+.cab h2{margin:4px 0 0;font:700 clamp(22px,5vw,34px)/1.1 var(--gis);color:var(--yellow)}
+.cab .ed{margin:14px auto 0;max-width:720px;border-top:2px dashed rgba(236,239,231,.35);border-bottom:2px dashed rgba(236,239,231,.35);padding:8px 0;font:600 14px var(--disp);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.cab svg.jug{position:absolute;opacity:.45}
+.tit{margin:26px 0 8px;text-align:center;font:700 clamp(34px,7vw,60px)/1 var(--disp);text-transform:uppercase;color:var(--yellow);letter-spacing:.01em;text-shadow:0 0 1px rgba(0,0,0,.3)}
+.sub{text-align:center;font:500 19px/1.4 var(--mano);font-size:24px;color:var(--chalk);margin:0 0 16px}
+.res{font-size:18px}
+h3.sec{font:700 30px/1.1 var(--gis);color:var(--yellow);margin:36px 0 12px;display:flex;align-items:center;gap:10px}
+h3.sec::after{content:"";flex:1;border-bottom:2px dashed rgba(242,212,102,.45);margin-top:8px}
+p.nota{color:var(--dim);font-style:italic;margin:-6px 0 12px;font-size:15px}
+.marcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:10px}
+.mc{background:var(--board2);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.mc .r{display:flex;justify-content:space-between;gap:10px;font:600 19px/1.35 var(--disp)}.mc .r.g b{color:var(--yellow)}.mc .r.p{color:var(--dim)}
+.mc i{display:block;font:500 20px/1.2 var(--mano);color:var(--blue);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:16px}th,td{padding:8px 6px;border-bottom:1px dashed var(--line);text-align:right}
+th{font:600 13px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}td.l,th.l{text-align:left}
+.up{color:var(--green);font-weight:700}.dn{color:var(--red);font-weight:700}
 .cajas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}
-.caja{border:1.5px solid #bbb;background:#f6f4ee;text-align:center;padding:12px 8px}.caja .k{font:700 11px Georgia;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
-.caja .v{font:900 28px Georgia;margin:4px 0}.caja .s{font-size:13px;color:var(--muted)}
-.fichas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.ficha{border:1px solid var(--line);text-align:center;padding:12px 8px;background:#fff}.ficha b{display:block}.ficha small{color:var(--muted);display:block}
-.ficha .v{font:900 26px Georgia;color:#7a6400}.ficha.mal .v{color:var(--red)}
-.cron{border-top:3px solid var(--ink);margin-top:24px;padding-top:10px}.cron .et{font:700 12px Georgia;letter-spacing:.18em;color:var(--red)}
-.cron h4{margin:4px 0;font:900 clamp(20px,4vw,28px)/1.15 Georgia,serif;text-transform:uppercase}.cron .lin{font-style:italic;color:var(--muted)}
-.marc{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);background:#fff;padding:10px 14px;margin:10px 0;gap:10px}
-.marc b{font-size:18px}.marc .m{color:var(--red);font-weight:700}
-blockquote{border-left:5px solid var(--red);margin:14px 0;padding:4px 16px;font:italic 700 clamp(18px,3.4vw,23px)/1.35 Georgia,serif}
-blockquote small{display:block;font:400 14px Georgia;color:var(--muted);margin-top:4px}
-.fraude{border:3px solid var(--ink);border-left:10px solid var(--red);padding:16px 20px;margin:26px 0;background:#f6f4ee;font-size:19px}
-.fraude h3{text-align:center;color:var(--red);letter-spacing:.2em;margin:0 0 10px;font-size:16px}
-.premios{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-.premio{border:1.5px solid #bbb;padding:12px 14px;background:#fff}.premio h4{margin:0;color:var(--red);font:700 14px Georgia;letter-spacing:.12em;text-transform:uppercase}.premio i{color:var(--muted);font-size:14px}
-.power{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.pw{border:1px solid var(--line);background:#fff;text-align:center;padding:10px}
-.pw .n{font:900 30px Georgia;color:var(--red)}.pw.t1 .n{color:#b8930a}.pw.t2 .n{color:#7d7d7d}.pw.t3 .n{color:#9a5b22}.pw small{display:block;color:var(--muted);font-style:italic;font-size:13px}
-.dos{display:grid;grid-template-columns:1fr 1fr;gap:26px}@media(max-width:700px){.dos{grid-template-columns:1fr}}
-.obit{border-bottom:2px solid var(--ink);padding:10px 0}.obit small{color:var(--muted);font-style:italic;display:block}
-.prev{border-bottom:1px solid var(--line);padding:10px 0;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
-.prev .ln{font:900 28px Georgia;color:var(--red)}.prev small{display:block;color:var(--muted)}.prev .tag{grid-column:1/-1;font:700 11px Georgia;letter-spacing:.12em;border:1.5px solid var(--ink);padding:3px 8px;justify-self:start}
-.rec{border-bottom:1px dotted #aaa;padding:8px 0;display:flex;justify-content:space-between;gap:10px}.rec .v{font:900 26px Georgia;color:var(--red)}.rec small{color:var(--muted)}.nuevo{font:700 10px Georgia;letter-spacing:.12em;color:#999;margin-left:6px}
-.tx{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;border-bottom:1px dotted #aaa;padding:10px 0}.tx ul{margin:4px 0;padding-left:18px}
-.mv{display:grid;grid-template-columns:120px 1fr;gap:10px;border-bottom:1px dotted #aaa;padding:8px 0;font-size:15px}.mv span{font:700 11px Georgia;letter-spacing:.1em;color:var(--muted)}
-.avisos{display:grid;grid-template-columns:1fr 1fr;gap:16px 26px;border-top:4px double var(--ink);border-bottom:4px double var(--ink);padding:16px 0;margin-top:26px}@media(max-width:700px){.avisos{grid-template-columns:1fr}}
-.avisos b{display:block;text-transform:uppercase}.avisos i{color:var(--muted);font-size:14px}
-.pie{text-align:center;color:var(--muted);font:14px Georgia;margin-top:26px}.pie a{color:var(--red)}
-.compartir{display:block;text-align:center;margin:22px auto 0;background:#1f8f4e;color:#fff;text-decoration:none;font:700 16px system-ui,sans-serif;padding:12px 18px;border-radius:999px;max-width:320px}
+.caja{border:2px solid rgba(236,239,231,.55);border-radius:12px;text-align:center;padding:12px 8px}
+.caja .k{font:600 13px var(--disp);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}.caja .v{font:700 36px/1.1 var(--gis);color:var(--yellow)}.caja .s{font-size:14px;color:var(--chalk)}
+.fichas{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.ficha{background:var(--board2);border:1px solid var(--line);border-radius:10px;text-align:center;padding:12px 8px}
+.ficha b{display:block;font:700 18px/1.15 var(--disp)}.ficha small{color:var(--dim);display:block;font-size:13px}
+.ficha .v{font:700 36px/1.1 var(--gis);color:var(--yellow)}.ficha.mal .v{color:var(--red)}
+.ficha .sello{display:inline-block;transform:rotate(-6deg);border:2px solid var(--red);color:var(--red);border-radius:4px;font:700 12px var(--disp);letter-spacing:.14em;padding:1px 8px;margin:4px 0 2px}
+.ficha .est{display:block;color:var(--yellow);font-size:18px;line-height:1}
+.barras .b{display:grid;grid-template-columns:minmax(0,1.3fr) 3fr auto;gap:10px;align-items:center;margin:6px 0;font-size:15px}
+.barras .b span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barras .b i{display:block;height:14px;border-radius:7px;background:var(--yellow)}.barras .b em{font:700 18px var(--disp);font-style:normal;color:var(--yellow)}
+.barras small{display:block;color:var(--dim);grid-column:1/-1;margin:-4px 0 4px;font-size:13px}
+.cron{margin-top:26px;padding-top:16px;border-top:2px dashed rgba(236,239,231,.3)}
+.et{display:inline-block;font:700 13px var(--disp);letter-spacing:.14em;padding:3px 10px;border-radius:4px;color:#1B2A38;background:var(--yellow)}
+.et.NOTA{background:var(--red)}.et.CHISME{background:#F4B6D2}.et.ESPECTÁCULOS{background:var(--blue)}.et.DEPORTES{background:var(--green)}
+.cron h4{margin:8px 0 4px;font:700 clamp(26px,5vw,36px)/1.05 var(--disp);text-transform:uppercase;color:var(--chalk)}
+.cron .baj{font:500 22px/1.25 var(--mano);color:var(--blue)}
+.marc{display:flex;justify-content:space-between;align-items:center;background:var(--deep);border-radius:10px;padding:10px 14px;margin:12px 0;gap:10px}
+.marc b{font:700 20px var(--disp);display:block}.marc small{color:var(--dim)}.marc .m{font:700 26px var(--gis);color:var(--yellow);white-space:nowrap}
+.cita{font:600 clamp(24px,4.5vw,30px)/1.2 var(--mano);color:var(--yellow);margin:14px 0 0;padding-left:16px;border-left:4px solid var(--yellow)}
+.cita small{display:block;font:400 14px var(--body);color:var(--dim);margin-top:4px}
+.papel{background:var(--paper);color:var(--ink);border-radius:4px;padding:18px 22px;margin:30px auto;max-width:720px;transform:rotate(-1deg);box-shadow:0 8px 20px rgba(0,0,0,.4);position:relative}
+.papel::before{content:"";position:absolute;top:-12px;left:50%;width:110px;height:26px;margin-left:-55px;background:rgba(255,255,230,.55);transform:rotate(2deg)}
+.papel h4{margin:0 0 8px;font:700 24px var(--disp);letter-spacing:.08em;color:#B53A2E;text-transform:uppercase}
+.premios{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:640px){.premios{grid-template-columns:1fr}}
+.premio{background:var(--board2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.premio .ic{font-size:30px}.premio h5{margin:2px 0 0;font:700 22px/1.1 var(--disp);color:var(--yellow);text-transform:uppercase}
+.premio i{color:var(--dim);font-size:14px;display:block}.premio p{margin:8px 0 0}
+.lot{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}@media(max-width:760px){.lot{grid-template-columns:repeat(2,1fr)}}
+.carta{background:var(--paper);color:var(--ink);border:6px solid #fff;outline:3px solid #B53A2E;outline-offset:-12px;border-radius:6px;padding:16px 12px 12px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,.35);position:relative}
+.carta .n{position:absolute;top:10px;left:14px;font:700 22px var(--disp);color:#B53A2E}
+.carta .nom{font:700 21px/1.05 var(--disp);text-transform:uppercase;margin:16px 0 6px;letter-spacing:.03em}
+.carta .eq{font:600 15px var(--body);border-top:1px solid #c9bfa6;padding-top:6px}.carta .ver{font:500 18px/1.15 var(--mano);color:#5a4632;margin-top:4px}
+.carta small{display:block;color:#7b6a55;font-size:12px}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:28px}@media(max-width:700px){.dos{grid-template-columns:1fr}}
+.esq{border:2px solid rgba(236,239,231,.5);border-radius:6px;padding:12px 14px;margin-bottom:10px;text-align:center}
+.esq b{font:700 20px var(--disp)}.esq small{display:block;color:var(--dim);font-style:italic}
+.prev{background:var(--board2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
+.prev b{font:700 17px/1.1 var(--disp)}.prev small{display:block;color:var(--dim)}.prev .ln{font:700 30px var(--gis);color:var(--yellow)}
+.prev .tag{grid-column:1/-1;font:600 12px var(--disp);letter-spacing:.1em;color:var(--dim)}
+.rec{border-bottom:1px dashed var(--line);padding:8px 0;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.rec .v{font:700 30px var(--gis);color:var(--yellow)}.rec small{color:var(--dim);font:600 12px var(--disp);letter-spacing:.1em}
+.nuevo{background:var(--yellow);color:#1B2A38;font:700 10px var(--disp);letter-spacing:.1em;padding:1px 6px;border-radius:3px;margin-left:6px}
+.tx{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;background:var(--board2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:8px}
+.tx ul{margin:4px 0;padding-left:18px}.tx .fl{font-size:26px;color:var(--yellow);align-self:center}
+.mv{display:grid;grid-template-columns:130px 1fr;gap:10px;border-bottom:1px dashed var(--line);padding:8px 0;font-size:15px}
+.mv span{font:700 12px var(--disp);letter-spacing:.1em;color:var(--blue)}small.pe{color:var(--dim);font-size:12px}
+.posts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:6px}
+.post{background:#F7E58A;color:#2b2a1f;padding:14px 14px 12px;box-shadow:0 6px 14px rgba(0,0,0,.35);transform:rotate(-1.5deg)}
+.post:nth-child(2n){transform:rotate(1.2deg);background:#F9C9D9}.post:nth-child(3n){background:#BFE3F5;transform:rotate(-.6deg)}
+.post b{display:block;font:700 18px var(--disp);text-transform:uppercase}.post i{display:block;font:500 18px var(--mano);margin-top:4px}
+.cta{text-align:center;margin:36px 0 0;padding:20px;border:2px dashed rgba(236,239,231,.4);border-radius:14px}
+.cta b{display:block;font:700 26px var(--gis);color:var(--yellow)}
+.compartir{display:inline-block;margin-top:12px;background:#25D366;color:#0b2b17;text-decoration:none;font:700 17px var(--disp);letter-spacing:.04em;padding:12px 22px;border-radius:999px}
+.pie{text-align:center;color:var(--dim);font-size:13px;margin-top:18px}.pie a{color:var(--yellow)}
 """
+JUGADA = ('<svg class="jug" style="{pos}" width="150" height="90" viewBox="0 0 150 90" fill="none" stroke="#ECEFE7" stroke-width="2.5" stroke-linecap="round">'
+          '<circle cx="20" cy="70" r="7"/><circle cx="50" cy="70" r="7"/><circle cx="80" cy="70" r="7"/>'
+          '<path d="M30 20 l10 10 M40 20 l-10 10 M100 15 l10 10 M110 15 l-10 10"/>'
+          '<path d="M50 62 C55 35 90 30 120 40 M114 34 l6 6 -8 3" stroke="#F2D466"/></svg>')
+PREMIOS = [("snell", "😶", "Premio «Ni sus luces»", "El titular que no hizo absolutamente nada"),
+           ("pitts", "📉", "Premio «Prometía mucho»", "El que más le quedó a deber a su proyección"),
+           ("foles", "🪑", "Premio «¿Pa' qué lo banqueas?»", "La mejor actuación desde la banca"),
+           ("burrow", "💀", "Premio «Murió en la raya»", "La mejor puntuación en una derrota")]
 
 def render(liga_nombre, titulo, w, fecha, D, T, url):
     S = T or {}
     P = {p.get("id"): p for p in (S.get("partidos") or []) if isinstance(p, dict)}
     a, M = D.get("alta"), D.get("matchups") or []
-    tit = S.get("titular") or (f"{a['ganador']} se lleva la semana con {a['g_pts']}" if a else f"Semana {w}")
+    tit = S.get("titular") or (f"¡{a['ganador']} se la llevó con {a['g_pts']}!" if a else f"Semana {w}")
     sub = S.get("subtitulo") or (f"{D['cerrado']['ganador']} sobrevivió por {D['cerrado']['margen']} · {D['paliza']['ganador']} ganó por {D['paliza']['margen']}" if M else "")
+    fonts = "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cabin+Sketch:wght@700&family=Caveat:wght@500;600&display=swap"
     h = [f"<!doctype html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>",
-         f"<title>{esc(titulo)} · Semana {w}</title><meta property='og:title' content='{esc(titulo)} · Semana {w}'>",
-         f"<meta property='og:description' content='{esc(tit)}'><style>{CSS}</style></head><body><div class='hoja'>",
-         f"<header class='cab'><h1>{esc(titulo)}</h1><p>Edición de la semana {w} · {esc(liga_nombre)} · {esc(fecha)}</p></header><div class='pad'>",
+         f"<title>{esc(titulo)} · Semana {w}</title><meta property='og:title' content='{esc(titulo)} · Semana {w}'><meta property='og:description' content='{esc(tit)}'>",
+         f"<link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='{fonts}' rel='stylesheet'>",
+         f"<style>{CSS}</style></head><body><div class='hoja'>",
+         "<header class='cab'>" + JUGADA.replace("{pos}", "top:18px;left:16px") + JUGADA.replace("{pos}", "top:18px;right:16px;transform:scaleX(-1)"),
+         f"<div class='marca'>{logo_svg()}La Pizarra presenta</div>",
+         f"<h1>{esc(titulo.split(' de ')[0] if ' de ' in titulo else titulo)}</h1>",
+         f"<h2>{esc(titulo.split(' de ', 1)[1]) if ' de ' in titulo else esc(liga_nombre)}</h2>",
+         f"<div class='ed'>Semana {w} · {esc(fecha)} · Edición con gis y sin filtro</div></header><div class='pad'>",
          f"<div class='tit'>{esc(tit)}</div><p class='sub'>{esc(sub)}</p>"]
-    if S.get("resumen"): h.append(f"<p>{esc(S['resumen'])}</p>")
-    h.append("<h2 class='sec'>Esta semana</h2>")
+    if S.get("resumen"): h.append(f"<p class='res'>{esc(S['resumen'])}</p>")
+    h.append("<h3 class='sec'>Los marcadores</h3><div class='marcs'>")
     for m in M:
         x = P.get(m["id"], {}); baj = f"<i>{esc(x['bajada'])}</i>" if x.get("bajada") else ""
-        h.append(f"<div class='mu'><b>{esc(m['ganador'])} {'empató con' if m['empate'] else 'le ganó a'} {esc(m['perdedor'])}</b>{baj}"
-                 f"<small>{m['g_pts']} — {m['p_pts']} | margen: {m['margen']}</small></div>")
-    # tabla
-    h.append("<h2 class='sec'>Tabla</h2><table><thead><tr><th class='l'>#</th><th class='l'>Equipo</th><th>G-P</th><th>Pts sem.</th><th>Racha</th></tr></thead><tbody>")
+        h.append(f"<div class='mc'><div class='r g'><span>{esc(m['ganador'])}</span><b>{m['g_pts']}</b></div><div class='r p'><span>{esc(m['perdedor'])}</span><span>{m['p_pts']}</span></div>{baj}</div>")
+    h.append("</div>")
+    if M:
+        b, c, p = D["baja"], D["cerrado"], D["paliza"]
+        h.append("<div class='cajas'>" + "".join(f"<div class='caja'><div class='k'>{k}</div><div class='v'>{v}</div><div class='s'>{esc(s)}</div></div>" for k, v, s in [
+            ("🏆 La más alta", a["g_pts"], a["ganador"]), ("🥶 La más baja", b["p_pts"], b["perdedor"]),
+            ("😰 De panzazo", f"{c['margen']}", f"{c['ganador']} sobrevivió"), ("🔨 La madriza", f"{p['margen']}", f"{p['ganador']} no tuvo piedad"),
+            ("📊 Promedio", D["promedio"], "de la liga")]) + "</div>")
+    h.append("<h3 class='sec'>La tabla</h3><table><thead><tr><th class='l'>#</th><th class='l'>Equipo</th><th>G-P</th><th>Esta semana</th><th>Racha</th></tr></thead><tbody>")
     for t in D.get("tabla", []):
         r = t["racha"]; rc = f"<span class='up'>▲ {r}</span>" if r > 0 else f"<span class='dn'>▼ {-r}</span>" if r < 0 else "–"
         h.append(f"<tr><td class='l'>{t['lugar']}</td><td class='l'>{esc(t['eq'])}</td><td>{t['g']}-{t['p']}{'-'+str(t['e']) if t['e'] else ''}</td><td>{r1(t['sem'])}</td><td>{rc}</td></tr>")
     h.append("</tbody></table>")
-    if M:
-        b, c, p = D["baja"], D["cerrado"], D["paliza"]
-        h.append("<div class='cajas'>" + "".join(f"<div class='caja'><div class='k'>{k}</div><div class='v'>{v}</div><div class='s'>{esc(s)}</div></div>" for k, v, s in [
-            ("🏆 Más alta", a["g_pts"], a["ganador"]), ("🔥 Más baja", b["p_pts"], b["perdedor"]),
-            ("⚔️ Más cerrado", f"{c['margen']} pts", f"{c['ganador']} sobrevivió"), ("😵 Paliza", f"{p['margen']} pts", f"{p['ganador']} arrasó"),
-            ("📊 Promedio", D["promedio"], "de la liga")]) + "</div>")
     if D.get("honor"):
-        h.append("<h3 class='band'>Cuadro de honor</h3><p style='text-align:center;font-style:italic;color:#5b5b5b'>Los titulares que más anotaron, de cualquier equipo</p><div class='fichas'>")
-        h += [f"<div class='ficha'><b>{esc(x['n'])}</b><small>{x['pos']} · {esc(x['eq'])}</small><div class='v'>{x['pts']}</div><small>{'Proy: '+str(x['proj']) if x['proj'] is not None else ''}</small></div>" for x in D["honor"]]
+        h.append("<h3 class='sec'>Cuadro de honor</h3><p class='nota'>Los titulares que más anotaron, de cualquier equipo</p><div class='fichas'>")
+        h += [f"<div class='ficha'><span class='est'>★</span><b>{esc(x['n'])}</b><small>{x['pos']} · {esc(x['eq'])}</small><div class='v'>{x['pts']}</div><small>{'Proyección: '+str(x['proj']) if x['proj'] is not None else ''}</small></div>" for x in D["honor"]]
         h.append("</div>")
     if D.get("castigados"):
-        h.append("<h3 class='band'>Castigados</h3><p style='text-align:center;font-style:italic;color:#5b5b5b'>Los titulares que más le quedaron a deber a su proyección</p><div class='fichas'>")
-        h += [f"<div class='ficha mal'><b>{esc(x['n'])}</b><small>{x['pos']} · {esc(x['eq'])}</small><div class='v'>{x['dif']}</div><small>Proy: {x['proj']} · Hizo {x['pts']}</small></div>" for x in D["castigados"]]
+        h.append("<h3 class='sec'>Los reprobados</h3><p class='nota'>Los titulares que más le quedaron a deber a su proyección</p><div class='fichas'>")
+        h += [f"<div class='ficha mal'><b>{esc(x['n'])}</b><small>{x['pos']} · {esc(x['eq'])}</small><div class='v'>{x['dif']}</div><span class='sello'>REPROBADO</span><small>Debía {x['proj']} · Hizo {x['pts']}</small></div>" for x in D["castigados"]]
         h.append("</div>")
-    # crónicas
+    bt = [x for x in D.get("banca_total", []) if x["pts"] > 0]
+    if bt:
+        mx = max(x["pts"] for x in bt)
+        h.append("<h3 class='sec'>La banca de los lamentos</h3><p class='nota'>Puntos que cada quien dejó sentados (mejor alineación posible contra la que puso)</p>")
+        if S.get("banca"): h.append(f"<p>{esc(S['banca'])}</p>")
+        h.append("<div class='barras'>")
+        for x in bt:
+            cam = x.get("cambio"); det = f"<small>{esc(cam['banca'])} ({cam['banca_pts']}) en la banca y {esc(cam['titular'])} ({cam['titular_pts']}) de titular</small>" if cam else ""
+            h.append(f"<div class='b'><span>{esc(x['eq'])}</span><i style='width:{max(4, x['pts']/mx*100):.0f}%'></i><em>{x['pts']}</em>{det}</div>")
+        h.append("</div>")
     if S.get("partidos"):
-        h.append("<h3 class='band'>Crónicas</h3>")
+        h.append("<h3 class='sec'>Crónicas de la jornada</h3>")
         for m in M:
-            x = P.get(m["id"]);
+            x = P.get(m["id"])
             if not x: continue
-            h.append(f"<div class='cron'><div class='et'>{esc(x.get('etiqueta') or 'CRÓNICA')}</div><h4>{esc(x.get('titular'))}</h4>"
-                     f"<div class='lin'>{esc(m['ganador'])} {'empató con' if m['empate'] else 'le ganó a'} {esc(m['perdedor'])} | {m['g_pts']} - {m['p_pts']}</div>"
-                     f"<div class='marc'><div><b>{esc(m['ganador'])}</b><br><small>{m['g_record']} · {m['g_pts']}</small></div><span class='m'>▶ {m['margen']}</span>"
-                     f"<div style='text-align:right'><b>{esc(m['perdedor'])}</b><br><small>{m['p_record']} · {m['p_pts']}</small></div></div>")
+            et = (x.get("etiqueta") or "DEPORTES").upper()
+            h.append(f"<div class='cron'><span class='et {esc(et.split()[0])}'>{esc(et)}</span><h4>{esc(x.get('titular'))}</h4>"
+                     f"{'<div class=baj>'+esc(x.get('bajada'))+'</div>' if x.get('bajada') else ''}"
+                     f"<div class='marc'><div><b>{esc(m['ganador'])}</b><small>{m['g_record']} · {m['g_pts']}</small></div><span class='m'>+{m['margen']}</span>"
+                     f"<div style='text-align:right'><b>{esc(m['perdedor'])}</b><small>{m['p_record']} · {m['p_pts']}</small></div></div>")
             h += [f"<p>{esc(par)}</p>" for par in (x.get("historia") or []) if par]
-            if x.get("cita"): h.append(f"<blockquote>“{esc(x['cita'])}”<small>— {esc(m['ganador'])}, después del partido</small></blockquote>")
+            if x.get("cita"): h.append(f"<div class='cita'>“{esc(x['cita'])}”<small>— {esc(m['ganador'])}, saliendo del estadio</small></div>")
             h.append("</div>")
     if S.get("sospecha") and D.get("sospecha"):
-        h.append(f"<div class='fraude'><h3>🔎 BAJO SOSPECHA</h3>{esc(S['sospecha'])}</div>")
-    # premios
+        sp = D["sospecha"]
+        h.append(f"<div class='papel'><h4>📋 Citatorio a la dirección</h4><p><b>{esc(sp['eq'])}</b>: de {sp['antes']} a {sp['ahora']} puntos en una semana.</p><p>{esc(S['sospecha'])}</p></div>")
     pr, PT = D.get("premios") or {}, S.get("premios") or {}
     cards = []
-    for k, nom, desc in [("snell", "Premio Tony Snell", "El titular que no hizo absolutamente nada"), ("pitts", "Premio Kyle Pitts", "El titular que más le quedó a deber a su proyección"),
-                         ("foles", "Premio Nick Foles", "La mejor actuación desde la banca"), ("burrow", "Premio Joe Burrow", "La mejor puntuación en una derrota")]:
+    for k, ic, nom, desc in PREMIOS:
         d = pr.get(k)
         if not d: continue
         dato = (f"{d['n']} ({d['eq']}): {d['pts']} pts" if "n" in d else f"{d['eq']}: {d['pts']} pts y perdió por {d['margen']}")
-        cards.append(f"<div class='premio'><h4>{nom}</h4><i>{desc}</i><p><b>{esc(dato)}</b>{('<br>'+esc(PT[k])) if PT.get(k) else ''}</p></div>")
-    if cards: h.append("<h3 class='band'>Premios de la semana</h3><div class='premios'>" + "".join(cards) + "</div>")
+        cards.append(f"<div class='premio'><div class='ic'>{ic}</div><h5>{nom}</h5><i>{desc}</i><p><b>{esc(dato)}</b>{('<br>'+esc(PT[k])) if PT.get(k) else ''}</p></div>")
+    if cards: h.append("<h3 class='sec'>Premios de la semana</h3><div class='premios'>" + "".join(cards) + "</div>")
     if D.get("power"):
-        h.append("<h3 class='band'>Power ranking</h3><div class='power'>")
-        h += [f"<div class='pw t{i+1}'><div class='n'>#{i+1}</div><b>{esc(x['eq'])}</b><small>{esc(x.get('linea',''))}</small></div>" for i, x in enumerate(D["power"])]
+        LT = {x.get("eq"): x for x in (S.get("loteria") or []) if isinstance(x, dict)}
+        h.append("<h3 class='sec'>La lotería del power ranking</h3><p class='nota'>¡Corre y se va corriendo! El orden es nuestro power ranking de la semana</p><div class='lot'>")
+        for i, x in enumerate(D["power"]):
+            L2 = LT.get(x["eq"], {})
+            h.append(f"<div class='carta'><span class='n'>{i+1}</span><div class='nom'>{esc(L2.get('carta') or ('El Valiente' if i == 0 else '—'))}</div>"
+                     f"<div class='eq'>{esc(x['eq'])}</div>{'<div class=ver>'+esc(L2.get('verso'))+'</div>' if L2.get('verso') else ''}<small>{x['g']}-{x['p']} · {esc(x.get('linea',''))}</small></div>")
         h.append("</div>")
-    # obituarios + previa
     OT = {o.get("n"): o.get("texto") for o in (S.get("obituarios") or []) if isinstance(o, dict)}
-    col1 = ["<h2 class='sec'>Obituarios</h2>"] + [f"<div class='obit'><b>{esc(o['n'])}</b><small>{'Proyectado '+str(o['proj'])+' – ' if o['proj'] is not None else ''}Hizo {o['pts']}</small>"
-                                                 f"{esc(OT.get(o['n']) or ('Se nos fue esta semana con '+str(o['pts'])+' puntos. Lo sobrevive '+o['eq']+'.'))}</div>" for o in D.get("obituarios", [])]
+    col1 = ["<h3 class='sec'>Minuto de silencio</h3>"] + [f"<div class='esq'>🕯️<br><b>{esc(o['n'])}</b><small>{'Se esperaban '+str(o['proj'])+' · ' if o['proj'] is not None else ''}Dio {o['pts']}</small>"
+                                                          f"{esc(OT.get(o['n']) or ('Se nos fue con '+str(o['pts'])+' puntos. Lo llora '+o['eq']+'.'))}</div>" for o in D.get("obituarios", [])]
     col2 = []
     if D.get("previa"):
-        col2 = ["<h2 class='sec'>Previa de la semana " + str(w + 1) + "</h2><p style='font-style:italic;color:#5b5b5b;font-size:14px'>Sale de las proyecciones. La Pizarra no acepta apuestas.</p>"]
+        col2 = [f"<h3 class='sec'>La línea de la semana {w+1}</h3><p class='nota'>Sale de las proyecciones. Aquí no se aceptan apuestas, solo carrilla.</p>"]
         col2 += [f"<div class='prev'><div><b>{esc(x['fav'])}</b><small>{x['fav_pts']}</small></div><div class='ln'>−{x['linea']}</div><div><b>{esc(x['otro'])}</b><small>{x['otro_pts']}</small></div>"
                  f"<span class='tag'>FAVORITO: {esc(x['fav']).upper()} · O/U {x['ou']}</span></div>" for x in D["previa"]]
     R = D.get("records") or {}
-    if R:
-        col2 = col2 or []
-        col1.append("<h2 class='sec'>Libro de récords</h2>")
-        for k, nom in [("alta", "Puntuación más alta"), ("baja", "Puntuación más baja"), ("paliza", "Paliza más grande"), ("cerrado", "Partido más cerrado"),
-                       ("derrota", "Más puntos en una derrota"), ("racha_g", "Racha ganadora más larga"), ("racha_p", "Racha perdedora más larga")]:
-            x = R.get(k)
-            if not x: continue
-            det = f"{esc(x['eq'])}{' vs '+esc(x['vs']) if x.get('vs') else ''}{' · Sem. '+str(x['w']) if x.get('w') else ''}"
-            col1.append(f"<div class='rec'><div><small>{nom.upper()}</small>{'<span class=nuevo>NUEVO</span>' if x.get('nuevo') else ''}<br>{det}</div><div class='v'>{('+' if k in ('paliza','cerrado') else '')}{x['v']}</div></div>")
+    rec = []
+    for k, nom in [("alta", "Puntuación más alta"), ("baja", "Puntuación más baja"), ("paliza", "La madriza más grande"), ("cerrado", "El partido más cerrado"),
+                   ("derrota", "Más puntos en una derrota"), ("racha_g", "Racha ganadora"), ("racha_p", "Racha perdedora")]:
+        x = R.get(k)
+        if not x: continue
+        det = f"{esc(x['eq'])}{' vs '+esc(x['vs']) if x.get('vs') else ''}{' · Sem. '+str(x['w']) if x.get('w') else ''}"
+        rec.append(f"<div class='rec'><div><small>{nom.upper()}</small>{'<span class=nuevo>¡NUEVO!</span>' if x.get('nuevo') else ''}<br>{det}</div><div class='v'>{('+' if k in ('paliza','cerrado') else '')}{x['v']}</div></div>")
+    if rec: (col2 if col2 else col1).extend(["<h3 class='sec'>Libro de récords</h3>"] + rec)
     h.append(f"<div class='dos'><div>{''.join(col1)}</div><div>{''.join(col2)}</div></div>")
     if D.get("intercambios"):
-        h.append("<h2 class='sec'>Intercambios</h2>")
+        h.append("<h3 class='sec'>El tianguis de intercambios</h3>")
         for lados in D["intercambios"]:
             if len(lados) != 2: continue
-            ul = lambda l: "<ul>" + "".join(f"<li>{esc(r['n'])} <small>{esc(r['pe'])}</small></li>" for r in l["recibe"]) + "</ul>"
-            h.append(f"<div class='tx'><div><b>{esc(lados[0]['eq'])}</b> recibe{ul(lados[0])}</div><div style='color:#b8121b;font-size:22px'>⇄</div><div><b>{esc(lados[1]['eq'])}</b> recibe{ul(lados[1])}</div></div>")
+            ul = lambda l: "<ul>" + "".join(f"<li>{esc(r['n'])} <small class='pe'>{esc(r['pe'])}</small></li>" for r in l["recibe"]) + "</ul>"
+            h.append(f"<div class='tx'><div><b>{esc(lados[0]['eq'])}</b> se lleva{ul(lados[0])}</div><div class='fl'>⇄</div><div><b>{esc(lados[1]['eq'])}</b> se lleva{ul(lados[1])}</div></div>")
     if D.get("movimientos"):
-        h.append("<h2 class='sec'>Movimientos</h2>")
+        h.append("<h3 class='sec'>Altas y bajas</h3>")
         for x in D["movimientos"]:
-            ag = ", ".join(f"{esc(j['n'])} <small>{esc(j['pe'])}</small>" for j in x["agrega"]); su = ", ".join(f"{esc(j['n'])} <small>{esc(j['pe'])}</small>" for j in x["suelta"])
+            ag = ", ".join(f"{esc(j['n'])} <small class='pe'>{esc(j['pe'])}</small>" for j in x["agrega"]); su = ", ".join(f"{esc(j['n'])} <small class='pe'>{esc(j['pe'])}</small>" for j in x["suelta"])
             h.append(f"<div class='mv'><span>{x['tipo']}{' · $'+str(x['faab']) if x.get('faab') is not None else ''}</span><div><b>{esc(x['eq'])}</b>{' agrega '+ag if ag else ''}{', suelta '+su if su and ag else (' suelta '+su if su else '')}</div></div>")
     if S.get("avisos"):
-        h.append("<div class='avisos'>" + "".join(f"<div><b>{esc(x.get('titulo'))}</b>{esc(x.get('texto'))}<br><i>{esc(x.get('pie'))}</i></div>" for x in S["avisos"] if isinstance(x, dict)) + "</div>")
+        h.append("<h3 class='sec'>Clasificados</h3><div class='posts'>" + "".join(f"<div class='post'><b>{esc(x.get('titulo'))}</b>{esc(x.get('texto'))}<i>{esc(x.get('pie'))}</i></div>" for x in S["avisos"] if isinstance(x, dict)) + "</div>")
     wa = "https://wa.me/?text=" + urllib.request.quote(f"{titulo} · Semana {w}: {tit} {url}")
-    h.append(f"<a class='compartir' href='{wa}' target='_blank' rel='noopener'>Compartir por WhatsApp</a>")
-    h.append(f"<p class='pie'>Hecho automáticamente con los datos reales de la liga por <a href='https://lapizarra.mx'>La Pizarra</a>. Los textos los escribe una IA; los números son reales.</p>")
+    h.append(f"<div class='cta'><b>¿Ya lo viste? Pásalo al grupo</b><a class='compartir' href='{wa}' target='_blank' rel='noopener'>Compartir por WhatsApp</a>"
+             f"<p class='pie'>¿Quieres El Pizarrón para tu liga? Pídelo en <a href='https://lapizarra.mx'>lapizarra.mx</a></p></div>")
+    h.append("<p class='pie'>Hecho con los datos reales de la liga por La Pizarra. Los textos los escribe una IA con mucha carrilla; los números son reales.</p>")
     h.append("</div></div></body></html>")
     return "\n".join(h)
 
@@ -547,7 +643,7 @@ def main():
             if not D.get("matchups"): print(f"Periódico: {lid} sin matchups en la semana {w}"); continue
             nombre = L.league.get("name") or "Tu liga"
             titulo = cfgl.get("titulo") or f"El Pizarrón de {nombre}"
-            T, costo = escribir(D, nombre, w); total += costo
+            T, costo = escribir(D, nombre, w, cfgl.get("picante", "normal")); total += costo
             carpeta = os.path.join(AQUI, "docs", "periodico", lid); os.makedirs(carpeta, exist_ok=True)
             url = f"https://lapizarra.mx/periodico/{lid}/{season}-{w}.html"
             fecha = datetime.now(timezone.utc).strftime("%d/%m/%Y")
