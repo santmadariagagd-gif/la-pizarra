@@ -346,6 +346,10 @@ dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 .averify span{color:var(--ink)}
 .averify .alink{align-self:flex-start}
 /* Grupos de quiniela */
+.qview{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:4px 0 18px}
+.qview button{font:600 18px var(--display);background:none;border:0;padding:8px 0;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.qview button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--mark)}
+
 .grbar{align-items:center}
 .grbar select{font:600 16px var(--display);padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
 .grnew{display:flex;gap:8px;margin:10px 0;max-width:520px}
@@ -485,7 +489,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <button class="acct" id="acctBtn" aria-label="Tu cuenta" hidden>Entrar</button>
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL">
-  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="nflq">Quiniela</button><button data-tab="nflgr">Grupos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
+  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="nflq">Quiniela</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
   <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fmatch">Matchup</button><button data-tab="froster">Roster</button><button data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
@@ -603,13 +607,13 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <section class="panel hidden" id="nflq">
   <div class="headrow"><h2 id="qTitle">Quiniela</h2><div class="seg" id="qSeg"><button aria-pressed="true" data-m="ats">Con spread</button><button aria-pressed="false" data-m="su">Sin spread</button><button aria-pressed="false" data-m="surv">Survivor</button></div></div>
   <p class="qdisc"><b>Aviso:</b> los picks son predicciones basadas en estadísticas, no una recomendación de apuesta. La Pizarra no se hace responsable de los resultados. Juega con responsabilidad.</p>
-  <p class="note" id="qMsg"></p>
-  <div id="qMine"></div>
-  <div class="games" id="qGames"></div>
-</section>
-<section class="panel hidden" id="nflgr">
-  <h2>Grupos de quiniela</h2>
-  <div id="grBody"></div>
+  <div class="qview" id="qView" role="tablist"><button role="tab" aria-selected="true" data-v="picks">Mis picks</button><button role="tab" aria-selected="false" data-v="grupos">Grupos</button></div>
+  <div id="qPicksView">
+    <p class="note" id="qMsg"></p>
+    <div id="qMine"></div>
+    <div class="games" id="qGames"></div>
+  </div>
+  <div id="grBody" hidden></div>
 </section>
 <section class="panel hidden" id="nflpo">
   <h2>Playoffs</h2>
@@ -765,7 +769,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["nflgames","nflq","nflgr","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
+const SECTIONS=["nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -796,7 +800,7 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="nflq") loadQuiniela(); if(id==="nflgr") grRender(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
+  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
@@ -1609,7 +1613,14 @@ async function qnAnalysis(r){
   $("#gbody").innerHTML=h; if(!dlg.open) dlg.showModal(); $("#gbody").scrollTop=0;
 }
 $("#qGames").addEventListener("click",e=>{const b=e.target.closest(".qan"); if(b){const r=qnRows[+b.dataset.qi]; if(r) qnAnalysis(r);}});
-document.querySelectorAll("#qSeg button").forEach(b=>b.onclick=()=>{qnMode=b.dataset.m; try{localStorage.setItem("pz_qmode",qnMode);}catch(e){} loadQuiniela();});
+document.querySelectorAll("#qSeg button").forEach(b=>b.onclick=()=>{qnMode=b.dataset.m; try{localStorage.setItem("pz_qmode",qnMode);}catch(e){} loadQuiniela(); if(qnView==="grupos") grRender();});
+// Dentro de la Quiniela: "Mis picks" (las tarjetas) o "Grupos" (tablas de tus grupos). Con spread / Sin spread aplica a las dos.
+let qnView="picks";
+function qnSetView(v){
+  qnView=v; document.querySelectorAll("#qView button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
+  $("#qPicksView").hidden=v!=="picks"; $("#grBody").hidden=v!=="grupos"; if(v==="grupos") grRender();
+}
+document.querySelectorAll("#qView button").forEach(b=>b.onclick=()=>qnSetView(b.dataset.v));
 
 function openNfl(id){
   const x=(D.sched||[]).find(g=>g.id===id); if(!x) return;
@@ -2831,7 +2842,7 @@ async function acctPull(){
 function grMineTxt(){   // en el recuadro de Mis picks: en qué grupos cuentan
   if(typeof GR==="undefined"||!acctOk()||!GR.ids.length) return "";
   const n=GR.ids.map(id=>GR.info[id]?.nombre).filter(Boolean);
-  return `<small>${GR.warn?`⚠️ ${GR.warn} `:""}Cuentan en ${n.length?n.map(x=>`«${acctEsc(x)}»`).join(", "):"tus grupos"}. <button class="alink" data-tabgo="nflgr">Ver tabla</button></small>`;
+  return `<small>${GR.warn?`⚠️ ${GR.warn} `:""}Cuentan en ${n.length?n.map(x=>`«${acctEsc(x)}»`).join(", "):"tus grupos"}. <button class="alink" data-qview="grupos">Ver tabla</button></small>`;
 }
 function acctHint(hasPicks){   // texto para el recuadro de Mis picks
   if(!D.fb||!ACCT.ready) return hasPicks?"":"Se guardan en este navegador.";
@@ -2925,12 +2936,12 @@ $("#acctBtn").onclick=acctOpen;
 $("#aClose").onclick=()=>adlg.close();
 adlg.addEventListener("click",e=>{if(e.target===adlg) adlg.close();});
 document.addEventListener("click",e=>{if(e.target.closest?.("[data-acct]")){e.preventDefault(); acctOpen();}
-  const tg=e.target.closest?.("[data-tabgo]"); if(tg){e.preventDefault(); showTab(tg.dataset.tabgo); window.scrollTo({top:0,behavior:"smooth"});}});
+  const qv=e.target.closest?.("[data-qview]"); if(qv){e.preventDefault(); qnSetView(qv.dataset.qview);}});
 async function acctCheck(){   // ¿ya abrió el link? recarga el usuario y su token (las reglas leen email_verified del token)
   const u=ACCT.user; if(!u||u.emailVerified) return acctOk();
   try{await u.reload(); if(ACCT.auth.currentUser?.emailVerified){await ACCT.auth.currentUser.getIdToken(true);}}catch(e){return false;}
   ACCT.user=ACCT.auth.currentUser; if(!acctOk()) return false;
-  acctBtn(); acctSlHint(); await acctPull(); await grLoadIds(); if(acctOnQ()) loadQuiniela(); if(!$("#nflgr").classList.contains("hidden")) grRender(); if(adlg.open) acctRender(); acctMsg("Listo, tu correo quedó confirmado.",true);
+  acctBtn(); acctSlHint(); await acctPull(); await grLoadIds(); if(acctOnQ()) loadQuiniela(); if(acctOnQ()&&qnView==="grupos") grRender(); if(adlg.open) acctRender(); acctMsg("Listo, tu correo quedó confirmado.",true);
   return true;
 }
 async function acctInit(){
@@ -2944,7 +2955,7 @@ async function acctInit(){
     GR.loaded=false; GR.ids=[]; GR.info={}; GR.data={};
     if(u&&acctOk()) grLoadIds().then(()=>{ if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
     if(acctOnQ()) loadQuiniela();
-    if(!$("#nflgr").classList.contains("hidden")) grRender();
+    if(acctOnQ()&&qnView==="grupos") grRender();
   });
   document.addEventListener("visibilitychange",()=>{ if(document.hidden||!ACCT.user) return;
     if(!acctOk()) acctCheck(); else if(Date.now()-ACCT.last>60e3) acctPull(); });   // al volver del correo se revisa solo
@@ -3093,12 +3104,12 @@ async function grMain(g){
   let Gd; try{ Gd=(GR.data[g]&&Date.now()-GR.data[g].t<60e3)?GR.data[g]:await grLoad(g); }
   catch(e){ console.warn("Grupos:",e); box.innerHTML=`<p class="note">No pudimos cargar el grupo. Intenta de nuevo en un momento.</p>`; return; }
   if(GR.cur!==g) return;
-  const I=Gd.info, modes=(I.modos||["ats","su"]).filter(m=>m==="ats"||m==="su"); if(!modes.includes(GR.mode)) GR.mode=modes[0];
+  const I=Gd.info; GR.mode=qnMode==="su"?"su":"ats";
   const R=grScore(Gd,GR.mode), me=grMe().uid, wa=`https://wa.me/?text=${encodeURIComponent(`Únete a mi quiniela «${I.nombre}» en La Pizarra: ${grLink(g)}`)}`;
   box.innerHTML=`<div class="grhead"><div><h3>${acctEsc(I.nombre)}</h3><small>${Gd.M.length} ${Gd.M.length===1?"miembro":"miembros"} · Semana ${Gd.cur}</small></div>
       <div class="grinv"><a class="btn" href="${wa}" target="_blank" rel="noopener">Invitar por WhatsApp</a><button class="alink" id="grCopy">Copiar link</button></div></div>
-    ${modes.length>1?`<div class="seg" id="grMode">${modes.map(m=>`<button aria-pressed="${m===GR.mode}" data-m="${m}">${m==="ats"?"Con spread":"Sin spread"}</button>`).join("")}</div>`:""}
-    <h3 style="margin-top:18px">Tabla</h3>
+    ${qnMode==="surv"?`<p class="note">El survivor en grupos llega pronto. Mientras, aquí está la tabla con spread.</p>`:""}
+    <h3 style="margin-top:18px">Tabla ${GR.mode==="ats"?"con spread":"sin spread"}</h3>
     <div class="tbl"><table class="grtab"><thead><tr><th class="l" aria-label="Lugar"></th><th class="l">Jugador</th><th>Puntos</th><th>Sem. ${Gd.cur}</th><th>Récord</th><th>%</th></tr></thead><tbody>
     ${R.map((r,i)=>{const n=r.sw+r.sl; return `<tr class="${r.uid===me?"me":""}"><td class="rk">${i+1}</td><td class="l"><span class="nm">${acctEsc(r.n)}</span></td><td><b>${r.sw}</b></td><td>${r.ww}</td><td>${r.sw}-${r.sl}${r.sp?`-${r.sp}`:""}</td><td>${n?Math.round(r.sw/n*100)+"%":"–"}</td></tr>`;}).join("")}
     </tbody></table></div>
@@ -3106,7 +3117,6 @@ async function grMain(g){
     <p class="note" style="margin-top:14px">${GR.mode==="ats"?"Con spread cuenta la línea oficial del grupo (la de ESPN Pick'em de cada semana). ":""}1 punto por acierto. <button class="alink danger" id="grLeave">Salir del grupo</button></p>`;
   $("#grCopy").onclick=async()=>{try{await navigator.clipboard.writeText(grLink(g)); $("#grCopy").textContent="¡Copiado!";}catch(e){prompt("Copia este link:",grLink(g));}};
   $("#grLeave").onclick=async()=>{ if(!confirm(`¿Salir de «${I.nombre}»? Tus picks se quedan en el grupo, pero ya no lo verás.`)) return; try{await grLeave(g); grRender();}catch(e){alert("No se pudo. Intenta de nuevo.");} };
-  document.querySelectorAll("#grMode button").forEach(b=>b.onclick=()=>{GR.mode=b.dataset.m; grMain(g);});
 }
 function grBind(){
   const sel=$("#grSel"); if(sel) sel.onchange=()=>{GR.cur=sel.value; acctLsSet("pz_grupo",GR.cur); grMain(GR.cur);};
@@ -3117,7 +3127,7 @@ function grBind(){
   const jb=$("#grJoinBtn"); if(jb) jb.onclick=async()=>{jb.disabled=true; try{await grJoin(GR.join); grRender();}catch(e){console.warn("Grupos:",e); $("#grMsg").textContent="No pudimos unirte al grupo. Intenta de nuevo."; jb.disabled=false;}};
 }
 // Invitación: lapizarra.mx/?g=ID
-(()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("nfl"); showTab("nflgr");}}catch(e){}})();
+(()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("nfl"); showTab("nflq"); qnSetView("grupos");}}catch(e){}})();
 </script>
 </body>
 </html>
