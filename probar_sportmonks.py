@@ -143,7 +143,7 @@ def revisar_partido(fid):
     cnt = Counter(nombre_tipo(d) for x in con_det for d in x.get("details") or [])
     out(f"  Estadísticas por jugador: {len(con_det)} de {len(Lu)} jugadores traen datos")
     jug_min = [x for x in con_det if any("minute" in nombre_tipo(d).lower() for d in x["details"])] or con_det
-    out("  Qué tan completos (de los que jugaron): " + ", ".join(f"{k} {pct(v, len(jug_min))}" for k, v in cnt.most_common(18)))
+    out("  Qué tan completos (de los que jugaron): " + ", ".join(f"{k} {pct(v, len(jug_min))}" for k, v in cnt.most_common(40)))
     rt = [(x.get("player_name"), d.get("data", {}).get("value")) for x in con_det for d in x["details"] if "rating" in nombre_tipo(d).lower()]
     if rt: out(f"  Calificación (ej.): {rt[:3]}")
     loc, vis = equipos(fx)
@@ -152,6 +152,12 @@ def revisar_partido(fid):
         out(f"  Duelos previos: {len(H)}" + (f" · el más reciente: {marcador(sorted(H, key=lambda f: f.get('starting_at') or '')[-1])}" if H else ""))
         Q = datos(api(f"squads/teams/{loc['id']}", include="player;position"))
         out(f"  Plantel de {loc.get('name')}: {len(Q)} jugadores · posiciones: {dict(Counter((q.get('position') or {}).get('name') for q in Q))}")
+        for eq in (loc, vis):
+            tm = datos(api(f"teams/{eq['id']}", include="sidelined.sideline.type;sidelined.player"))
+            SB = (tm or {}).get("sidelined") or [] if isinstance(tm, dict) else []
+            act = [b for b in SB if not (b.get("sideline") or {}).get("end_date") or str((b.get("sideline") or {}).get("end_date")) >= str(HOY)]
+            out(f"  Lesiones/suspensiones registradas de {eq.get('name')}: {len(SB)} en total, {len(act)} vigentes" +
+                (" · ej.: " + "; ".join(f"{(b.get('player') or {}).get('display_name')} ({nombre_tipo(b.get('sideline') or {})})" for b in act[:3]) if act else ""))
         img = [p.get("image_path") for p in (loc, vis) if p.get("image_path")]
         out(f"  Escudo/foto: el API trae imágenes ({len(img)} escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.")
 
@@ -195,7 +201,9 @@ def main():
     out(f"=== PRUEBA SPORTMONKS · {HOY} ===")
     L = suscripcion()
     buscar_ligas()
-    for l in L[:12]:
+    # Liga MX primero (es la que más nos importa); luego el resto
+    L = sorted(L, key=lambda l: (0 if "mx" in str(l.get("name","")).lower() or (l.get("country") or {}).get("name") == "Mexico" else 1, l.get("id") or 0))
+    for l in L[:20]:
         try: revisar_liga(l)
         except Exception as ex: out(f"  ! Error revisando {l.get('name')}: {ex}")
     for paso in (seleccion, en_vivo):
