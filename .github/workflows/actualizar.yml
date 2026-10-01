@@ -20,12 +20,13 @@ jobs:
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}   # clave de The Odds API (Settings → Secrets and variables → Actions)
           FIREBASE_SA: ${{ secrets.FIREBASE_SA }}     # llave de servicio de Firebase (JSON) para los grupos de quiniela
-          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}   # Sportmonks: estadísticas de jugadores de Liga MX
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}   # Sportmonks: estadísticas de jugadores de fútbol
       - name: Guardar la página nueva
         run: |
           git config user.name "La Pizarra bot"
           git config user.email "actions@github.com"
           git add docs/index.html
+          if [ -d docs/datos ]; then git add docs/datos; fi   # estadísticas de jugadores de fútbol (Sportmonks)
           if [ -f momios.json ]; then git add momios.json; fi
           git diff --cached --quiet || git commit -m "Actualización automática de datos"
           git pull --rebase   # por si mientras corría subiste archivos o salió el periódico
