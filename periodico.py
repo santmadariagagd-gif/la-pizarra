@@ -191,6 +191,10 @@ def calcular(L, PROJ, PROJ_SIG):
         if len(par) != 2: continue
         a, b = sorted(par, key=lambda x: -(x.get("points") or 0))
         pa, pb = a.get("points") or 0, b.get("points") or 0
+        def lineup(rid):   # todos los titulares: nombre, posición, puntos, proyección
+            return [dict(n=x["n"], pos=x["pos"], pts=x["pts"], proj=x["proj"]) for x in sorted([x for x in titulares if x["rid"] == rid], key=lambda x: -(x["pts"] or 0))]
+        def bench(rid, n=5):   # lo mejor que se quedó en la banca
+            return [dict(n=x["n"], pos=x["pos"], pts=x["pts"]) for x in sorted([x for x in banca if x["rid"] == rid], key=lambda x: -(x["pts"] or 0))[:n]]
         def top(rid, n=3, rev=True):
             L2 = [x for x in titulares if x["rid"] == rid]
             return [dict(n=x["n"], pos=x["pos"], pts=x["pts"], proj=x["proj"]) for x in sorted(L2, key=lambda x: (x["pts"] or 0), reverse=rev)[:n]]
@@ -201,6 +205,8 @@ def calcular(L, PROJ, PROJ_SIG):
                       g_record=rec(a["roster_id"]), p_record=rec(b["roster_id"]),
                       g_mejores=top(a["roster_id"]), p_mejores=top(b["roster_id"]),
                       g_peores=top(a["roster_id"], 2, False), p_peores=top(b["roster_id"], 2, False),
+                      g_titulares=lineup(a["roster_id"]), p_titulares=lineup(b["roster_id"]),
+                      g_en_banca=bench(a["roster_id"]), p_en_banca=bench(b["roster_id"]),
                       g_banca=por_equipo[a["roster_id"]]["banca"], p_banca=por_equipo[b["roster_id"]]["banca"],
                       g_cambio=por_equipo[a["roster_id"]]["cambio"], p_cambio=por_equipo[b["roster_id"]]["cambio"],
                       g_racha=racha(a["roster_id"], w), p_racha=racha(b["roster_id"], w)))
@@ -320,6 +326,12 @@ LOTERIA = ["El Gallo", "El Diablito", "La Dama", "El Catrín", "El Paraguas", "L
            "El Soldado", "La Estrella", "El Cazo", "El Mundo", "El Nopal", "El Alacrán", "La Rosa", "La Calavera",
            "La Campana", "El Cantarito", "El Venado", "El Sol", "La Corona", "La Chalupa", "El Pino", "El Pescado",
            "La Palma", "La Maceta", "El Arpa", "La Rana"]
+LOTERIA_FIJA = ["El Valiente", "La Corona", "El Sol", "La Estrella", "El Catrín", "El Gallo", "La Escalera", "El Paraguas",
+                "El Cotorro", "La Calavera", "El Borracho", "La Muerte", "El Nopal", "La Rana"]
+def carta_fija(i, n):
+    if i == n - 1: return "La Muerte"
+    if i == n - 2 and n > 4: return "El Borracho"
+    return [c for c in LOTERIA_FIJA if c not in ("La Muerte", "El Borracho")][i % 12]
 PICANTE = {
     "familiar": "Tono: carrilla de cuates pero apto para todo público: sin groserías ni doble sentido.",
     "normal": "Tono: carrilla de cuates con groserías suaves ocasionales (\"no manches\", \"qué oso\", \"le dieron baile\") y algo de doble sentido ligero.",
@@ -350,8 +362,8 @@ FORMATO = """Devuelve exactamente este JSON:
  "subtitulo": "una línea con 2 o 3 datos de la semana",
  "resumen": "un párrafo de 4-6 frases que repase todos los matchups con mucho sabor",
  "partidos": [ {"id": <id del matchup>, "etiqueta": "NOTA ROJA|CHISME|ESPECTÁCULOS|DEPORTES|ÚLTIMA HORA",
-               "titular": "máx. 80 caracteres", "bajada": "una frase corta y graciosa",
-               "historia": ["párrafo sobre el ganador", "párrafo sobre el perdedor (si dejó puntos en la banca, restriégaselo)"],
+               "titular": "máx. 80 caracteres, estilo nota roja", "bajada": "una frase corta y graciosa",
+               "historia": ["párrafo 1: la jugada clave del partido", "párrafo 2: el ganador jugador por jugador", "párrafo 3: el perdedor jugador por jugador y su banca", "párrafo 4: remate y qué sigue para los dos"],
                "cita": "una frase inventada del ganador después del partido"} ],
  "banca": "2-3 frases sobre la tabla de puntos dejados en la banca (quién dejó más)",
  "sospecha": "si hay dato de 'sospecha', un párrafo estilo citatorio de la dirección de la escuela; si no, null",
@@ -361,6 +373,13 @@ FORMATO = """Devuelve exactamente este JSON:
  "avisos": [ {"titulo": "SE BUSCA / SE VENDE / SE RENTA / SE PERDIÓ / etc.", "texto": "1-2 frases", "pie": "remate corto"} ]  (4 avisos)
 }
 - Un objeto en "partidos" por cada matchup, en el mismo orden que te los doy.
+- Las crónicas son lo más importante del periódico: 4 párrafos cada una (unas 250-350 palabras por partido). Analiza el partido
+  jugador por jugador con los datos de "g_titulares"/"p_titulares" (puntos contra proyección), "g_en_banca"/"p_en_banca" y
+  "g_cambio"/"p_cambio" (el cambio que no hizo). Menciona por lo menos 5 jugadores con sus números en cada crónica: quién salvó la
+  semana, quién no se presentó, quién le quedó a deber a su proyección, qué puntos se quedaron sentados en la banca y por cuánto
+  habría cambiado el resultado. Usa la racha, el récord y el historial de cada equipo para el contexto de la temporada.
+- Molesta mucho: háblale directo al manager perdedor por su nombre de usuario ("mada, ¿qué estamos haciendo?"), échale en cara
+  sus decisiones de alineación con números, y tampoco perdones al ganador si ganó de suerte. Cada crónica con chistes distintos.
 - "loteria": un objeto por cada equipo del power ranking, en ese orden; cada equipo con una carta DISTINTA de esta lista: {cartas}."""
 
 def escribir(datos, liga_nombre, w, picante="normal"):
@@ -372,7 +391,7 @@ def escribir(datos, liga_nombre, w, picante="normal"):
     hechos["power_ranking"] = [x["eq"] for x in datos.get("power", [])]
     sistema = REGLAS.replace("{picante}", PICANTE.get(picante, PICANTE["normal"]))
     msg = f"Liga: {liga_nombre}. Semana {w}.\n\nDATOS:\n{json.dumps(hechos, ensure_ascii=False)}\n\n" + FORMATO.replace("{cartas}", ", ".join(LOTERIA))
-    body = dict(model=MODELO, max_tokens=16000, system=sistema, messages=[dict(role="user", content=msg)])
+    body = dict(model=MODELO, max_tokens=24000, system=sistema, messages=[dict(role="user", content=msg)])
     req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=json.dumps(body).encode("utf-8"), method="POST",
                                  headers={"content-type": "application/json", "x-api-key": os.environ["ANTHROPIC_API_KEY"],
                                           "anthropic-version": "2023-06-01"})
@@ -576,7 +595,7 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
         h.append("<h3 class='sec'>La lotería del power ranking</h3><p class='nota'>¡Corre y se va corriendo! El orden es nuestro power ranking de la semana</p><div class='lot'>")
         for i, x in enumerate(D["power"]):
             L2 = LT.get(x["eq"], {})
-            h.append(f"<div class='carta'><span class='n'>{i+1}</span><div class='nom'>{esc(L2.get('carta') or ('El Valiente' if i == 0 else '—'))}</div>"
+            h.append(f"<div class='carta'><span class='n'>{i+1}</span><div class='nom'>{esc(L2.get('carta') or carta_fija(i, len(D['power'])))}</div>"
                      f"<div class='eq'>{esc(x['eq'])}</div>{'<div class=ver>'+esc(L2.get('verso'))+'</div>' if L2.get('verso') else ''}<small>{x['g']}-{x['p']} · {esc(x.get('linea',''))}</small></div>")
         h.append("</div>")
     OT = {o.get("n"): o.get("texto") for o in (S.get("obituarios") or []) if isinstance(o, dict)}
