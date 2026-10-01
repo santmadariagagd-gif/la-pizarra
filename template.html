@@ -804,11 +804,12 @@ const LEAGUES={
   cdf:{slug:"",label:"Coupe de France",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:307,tipo:"copa",pais:"FR",cid:"250",region:"Europa"},
   por:{slug:"",label:"Liga Portugal",liguilla:false,players:true,pr:true,photos:false,rk:"portugal",sm:462,tipo:"liga",pais:"PT",cid:"620",region:"Europa"},
   // Champions: fase de liga de 36 + eliminación directa. Sigue en ESPN mientras no esté el paquete de Sportmonks.
-  ucl:{slug:"uefa.champions",label:"Champions League",liguilla:false,players:true,pr:false,photos:false,rk:null,cup:true,tipo:"liga",pais:"EU",cid:null,region:"Europa"},
+  ucl:{slug:"uefa.champions",label:"Champions League",liguilla:false,players:true,pr:false,photos:false,rk:null,cup:true,tipo:"liga",pais:"EU",cid:null,region:"Europa",cids:["826","724","380","276","250","620"]},
   arg:{slug:"",label:"Liga Profesional Argentina",liguilla:true,players:true,pr:false,photos:false,rk:null,sm:636,tipo:"torneo",pais:"AR",cid:"032",region:"Sudamérica"},
-  lib:{slug:"",label:"Copa Libertadores",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1122,tipo:"torneo",pais:"SUD",cid:null,region:"Sudamérica"},
-  ccc:{slug:"",label:"Concachampions",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1111,tipo:"copa",pais:"CON",cid:null,region:"Concacaf"},
-  lgc:{slug:"",label:"Leagues Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:3211,tipo:"torneo",pais:"CON",cid:null,region:"Concacaf"},
+  // cids: países del mapa donde también aparece el torneo (internacionales)
+  lib:{slug:"",label:"Copa Libertadores",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1122,tipo:"torneo",pais:"SUD",cid:null,region:"Sudamérica",cids:["032","076","170","152","858","600","218","604","068","862"]},
+  ccc:{slug:"",label:"Concachampions",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1111,tipo:"copa",pais:"CON",cid:null,region:"Concacaf",cids:["484","840","124"]},
+  lgc:{slug:"",label:"Leagues Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:3211,tipo:"torneo",pais:"CON",cid:null,region:"Concacaf",cids:["484","840","124"]},
   sau:{slug:"",label:"Liga Profesional Saudí",liguilla:false,players:true,pr:true,photos:false,rk:"saudi",sm:944,tipo:"liga",pais:"SA",cid:"682",region:"Asia"},
 };
 const BANDERA={MX:"🇲🇽",GB:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",ES:"🇪🇸",IT:"🇮🇹",DE:"🇩🇪",FR:"🇫🇷",PT:"🇵🇹",AR:"🇦🇷",SA:"🇸🇦",EU:"🇪🇺",SUD:"🌎",CON:"🌎"};
@@ -816,6 +817,7 @@ const PAIS_ES={MX:"México",GB:"Inglaterra",ES:"España",IT:"Italia",DE:"Alemani
 // Dónde va cada pin en el mapa (coordenadas del SVG, proyección Natural Earth)
 const PIN={MX:[222.7,184],GB:[496.4,91.6],ES:[490.5,130.4],IT:[531.7,123],DE:[525.1,95.9],FR:[506.2,110.3],PT:[478.9,132.6],AR:[332.1,369.7],SA:[621.6,182.7],EU:[560,70],SUD:[356.2,292.1],CON:[262,205]};
 const TIPO_ES={liga:"Liga",copa:"Copa",torneo:"Torneo",sel:"Selección"};
+const PAIS_CID={"484":"México","826":"Inglaterra","724":"España","380":"Italia","276":"Alemania","250":"Francia","620":"Portugal","032":"Argentina","682":"Arabia Saudita","840":"Estados Unidos","124":"Canadá","076":"Brasil","170":"Colombia","152":"Chile","858":"Uruguay","600":"Paraguay","218":"Ecuador","604":"Perú","068":"Bolivia","862":"Venezuela"};
 
 let FLIG=localStorage.getItem("pz_flig")||"mx"; if(!LEAGUES[FLIG]) FLIG="mx";
 const flSlug=()=>LEAGUES[FLIG].slug, flLabel=()=>LEAGUES[FLIG].label;
@@ -855,7 +857,7 @@ function loadNflPlayoffs(){
     renderNflBracket();
   }
 }
-function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id));
+function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=id==="mxexplore"?"none":"";
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
@@ -919,31 +921,30 @@ let EXP_FILTRO="";   // región o país elegido ("" = todo)
   const zoomEn=(f,cx,cy)=>{const [px,py]=pt(cx,cy); const w=Math.max(W/8,Math.min(W,vb.w/f)), h=w*H/W; vb={x:px-(px-vb.x)*(w/vb.w),y:py-(py-vb.y)*(h/vb.h),w,h}; limita(); aplica();};
   const limita=()=>{vb.x=Math.max(0,Math.min(W-vb.w,vb.x)); vb.y=Math.max(0,Math.min(H-vb.h,vb.y));};
   svg.addEventListener("wheel",e=>{e.preventDefault(); zoomEn(e.deltaY<0?1.25:0.8,e.clientX,e.clientY);},{passive:false});
-  const P=new Map(); let last=null, movio=false;
-  svg.addEventListener("pointerdown",e=>{P.set(e.pointerId,[e.clientX,e.clientY]); svg.setPointerCapture(e.pointerId); last=null; movio=false;});
+  const P=new Map(); let last=null, movio=false, ini=null;
+  svg.addEventListener("pointerdown",e=>{P.set(e.pointerId,[e.clientX,e.clientY]); last=null; movio=false; ini=[e.clientX,e.clientY];});
   svg.addEventListener("pointermove",e=>{ if(!P.has(e.pointerId)) return; P.set(e.pointerId,[e.clientX,e.clientY]);
     const ps=[...P.values()], r=svg.getBoundingClientRect();
-    if(ps.length===1){ if(last){const dx=(e.clientX-last[0])/r.width*vb.w, dy=(e.clientY-last[1])/r.height*vb.h; if(Math.abs(dx)+Math.abs(dy)>0.5) movio=true; vb.x-=dx; vb.y-=dy; limita(); aplica();} last=[e.clientX,e.clientY]; }
+    if(ps.length===1){ if(ini&&Math.hypot(e.clientX-ini[0],e.clientY-ini[1])>6) movio=true;
+      if(movio&&last){const dx=(e.clientX-last[0])/r.width*vb.w, dy=(e.clientY-last[1])/r.height*vb.h; vb.x-=dx; vb.y-=dy; limita(); aplica();} last=[e.clientX,e.clientY]; }
     else if(ps.length===2){ const d=Math.hypot(ps[0][0]-ps[1][0],ps[0][1]-ps[1][1]); if(last&&last.d){ zoomEn(d/last.d,(ps[0][0]+ps[1][0])/2,(ps[0][1]+ps[1][1])/2);} last={d}; movio=true; } });
   const fin=e=>{P.delete(e.pointerId); last=null;};
-  svg.addEventListener("pointerup",fin); svg.addEventListener("pointercancel",fin);
+  svg.addEventListener("pointerup",fin); svg.addEventListener("pointercancel",fin); svg.addEventListener("pointerleave",fin);
   svg.addEventListener("click",e=>{ if(movio){e.stopPropagation(); e.preventDefault();} },true);   // un arrastre no cuenta como clic
   document.querySelectorAll(".mapa-zoom button").forEach(b=>b.onclick=()=>{const r=svg.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2;
     if(b.dataset.z==="in") zoomEn(1.6,cx,cy); else if(b.dataset.z==="out") zoomEn(0.625,cx,cy); else {vb={x:0,y:0,w:W,h:H}; aplica();}});
 })();
 function renderExplore(){
   const svg=$("#mapaMundo"); if(!svg) return;
-  // países con competencias
-  const porCid={}; Object.entries(LEAGUES).forEach(([k,L])=>{if(L.cid){(porCid[L.cid]=porCid[L.cid]||[]).push(k);}});
-  svg.querySelectorAll(".paises path").forEach(pth=>{const cid=pth.id.slice(1); pth.classList.toggle("con",!!porCid[cid]); pth.classList.toggle("sel",!!porCid[cid]&&LEAGUES[porCid[cid][0]].pais===EXP_FILTRO);
-    pth.onclick=porCid[cid]?()=>{EXP_FILTRO=LEAGUES[porCid[cid][0]].pais; renderExplore();}:null;});
-  // pines: uno por región (en el teléfono los países de Europa quedarían encimados)
-  const PIN_REG={"México":["MX","🇲🇽"],"Europa":["EU","🇪🇺"],"Sudamérica":["SUD","🏆"],"Concacaf":["CON","🏆"],"Asia":["SA","🇸🇦"]};
-  $("#mapaPines").innerHTML=REGIONES.filter(r=>PIN_REG[r]).map(r=>{const [k,em]=PIN_REG[r], [x,y]=PIN[k]; return `<g class="pin${EXP_FILTRO===r?" sel":""}" data-reg="${r}" transform="translate(${x},${y})"><circle r="24"/><text>${em}</text></g>`;}).join("");
-  $("#mapaPines").querySelectorAll(".pin").forEach(g=>g.onclick=()=>{EXP_FILTRO=EXP_FILTRO===g.dataset.reg?"":g.dataset.reg; renderExplore();});
-  // lista
-  const visibles=Object.entries(LEAGUES).filter(([,L])=>!EXP_FILTRO||L.pais===EXP_FILTRO||L.region===EXP_FILTRO);
-  const grupos=REGIONES.map(r=>[r,visibles.filter(([,L])=>L.region===r)]).filter(([,xs])=>xs.length);
+  $(".hero").style.display="none";   // en Explorar no se muestra el encabezado de la liga
+  const enPais=(L,cid)=>L.cid===cid||(L.cids||[]).includes(cid);
+  const cids=new Set(); Object.values(LEAGUES).forEach(L=>{if(L.cid) cids.add(L.cid); (L.cids||[]).forEach(c=>cids.add(c));});
+  const esPais=/^c:/.test(EXP_FILTRO), cidSel=esPais?EXP_FILTRO.slice(2):null;
+  svg.querySelectorAll(".paises path").forEach(pth=>{const cid=pth.id.slice(1); pth.classList.toggle("con",cids.has(cid)); pth.classList.toggle("sel",cid===cidSel);
+    pth.onclick=cids.has(cid)?()=>{EXP_FILTRO=cid===cidSel?"":"c:"+cid; renderExplore(); $("#mapaLista").scrollIntoView({behavior:"smooth",block:"start"});}:null;});
+  $("#mapaPines").innerHTML="";
+  const visibles=Object.entries(LEAGUES).filter(([,L])=>!EXP_FILTRO||(esPais?enPais(L,cidSel):L.region===EXP_FILTRO));
+  const grupos=esPais?[[`Torneos de ${PAIS_CID[cidSel]||"este país"}`,visibles]]:REGIONES.map(r=>[r,visibles.filter(([,L])=>L.region===r)]).filter(([,xs])=>xs.length);
   $("#mapaLista").innerHTML=`<div class="regiones"><button aria-pressed="${!EXP_FILTRO}" data-f="">Todas</button>${REGIONES.map(r=>`<button aria-pressed="${EXP_FILTRO===r}" data-f="${r}">${r}</button>`).join("")}</div>`+
     grupos.map(([r,xs])=>`<h3 class="mapa-h">${r}</h3><div class="comps">${xs.map(([k,L])=>`<button data-k="${k}" class="${k===FLIG?"cur":""}"><span class="fl">${BANDERA[L.pais]||"⚽"}</span><span><b>${L.label}</b><small>${TIPO_ES[L.tipo]||""}${L.pais&&PAIS_ES[L.pais]&&L.tipo!=="sel"?" · "+PAIS_ES[L.pais]:""}</small></span></button>`).join("")}</div>`).join("");
   $("#mapaLista").querySelectorAll(".regiones button").forEach(b=>b.onclick=()=>{EXP_FILTRO=b.dataset.f; renderExplore();});
@@ -1850,7 +1851,7 @@ function smStandings(key){
   if(SM_TB[key]) return SM_TB[key];
   SM_TB[key]=(async()=>{
     const L=await smLeague(key), S=L.currentseason||L.current_season||{};
-    const T=(await smGet(`standings/seasons/${S.id}`,"include=participant;details.type;stage")).data||[];
+    const T=(await smGet(`standings/seasons/${S.id}`,"include=participant;details.type;stage;group")).data||[];
     const stages=[...new Map(T.map(r=>[r.stage_id,r.stage||{id:r.stage_id}])).values()];
     const st=stages.find(s=>s.is_current)||stages.sort((a,b)=>(b.sort_order||0)-(a.sort_order||0))[0]||{};
     const det=(r,id)=>(r.details||[]).find(d=>d.type_id===id)?.value;
@@ -2624,7 +2625,15 @@ function serieGanador(legs,pos){
 // siguiente donde juega su ganador. Las series de rondas futuras sin equipos salen como "Por definir".
 function bracketSVG(fases){
   if(fases.length<2) return "";
-  const R=fases.map(([nombre,f])=>({nombre:etapaEs(nombre),ties:f.series.map(sr=>({ids:sr.ids,eq:sr.eq,w:sr.w,g:sr.g,ok:sr.done}))}));
+  const todas=fases.map(([nombre,f])=>({nombre:etapaEs(nombre),ties:f.series.map(sr=>({ids:sr.ids,eq:sr.eq,w:sr.w,g:sr.g,ok:sr.done}))}));
+  // Tramos: una ronda se une a la anterior solo si algún equipo viene de ahí. Las rondas previas de una copa
+  // (Ronda 1, 2, 3 de la Libertadores) no alimentan a los octavos, así que se dibujan como un cuadro aparte.
+  const tramos=[[todas[0]]];
+  for(let r=1;r<todas.length;r++){ const prev=todas[r-1], liga=todas[r].ties.some(t=>t.ids.some(id=>prev.ties.some(p=>p.ids.includes(id)))); if(liga) tramos[tramos.length-1].push(todas[r]); else tramos.push([todas[r]]); }
+  return tramos.map(R=>bracketTramo(R)).join("");
+}
+function bracketTramo(R){
+  if(R.length<2) return "";
   // Orden tipo árbol: de la última ronda hacia atrás, cada serie "jala" a las series de la ronda anterior donde jugaron sus equipos
   for(let r=R.length-1;r>=1;r--){
     const prev=R[r-1].ties, usado=new Set(), orden=[];
