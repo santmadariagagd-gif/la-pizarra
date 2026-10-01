@@ -7,6 +7,9 @@ on:
     paths: ["notas.json", "ranking.json", "template.html", "build_site.py"]
 permissions:
   contents: write
+concurrency:
+  group: actualizar          # si llega una corrida nueva, se cancela la que iba en curso (evita choques)
+  cancel-in-progress: true
 jobs:
   actualizar:
     runs-on: ubuntu-latest
@@ -29,5 +32,6 @@ jobs:
           if [ -d docs/datos ]; then git add docs/datos; fi   # estadísticas de jugadores de fútbol (Sportmonks)
           if [ -f momios.json ]; then git add momios.json; fi
           git diff --cached --quiet || git commit -m "Actualización automática de datos"
-          git pull --rebase   # por si mientras corría subiste archivos o salió el periódico
+          # Si mientras corría se subió algo, se acomoda encima; si chocan archivos generados, se quedan los de esta corrida
+          git pull --rebase -X theirs
           git push
