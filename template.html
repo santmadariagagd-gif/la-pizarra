@@ -38,6 +38,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible{o
 .hero .kicker{display:flex;align-items:center;font:700 30px/1 var(--display);margin:0 0 6px;letter-spacing:.01em;color:var(--ink)}
 .hero h1{font:700 clamp(44px,8vw,86px)/.92 var(--display);margin:0 0 14px;letter-spacing:-.01em}
 .hero p{margin:0;color:var(--muted);max-width:44ch;font-size:17px}
+.hero .temp{margin-top:8px} .hero .temp select{font:700 14px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 28px 7px 12px;margin-left:6px}
 .play{width:100%;height:auto;max-height:110px}
 .play .x,.play .o{stroke:var(--ink);stroke-width:3;fill:none}
 .play .rt{stroke:var(--mark);stroke-width:2.5;fill:none;stroke-linecap:round}
@@ -537,6 +538,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div>
     <p class="kicker"><img id="leagueLogo" alt="" hidden><span id="heroTitle"></span></p>
     <p id="heroSub"></p>
+    <p class="temp" id="tempWrap" hidden><label>Temporada <select id="tempSel" aria-label="Temporada"></select></label></p>
   </div>
   <svg class="play mxart" viewBox="0 0 420 220" aria-hidden="true" hidden>
     <rect class="los" x="20" y="20" width="380" height="180" rx="4" style="stroke-dasharray:none;fill:none"/>
@@ -862,6 +864,7 @@ function showSport(sp){
   $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:sp==="mx"?flLabel():`Fantasy Football · Semana ${D.gweek}`;
   setLogo(sp==="mx"?(LEAGUES[FLIG].nat?pickLogo(SEL_LOGOS):LEAGUES[FLIG].sm?null:pickLogo(MX_LOGOS)):D.nfl_logo);
   $("#heroSub").textContent= sp==="mx"?"":`Datos actualizados hasta la semana ${D.week}.`;
+  $("#tempWrap").hidden=sp!=="mx"; if(sp==="mx") pintaTemporadas();
   showTab(sp==="nfl"?"nflgames":sp==="mx"?"mxexplore":"fmatch");
 }
 document.querySelectorAll("nav.sports button").forEach(b=>b.onclick=()=>showSport(b.dataset.sport));
@@ -896,6 +899,7 @@ function selectLeague(key){
   mxLoaded=false; mxtLoaded=false; mxLgLoaded=false; mxpLoaded=false; mxprLoaded=false; selLoaded=false; uclKoLoaded=false; $("#mxhistQ").value=""; $("#mxGames").dataset.src=""; MXJ=[]; curJ=0; MXP=[]; MX_TABLE_ROWS=null;
   $("#mxGames").innerHTML=""; $("#jSel").innerHTML=""; $("#mxMsg").textContent="Cargando partidos…";   // que no se quede la liga anterior en pantalla
   if(LEAGUES[FLIG].sm){ const k=FLIG; setLogo(null); smLeague(k).then(L=>{if(FLIG===k&&SM_ESCUDOS) setLogo(L.image_path);}).catch(()=>{}); }
+  pintaTemporadas();
   if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true"){ $("#heroTitle").textContent=flLabel(); if(LEAGUES[FLIG].nat) setLogo(pickLogo(SEL_LOGOS)); }
   const cur=document.querySelector('.subnav[data-for=mx] button[aria-current]');
   const id=cur&&!cur.hidden&&cur.dataset.tab!=="mxexplore"?cur.dataset.tab:"mxgames";
@@ -1814,7 +1818,8 @@ function smLeague(key){
 const smDay=t=>new Date(t).toISOString().slice(0,10);
 // Todos los partidos de la temporada actual (en tramos de 90 días; la API acepta hasta 100).
 async function smSeasonEvents(key){
-  const lg=LEAGUES[key], L=await smLeague(key), S=L.currentseason||L.current_season||{};
+  const lg=LEAGUES[key], L=await smLeague(key), sel=SM_SEL[key];
+  const S=(sel&&(L.seasons||[]).find(x=>x.id===sel.sid))||L.currentseason||L.current_season||{};
   if(!S.id) return {ev:[],L,S};
   const ini=new Date((S.starting_at||smDay(Date.now()))+"T00:00:00Z").getTime()-3*864e5;
   const fin=new Date((S.ending_at||smDay(Date.now()+180*864e5))+"T00:00:00Z").getTime()+21*864e5;
@@ -1829,7 +1834,7 @@ async function smSeasonEvents(key){
     // (fase con jornadas numéricas marcada como actual, o la última que empezó) y su Liguilla.
     const reg=F.filter(f=>/^\d+$/.test(f.round?.name||""));
     const now=Date.now()/1000;
-    const cur=(reg.find(f=>f.stage?.is_current)||[...reg].filter(f=>f.starting_at_timestamp<=now).sort((a,b)=>b.starting_at_timestamp-a.starting_at_timestamp)[0]||reg[0])?.stage_id;
+    const cur=sel?.stage||(reg.find(f=>f.stage?.is_current)||[...reg].filter(f=>f.starting_at_timestamp<=now).sort((a,b)=>b.starting_at_timestamp-a.starting_at_timestamp)[0]||reg[0])?.stage_id;
     if(cur){const t0=Math.min(...reg.filter(f=>f.stage_id===cur).map(f=>f.starting_at_timestamp));
       const base=(reg.find(f=>f.stage_id===cur)?.stage?.name||"").split(/[ ,-]/)[0];   // "Apertura" / "Clausura"
       // La Liguilla viene como fases aparte ("Clausura - Quarter-finals", "Apertura, Play In"): solo las del torneo actual
@@ -1841,20 +1846,21 @@ async function smSeasonEvents(key){
 // Tabla de la temporada (en Liga MX, la del torneo actual)
 const SM_TB={};
 function smStandings(key){
-  if(SM_TB[key]) return SM_TB[key];
-  SM_TB[key]=(async()=>{
-    const L=await smLeague(key), S=L.currentseason||L.current_season||{};
+  const ck=smSelKey(key);
+  if(SM_TB[ck]) return SM_TB[ck];
+  SM_TB[ck]=(async()=>{
+    const L=await smLeague(key), sel=SM_SEL[key], S=(sel&&(L.seasons||[]).find(x=>x.id===sel.sid))||L.currentseason||L.current_season||{};
     const T=(await smGet(`standings/seasons/${S.id}`,"include=participant;details.type;stage;group")).data||[];
     const stages=[...new Map(T.map(r=>[r.stage_id,r.stage||{id:r.stage_id}])).values()];
-    const st=stages.find(s=>s.is_current)||stages.sort((a,b)=>(b.sort_order||0)-(a.sort_order||0))[0]||{};
+    const st=(sel?.stage&&stages.find(s=>s.id===sel.stage))||stages.find(s=>s.is_current)||stages.sort((a,b)=>(b.sort_order||0)-(a.sort_order||0))[0]||{};
     const det=(r,id)=>(r.details||[]).find(d=>d.type_id===id)?.value;
     const rows=T.filter(r=>r.stage_id===st.id).sort((a,b)=>(a.group?.name||"").localeCompare(b.group?.name||"")||a.position-b.position).map(r=>({grupo:r.group?.name||null,n:r.participant?.name,id:String(r.participant_id),
       logo:SM_ESCUDOS?r.participant?.image_path:null,rk:r.position,pj:det(r,129),g:det(r,130),e:det(r,131),p:det(r,132),gf:det(r,133),gc:det(r,134),dg:det(r,179),pts:r.points??det(r,187),zn:null}));
     const año=(st.starting_at||"").slice(0,4);
     return {rows,titulo:LEAGUES[key].liguilla?`${st.name||""} ${año}`.trim():`Temporada ${S.name||""}`};
   })();
-  SM_TB[key].catch(()=>{delete SM_TB[key];});
-  return SM_TB[key];
+  SM_TB[ck].catch(()=>{delete SM_TB[ck];});
+  return SM_TB[ck];
 }
 // Goleo y asistencias de la temporada (208 = goles, 209 = asistencias)
 const SM_TOP={};
@@ -1954,6 +1960,41 @@ async function smSummary(e,key){
 }
 
 let MXS_CACHE={};
+// Temporadas pasadas (Sportmonks trae las 2 anteriores): {sid, stage} elegido por liga; sin elección = temporada actual
+const SM_SEL={};
+const smSelKey=key=>key+"|"+(SM_SEL[key]?.sid||"")+"|"+(SM_SEL[key]?.stage||"");
+const SM_FASES={};   // fases (Apertura/Clausura) por temporada, para Liga MX y Argentina
+async function smOpcionesTemporada(key){
+  const lg=LEAGUES[key], L=await smLeague(key);
+  const cur=L.currentseason||L.current_season||{}, ss=(L.seasons||[]).filter(x=>x.starting_at).sort((a,b)=>b.starting_at.localeCompare(a.starting_at)).slice(0,3);
+  const ops=[];
+  for(const S of ss){
+    if(lg.liguilla){
+      if(!SM_FASES[S.id]) SM_FASES[S.id]=smGet(`seasons/${S.id}`,"include=stages").then(j=>(j.data?.stages||[]).filter(st=>st.type_id===223&&/^(Apertura|Clausura)$/i.test(st.name||"")).sort((a,b)=>(b.starting_at||"").localeCompare(a.starting_at||""))).catch(()=>[]);
+      const fases=await SM_FASES[S.id];
+      for(const st of fases){ const año=(st.starting_at||S.starting_at||"").slice(0,4); if(st.starting_at&&st.starting_at>smDay(Date.now())) continue;   // torneos que aún no empiezan
+        ops.push({label:`${st.name} ${año}`,sid:S.id,stage:st.id,actual:S.id===cur.id&&!!st.is_current}); }
+    } else ops.push({label:S.name,sid:S.id,stage:null,actual:S.id===cur.id});
+  }
+  return ops;
+}
+async function pintaTemporadas(){
+  const key=FLIG, lg=LEAGUES[key], W=$("#tempWrap");
+  if(!lg.sm){W.hidden=true; return;}
+  let ops=[]; try{ops=await smOpcionesTemporada(key);}catch(e){}
+  if(key!==FLIG) return;
+  if(ops.length<2){W.hidden=true; return;}
+  const sel=SM_SEL[key], actual=ops.find(o=>o.actual)||ops[0];
+  $("#tempSel").innerHTML=ops.map(o=>`<option value="${o.sid}|${o.stage||""}">${o.label}</option>`).join("");
+  $("#tempSel").value=sel?`${sel.sid}|${sel.stage||""}`:`${actual.sid}|${actual.stage||""}`;
+  W.hidden=false;
+  $("#tempSel").onchange=e=>{
+    const [sid,stage]=e.target.value.split("|"), esActual=actual&&+sid===actual.sid&&(stage||"")===(actual.stage||"");
+    if(esActual) delete SM_SEL[key]; else SM_SEL[key]={sid:+sid,stage:stage?+stage:null};
+    mxLoaded=false; mxtLoaded=false; mxLgLoaded=false; mxpLoaded=false; mxprLoaded=false; MXJ=[]; curJ=0; MX_TABLE_ROWS=null; $("#mxGames").innerHTML=""; $("#jSel").innerHTML="";
+    const cur=document.querySelector('.subnav[data-for=mx] button[aria-current]'); showTab(cur&&!cur.hidden?cur.dataset.tab:"mxgames");
+  };
+}
 // Partidos de Liga MX: se agrupan por SEMANA de calendario (lunes a domingo), no por número de
 // jornada — ESPN no publica ese número para esta liga y reconstruirlo con fechas nunca salió del todo
 // bien. Los partidos entre dos equipos que ya se habían enfrentado antes en el torneo (revanchas) son
@@ -2009,18 +2050,20 @@ function mxGroups(ev,playoffAware,allTeams){
 }
 function mxSeason(){
   const key=FLIG;
-  if(MXS_CACHE[key]) return MXS_CACHE[key];
-  const slug=LEAGUES[key].slug;
   if(LEAGUES[key].sm){
-    MXS_CACHE[key]=(async()=>{
+    const ck=smSelKey(key);
+    if(MXS_CACHE[ck]) return MXS_CACHE[ck];
+    MXS_CACHE[ck]=(async()=>{
       const {ev,L}=await smSeasonEvents(key);
       if(FLIG===key&&document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(SM_ESCUDOS?L.image_path:null);
       const {weeks,liguilla}=mxGroups(ev,LEAGUES[key].liguilla,!!LEAGUES[key].cup);
       return {ev,J:weeks,liguilla};
     })();
-    MXS_CACHE[key].catch(()=>{delete MXS_CACHE[key];});
-    return MXS_CACHE[key];
+    MXS_CACHE[ck].catch(()=>{delete MXS_CACHE[ck];});
+    return MXS_CACHE[ck];
   }
+  if(MXS_CACHE[key]) return MXS_CACHE[key];
+  const slug=LEAGUES[key].slug;
   MXS_CACHE[key]=(async()=>{
     const sb=d=>fetch(`${ESPN}/site/v2/sports/soccer/${slug}/scoreboard${d?`?dates=${d}`:""}`).then(r=>r.json());
     const base=await sb();
@@ -2853,6 +2896,7 @@ async function loadMxPlayers(){
     $("#mxpTitle").textContent=`Líderes de ${flLabel()}`;
     const pk="pizarra_mxp3_"+FLIG; // caché de líderes, separado por competencia
     let cached=null; try{cached=JSON.parse(localStorage.getItem(pk)||"null")}catch(e){}
+    if(LEAGUES[FLIG].sm&&SM_SEL[FLIG]){ MXP=[]; $("#mxpMsg").textContent="Las estadísticas de jugadores solo están para el torneo en curso."; return; }
     if(LEAGUES[FLIG].sm){
       // Ligas de Sportmonks: las estadísticas las arma build_site.py una vez al día (docs/datos/jugadores_<liga>.json)
       const key=FLIG, j=await fetch(`datos/jugadores_${key}.json`,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null); if(key!==FLIG) return;
