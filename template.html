@@ -8,24 +8,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#1F332D">
 <style>
 :root{
-  --bg:#EEF1F0; --surface:#FFFFFF; --ink:#1B2A38; --muted:#5B6A76; --line:#D3DAD8;
-  --mark:#1F5FA8; --alt:#C23A2E; --hl:#FFF3B8; --good:#23794A; --bad:#B53A2E;
+  /* Un solo tema: el verde pizarrón (decisión del 1 oct 2026; el tema claro se quitó porque varias cosas no se veían bien) */
+  color-scheme:dark;
+  --bg:#1F332D; --surface:#263D36; --ink:#ECEFE7; --muted:#A8B8AF; --line:#3A554C;
+  --mark:#F2D466; --alt:#9CC7E6; --hl:#3E5A3A; --good:#8FD6A6; --bad:#F29C8C;
   --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
   --body:"Barlow","Helvetica Neue",Arial,sans-serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#1F332D; --surface:#263D36; --ink:#ECEFE7; --muted:#A8B8AF; --line:#3A554C;
-    --mark:#F2D466; --alt:#9CC7E6; --hl:#3E5A3A; --good:#8FD6A6; --bad:#F29C8C;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#1F332D; --surface:#263D36; --ink:#ECEFE7; --muted:#A8B8AF; --line:#3A554C;
-  --mark:#F2D466; --alt:#9CC7E6; --hl:#3E5A3A; --good:#8FD6A6; --bad:#F29C8C;
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -823,7 +816,7 @@ let FLIG=localStorage.getItem("pz_flig")||"mx"; if(!LEAGUES[FLIG]) FLIG="mx";
 const flSlug=()=>LEAGUES[FLIG].slug, flLabel=()=>LEAGUES[FLIG].label;
 let MX_LOGOS=D.mx_logos||[];
 const SEL_LOGOS=[{href:"https://a.espncdn.com/i/teamlogos/countries/500/mex.png",rel:["full","default"]},{href:"https://a.espncdn.com/i/teamlogos/countries/500-dark/mex.png",rel:["full","dark"]}];
-function pickLogo(ls){ if(!ls||!ls.length) return null; const dark=document.documentElement.dataset.theme==="dark"||(document.documentElement.dataset.theme!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);
+function pickLogo(ls){ if(!ls||!ls.length) return null; const dark=true;   // la página siempre es oscura
   const f=ls.find(l=>(l.rel||[]).includes(dark?"dark":"default"))||ls[0]; return f.href;}
 function setLogo(u){const im=$("#leagueLogo"); if(u){im.onerror=()=>{im.hidden=true};im.src=u;im.hidden=false;} else im.hidden=true;}
 $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLogo(D.nfl_logo); $("#heroSub").textContent=`Datos actualizados hasta la semana ${D.week}.`;
