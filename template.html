@@ -345,6 +345,24 @@ dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 .averify{display:flex;flex-direction:column;gap:8px;margin:0 0 18px;padding:12px 14px;border-radius:10px;background:var(--hl);border-left:4px solid var(--mark);font-size:15px}
 .averify span{color:var(--ink)}
 .averify .alink{align-self:flex-start}
+/* Grupos de quiniela */
+.grbar{align-items:center}
+.grbar select{font:600 16px var(--display);padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.grnew{display:flex;gap:8px;margin:10px 0;max-width:520px}
+.grnew[hidden]{display:none}
+.grnew input{flex:1;font:400 16px var(--body);padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);min-width:0}
+.grjoin{display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding:14px 16px;border-radius:12px;background:var(--hl);border-left:4px solid var(--mark);margin:6px 0 16px;max-width:620px}
+.grjoin b{font:700 18px var(--display)}
+.grhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0 14px}
+.grhead h3{margin:0}
+.grhead small{color:var(--muted)}
+.grinv{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.grinv .btn{text-decoration:none;display:inline-block}
+.grtab tr.me td,.grgrid tr.me td{background:var(--hl)}
+.grgrid th{font-size:12px;line-height:1.25;white-space:nowrap}
+.grgrid th small{display:block;color:var(--muted);font-weight:500}
+.grc{font:600 14px var(--display);text-align:center}
+.grc.win{color:var(--good)}.grc.loss{color:var(--bad);text-decoration:line-through}.grc.push{color:var(--muted)}.grc.pend{color:var(--ink)}.grc.none{color:var(--muted)}
 /* Fantasy: barra de Sleeper compartida */
 .fconn{padding-top:26px}
 #sleeper.on h2,#sleeper.on #slUser,#sleeper.on #slGo,#sleeper.on #slSrc{display:none}
@@ -467,7 +485,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <button class="acct" id="acctBtn" aria-label="Tu cuenta" hidden>Entrar</button>
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL">
-  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="nflq">Quiniela</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
+  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="nflq">Quiniela</button><button data-tab="nflgr">Grupos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
   <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fmatch">Matchup</button><button data-tab="froster">Roster</button><button data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
@@ -588,6 +606,10 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <p class="note" id="qMsg"></p>
   <div id="qMine"></div>
   <div class="games" id="qGames"></div>
+</section>
+<section class="panel hidden" id="nflgr">
+  <h2>Grupos de quiniela</h2>
+  <div id="grBody"></div>
 </section>
 <section class="panel hidden" id="nflpo">
   <h2>Playoffs</h2>
@@ -743,7 +765,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
+const SECTIONS=["nflgames","nflq","nflgr","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -774,7 +796,7 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
+  if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="nflq") loadQuiniela(); if(id==="nflgr") grRender(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp){
   document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
@@ -1417,7 +1439,7 @@ function qnMineBox(P){
   const box=$("#qMine"); if(qnMode==="surv"){box.innerHTML=""; return;}
   const mode=qnMode, wk=P.week, W=(qnPicksAll()[D.season]||{})[wk]||{}, n=Object.values(W).filter(v=>v[mode]).length;
   const Rw=qnRecord(mode,wk), Rs=qnRecord(mode), lbl=mode==="ats"?"contra el spread":"sin spread";
-  box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${n?(acctHint(true)?`<small>${acctHint(true)}</small>`:""):`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. ${acctHint(false)}</small>`}</div>`;
+  box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${grMineTxt()}${n?(acctHint(true)?`<small>${acctHint(true)}</small>`:""):`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. ${acctHint(false)}</small>`}</div>`;
 }
 $("#qGames").addEventListener("click",e=>{
   const el=e.target.closest(".team[data-qt]"); if(!el||qnMode==="surv") return;
@@ -1426,7 +1448,7 @@ $("#qGames").addEventListener("click",e=>{
   const t=el.dataset.qt;
   if(G[qnMode]?.t===t) delete G[qnMode]; else {G[qnMode]=qnMode==="ats"?{t,L:r.g.L}:{t}; pzTrack("hacer_pick",{modo:qnMode});}
   if(!Object.keys(G).length) delete W[k];
-  qnPicksSave(all); loadQuiniela();
+  qnPicksSave(all); grOnPick(el.dataset.qw,k,G); loadQuiniela();
 });
 $("#qGames").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches?.(".team[data-qt]")){e.preventDefault(); e.target.click();}});
 async function loadQuiniela(){
@@ -2806,6 +2828,11 @@ async function acctPull(){
   if(JSON.stringify(N)!==JSON.stringify(cloud)||!exists) acctPush(true);
   if(adlg.open) acctRender();
 }
+function grMineTxt(){   // en el recuadro de Mis picks: en qué grupos cuentan
+  if(typeof GR==="undefined"||!acctOk()||!GR.ids.length) return "";
+  const n=GR.ids.map(id=>GR.info[id]?.nombre).filter(Boolean);
+  return `<small>${GR.warn?`⚠️ ${GR.warn} `:""}Cuentan en ${n.length?n.map(x=>`«${acctEsc(x)}»`).join(", "):"tus grupos"}. <button class="alink" data-tabgo="nflgr">Ver tabla</button></small>`;
+}
 function acctHint(hasPicks){   // texto para el recuadro de Mis picks
   if(!D.fb||!ACCT.ready) return hasPicks?"":"Se guardan en este navegador.";
   if(ACCT.user&&!acctOk()) return `<button class="alink" data-acct>Confirma tu correo</button> para guardarlos en tu cuenta.`;
@@ -2897,12 +2924,13 @@ function acctOpen(){ if(!ACCT.ready) return; ACCT.mode="in"; acctRender(); if(!a
 $("#acctBtn").onclick=acctOpen;
 $("#aClose").onclick=()=>adlg.close();
 adlg.addEventListener("click",e=>{if(e.target===adlg) adlg.close();});
-document.addEventListener("click",e=>{if(e.target.closest?.("[data-acct]")){e.preventDefault(); acctOpen();}});
+document.addEventListener("click",e=>{if(e.target.closest?.("[data-acct]")){e.preventDefault(); acctOpen();}
+  const tg=e.target.closest?.("[data-tabgo]"); if(tg){e.preventDefault(); showTab(tg.dataset.tabgo); window.scrollTo({top:0,behavior:"smooth"});}});
 async function acctCheck(){   // ¿ya abrió el link? recarga el usuario y su token (las reglas leen email_verified del token)
   const u=ACCT.user; if(!u||u.emailVerified) return acctOk();
   try{await u.reload(); if(ACCT.auth.currentUser?.emailVerified){await ACCT.auth.currentUser.getIdToken(true);}}catch(e){return false;}
   ACCT.user=ACCT.auth.currentUser; if(!acctOk()) return false;
-  acctBtn(); acctSlHint(); await acctPull(); if(acctOnQ()) loadQuiniela(); if(adlg.open) acctRender(); acctMsg("Listo, tu correo quedó confirmado.",true);
+  acctBtn(); acctSlHint(); await acctPull(); await grLoadIds(); if(acctOnQ()) loadQuiniela(); if(!$("#nflgr").classList.contains("hidden")) grRender(); if(adlg.open) acctRender(); acctMsg("Listo, tu correo quedó confirmado.",true);
   return true;
 }
 async function acctInit(){
@@ -2913,12 +2941,183 @@ async function acctInit(){
   ACCT.auth.onAuthStateChanged(u=>{
     const was=ACCT.user; ACCT.user=u||null; ACCT.ready=true; acctBtn(); acctSlHint();
     if(u&&(!was||was.uid!==u.uid)){ if(u.emailVerified){ acctPull(); if(adlg.open) adlg.close(); } else if(adlg.open) acctRender(); }
+    GR.loaded=false; GR.ids=[]; GR.info={}; GR.data={};
+    if(u&&acctOk()) grLoadIds().then(()=>{ if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
     if(acctOnQ()) loadQuiniela();
+    if(!$("#nflgr").classList.contains("hidden")) grRender();
   });
   document.addEventListener("visibilitychange",()=>{ if(document.hidden||!ACCT.user) return;
     if(!acctOk()) acctCheck(); else if(Date.now()-ACCT.last>60e3) acctPull(); });   // al volver del correo se revisa solo
 }
 acctInit();
+
+// ---------- Grupos de quiniela (NFL con y sin spread; 1 punto por acierto) ----------
+// Firestore (ver reglas en la sección 2.4 del contexto):
+//  grupos/{g} = {nombre, dueno, creado, temporada, modos}; grupos/{g}/miembros/{uid} = {nombre, unido};
+//  grupos/{g}/picks/{uid}_{semana} = {uid, w, temporada, ultimo, "VIS@LOC": {ats: "EQ", su: "EQ"}} (una escritura = un partido);
+//  misgrupos/{uid} = {ids: [...]}; partidos_semana/{temporada}-{semana} lo sube GitHub (build_site.py) con kickoff y línea oficial.
+// Las reglas rechazan picks de partidos que ya empezaron y no dejan leer picks ajenos antes del primer partido de la semana;
+// la página además solo muestra los picks de partidos que ya empezaron. Se califica con la línea oficial y los marcadores
+// de D.sched / NLIVE (la misma cuenta para todos). Semanas terminadas se guardan en el navegador para ahorrar lecturas.
+var GR={ids:[],loaded:false,info:{},cur:null,mode:"ats",join:null,joinInfo:null,busy:false,creating:false};
+const grFV=()=>firebase.firestore.FieldValue;
+const grMe=()=>ACCT.user;
+const grName=()=>{const u=grMe(); return ((u?.displayName||(u?.email||"").split("@")[0]||"Jugador").trim()).slice(0,40);};
+const grLink=id=>`https://lapizarra.mx/?g=${id}`;
+async function grLoadIds(){
+  GR.loaded=false; GR.ids=[]; if(!acctOk()) return;
+  try{const s=await ACCT.db.doc(`misgrupos/${grMe().uid}`).get(); GR.ids=(s.data()?.ids)||[];}catch(e){console.warn("Grupos:",e?.code||e);}
+  GR.loaded=true; if(!GR.cur||!GR.ids.includes(GR.cur)) GR.cur=acctLsGet("pz_grupo")&&GR.ids.includes(acctLsGet("pz_grupo"))?acctLsGet("pz_grupo"):GR.ids[0]||null;
+}
+const grSaveIds=()=>ACCT.db.doc(`misgrupos/${grMe().uid}`).set({ids:GR.ids});
+async function grInfo(id,force){
+  if(GR.info[id]&&!force) return GR.info[id];
+  const s=await ACCT.db.doc(`grupos/${id}`).get(); if(!s.exists) return null;
+  return GR.info[id]={id,...s.data()};
+}
+// Pick → grupos (se llama desde la Quiniela después de guardarlo en el navegador)
+const grVal=G=>{const v={}; if(G?.ats?.t) v.ats=G.ats.t; if(G?.su?.t) v.su=G.su.t; return v;};
+async function grWrite(g,w,key,val){
+  const uid=grMe().uid, ref=ACCT.db.doc(`grupos/${g}/picks/${uid}_${w}`);
+  try{ await ref.update(new firebase.firestore.FieldPath(key),val,"ultimo",key); }
+  catch(e){ if(e?.code==="not-found") await ref.set({uid,w:+w,temporada:D.season,ultimo:key,[key]:val}); else throw e; }
+}
+function grOnPick(w,key,G){
+  if(!acctOk()||!GR.ids.length) return;
+  GR.ids.forEach(g=>grWrite(g,w,key,grVal(G)).catch(e=>{console.warn("Grupos: no se guardó el pick",g,e?.code||e);
+    if(e?.code==="permission-denied"){GR.warn="Este partido todavía no está abierto en los grupos (los partidos de la semana se publican cada mañana) o ya empezó."; if(!$("#nflq").classList.contains("hidden")) loadQuiniela();}}));
+}
+// Picks que ya tenías esta semana → al grupo nuevo
+async function grSyncWeek(g){
+  const P=await qnGet(), W=(qnPicksAll()[D.season]||{})[P.week]||{};
+  for(const gm of P.games){ if(gm.lock) continue; const k=`${gm.a}@${gm.h}`; if(W[k]) await grWrite(g,P.week,k,grVal(W[k])).catch(()=>{}); }
+}
+async function grCreate(nombre){
+  nombre=(nombre||"").trim().slice(0,40); if(!nombre) return;
+  const uid=grMe().uid, ref=ACCT.db.collection("grupos").doc(), b=ACCT.db.batch();
+  b.set(ref,{nombre,dueno:uid,creado:grFV().serverTimestamp(),temporada:D.season,modos:["ats","su"]});
+  b.set(ref.collection("miembros").doc(uid),{nombre:grName(),unido:grFV().serverTimestamp()});
+  await b.commit(); GR.ids=[...GR.ids,ref.id]; await grSaveIds(); GR.cur=ref.id; acctLsSet("pz_grupo",ref.id);
+  pzTrack("crear_grupo",{}); grSyncWeek(ref.id).catch(()=>{});
+}
+async function grJoin(id){
+  const uid=grMe().uid; await ACCT.db.doc(`grupos/${id}/miembros/${uid}`).set({nombre:grName(),unido:grFV().serverTimestamp()});
+  if(!GR.ids.includes(id)){GR.ids=[...GR.ids,id]; await grSaveIds();}
+  GR.cur=id; acctLsSet("pz_grupo",id); GR.join=null; GR.joinInfo=null; pzTrack("unirse_grupo",{}); grSyncWeek(id).catch(()=>{});
+}
+async function grLeave(id){
+  await ACCT.db.doc(`grupos/${id}/miembros/${grMe().uid}`).delete();
+  GR.ids=GR.ids.filter(x=>x!==id); await grSaveIds(); GR.cur=GR.ids[0]||null; delete GR.data[id];
+}
+// Datos del grupo: miembros, partidos oficiales y picks por semana
+const grCacheGet=k=>{try{return JSON.parse(localStorage.getItem(k)||"null");}catch(e){return null;}};
+const grCacheSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+const grTs=v=>v?.toMillis?v.toMillis():v?.seconds?v.seconds*1000:+v||0;
+async function grSem(w,cur){
+  const ck=`pz_sem_${D.season}-${w}`; if(w<cur){const c=grCacheGet(ck); if(c) return c;}
+  let s=null; try{s=await ACCT.db.doc(`partidos_semana/${D.season}-${w}`).get();}catch(e){return null;}
+  if(!s.exists) return null; const d=s.data();
+  const out={w,primero:grTs(d.primero),games:Object.fromEntries(Object.entries(d.games||{}).map(([k,v])=>[k,{a:v.a,h:v.h,L:v.L??null,ko:grTs(v.ko)}]))};
+  if(w<cur) grCacheSet(ck,out); return out;
+}
+const grWeekDone=S=>S&&Object.values(S.games).every(g=>qnResult(S.w,g.a,g.h));
+async function grLoad(g){
+  const info=await grInfo(g,true); if(!info) throw new Error("nogrupo");
+  const ms=await ACCT.db.collection(`grupos/${g}/miembros`).get();
+  const M=ms.docs.map(d=>({uid:d.id,...d.data()}));
+  const cur=(await qnGet()).week||D.gweek, made=grTs(info.creado)||Date.now();
+  const firstW=Math.min(cur,...(D.sched||[]).filter(x=>x.ko&&+new Date(x.ko)>=made).map(x=>x.w).concat([cur]));
+  const W={};
+  for(let w=firstW;w<=cur;w++){
+    const S=await grSem(w,cur); if(!S) continue;
+    const ck=`pz_grp_${g}_${w}`, cached=w<cur?grCacheGet(ck):null, P=cached||{};
+    if(!cached||M.some(m=>!(m.uid in cached))){
+      await Promise.all(M.map(async m=>{ if(m.uid in P) return;
+        try{const s=await ACCT.db.doc(`grupos/${g}/picks/${m.uid}_${w}`).get(); P[m.uid]=s.exists?s.data():null;}catch(e){P[m.uid]=null;} }));
+      if(w<cur&&grWeekDone(S)) grCacheSet(ck,P);
+    }
+    W[w]={S,P};
+  }
+  return GR.data[g]={info,M,W,cur,t:Date.now()};
+}
+function grScore(Gd,mode){
+  const now=Date.now(), rows=Gd.M.map(m=>({uid:m.uid,n:m.nombre||"Jugador",sw:0,sl:0,sp:0,ww:0,wl:0}));
+  const byU=Object.fromEntries(rows.map(r=>[r.uid,r]));
+  for(const [w,{S,P}] of Object.entries(Gd.W)) for(const [k,g] of Object.entries(S.games)){
+    if(g.ko>now) continue; const res=qnResult(+w,g.a,g.h); if(!res) continue;
+    for(const [uid,doc] of Object.entries(P)){ const t=doc?.[k]?.[mode], r=byU[uid]; if(!t||!r) continue;
+      if(mode==="ats"&&g.L==null) continue;
+      const gr=qnGrade(mode==="ats"?{t,L:g.L}:{t},mode,g.a,g.h,res);
+      if(gr==="win"){r.sw++; if(+w===Gd.cur) r.ww++;} else if(gr==="loss"){r.sl++; if(+w===Gd.cur) r.wl++;} else r.sp++; }
+  }
+  return rows.sort((a,b)=>b.sw-a.sw||b.ww-a.ww||a.sl-b.sl||a.n.localeCompare(b.n,"es"));
+}
+function grGrid(Gd,mode){
+  const X=Gd.W[Gd.cur]; if(!X) return `<p class="note">Los partidos de la semana ${Gd.cur} todavía no están publicados en los grupos (se publican cada mañana).</p>`;
+  const now=Date.now(), G=Object.entries(X.S.games).filter(([,g])=>g.ko<=now).sort((a,b)=>a[1].ko-b[1].ko);
+  const me=grMe().uid, myDoc=X.P[me]||{}, mine=Object.keys(X.S.games).filter(k=>myDoc?.[k]?.[mode]).length;
+  const head=`<p class="note">Tú llevas <b>${mine} de ${Object.keys(X.S.games).length}</b> picks ${mode==="ats"?"con spread":"sin spread"} esta semana. Los picks de todos se ven cuando empieza cada partido.</p>`;
+  if(!G.length) return head;
+  const cell=(uid,k,g)=>{const t=X.P[uid]?.[k]?.[mode]; if(!t) return `<td class="grc none">–</td>`;
+    const res=qnResult(Gd.cur,g.a,g.h), gr=res&&!(mode==="ats"&&g.L==null)?qnGrade(mode==="ats"?{t,L:g.L}:{t},mode,g.a,g.h,res):null;
+    return `<td class="grc ${gr||"pend"}">${t}</td>`;};
+  const ln=g=>mode==="ats"&&g.L!=null?`<small>${g.h} ${g.L>0?"+":""}${g.L}</small>`:"";
+  return head+`<div class="tbl"><table class="grgrid"><thead><tr><th class="l">Jugador</th>${G.map(([k,g])=>`<th>${g.a}<br>@${g.h}${ln(g)}</th>`).join("")}</tr></thead>
+    <tbody>${Gd.M.map(m=>`<tr class="${m.uid===me?"me":""}"><td class="l"><span class="nm">${acctEsc(m.nombre||"Jugador")}</span></td>${G.map(([k,g])=>cell(m.uid,k,g)).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+async function grRender(){
+  const box=$("#grBody"); if(!box) return;
+  if(!D.fb){box.innerHTML=`<p class="note">Muy pronto.</p>`; return;}
+  if(!ACCT.ready){box.innerHTML=`<p class="note">Cargando…</p>`; return;}
+  if(!ACCT.user){box.innerHTML=`<p class="note">${GR.join?"Te invitaron a un grupo de quiniela. ":""}Para crear un grupo o unirte a uno, <button class="alink" data-acct>entra a tu cuenta</button>.</p>`; return;}
+  if(!acctOk()){box.innerHTML=`<p class="note">Para usar los grupos, primero <button class="alink" data-acct>confirma tu correo</button>.</p>`; return;}
+  if(!GR.loaded) await grLoadIds();
+  let h="";
+  if(GR.join&&!GR.ids.includes(GR.join)){
+    if(!GR.joinInfo) GR.joinInfo=await grInfo(GR.join).catch(()=>null)||{nope:true};
+    h+=GR.joinInfo.nope?`<div class="grjoin"><b>Ese link de invitación no es válido.</b><span>Pídele a quien te invitó que te lo mande otra vez.</span></div>`
+      :`<div class="grjoin"><b>Te invitaron a «${acctEsc(GR.joinInfo.nombre)}»</b><span>Tus picks de la Quiniela de NFL contarán en la tabla del grupo.</span><button class="btn" id="grJoinBtn">Unirme</button></div>`;
+  } else if(GR.join&&GR.ids.includes(GR.join)){GR.cur=GR.join; GR.join=null;}
+  const opts=await Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null)));
+  h+=`<div class="bar grbar">${GR.ids.length?`<select id="grSel" aria-label="Grupo">${GR.ids.map((id,i)=>`<option value="${id}" ${id===GR.cur?"selected":""}>${acctEsc(opts[i]?.nombre||"Grupo")}</option>`).join("")}</select>`:""}
+    <button class="${GR.ids.length?"alink":"btn"}" id="grNew">Crear un grupo</button></div>
+    <div class="grnew" id="grNewBox" ${GR.creating?"":"hidden"}><input type="text" id="grName" maxlength="40" placeholder="Nombre del grupo" aria-label="Nombre del grupo"><button class="btn" id="grMake">Crear</button></div>
+    <p class="amsg" id="grMsg" aria-live="polite"></p>`;
+  if(!GR.ids.length&&!GR.join) h+=`<p class="note">Crea un grupo y comparte el link por WhatsApp. Cada quien hace sus picks en la Quiniela y aquí sale la tabla: 1 punto por acierto, con spread y sin spread.</p>`;
+  h+=`<div id="grMain"></div>`;
+  box.innerHTML=h; grBind();
+  if(GR.cur) grMain(GR.cur);
+}
+async function grMain(g){
+  const box=$("#grMain"); box.innerHTML=`<p class="note">Cargando la tabla…</p>`;
+  let Gd; try{ Gd=(GR.data[g]&&Date.now()-GR.data[g].t<60e3)?GR.data[g]:await grLoad(g); }
+  catch(e){ console.warn("Grupos:",e); box.innerHTML=`<p class="note">No pudimos cargar el grupo. Intenta de nuevo en un momento.</p>`; return; }
+  if(GR.cur!==g) return;
+  const I=Gd.info, modes=(I.modos||["ats","su"]).filter(m=>m==="ats"||m==="su"); if(!modes.includes(GR.mode)) GR.mode=modes[0];
+  const R=grScore(Gd,GR.mode), me=grMe().uid, wa=`https://wa.me/?text=${encodeURIComponent(`Únete a mi quiniela «${I.nombre}» en La Pizarra: ${grLink(g)}`)}`;
+  box.innerHTML=`<div class="grhead"><div><h3>${acctEsc(I.nombre)}</h3><small>${Gd.M.length} ${Gd.M.length===1?"miembro":"miembros"} · Semana ${Gd.cur}</small></div>
+      <div class="grinv"><a class="btn" href="${wa}" target="_blank" rel="noopener">Invitar por WhatsApp</a><button class="alink" id="grCopy">Copiar link</button></div></div>
+    ${modes.length>1?`<div class="seg" id="grMode">${modes.map(m=>`<button aria-pressed="${m===GR.mode}" data-m="${m}">${m==="ats"?"Con spread":"Sin spread"}</button>`).join("")}</div>`:""}
+    <h3 style="margin-top:18px">Tabla</h3>
+    <div class="tbl"><table class="grtab"><thead><tr><th class="l" aria-label="Lugar"></th><th class="l">Jugador</th><th>Puntos</th><th>Sem. ${Gd.cur}</th><th>Récord</th><th>%</th></tr></thead><tbody>
+    ${R.map((r,i)=>{const n=r.sw+r.sl; return `<tr class="${r.uid===me?"me":""}"><td class="rk">${i+1}</td><td class="l"><span class="nm">${acctEsc(r.n)}</span></td><td><b>${r.sw}</b></td><td>${r.ww}</td><td>${r.sw}-${r.sl}${r.sp?`-${r.sp}`:""}</td><td>${n?Math.round(r.sw/n*100)+"%":"–"}</td></tr>`;}).join("")}
+    </tbody></table></div>
+    <h3 style="margin-top:22px">Picks de la semana ${Gd.cur}</h3>${grGrid(Gd,GR.mode)}
+    <p class="note" style="margin-top:14px">${GR.mode==="ats"?"Con spread cuenta la línea oficial del grupo (la de ESPN Pick'em de cada semana). ":""}1 punto por acierto. <button class="alink danger" id="grLeave">Salir del grupo</button></p>`;
+  $("#grCopy").onclick=async()=>{try{await navigator.clipboard.writeText(grLink(g)); $("#grCopy").textContent="¡Copiado!";}catch(e){prompt("Copia este link:",grLink(g));}};
+  $("#grLeave").onclick=async()=>{ if(!confirm(`¿Salir de «${I.nombre}»? Tus picks se quedan en el grupo, pero ya no lo verás.`)) return; try{await grLeave(g); grRender();}catch(e){alert("No se pudo. Intenta de nuevo.");} };
+  document.querySelectorAll("#grMode button").forEach(b=>b.onclick=()=>{GR.mode=b.dataset.m; grMain(g);});
+}
+function grBind(){
+  const sel=$("#grSel"); if(sel) sel.onchange=()=>{GR.cur=sel.value; acctLsSet("pz_grupo",GR.cur); grMain(GR.cur);};
+  $("#grNew").onclick=()=>{GR.creating=!GR.creating; $("#grNewBox").hidden=!GR.creating; if(GR.creating) $("#grName").focus();};
+  const mk=async()=>{const n=$("#grName").value.trim(); if(!n){$("#grMsg").textContent="Ponle nombre a tu grupo."; return;}
+    $("#grMake").disabled=true; try{await grCreate(n); GR.creating=false; grRender();}catch(e){console.warn("Grupos:",e); $("#grMsg").textContent="No se pudo crear el grupo. Intenta de nuevo.";} finally{const b=$("#grMake"); if(b) b.disabled=false;}};
+  $("#grMake").onclick=mk; $("#grName").onkeydown=e=>{if(e.key==="Enter") mk();};
+  const jb=$("#grJoinBtn"); if(jb) jb.onclick=async()=>{jb.disabled=true; try{await grJoin(GR.join); grRender();}catch(e){console.warn("Grupos:",e); $("#grMsg").textContent="No pudimos unirte al grupo. Intenta de nuevo."; jb.disabled=false;}};
+}
+// Invitación: lapizarra.mx/?g=ID
+(()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("nfl"); showTab("nflgr");}}catch(e){}})();
 </script>
 </body>
 </html>

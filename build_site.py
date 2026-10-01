@@ -1171,6 +1171,50 @@ data=json.dumps(out,ensure_ascii=False,allow_nan=False)
 aqui=os.path.dirname(os.path.abspath(__file__))
 notas=json.load(open(os.path.join(aqui,'notas.json'),encoding='utf-8'))
 notas_js=json.dumps([[n['jugador'],n['posicion'],n['equipo'],n['texto']] for n in notas['notas']],ensure_ascii=False)
+# ---------- Grupos de quiniela: partidos oficiales en Firebase ----------
+# Las reglas de Firestore usan estos documentos para cerrar cada pick cuando empieza su partido y para no
+# dejar ver los picks ajenos antes de que arranque la semana. Doc: partidos_semana/{temporada}-{semana} =
+# {temporada, w, primero (primer kickoff), games: {"VIS@LOC": {a, h, ko, L}}}. L = ventaja del local (como ESPN Pick'em).
+# Semana de ESPN Pick'em: su línea (la misma que ve la Quiniela). Otras semanas: línea de nflverse.
+# Partidos que ya empezaron no se tocan (su kickoff y su línea quedan fijos). Necesita el secreto FIREBASE_SA
+# (llave de servicio de Firebase en JSON); sin él, no se sube nada y la página sigue igual.
+def _fb_partidos():
+    sa=os.environ.get('FIREBASE_SA','').strip()
+    if not sa:
+        print("Grupos: no hay secreto FIREBASE_SA; no se suben los partidos a Firebase"); return
+    import firebase_admin
+    from firebase_admin import credentials, firestore
+    from datetime import timezone as _tz
+    if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
+    db=firestore.client(); ahora=datetime.now(_tz.utc); fx={"WSH":"WAS","LAR":"LA"}; sem={}
+    pk=out.get('pickem') or {}; pw=(pk.get('currentScoringPeriod') or {}).get('id')
+    if pw:
+        for p in pk.get('propositions',[]):
+            O=p.get('possibleOutcomes') or []
+            A=next((o for o in O if o.get('subType')=='AWAY'),None); H=next((o for o in O if o.get('subType')=='HOME'),None)
+            if not A or not H or p.get('spread') is None or not p.get('date'): continue
+            a=fx.get(A['abbrev'],A['abbrev']); h=fx.get(H['abbrev'],H['abbrev'])
+            sem.setdefault(int(pw),{})[f"{a}@{h}"]=dict(a=a,h=h,ko=datetime.fromtimestamp(p['date']/1000,tz=_tz.utc),L=float(p['spread']))
+    gw=out.get('gweek') or 0
+    for w in (gw,gw+1):
+        if not w or w in sem: continue
+        for g in sched:
+            if g['w']!=w or not g.get('ko') or g.get('tbd'): continue
+            ko=datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=_tz.utc)
+            sem.setdefault(w,{})[f"{g['a']}@{g['h']}"]=dict(a=g['a'],h=g['h'],ko=ko,L=(-g['sp'] if g.get('sp') is not None else None))
+    for w,G in sem.items():
+        ref=db.collection('partidos_semana').document(f"{out['season']}-{w}")
+        prev=(ref.get().to_dict() or {}).get('games',{})
+        for k,v in prev.items():                      # lo que ya empezó se queda como estaba
+            if v.get('ko') and v['ko']<=ahora: G[k]=v
+        if not G: continue
+        ref.set(dict(temporada=out['season'],w=w,primero=min(v['ko'] for v in G.values()),games=G))
+        print(f"Grupos: semana {w} en Firebase ({len(G)} partidos)")
+try:
+    _fb_partidos()
+except Exception as ex:
+    print("Grupos: no se pudieron subir los partidos a Firebase:",ex)
+
 # Google Analytics: google_analytics.txt con el ID de medición (G-XXXXXXX). Es público por diseño.
 def _ga_id():
     import re as _re
