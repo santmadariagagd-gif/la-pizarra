@@ -15,10 +15,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt firebase-admin   # firebase-admin: sube los partidos de los grupos
       - run: python build_site.py
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}   # clave de The Odds API (Settings → Secrets and variables → Actions)
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}     # llave de servicio de Firebase (JSON) para los grupos de quiniela
       - name: Guardar la página nueva
         run: |
           git config user.name "La Pizarra bot"
