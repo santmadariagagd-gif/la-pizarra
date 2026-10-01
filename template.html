@@ -2629,7 +2629,13 @@ function bracketSVG(fases){
   // Tramos: una ronda se une a la anterior solo si algún equipo viene de ahí. Las rondas previas de una copa
   // (Ronda 1, 2, 3 de la Libertadores) no alimentan a los octavos, así que se dibujan como un cuadro aparte.
   const tramos=[[todas[0]]];
-  for(let r=1;r<todas.length;r++){ const prev=todas[r-1], liga=todas[r].ties.some(t=>t.ids.some(id=>prev.ties.some(p=>p.ids.includes(id)))); if(liga) tramos[tramos.length-1].push(todas[r]); else tramos.push([todas[r]]); }
+  // Se unen si la ronda anterior tiene al menos tantas series como esta (el cuadro se va cerrando) y la mayoría
+  // de las series de esta ronda tiene algún equipo que viene de la anterior. Una ronda previa chica (Ronda 3 de la
+  // Libertadores, el Play-In de la Liga MX) alimenta a los grupos o solo a una parte del cuadro: va aparte.
+  for(let r=1;r<todas.length;r++){ const prev=todas[r-1], cur=todas[r];
+    const con=cur.ties.filter(t=>t.ids.some(id=>prev.ties.some(p=>p.ids.includes(id)))).length;
+    const liga=prev.ties.length>=cur.ties.length&&con*2>=cur.ties.length;
+    if(liga) tramos[tramos.length-1].push(cur); else tramos.push([cur]); }
   return tramos.map(R=>bracketTramo(R)).join("");
 }
 function bracketTramo(R){
