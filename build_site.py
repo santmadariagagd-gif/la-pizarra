@@ -1007,8 +1007,105 @@ def mx_player_stats():
     eventos.pop("_diag",None)
     print(f"Liga MX: {len(eventos)} partidos terminados, {con_stats} con estadísticas por jugador, {len(filas)} jugadores")
     return filas
+# ---------- Sportmonks: estadísticas de jugadores del torneo (licencia comercial) ----------
+# Pide a Sportmonks (secreto SPORTMONKS_KEY) todos los partidos terminados del torneo actual con sus
+# alineaciones y eventos, y suma partido por partido. Goles, asistencias y tarjetas salen de los eventos;
+# minutos, tiros, faltas y atajadas de las estadísticas de cada jugador. Mismos campos que usa la página.
+SMK=os.environ.get("SPORTMONKS_KEY","").strip()
+SM_ESCUDOS=True   # mismo interruptor que en template.html
+def sm(ruta,**q):
+    url="https://api.sportmonks.com/v3/football/"+ruta+("?"+urllib.parse.urlencode(q,safe=";:,") if q else "")
+    req=urllib.request.Request(url,headers={"Authorization":SMK,"Accept":"application/json","User-Agent":"LaPizarra/1.0"})
+    with urllib.request.urlopen(req,timeout=90) as r:
+        return json.loads(r.read().decode("utf-8"))
+def sm_all(ruta,**q):
+    res=[]
+    for page in range(1,40):
+        j=sm(ruta,per_page=25,page=page,**q); d=j.get("data") or []
+        res+=d if isinstance(d,list) else [d]
+        if not (j.get("pagination") or {}).get("has_more"): break
+    return res
+SM_FIN={"FT","AET","FT_PEN","AWARDED"}
+def sm_tipo(n):
+    n=(n or "").lower()
+    if "own goal" in n: return "autogol"
+    if "yellow/red" in n or "redcard" in n or "red card" in n: return "roja"
+    if "yellowcard" in n or "yellow card" in n: return "amarilla"
+    if n in ("goal","penalty"): return "gol"
+    if "substitution" in n: return "cambio"
+    return None
+def sm_player_stats(liga_id,nombre,con_liguilla):
+    L=sm(f"leagues/{liga_id}",include="currentSeason")["data"]; S=L.get("currentseason") or L.get("current_season") or {}
+    if not S.get("id"): print(f"{nombre} (Sportmonks): sin temporada actual"); return []
+    ini=date.fromisoformat(S["starting_at"]); fin=min(date.today(),date.fromisoformat(S.get("ending_at") or date.today().isoformat())+timedelta(days=21))
+    F={}
+    a=ini
+    while a<=fin:
+        b=min(fin,a+timedelta(days=89))
+        for f in sm_all(f"fixtures/between/{a}/{b}",filters=f"fixtureLeagues:{liga_id}",include="participants;scores;state;round;stage;events.type;lineups.details.type;lineups.position"):
+            if f.get("season_id")==S["id"]: F[f["id"]]=f
+        a=b+timedelta(days=1)
+    F=list(F.values())
+    if con_liguilla:   # Liga MX: solo el torneo actual (Apertura o Clausura) y su Liguilla
+        num=lambda f:str((f.get("round") or {}).get("name") or "").isdigit()
+        reg=[f for f in F if num(f)]
+        cur=next((f["stage_id"] for f in reg if (f.get("stage") or {}).get("is_current")),None) or (max(reg,key=lambda f:f["starting_at_timestamp"])["stage_id"] if reg else None)
+        if cur:
+            t0=min(f["starting_at_timestamp"] for f in reg if f["stage_id"]==cur)
+            F=[f for f in F if f["stage_id"]==cur or (not num(f) and f["starting_at_timestamp"]>=t0)]
+    F=[f for f in F if (f.get("state") or {}).get("developer_name") in SM_FIN]
+    P={}
+    for f in F:
+        part={p["id"]:p for p in f.get("participants") or []}
+        goles={}
+        for s in f.get("scores") or []:
+            if s.get("description")=="CURRENT": goles[s.get("participant_id")]=(s.get("score") or {}).get("goals") or 0
+        G,AS,YC,RC,ENTRA={}, {}, {}, {}, set()
+        for e in f.get("events") or []:
+            t=sm_tipo((e.get("type") or {}).get("name")); pid=e.get("player_id")
+            if t=="gol":
+                G[pid]=G.get(pid,0)+1
+                if (e.get("type") or {}).get("name","").lower()=="goal" and e.get("related_player_id"): AS[e["related_player_id"]]=AS.get(e["related_player_id"],0)+1
+            elif t=="amarilla": YC[pid]=YC.get(pid,0)+1
+            elif t=="roja": RC[pid]=RC.get(pid,0)+1
+            elif t=="cambio": ENTRA.add(pid)
+        LU=f.get("lineups") or []
+        filas={}
+        for l in LU:
+            if l.get("type_id")==11 and l.get("formation_field"):
+                filas.setdefault(l["team_id"],[]).append(int(str(l["formation_field"]).split(":")[0]))
+        for l in LU:
+            det={(d.get("type") or {}).get("developer_name"):(d.get("data") or {}).get("value") for d in l.get("details") or []}
+            tit=l.get("type_id")==11; mins=det.get("MINUTES_PLAYED")
+            if not (tit or l.get("player_id") in ENTRA or (mins or 0)>0): continue
+            tid=l.get("team_id"); eq=part.get(tid,{}); rival=next((k for k in part if k!=tid),None)
+            fila=int(str(l["formation_field"]).split(":")[0]) if tit and l.get("formation_field") else None
+            if fila: pos="G" if fila==1 else "D" if fila==2 else "F" if fila==max(filas.get(tid,[fila])) else "M"
+            else:
+                pn=((l.get("position") or {}).get("name") or "").lower()
+                pos="G" if "goal" in pn else "D" if "def" in pn else "F" if ("att" in pn or "forw" in pn) else "M"
+            pid=l.get("player_id")
+            r=P.setdefault(pid,dict(id=pid,n=(l.get("player_name") or "").strip(),t=eq.get("short_code") or "",tn=eq.get("name") or "",
+                logo=eq.get("image_path") if SM_ESCUDOS else None,pos=pos,ap=0,tit=0,min=0,g=0,as_=0,sh=0,sot=0,yc=0,rc=0,fc=0,fs=0,sv=0,gc=None,cs=None))
+            if tit: r["pos"]=pos
+            r["ap"]+=1; r["tit"]+=1 if tit else 0
+            r["min"]+=mins or 0; r["g"]+=G.get(pid,0); r["as_"]+=AS.get(pid,0); r["yc"]+=YC.get(pid,0); r["rc"]+=RC.get(pid,0)
+            for k,c in (("sh","SHOTS_TOTAL"),("sot","SHOTS_ON_TARGET"),("fc","FOULS"),("fs","FOULS_DRAWN"),("sv","SAVES")): r[k]+=det.get(c) or 0
+            if tit and pos=="G":
+                rec=goles.get(rival,0); r["gc"]=(r["gc"] or 0)+rec; r["cs"]=(r["cs"] or 0)+(1 if rec==0 else 0)
+    res=[]
+    for r in P.values():
+        if not r["n"]: continue
+        r["as"]=r.pop("as_"); r["pg"]=r["pos"]; r["g90"]=round(r["g"]*90/r["min"],2) if r["min"]>=90 else None
+        res.append(r)
+    print(f"{nombre} (Sportmonks): {len(F)} partidos terminados, {len(res)} jugadores")
+    return res
 try:
-    out['mxp']=mx_player_stats()
+    if SMK:
+        out['mxp']=sm_player_stats(743,"Liga MX",True); out['mx_logos']=[]
+    else:
+        print("Liga MX: falta el secret SPORTMONKS_KEY; se intenta con ESPN")
+        out['mxp']=mx_player_stats()
 except Exception as ex:
     print("Liga MX: no se pudieron obtener estadísticas de jugadores:",ex); out['mxp']=[]
 # ---------- Postemporada NFL, si la temporada terminara hoy ----------
