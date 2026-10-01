@@ -1035,7 +1035,9 @@ def sm_tipo(n):
     if "substitution" in n: return "cambio"
     return None
 def sm_player_stats(liga_id,nombre,con_liguilla):
-    L=sm(f"leagues/{liga_id}",include="currentSeason")["data"]; S=L.get("currentseason") or L.get("current_season") or {}
+    L=sm(f"leagues/{liga_id}",include="currentSeason;seasons")["data"]; S=L.get("currentseason") or L.get("current_season") or {}
+    if not S.get("id"):   # sin temporada en curso (p. ej. Leagues Cup): la última
+        ss=sorted([x for x in L.get("seasons") or [] if x.get("starting_at")],key=lambda x:x["starting_at"],reverse=True); S=ss[0] if ss else {}
     if not S.get("id"): print(f"{nombre} (Sportmonks): sin temporada actual"); return []
     ini=date.fromisoformat(S["starting_at"]); fin=min(date.today(),date.fromisoformat(S.get("ending_at") or date.today().isoformat())+timedelta(days=21))
     F={}
@@ -1053,7 +1055,7 @@ def sm_player_stats(liga_id,nombre,con_liguilla):
         if cur:
             t0=min(f["starting_at_timestamp"] for f in reg if f["stage_id"]==cur)
             F=[f for f in F if f["stage_id"]==cur or (not num(f) and f["starting_at_timestamp"]>=t0)]
-    F=[f for f in F if (f.get("state") or {}).get("developer_name") in SM_FIN]
+    F=[f for f in F if (f.get("state") or {}).get("developer_name") in SM_FIN and (f.get("stage") or {}).get("type_id")!=225]   # 225 = rondas clasificatorias (amateur)
     P={}
     for f in F:
         part={p["id"]:p for p in f.get("participants") or []}
@@ -1102,7 +1104,11 @@ def sm_player_stats(liga_id,nombre,con_liguilla):
     return res
 # Ligas que salen de Sportmonks: clave en la página → (id en Sportmonks, nombre, ¿tiene Liguilla?)
 SM_LIGAS={"mx":(743,"Liga MX",True),"eng":(8,"Premier League",False),"esp":(564,"La Liga",False),
-          "ita":(384,"Serie A",False),"ger":(82,"Bundesliga",False),"fra":(301,"Ligue 1",False)}
+          "ita":(384,"Serie A",False),"ger":(82,"Bundesliga",False),"fra":(301,"Ligue 1",False),
+          "por":(462,"Liga Portugal",False),"sau":(944,"Liga Saudí",False),"arg":(636,"Liga Argentina",True),
+          "fac":(24,"FA Cup",False),"efl":(27,"Carabao Cup",False),"cdr":(570,"Copa del Rey",False),"cit":(390,"Coppa Italia",False),
+          "dfb":(109,"DFB-Pokal",False),"cdf":(307,"Coupe de France",False),"lib":(1122,"Copa Libertadores",False),
+          "ccc":(1111,"Concachampions",False),"lgc":(3211,"Leagues Cup",False)}
 # Las estadísticas de jugadores van en archivos aparte (docs/datos/jugadores_<liga>.json) que la página
 # pide solo cuando abres la pestaña Jugadores, para no hacer pesada la página principal.
 out['mxp']=[]; out['mx_logos']=[]
