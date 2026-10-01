@@ -2040,7 +2040,7 @@ function mxGroups(ev,playoffAware,allTeams){
   if(sorted.some(e=>e._sm)&&LEAGUES[FLIG]?.sm&&LEAGUES[FLIG].tipo!=="liga"){
     const byR=new Map();
     for(const e of sorted){
-      const k=/^\d+$/.test(e._round||"")?`${e._stage&&!/group|regular|apertura|clausura/i.test(e._stage)?etapaEs(e._stage)+" · ":e._stage&&/apertura|clausura/i.test(e._stage)?e._stage.split(/[ ,-]/)[0]+" · ":"Fase de grupos · "}Jornada ${e._round}`:etapaEs(e._stage||"Eliminatoria");
+      const k=e._ko||!/^\d+$/.test(e._round||"")?etapaEs(e._stage||"Eliminatoria"):`${e._stage&&/apertura|clausura/i.test(e._stage)?e._stage.split(/[ ,-]/)[0]+" · ":"Fase de grupos · "}Jornada ${e._round}`;
       if(!byR.has(k)) byR.set(k,{t:+new Date(e.date),games:[]}); const g=byR.get(k); g.games.push(e); g.t=Math.min(g.t,+new Date(e.date)||g.t);
     }
     const weeks=[...byR.entries()].sort((a,b)=>a[1].t-b[1].t).map(([label,g])=>({label,games:g.games}));
@@ -2692,7 +2692,8 @@ function serieGanador(legs,pos){
 // siguiente donde juega su ganador. Las series de rondas futuras sin equipos salen como "Por definir".
 function bracketSVG(fases){
   if(fases.length<2) return "";
-  const todas=fases.map(([nombre,f])=>({nombre:etapaEs(nombre),ties:f.series.map(sr=>({ids:sr.ids,eq:sr.eq,w:sr.w,g:sr.g,ok:sr.done}))}));
+  // El partido por el tercer lugar no es parte del cuadro (queda en la lista de abajo)
+  const todas=fases.map(([nombre,f])=>({nombre:etapaEs(nombre),ties:f.series.map(sr=>({ids:sr.ids,eq:sr.eq,w:sr.w,g:sr.g,ok:sr.done}))})).filter(r=>!/tercer lugar/i.test(r.nombre));
   // Tramos: una ronda se une a la anterior solo si algún equipo viene de ahí. Las rondas previas de una copa
   // (Ronda 1, 2, 3 de la Libertadores) no alimentan a los octavos, así que se dibujan como un cuadro aparte.
   const tramos=[[todas[0]]];
@@ -2770,7 +2771,7 @@ async function loadMxLiguilla(){
     if(L.sm&&L.tipo!=="liga"){
       // Copas y torneos: llaves con todas las rondas de eliminación (en copas, solo las principales)
       const {ev}=await mxSeason(); if(key!==FLIG) return;
-      const ko=ev.filter(e=>e._ko&&!(L.tipo==="torneo"&&e._round&&/^\d+$/.test(e._round)));
+      const ko=ev.filter(e=>e._ko);   // por tipo de fase (224/225): algunas rondas de eliminación traen jornada numérica
       $("#mxlgMsg").textContent=ko.length?"":"Las llaves aparecen cuando empiecen las rondas de eliminación.";
       $("#mxBracket").innerHTML=ko.length?renderLlaves(ko):"";
       return;
