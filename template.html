@@ -842,6 +842,8 @@ $("#flSel").onchange=e=>{
   FLIG=e.target.value; try{localStorage.setItem("pz_flig",FLIG)}catch(err){}
   applyLeagueTabs();
   mxLoaded=false; mxtLoaded=false; mxLgLoaded=false; mxpLoaded=false; mxprLoaded=false; selLoaded=false; uclKoLoaded=false; $("#mxhistQ").value=""; $("#mxGames").dataset.src=""; MXJ=[]; curJ=0; MXP=[]; MX_TABLE_ROWS=null;
+  $("#mxGames").innerHTML=""; $("#jSel").innerHTML=""; $("#mxMsg").textContent="Cargando partidos…";   // que no se quede la liga anterior en pantalla
+  if(LEAGUES[FLIG].sm){ const k=FLIG; setLogo(null); smLeague(k).then(L=>{if(FLIG===k&&SM_ESCUDOS) setLogo(L.image_path);}).catch(()=>{}); }
   if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true"){ $("#heroTitle").textContent=flLabel(); if(LEAGUES[FLIG].nat) setLogo(pickLogo(SEL_LOGOS)); }
   const cur=document.querySelector('.subnav[data-for=mx] button[aria-current]');
   const id=cur&&!cur.hidden?cur.dataset.tab:"mxgames";
@@ -1699,7 +1701,7 @@ function smEvent(f,lg){
                                 {homeAway:"away",score:smScore(f,"away"),team:smTeam(A),records:[],winner:!!A.meta?.winner}],
       venue:f.venue?{fullName:SM_ESTADIO[f.venue.name]||f.venue.name,address:{city:SM_CIUDAD[f.venue.city_name]||f.venue.city_name}}:null,odds:[]}],
     _sm:true,_round:rn,_stage:f.stage?.name,_stageId:f.stage_id,
-    _lig:!!(lg?.liguilla&&rn!=null&&!/^\d+$/.test(rn)),   // en Liga MX: lo que no es jornada numérica es Liguilla
+    _lig:!!(lg?.liguilla&&(f.stage?.type_id===224||!/^\d+$/.test(rn||""))),   // Liga MX: fase de eliminación (224) o sin jornada numérica = Liguilla
     _susp:SM_SUSP[dn]||null,_lat:f.venue?.latitude!=null?+f.venue.latitude:null,_lon:f.venue?.longitude!=null?+f.venue.longitude:null};
 }
 // Liga y temporada actual (se guarda por liga mientras la página esté abierta)
@@ -1716,7 +1718,7 @@ async function smSeasonEvents(key){
   if(!S.id) return {ev:[],L,S};
   const ini=new Date((S.starting_at||smDay(Date.now()))+"T00:00:00Z").getTime()-3*864e5;
   const fin=new Date((S.ending_at||smDay(Date.now()+180*864e5))+"T00:00:00Z").getTime()+21*864e5;
-  const tramos=[]; for(let a=ini;a<=fin;a+=90*864e5) tramos.push([smDay(a),smDay(Math.min(fin,a+89*864e5))]);
+  const tramos=[]; for(let a=ini;a<=fin;a+=30*864e5) tramos.push([smDay(a),smDay(Math.min(fin,a+29*864e5))]);   // tramos chicos en paralelo: carga más rápido
   const inc="participants;scores;state;round;stage;venue";
   const listas=await Promise.all(tramos.map(([a,b])=>smAll(`fixtures/between/${a}/${b}`,`filters=fixtureLeagues:${lg.sm}&include=${inc}`).catch(()=>[])));
   const byId=new Map(); listas.flat().filter(f=>f.season_id===S.id).forEach(f=>byId.set(f.id,f));
@@ -1728,7 +1730,9 @@ async function smSeasonEvents(key){
     const now=Date.now()/1000;
     const cur=(reg.find(f=>f.stage?.is_current)||[...reg].filter(f=>f.starting_at_timestamp<=now).sort((a,b)=>b.starting_at_timestamp-a.starting_at_timestamp)[0]||reg[0])?.stage_id;
     if(cur){const t0=Math.min(...reg.filter(f=>f.stage_id===cur).map(f=>f.starting_at_timestamp));
-      F=F.filter(f=>f.stage_id===cur||(!/^\d+$/.test(f.round?.name||"")&&f.starting_at_timestamp>=t0));}
+      const base=(reg.find(f=>f.stage_id===cur)?.stage?.name||"").split(/[ ,-]/)[0];   // "Apertura" / "Clausura"
+      // La Liguilla viene como fases aparte ("Clausura - Quarter-finals", "Apertura, Play In"): solo las del torneo actual
+      F=F.filter(f=>f.stage_id===cur||(!/^\d+$/.test(f.round?.name||"")&&f.starting_at_timestamp>=t0&&(!base||(f.stage?.name||"").startsWith(base))));}
     S._stage=F.find(f=>f.stage_id===cur)?.stage||null;
   }
   return {ev:F.map(f=>smEvent(f,lg)).sort((a,b)=>new Date(a.date)-new Date(b.date)),L,S};
@@ -1864,12 +1868,14 @@ function mxGroups(ev,playoffAware,allTeams){
   const sorted=[...ev].sort((a,b)=>new Date(a.date)-new Date(b.date));
   const met=new Set(), liguilla=[], byWeek=new Map();
   // Sportmonks da el número de jornada: si todos los partidos regulares lo traen, se agrupa por jornada.
-  const porJornada=sorted.some(e=>e._sm)&&sorted.filter(e=>!e._lig).every(e=>/^\d+$/.test(e._round||""));
+  // Agrupar por jornada se probó (1 oct 2026) y se descartó: los partidos reprogramados estiran el rango de fechas
+  // y confunden con los partidos en vivo. Se agrupa por semana de calendario y la jornada se ve en cada tarjeta.
+  const porJornada=false;
   for(const e of sorted){
     if(e._lig){liguilla.push(e); continue;}
     if(porJornada){const k=+e._round; if(!byWeek.has(k)) byWeek.set(k,[]); byWeek.get(k).push(e); continue;}
-    if(!reg(e)){liguilla.push(e); continue;}
-    if(playoffAware){
+    if(!e._sm&&!reg(e)){liguilla.push(e); continue;}   // Sportmonks ya dice qué es Liguilla (e._lig)
+    if(playoffAware&&!e._sm){
       // Solo aplica a ligas con Liguilla (temporada regular sin revanchas): un segundo cruce entre los
       // mismos dos equipos es la Liguilla. En ligas de ida y vuelta (Premier, La Liga...) un segundo
       // cruce es normal — cada equipo juega dos veces contra cada rival — así que no se aparta.
@@ -1890,7 +1896,7 @@ function mxGroups(ev,playoffAware,allTeams){
   }
   const weeks=[...byWeek.entries()].sort((a,b)=>a[0]<b[0]?-1:1).map(([wk,games])=>{
     const start=new Date(wk+"T12:00:00Z"), end=new Date(wk+"T12:00:00Z"); end.setUTCDate(end.getUTCDate()+6);
-    return {games,label:`${start.getUTCDate()} – ${fDateShort(end)}`};
+    return {games,label:start.getUTCMonth()===end.getUTCMonth()?`${start.getUTCDate()} – ${fDateShort(end)}`:`${fDateShort(start)} – ${fDateShort(end)}`};
   });
   return {weeks,liguilla};
 }
@@ -1977,7 +1983,7 @@ function mxCard(e,i){
            {n:A.team?.shortDisplayName||A.team?.displayName||"Visita",sub:rec(A),logo:A.team?.logo,ml:am,score:as,win:done&&as>hs}],
     probs:(!done&&!live&&pr)?[{p:pr[0],c:col(H),l:"Local"},{p:pr[1],c:"var(--line)",l:"Empate"},{p:pr[2],c:col(A),l:"Visita"}]:null,
     lines:(!done&&!live)?[["Empate",mlTxt(dm)],["Total de goles",o.overUnder??"–"]].filter(x=>x[1]!=="–"):[],
-    place:[c.venue?.fullName,c.venue?.address?.city].filter(Boolean).join(" · "), city:c.venue?.address?.city};
+    place:[/^\d+$/.test(e._round||"")?`Jornada ${e._round}`:null,c.venue?.fullName,c.venue?.address?.city].filter(Boolean).join(" · "), city:c.venue?.address?.city};
 }
 let mxLoaded=false, curJ=0, MXJ=[];
 async function loadMxGames(){
@@ -1986,7 +1992,9 @@ async function loadMxGames(){
   try{
     $("#mxgTitle").textContent=`Partidos de ${flLabel()}`;
     $("#mxMsg").textContent="Cargando partidos…";
-    const {J}=await mxSeason(); MXJ=J;
+    const key=FLIG, {J}=await mxSeason();
+    if(key!==FLIG) return;   // cambiaron de liga mientras cargaba: esa carga ya no se pinta
+    MXJ=J;
     if(!J.length){$("#mxMsg").textContent=`No hay partidos de ${flLabel()} programados por ahora.`;return;}
     const now=Date.now(), vivo=J.findIndex(j=>j.games.some(e=>e.status?.type?.state==="in"));
     curJ=vivo>=0?vivo:J.findIndex(j=>j.games.some(e=>e.status?.type?.state==="pre"&&!e._susp&&+new Date(e.date)>now-12*36e5));
