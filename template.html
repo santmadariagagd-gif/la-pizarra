@@ -346,6 +346,11 @@ dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 .averify span{color:var(--ink)}
 .averify .alink{align-self:flex-start}
 /* Grupos de quiniela */
+.qtb{display:flex;flex-direction:column;gap:6px;margin:10px 0 2px;padding:10px 12px;border-radius:8px;background:var(--hl);font-size:14px}
+.qtb input{font:600 18px var(--display);width:110px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.grwin{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:10px;background:var(--hl);border-left:4px solid var(--mark);margin:6px 0 4px;font-size:15px}
+.grc small{display:block;font:500 11px/1.2 var(--body);color:var(--muted);text-decoration:none}
+
 .qview{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:4px 0 18px}
 .qview button{font:600 18px var(--display);background:none;border:0;padding:8px 0;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
 .qview button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--mark)}
@@ -1438,6 +1443,9 @@ function qnRecord(mode,onlyWeek){
       if(g==="win")R.w++; else if(g==="loss")R.l++; else if(g==="push")R.p++; else R.pend++;}}
   return R;
 }
+// Desempate: puntos totales del último partido de la semana (el de kickoff más tarde; si empatan, la llave mayor).
+// Se guarda en el pick de ese partido como "tb" (sirve para con y sin spread) y se cierra con su kickoff.
+const qnLastKey=games=>{const L=[...games].map(g=>({k:`${g.a}@${g.h}`,ko:+(g.ko||0)})).sort((x,y)=>x.ko-y.ko||(x.k<y.k?-1:x.k>y.k?1:0)); return L.length?L[L.length-1].k:null;};
 const qnRecTxt=R=>`${R.w}-${R.l}${R.p?`-${R.p}`:""}${R.w+R.l?` (${Math.round(100*R.w/(R.w+R.l))}%)`:""}`;
 function qnMineBox(P){
   const box=$("#qMine"); if(qnMode==="surv"){box.innerHTML=""; return;}
@@ -1474,6 +1482,7 @@ async function loadQuiniela(){
   const rows=G.map(g=>{const m=qnModel(g), q=qnProb(g);
     const edge=m==null?null:m+g.L;                      // puntos a favor del local contra la línea
     return {g,m,q,edge,pick:qnMode==="ats"?(edge==null?null:edge>0?g.h:g.a):(q?(q.p[1]>=q.p[0]?g.h:g.a):null)};});
+  const lastK=qnLastKey(G);
   const top=new Set(rows.filter(r=>!r.g.lock&&r.edge!=null).sort((x,y)=>Math.abs(y.edge)-Math.abs(x.edge)).slice(0,3).map(r=>r.g));
   qnMineBox(P);
   const MW=((qnPicksAll()[D.season]||{})[P.week])||{};
@@ -1499,9 +1508,23 @@ async function loadQuiniela(){
       ${!sp&&q?`<div class="prob"><i style="width:${(q.p[0]*100).toFixed(1)}%;background:${A.c||"#888"}"></i><i style="width:${(q.p[1]*100).toFixed(1)}%;background:${H.c||"#555"}"></i></div>`:""}
       ${lines.length?`<div class="lines qln">${lines.map(([k,v])=>`<span>${k} <b>${v}</b></span>`).join("")}</div>`:""}
       ${(al=>al?`<div class="qalert">${al}</div>`:"")(qnAlert(g,INJ))}
+      ${`${g.a}@${g.h}`===lastK?qnTbBox(g,P.week,MW[`${g.a}@${g.h}`]?.tb,res):""}
       <div class="where"><span>${pick?`Pick de La Pizarra: <b>${T(pick).n}</b>`:""}</span><span>${pop}</span></div>
       <button class="qan" type="button" data-qi="${qi}">Ver análisis ›</button></article>`;}).join("");
 }
+function qnTbBox(g,w,tb,res){
+  const tot=res?res.as+res.hs:null;
+  if(g.lock) return `<div class="qtb"><span>Desempate (último partido de la semana)</span><b>${tb!=null?`Tu pronóstico: ${tb} pts`:"No pusiste desempate"}${tot!=null?` · Fueron ${tot}`:""}</b></div>`;
+  return `<div class="qtb"><label for="qtbIn">Desempate: ¿cuántos puntos en total habrá en este partido?</label>
+    <input type="number" id="qtbIn" class="qtbin" min="0" max="150" step="1" inputmode="numeric" placeholder="Ej. 45" value="${tb??""}" data-k="${g.a}@${g.h}" data-qw="${w}"></div>`;
+}
+$("#qGames").addEventListener("change",e=>{
+  const el=e.target.closest?.(".qtbin"); if(!el) return;
+  const v=el.value.trim(), n=v===""?null:Math.round(+v); if(n!=null&&(!isFinite(n)||n<0||n>150)){el.value=""; return;}
+  const all=qnPicksAll(), S=all[D.season]=all[D.season]||{}, W=S[el.dataset.qw]=S[el.dataset.qw]||{}, k=el.dataset.k, G=W[k]=W[k]||{};
+  if(n==null) delete G.tb; else G.tb=n; if(!Object.keys(G).length) delete W[k];
+  qnPicksSave(all); grOnPick(el.dataset.qw,k,G||{}); pzTrack("desempate",{});
+});
 // ---------- Quiniela: análisis por partido (bajas, duelos previos, descanso, racha, clima) ----------
 // Lesiones: ESPN en vivo (una sola consulta para los 32 equipos; se guarda 15 min en el navegador, ya recortada).
 // Titulares: tabla de profundidad de Sleeper (D.starters, la baja el script una vez al día).
@@ -2987,7 +3010,7 @@ async function grInfo(id,force){
   return GR.info[id]={id,...s.data()};
 }
 // Pick → grupos (se llama desde la Quiniela después de guardarlo en el navegador)
-const grVal=G=>{const v={}; if(G?.ats?.t) v.ats=G.ats.t; if(G?.su?.t) v.su=G.su.t; return v;};
+const grVal=G=>{const v={}; if(G?.ats?.t) v.ats=G.ats.t; if(G?.su?.t) v.su=G.su.t; if(Number.isInteger(G?.tb)) v.tb=G.tb; return v;};
 async function grWrite(g,w,key,val){
   const uid=grMe().uid, ref=ACCT.db.doc(`grupos/${g}/picks/${uid}_${w}`);
   try{ await ref.update(new firebase.firestore.FieldPath(key),val,"ultimo",key); }
@@ -3051,17 +3074,33 @@ async function grLoad(g){
   }
   return GR.data[g]={info,M,W,cur,t:Date.now()};
 }
+// Tabla: puntos (1 por acierto). Ganador de cada semana: más aciertos; si empatan, el desempate más cercano a los
+// puntos totales del último partido. Empates en la temporada: más semanas ganadas y luego menor error acumulado de desempate.
 function grScore(Gd,mode){
-  const now=Date.now(), rows=Gd.M.map(m=>({uid:m.uid,n:m.nombre||"Jugador",sw:0,sl:0,sp:0,ww:0,wl:0}));
-  const byU=Object.fromEntries(rows.map(r=>[r.uid,r]));
-  for(const [w,{S,P}] of Object.entries(Gd.W)) for(const [k,g] of Object.entries(S.games)){
-    if(g.ko>now) continue; const res=qnResult(+w,g.a,g.h); if(!res) continue;
-    for(const [uid,doc] of Object.entries(P)){ const t=doc?.[k]?.[mode], r=byU[uid]; if(!t||!r) continue;
-      if(mode==="ats"&&g.L==null) continue;
-      const gr=qnGrade(mode==="ats"?{t,L:g.L}:{t},mode,g.a,g.h,res);
-      if(gr==="win"){r.sw++; if(+w===Gd.cur) r.ww++;} else if(gr==="loss"){r.sl++; if(+w===Gd.cur) r.wl++;} else r.sp++; }
+  const now=Date.now(), rows=Gd.M.map(m=>({uid:m.uid,n:m.nombre||"Jugador",sw:0,sl:0,sp:0,ww:0,wl:0,won:0,tbe:0}));
+  const byU=Object.fromEntries(rows.map(r=>[r.uid,r])), winners={};
+  for(const [w,{S,P}] of Object.entries(Gd.W)){
+    const pts={}; Gd.M.forEach(m=>pts[m.uid]=0);
+    for(const [k,g] of Object.entries(S.games)){
+      if(g.ko>now) continue; const res=qnResult(+w,g.a,g.h); if(!res) continue;
+      for(const [uid,doc] of Object.entries(P)){ const t=doc?.[k]?.[mode], r=byU[uid]; if(!t||!r) continue;
+        if(mode==="ats"&&g.L==null) continue;
+        const gr=qnGrade(mode==="ats"?{t,L:g.L}:{t},mode,g.a,g.h,res);
+        if(gr==="win"){r.sw++; pts[uid]++; if(+w===Gd.cur) r.ww++;} else if(gr==="loss"){r.sl++; if(+w===Gd.cur) r.wl++;} else r.sp++; }
+    }
+    const lk=qnLastKey(Object.values(S.games)), lg=lk&&S.games[lk], lr=lg&&qnResult(+w,lg.a,lg.h);
+    if(lr){   // semana terminada: desempate y ganador
+      const tot=lr.as+lr.hs, err=uid=>{const tb=P[uid]?.[lk]?.tb; return Number.isInteger(tb)?Math.abs(tb-tot):null;};
+      Gd.M.forEach(m=>{const e=err(m.uid); byU[m.uid].tbe+=e??50;});
+      const best=Math.max(0,...Object.values(pts));
+      if(best>0){ const top=Gd.M.filter(m=>pts[m.uid]===best).sort((a,b)=>(err(a.uid)??999)-(err(b.uid)??999));
+        const e0=err(top[0].uid), tied=top.filter(m=>(err(m.uid)??999)===(e0??999));
+        tied.forEach(m=>byU[m.uid].won++);
+        winners[w]={who:tied.map(m=>m.nombre||"Jugador"),pts:best,tb:tied.map(m=>P[m.uid]?.[lk]?.tb),tot,usedTb:top.length>1}; }
+    }
   }
-  return rows.sort((a,b)=>b.sw-a.sw||b.ww-a.ww||a.sl-b.sl||a.n.localeCompare(b.n,"es"));
+  rows.sort((a,b)=>b.sw-a.sw||b.won-a.won||a.tbe-b.tbe||a.n.localeCompare(b.n,"es"));
+  rows.winners=winners; return rows;
 }
 function grGrid(Gd,mode){
   const X=Gd.W[Gd.cur]; if(!X) return `<p class="note">Los partidos de la semana ${Gd.cur} todavía no están publicados en los grupos (se publican cada mañana).</p>`;
@@ -3069,9 +3108,11 @@ function grGrid(Gd,mode){
   const me=grMe().uid, myDoc=X.P[me]||{}, mine=Object.keys(X.S.games).filter(k=>myDoc?.[k]?.[mode]).length;
   const head=`<p class="note">Tú llevas <b>${mine} de ${Object.keys(X.S.games).length}</b> picks ${mode==="ats"?"con spread":"sin spread"} esta semana. Los picks de todos se ven cuando empieza cada partido.</p>`;
   if(!G.length) return head;
-  const cell=(uid,k,g)=>{const t=X.P[uid]?.[k]?.[mode]; if(!t) return `<td class="grc none">–</td>`;
+  const lk=qnLastKey(Object.values(X.S.games));
+  const cell=(uid,k,g)=>{const t=X.P[uid]?.[k]?.[mode], tb=k===lk?X.P[uid]?.[k]?.tb:null, tbs=Number.isInteger(tb)?`<small>${tb} pts</small>`:"";
+    if(!t) return `<td class="grc none">–${tbs}</td>`;
     const res=qnResult(Gd.cur,g.a,g.h), gr=res&&!(mode==="ats"&&g.L==null)?qnGrade(mode==="ats"?{t,L:g.L}:{t},mode,g.a,g.h,res):null;
-    return `<td class="grc ${gr||"pend"}">${t}</td>`;};
+    return `<td class="grc ${gr||"pend"}">${t}${tbs}</td>`;};
   const ln=g=>mode==="ats"&&g.L!=null?`<small>${g.h} ${g.L>0?"+":""}${g.L}</small>`:"";
   return head+`<div class="tbl"><table class="grgrid"><thead><tr><th class="l">Jugador</th>${G.map(([k,g])=>`<th>${g.a}<br>@${g.h}${ln(g)}</th>`).join("")}</tr></thead>
     <tbody>${Gd.M.map(m=>`<tr class="${m.uid===me?"me":""}"><td class="l"><span class="nm">${acctEsc(m.nombre||"Jugador")}</span></td>${G.map(([k,g])=>cell(m.uid,k,g)).join("")}</tr>`).join("")}</tbody></table></div>`;
@@ -3109,12 +3150,14 @@ async function grMain(g){
   box.innerHTML=`<div class="grhead"><div><h3>${acctEsc(I.nombre)}</h3><small>${Gd.M.length} ${Gd.M.length===1?"miembro":"miembros"} · Semana ${Gd.cur}</small></div>
       <div class="grinv"><a class="btn" href="${wa}" target="_blank" rel="noopener">Invitar por WhatsApp</a><button class="alink" id="grCopy">Copiar link</button></div></div>
     ${qnMode==="surv"?`<p class="note">El survivor en grupos llega pronto. Mientras, aquí está la tabla con spread.</p>`:""}
+    ${(()=>{const W=R.winners, ws=Object.keys(W).map(Number).sort((a,b)=>b-a); if(!ws.length) return ""; const w=ws[0], x=W[w];
+      return `<div class="grwin">🏆 <span><b>Semana ${w}:</b> ${x.who.map(acctEsc).join(" y ")} con ${x.pts} ${x.pts===1?"acierto":"aciertos"}${x.usedTb?` · desempate: ${x.tb.map(v=>v??"sin pronóstico").join(", ")} (fueron ${x.tot} pts)`:""}</span></div>`;})()}
     <h3 style="margin-top:18px">Tabla ${GR.mode==="ats"?"con spread":"sin spread"}</h3>
-    <div class="tbl"><table class="grtab"><thead><tr><th class="l" aria-label="Lugar"></th><th class="l">Jugador</th><th>Puntos</th><th>Sem. ${Gd.cur}</th><th>Récord</th><th>%</th></tr></thead><tbody>
-    ${R.map((r,i)=>{const n=r.sw+r.sl; return `<tr class="${r.uid===me?"me":""}"><td class="rk">${i+1}</td><td class="l"><span class="nm">${acctEsc(r.n)}</span></td><td><b>${r.sw}</b></td><td>${r.ww}</td><td>${r.sw}-${r.sl}${r.sp?`-${r.sp}`:""}</td><td>${n?Math.round(r.sw/n*100)+"%":"–"}</td></tr>`;}).join("")}
+    <div class="tbl"><table class="grtab"><thead><tr><th class="l" aria-label="Lugar"></th><th class="l">Jugador</th><th>Puntos</th><th>Sem. ${Gd.cur}</th><th>Semanas ganadas</th><th>Récord</th><th>%</th></tr></thead><tbody>
+    ${R.map((r,i)=>{const n=r.sw+r.sl; return `<tr class="${r.uid===me?"me":""}"><td class="rk">${i+1}</td><td class="l"><span class="nm">${acctEsc(r.n)}</span></td><td><b>${r.sw}</b></td><td>${r.ww}</td><td>${r.won}</td><td>${r.sw}-${r.sl}${r.sp?`-${r.sp}`:""}</td><td>${n?Math.round(r.sw/n*100)+"%":"–"}</td></tr>`;}).join("")}
     </tbody></table></div>
     <h3 style="margin-top:22px">Picks de la semana ${Gd.cur}</h3>${grGrid(Gd,GR.mode)}
-    <p class="note" style="margin-top:14px">${GR.mode==="ats"?"Con spread cuenta la línea oficial del grupo (la de ESPN Pick'em de cada semana). ":""}1 punto por acierto. <button class="alink danger" id="grLeave">Salir del grupo</button></p>`;
+    <p class="note" style="margin-top:14px">${GR.mode==="ats"?"Con spread cuenta la línea oficial del grupo (la de ESPN Pick'em de cada semana). ":""}1 punto por acierto. Desempate de la semana: los puntos totales del último partido (se pone en su tarjeta, en Mis picks). <button class="alink danger" id="grLeave">Salir del grupo</button></p>`;
   $("#grCopy").onclick=async()=>{try{await navigator.clipboard.writeText(grLink(g)); $("#grCopy").textContent="¡Copiado!";}catch(e){prompt("Copia este link:",grLink(g));}};
   $("#grLeave").onclick=async()=>{ if(!confirm(`¿Salir de «${I.nombre}»? Tus picks se quedan en el grupo, pero ya no lo verás.`)) return; try{await grLeave(g); grRender();}catch(e){alert("No se pudo. Intenta de nuevo.");} };
 }
