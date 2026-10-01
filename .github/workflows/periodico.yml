@@ -1,0 +1,38 @@
+name: Periódico de las ligas
+on:
+  schedule:
+    - cron: "0 12 * * 2"   # martes 6:00 am CDMX (después del Monday Night)
+  workflow_dispatch:        # botón "Run workflow"
+    inputs:
+      semana:
+        description: "Semana a publicar (vacío = la última que ya terminó)"
+        required: false
+      sin_ia:
+        description: "Escribe 1 para probar sin gastar en la IA"
+        required: false
+permissions:
+  contents: write
+jobs:
+  periodico:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install nflreadpy firebase-admin
+      - run: python periodico.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # llave de la API de Claude
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}               # para leer las proyecciones guardadas
+          SEMANA: ${{ github.event.inputs.semana }}
+          SIN_IA: ${{ github.event.inputs.sin_ia }}
+      - name: Publicar los periódicos
+        run: |
+          git config user.name "La Pizarra bot"
+          git config user.email "actions@github.com"
+          git add docs/periodico || true
+          git diff --cached --quiet && exit 0
+          git commit -m "Periódico de las ligas"
+          git pull --rebase
+          git push
