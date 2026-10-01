@@ -741,7 +741,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="verdict" id="verdict"><strong>Agrega jugadores para comparar</strong><div class="meter"><i style="width:50%"></i></div><span class="note"></span></div>
 </section>
 
-<footer>La Pizarra</footer>
+<footer>La Pizarra · <a href="/privacidad.html">Aviso de privacidad</a> · <a href="/terminos.html">Términos y condiciones</a> · <a href="mailto:santmadariagagd@gmail.com">Contacto</a></footer>
 </div>
 
 <script>
@@ -2926,6 +2926,7 @@ function acctRender(){
       <input type="password" id="aPass" placeholder="Contraseña${up?` (mínimo ${ACCT_MIN} caracteres)`:""}" autocomplete="${up?"new-password":"current-password"}" aria-label="Contraseña">
       <button class="btn" id="aGo">${up?"Crear cuenta":"Entrar"}</button>
       <p class="amsg" id="aMsg" aria-live="polite"></p>
+      <p class="note" style="margin:4px 0 0;font-size:13px">Al ${up?"crear tu cuenta":"entrar"} aceptas los <a href="/terminos.html" target="_blank">Términos</a> y el <a href="/privacidad.html" target="_blank">Aviso de privacidad</a>.</p>
       <div class="alinks"><button class="alink" id="aSwap">${up?"Ya tengo cuenta":"Crear una cuenta"}</button>${up?"":`<button class="alink" id="aForgot">Olvidé mi contraseña</button>`}</div>
     </div>`;
   $("#aGoogle").onclick=acctGoogle; $("#aGo").onclick=acctEmail;

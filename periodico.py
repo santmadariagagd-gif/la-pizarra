@@ -632,7 +632,7 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
     wa = "https://wa.me/?text=" + urllib.request.quote(f"{titulo} · Semana {w}: {tit} {url}")
     h.append(f"<div class='cta'><b>¿Ya lo viste? Pásalo al grupo</b><a class='compartir' href='{wa}' target='_blank' rel='noopener'>Compartir por WhatsApp</a>"
              f"<p class='pie'>¿Quieres El Pizarrón para tu liga? Pídelo en <a href='https://lapizarra.mx'>lapizarra.mx</a></p></div>")
-    h.append("<p class='pie'>Hecho con los datos reales de la liga por La Pizarra. Los textos los escribe una IA con mucha carrilla; los números son reales.</p>")
+    h.append("<p class='pie'>Hecho con los datos reales de la liga por La Pizarra. Los textos los escribe una IA con mucha carrilla; los números son reales. La Pizarra no está afiliada a la NFL ni a las plataformas de fantasy. <a href='https://lapizarra.mx/terminos.html'>Términos</a> · <a href='https://lapizarra.mx/privacidad.html'>Privacidad</a></p>")
     h.append("</div></div></body></html>")
     return "\n".join(h)
 
