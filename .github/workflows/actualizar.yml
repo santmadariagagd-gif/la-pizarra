@@ -20,6 +20,7 @@ jobs:
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}   # clave de The Odds API (Settings → Secrets and variables → Actions)
           FIREBASE_SA: ${{ secrets.FIREBASE_SA }}     # llave de servicio de Firebase (JSON) para los grupos de quiniela
+          SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}   # Sportmonks: estadísticas de jugadores de Liga MX
       - name: Guardar la página nueva
         run: |
           git config user.name "La Pizarra bot"
