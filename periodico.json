@@ -1,0 +1,6 @@
+{
+  "nota": "Ligas que reciben el periódico. liga = número de la liga en Sleeper (sale en el link: sleeper.com/leagues/NUMERO). hasta = último día de la prueba o del pago (AAAA-MM-DD). titulo es opcional.",
+  "ligas": [
+    {"plataforma": "sleeper", "liga": "1383551364243660800", "hasta": "2027-02-15", "titulo": ""}
+  ]
+}

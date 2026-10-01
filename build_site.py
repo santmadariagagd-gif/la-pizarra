@@ -1202,6 +1202,13 @@ def _fb_partidos():
             if g['w']!=w or not g.get('ko') or g.get('tbd'): continue
             ko=datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=_tz.utc)
             sem.setdefault(w,{})[f"{g['a']}@{g['h']}"]=dict(a=g['a'],h=g['h'],ko=ko,L=(-g['sp'] if g.get('sp') is not None else None))
+    # Proyecciones de la semana (consenso de FantasyPros) para el periódico de las ligas: se guardan cada día y
+    # quedan las de antes de que se jueguen los partidos. Solo las lee periodico.py (con la llave de servicio).
+    F=out.get('ffw')
+    if F and F.get('p'):
+        db.collection('proyecciones').document(f"{out['season']}-{F['w']}").set(dict(w=F['w'],fecha=F.get('fecha'),
+            p={k:v[2] for k,v in F['p'].items() if v[2] is not None}))
+        print(f"Periódico: proyecciones de la semana {F['w']} guardadas ({len(F['p'])} jugadores)")
     for w,G in sem.items():
         ref=db.collection('partidos_semana').document(f"{out['season']}-{w}")
         prev=(ref.get().to_dict() or {}).get('games',{})

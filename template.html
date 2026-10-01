@@ -372,6 +372,9 @@ dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 .grgrid th small{display:block;color:var(--muted);font-weight:500}
 .grc{font:600 14px var(--display);text-align:center}
 .grc.win{color:var(--good)}.grc.loss{color:var(--bad);text-decoration:line-through}.grc.push{color:var(--muted)}.grc.pend{color:var(--ink)}.grc.none{color:var(--muted)}
+.paper{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-left:5px solid #b8121b;border-radius:10px;padding:12px 16px;margin:0 0 22px;max-width:780px}
+.paper[hidden]{display:none}
+.paper span{font-size:28px}.paper div{flex:1;min-width:0}.paper b{display:block;font:700 17px var(--display)}.paper small{color:var(--muted);font-size:14px}.paper em{font-style:normal;font-weight:600;color:var(--mark)}
 /* Fantasy: barra de Sleeper compartida */
 .fconn{padding-top:26px}
 #sleeper.on h2,#sleeper.on #slUser,#sleeper.on #slGo,#sleeper.on #slSrc{display:none}
@@ -700,6 +703,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <section class="panel hidden" id="fliga">
   <p class="note sloff">Conecta tu liga de Sleeper para ver la tabla, la fuerza de cada roster y los movimientos de tu liga.</p>
   <div class="sldash" hidden>
+    <a id="slPaper" class="paper" hidden></a>
     <div class="kpis" id="slKpis"></div>
     <div class="grid2">
       <div><h3>Tabla</h3><div class="tbl"><table id="slStand"></table></div></div>
@@ -1139,7 +1143,7 @@ function slRender(){
   const max=power[0]?.v||1;
   $("#slPower").innerHTML=power.map(({r,v})=>`<div class="prow${r===me?" me":""}"><span class="pn">${teamName(r)}</span><span class="pb"><i style="width:${(v/max*100).toFixed(1)}%"></i></span><span class="pv">${fmt(v)}</span></div>`).join("");
   slFree();
-  slStand(stand,pts); slTrendRender();
+  slStand(stand,pts); slTrendRender(); slPaperLoad();
   // trade partner
   const others=rs.filter(r=>r!==me);
   $("#tradeTeam").innerHTML=`<option value="">Cualquier equipo</option>`+others.map(r=>`<option value="${r.roster_id}">${teamName(r)}</option>`).join("");
@@ -1153,6 +1157,15 @@ function slStand(stand,pts){
   const pa=r=>(r.settings?.fpts_against||0)+(r.settings?.fpts_against_decimal||0)/100;
   $("#slStand").innerHTML=`<thead><tr><th class="l" aria-label="Lugar"></th><th class="l">Equipo</th><th>Récord</th><th>PF</th><th>PC</th></tr></thead><tbody>${stand.map((r,i)=>{const s=r.settings||{};
     return `<tr class="${r===SL.mine?"me":""}"><td class="rk">${i+1}</td><td class="l"><span class="nm">${teamName(r)}</span></td><td>${s.wins||0}-${s.losses||0}${s.ties?"-"+s.ties:""}</td><td>${fmt(pts(r),1)}</td><td>${fmt(pa(r),1)}</td></tr>`;}).join("")}</tbody>`;
+}
+// El periódico de la liga (lo publica periodico.py cada martes en /periodico/{liga}/; ultimo.json dice cuál es el más reciente)
+async function slPaperLoad(){
+  const a=$("#slPaper"); a.hidden=true; if(!SL.league) return;
+  const slug=String(SL.league.league_id).replace(":","-");
+  try{const r=await fetch(`/periodico/${encodeURIComponent(slug)}/ultimo.json`,{cache:"no-store"}); if(!r.ok) return; const j=await r.json();
+    if(String(SL.league.league_id).replace(":","-")!==slug) return;
+    a.href=j.url; a.innerHTML=`<span>📰</span><div><b>${acctEsc(j.titulo)} · Semana ${j.w}</b><small>${acctEsc(j.titular||"Ya salió la edición de esta semana")}</small></div><em>Leer ›</em>`; a.hidden=false;
+  }catch(e){}
 }
 // Lo más agregado en Sleeper (24 h): en la pestaña Waivers, con o sin liga conectada.
 let slTrendData=null;
