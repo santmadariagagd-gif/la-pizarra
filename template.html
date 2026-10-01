@@ -178,6 +178,7 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 .comps button.cur{border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)}
 .mapa-h{font:700 20px/1.2 var(--display);margin:6px 0 10px}
 .avanza{color:var(--ink)} .avanza b{color:var(--mark)}
+.where .tv{display:block;color:var(--ink);margin-top:2px}
 .bracket-wrap{overflow-x:auto;margin:0 0 22px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
 .bracket-svg{display:block;max-width:none}
 .bracket-svg .rnd{font:700 12px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;fill:var(--muted);text-anchor:middle}
@@ -1880,6 +1881,21 @@ const ETAPA_ES=[[/^final$/i,"Final"],[/3rd place/i,"Tercer lugar"],[/semi/i,"Sem
   [/^(\d+)(st|nd|rd|th) round qualifying replays$/i,"Repeticiones de la $1ª ronda clasificatoria"],[/^(\d+)(st|nd|rd|th) round qualifying$/i,"$1ª ronda clasificatoria"],[/^(\d+)(st|nd|rd|th) round$/i,"Ronda $1"],[/^round (\d+)$/i,"Ronda $1"],[/^round of (\d+)$/i,"Ronda de $1"]];
 function etapaEs(n){ n=String(n||"").replace(/^(Apertura|Clausura|\d+(st|nd|rd|th) Phase)\s*[-,]\s*/i,"").trim();
   for(const [r,t] of ETAPA_ES){ if(r.test(n)) return /\$1/.test(t)?n.replace(r,t):t; } return n; }
+// Canales de TV (datos de Sportmonks; 458 = México). Se muestran los de México y, si no hay, cualquiera.
+const SM_TV={};
+function smCanales(f){
+  const T=(f.tvstations||[]).map(t=>({n:t.tvstation?.name,pais:t.country_id,tipo:t.tvstation?.type})).filter(t=>t.n);
+  const mx=T.filter(t=>t.pais===458), base=(mx.length?mx:T).filter(t=>t.tipo!=="channel"||!(mx.length?mx:T).some(x=>x.tipo==="tv"));   // "TUDN HD" y "TUDN Mobile" sobran si ya está "TUDN"
+  return [...new Set(base.map(t=>t.n.replace(/\s+(HD|Mobile|App|Online)$/i,"")))].slice(0,4);
+}
+async function smDondeVerlo(ids){
+  ids=ids.filter(Boolean); if(!ids.length) return;
+  const falta=ids.filter(id=>!SM_TV[id]);
+  if(falta.length){ try{ const j=await smGet(`fixtures/multi/${falta.slice(0,50).join(",")}`,"include=tvstations.tvstation"); (j.data||[]).forEach(f=>{SM_TV[String(f.id)]=smCanales(f);}); }catch(e){} }
+  for(const id of ids){ const c=SM_TV[id]; if(!c||!c.length) continue; const el=document.querySelector(`.game[data-gid="${id}"] .where span:first-child`); if(el&&!el.querySelector(".tv")) el.insertAdjacentHTML("beforeend",`<span class="tv">📺 ${c.join(" · ")}</span>`); }
+}
+// Árbitro (type 6 = central) en el detalle del partido
+const smArbitro=f=>{const r=(f.referees||[]).find(x=>x.type_id===6)?.referee; return r?(r.display_name||r.name||r.common_name):null;};
 const smBajaEs=t=>(SM_BAJA.find(([r])=>r.test(t||""))||[0,"Baja"])[1];
 // Un partido completo de Sportmonks con la forma del "summary" de ESPN (keyEvents, boxscore, rosters…).
 const SM_TSTAT={BALL_POSSESSION:"possessionPct",SHOTS_TOTAL:"totalShots",SHOTS_ON_TARGET:"shotsOnTarget",BIG_CHANCES_CREATED:"bigChances",CORNERS:"wonCorners",
@@ -1892,7 +1908,7 @@ function smEvType(n){n=(n||"").toLowerCase();
 async function smSummary(e,key){
   const inc="participants;scores;state;venue;periods;events.type;lineups.details.type;lineups.position;statistics.type;formations;coaches";
   let f=null;
-  try{ f=(await smGet(`fixtures/${e.id}`,`include=${inc};lineups.player;sidelined.sideline.type;sidelined.player`)).data; }
+  try{ f=(await smGet(`fixtures/${e.id}`,`include=${inc};lineups.player;sidelined.sideline.type;sidelined.player;tvstations.tvstation;referees.referee`)).data; }
   catch(err){ f=(await smGet(`fixtures/${e.id}`,`include=${inc}`)).data; }   // por si algún dato extra no está disponible
   if(!f) return null;
   const [H,A]=smSide(f), name={[H.id]:H.name,[A.id]:A.name}, loc={[H.id]:"home",[A.id]:"away"};
@@ -1938,7 +1954,7 @@ async function smSummary(e,key){
         plays:(inn||out)?[{substitution:true,clock:{displayValue:clk(inn||out)}}]:[]};});
     return {homeAway:loc[p.id],team:smTeam(p),formation:(f.formations||[]).find(x=>x.participant_id===p.id)?.formation||"",roster};
   });
-  const sm={keyEvents,boxscore:{teams:box},rosters};
+  const sm={keyEvents,boxscore:{teams:box},rosters,_tv:smCanales(f),_arbitro:smArbitro(f)};
   if(smState(f)==="pre"){
     // Previa: tabla, forma (últimos 5 de la liga), enfrentamientos previos, goleador/asistidor y bajas.
     const [tb,{ev},gol,asi,h2h]=await Promise.all([smStandings(key).catch(()=>({rows:[]})),mxSeason(),smTop(key,208),smTop(key,209),
@@ -2019,6 +2035,17 @@ function mxGroups(ev,playoffAware,allTeams){
   // Agrupar por jornada se probó (1 oct 2026) y se descartó: los partidos reprogramados estiran el rango de fechas
   // y confunden con los partidos en vivo. Se agrupa por semana de calendario y la jornada se ve en cada tarjeta.
   const porJornada=false;
+  // Copas y torneos (Sportmonks): se agrupa por ronda ("Octavos de final", "Semifinales", y en la fase de grupos
+  // "Fase de grupos · Jornada 3"), con ida y vuelta juntas; es más fácil de buscar que por fechas.
+  if(sorted.some(e=>e._sm)&&LEAGUES[FLIG]?.sm&&LEAGUES[FLIG].tipo!=="liga"){
+    const byR=new Map();
+    for(const e of sorted){
+      const k=/^\d+$/.test(e._round||"")?`${e._stage&&!/group|regular|apertura|clausura/i.test(e._stage)?etapaEs(e._stage)+" · ":e._stage&&/apertura|clausura/i.test(e._stage)?e._stage.split(/[ ,-]/)[0]+" · ":"Fase de grupos · "}Jornada ${e._round}`:etapaEs(e._stage||"Eliminatoria");
+      if(!byR.has(k)) byR.set(k,{t:+new Date(e.date),games:[]}); const g=byR.get(k); g.games.push(e); g.t=Math.min(g.t,+new Date(e.date)||g.t);
+    }
+    const weeks=[...byR.entries()].sort((a,b)=>a[1].t-b[1].t).map(([label,g])=>({label,games:g.games}));
+    return {weeks,liguilla};
+  }
   for(const e of sorted){
     if(e._lig){liguilla.push(e); continue;}
     if(porJornada){const k=+e._round; if(!byWeek.has(k)) byWeek.set(k,[]); byWeek.get(k).push(e); continue;}
@@ -2162,6 +2189,7 @@ async function renderMxJ(){
   $("#mxMsg").textContent=first-Date.now()>5*864e5&&J[curJ-1]&&J[curJ-1].games.every(e=>e.status?.type?.state==="post")?`${flLabel()} regresa el ${fDay(new Date(first))} después de la pausa.`:"";
   const cards=ev.map(mxCard);
   $("#mxGames").innerHTML=cards.map(gameCard).join("");
+  if(LEAGUES[FLIG].sm) smDondeVerlo(cards.filter(c=>!c.status||c.live).map(c=>c.gid));
   for(const c of cards){ if(c.status||c.tbd) continue; const g=c.lat!=null?{latitude:c.lat,longitude:c.lon}:await geocode(c.city); if(g) fillWeather(document.getElementById(c.wxId),g.latitude,g.longitude,c.when.getTime()); }
 }
 $("#jSel").onchange=e=>{curJ=+e.target.value;renderMxJ();};
@@ -2281,9 +2309,12 @@ async function openMx(id,quiet){
   const T=x=>({n:esTeam(x.team?.shortDisplayName||x.team?.displayName),logo:x.team?.logo});
   const hs=c.teams[0].score, as=c.teams[1].score;
   let h=mheadHTML(T(H),T(A),hs,as,c.status||(c.tbd?"Por definir horario":fHour(c.when)))+`<p class="meta">${cap(fDay(c.when))}${c.tbd?" · Por definir horario":" · "+fHour(c.when)} · ${c.place}</p>`;
+  const extra=[];   // dónde verlo y árbitro (Sportmonks), después de cargar el detalle
   const keep=quiet?$("#gbody").scrollTop:0;
   if(!quiet){$("#gbody").innerHTML=h+`<p class="note" style="text-align:center">Cargando detalle…</p>`; dlg.showModal();}
   let sm=null; try{sm=e._sm?await smSummary(e,FLIG):await fetch(`${ESPN}/site/v2/sports/soccer/${e._slug||flSlug()}/summary?event=${id}`).then(r=>r.json());}catch(err){}
+  if(sm?._tv?.length) extra.push(`📺 ${sm._tv.join(" · ")}`); if(sm?._arbitro) extra.push(`Árbitro: ${sm._arbitro}`);
+  if(extra.length) h+=`<p class="meta">${extra.join(" · ")}</p>`;
   if(c.probs){h+=`<h3>Previa</h3><div class="tbl"><table class="cmp"><tbody><tr><td>${mlTxt(c.teams[0].ml)}</td><td>Momio</td><td>${mlTxt(c.teams[1].ml)}</td></tr><tr><td>${Math.round(c.probs[0].p*100)}%</td><td>Probabilidad (empate ${Math.round(c.probs[1].p*100)}%)</td><td>${Math.round(c.probs[2].p*100)}%</td></tr><tr><td colspan="3" style="text-align:center" id="dwx"></td></tr></tbody></table></div>`;}
   if(sm){
     const K=(sm.keyEvents||[]).map(k=>({m:k.clock?.displayValue||"",tp:EVT(k.type?.text||""),txt:k.text||"",tm:k.team?.displayName||"",who:(k.participants||[]).map(p=>p.athlete?.displayName).filter(Boolean)}))
