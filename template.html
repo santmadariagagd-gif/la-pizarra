@@ -184,6 +184,14 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 .comps button.cur{border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)}
 .mapa-h{font:700 20px/1.2 var(--display);margin:6px 0 10px}
 .avanza{color:var(--ink)} .avanza b{color:var(--mark)}
+.bracket-wrap{overflow-x:auto;margin:0 0 22px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+.bracket-svg{display:block;max-width:none}
+.bracket-svg .rnd{font:700 12px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;fill:var(--muted);text-anchor:middle}
+.bracket-svg rect{fill:var(--card);stroke:var(--line);stroke-width:1.2}
+.bracket-svg .fin rect{stroke:var(--mark)}
+.bracket-svg .nm{font:600 13px/1 var(--display);fill:var(--muted)} .bracket-svg .gl{font:700 13px/1 var(--display);fill:var(--muted);text-anchor:end}
+.bracket-svg .gan{fill:var(--ink)} .bracket-svg .gl.gan{fill:var(--mark)}
+.bracket-svg .ln{fill:none;stroke:var(--line);stroke-width:1.5}
 .mapa-wrap{position:relative;touch-action:none;overflow:hidden;border-radius:10px}
 .mapa-zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px}
 .mapa-zoom button{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:700 20px/1 var(--display);cursor:pointer}
@@ -2612,16 +2620,54 @@ function serieGanador(legs,pos){
   if(pos&&pos[a]!=null&&pos[b]!=null) return {n:nombre(pos[a]<pos[b]?a:b),c:"por posición en la tabla"};
   return null;
 }
+// Dibujo del bracket (SVG): una columna por ronda, una caja por serie, con líneas entre la serie y la de la ronda
+// siguiente donde juega su ganador. Las series de rondas futuras sin equipos salen como "Por definir".
+function bracketSVG(fases){
+  if(fases.length<2) return "";
+  const R=fases.map(([nombre,f])=>({nombre:etapaEs(nombre),ties:f.series.map(sr=>({ids:sr.ids,eq:sr.eq,w:sr.w,g:sr.g,ok:sr.done}))}));
+  // Orden tipo árbol: de la última ronda hacia atrás, cada serie "jala" a las series de la ronda anterior donde jugaron sus equipos
+  for(let r=R.length-1;r>=1;r--){
+    const prev=R[r-1].ties, usado=new Set(), orden=[];
+    for(const t of R[r].ties){ t.hijos=[]; for(const id of t.ids){ const h=prev.find(p=>!usado.has(p)&&p.ids.includes(id)); if(h){usado.add(h); orden.push(h); t.hijos.push(h);} }
+      while(t.hijos.length<2){ const ph={ids:[],eq:[],ph:true}; orden.push(ph); t.hijos.push(ph); } }
+    const sobran=prev.filter(p=>!usado.has(p)); R[r-1].ties=[...orden,...sobran];
+  }
+  const BW=150,BH=50,GX=44,GY=12,TOP=26, n=Math.max(...R.map(x=>x.ties.length)), Hh=TOP+n*(BH+GY);
+  // Posiciones: la primera ronda se reparte; cada serie siguiente queda al centro de sus hijas
+  R[0].ties.forEach((t,i)=>{t.y=TOP+i*(BH+GY)+(Hh-TOP-R[0].ties.length*(BH+GY))/2;});
+  for(let r=1;r<R.length;r++){ let libre=TOP; R[r].ties.forEach(t=>{const hs=(t.hijos||[]).filter(h=>h.y!=null); if(hs.length){t.y=hs.reduce((a,h)=>a+h.y,0)/hs.length;} else {t.y=libre;} libre=t.y+BH+GY;}); }
+  const esc=x=>String(x??"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+  const corta=x=>{x=esc(x); return x.length>17?x.slice(0,16)+"…":x;};
+  let out="";
+  R.forEach((rd,r)=>{ const x=r*(BW+GX);
+    out+=`<text class="rnd" x="${x+BW/2}" y="14">${esc(rd.nombre)}</text>`;
+    rd.ties.forEach(t=>{ const y=t.y;
+      out+=`<g class="tie${t.ok?" fin":""}"><rect x="${x}" y="${y}" width="${BW}" height="${BH}" rx="6"/>`;
+      for(let i=0;i<2;i++){ const e=t.eq[i], gan=e&&t.w&&t.w===e.id, yy=y+18+i*22;
+        out+=`<text class="nm${gan?" gan":""}" x="${x+8}" y="${yy}">${e?corta(e.n):(t.ph||!e?"Por definir":"")}</text>`+(e&&t.g?`<text class="gl${gan?" gan":""}" x="${x+BW-8}" y="${yy}">${esc(t.g[i])}</text>`:"");
+      }
+      out+=`</g>`;
+      (t.hijos||[]).forEach(h=>{ if(h.y==null) return; const x1=x-GX, y1=h.y+BH/2, y2=y+BH/2, xm=x-GX/2; out+=`<path class="ln" d="M${x1} ${y1} H${xm} V${y2} H${x}"/>`; });
+    });
+  });
+  const Wd=R.length*(BW+GX)-GX;
+  return `<div class="bracket-wrap"><svg class="bracket-svg" viewBox="0 0 ${Wd} ${Hh}" width="${Wd}" height="${Hh}" role="img" aria-label="Bracket">${out}</svg></div>`;
+}
 function renderLlaves(evs,pos){
   const porFase=new Map();
   for(const e of evs){const k=e._stage||"Eliminatoria"; if(!porFase.has(k)) porFase.set(k,{ord:e._stageOrder??0,t:+new Date(e.date),evs:[]}); const f=porFase.get(k); f.evs.push(e); f.t=Math.min(f.t,+new Date(e.date));}
   const fases=[...porFase.entries()].sort((a,b)=>(a[1].ord-b[1].ord)||(a[1].t-b[1].t));
-  return fases.map(([nombre,f])=>{
+  const html=fases.map(([nombre,f])=>{
     const byPair=new Map();
     for(const e of f.evs){const cs=e.competitions?.[0]?.competitors||[]; const k=e._agg||cs.map(c=>c.team?.id).sort().join("-"); if(!byPair.has(k)) byPair.set(k,[]); byPair.get(k).push(e);}
+    f.series=[];
     const series=[...byPair.values()].sort((a,b)=>new Date(a[0].date)-new Date(b[0].date)).map(legs=>{
       legs.sort((a,b)=>new Date(a.date)-new Date(b.date));
       const cards=legs.map(mxCard), done=cards.every(c=>/^Final/.test(c.status));
+      {const cs=e=>e.competitions[0].competitors, eq=[]; legs.forEach(e=>cs(e).forEach(c=>{if(c.team?.id&&!eq.some(x=>x.id===c.team.id)) eq.push({id:c.team.id,n:c.team.shortDisplayName||c.team.displayName});}));
+        const gl=eq.map(q=>legs.reduce((a,e)=>a+(+(cs(e).find(c=>c.team.id===q.id)?.score)||0),0));
+        const win=done?serieGanador(legs,pos):null;
+        f.series.push({ids:eq.map(q=>q.id),eq,g:cards.some(c=>/^Final/.test(c.status))?gl:null,done,w:win?eq.find(q=>q.n===win.n)?.id:null});}
       let glob="";
       if(done&&cards.length===2){
         const n1=cards[0].teams[0].n, n2=cards[0].teams[1].n;
@@ -2633,6 +2679,7 @@ function renderLlaves(evs,pos){
       return `<div class="lgTie">${glob}${cards.map(gameCard).join("")}</div>`;});
     return `<h3>${etapaEs(nombre)}</h3>${series.join("")}`;
   }).join("");
+  return bracketSVG(fases)+html;
 }
 async function loadMxLiguilla(){
   if(mxLgLoaded) return; mxLgLoaded=true;
