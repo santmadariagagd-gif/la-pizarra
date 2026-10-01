@@ -1,25 +1,37 @@
 === PRUEBA SPORTMONKS · 2026-10-01 ===
 =========== 1. Ligas de tu suscripción ===========
-Suscripción: [{"meta": [], "plans": [{"plan": "Cricket Free Plan", "sport": "Cricket", "category": "Standard"}, {"plan": "Football Free Plan", "sport": "Football", "category": "Standard"}], "add_ons": [], "widgets": []}]
-Ligas a las que tienes acceso: 4
-  id 271 · Superliga (Denmark) · temporada actual: 2026/2027 (id 27897)
-  id 501 · Premiership (Scotland) · temporada actual: 2026/2027 (id 28275)
-  id 513 · Premiership Play-Offs (Scotland) · temporada actual: 2026/2027 (id 27934)
-  id 1659 · Superliga Play-offs (Denmark) · temporada actual: None (id None)
+Suscripción: [{"meta": {"current_timestamp": 1790882997, "next_billing_cycle": "2026-10-15T20:23:50 UTC"}, "plans": [{"plan": "Growth - Trialing until 2026-10-15 20:23:50", "sport": "Football", "category": "Advanced"}], "add_ons": [], "widgets": [], "bundles": []}]
+Ligas a las que tienes acceso: 22
+  id 8 · Premier League (England) · temporada actual: 2026/2027 (id 28083)
+  id 24 · FA Cup (England) · temporada actual: 2026/2027 (id 28020)
+  id 27 · Carabao Cup (England) · temporada actual: 2026/2027 (id 27917)
+  id 82 · Bundesliga (Germany) · temporada actual: 2026/2027 (id 28321)
+  id 109 · DFB Pokal (Germany) · temporada actual: 2026/2027 (id 27898)
+  id 163 · Bundesliga Play-offs (Germany) · temporada actual: 2026/2027 (id 28156)
+  id 301 · Ligue 1 (France) · temporada actual: 2026/2027 (id 28082)
+  id 307 · Coupe de France (France) · temporada actual: 2026/2027 (id 28289)
+  id 384 · Serie A (Italy) · temporada actual: 2026/2027 (id 27895)
+  id 390 · Coppa Italia (Italy) · temporada actual: 2026/2027 (id 28279)
+  id 462 · Liga Portugal (Portugal) · temporada actual: 2026/2027 (id 27947)
+  id 564 · La Liga (Spain) · temporada actual: 2026/2027 (id 27965)
+  id 570 · Copa Del Rey (Spain) · temporada actual: 2026/2027 (id 28138)
+  id 636 · Liga Profesional de Fútbol (Argentina) · temporada actual: 2026 (id 26808)
+  id 743 · Liga MX (Mexico) · temporada actual: 2026/2027 (id 28009)
+  id 944 · Pro League (Saudi Arabia) · temporada actual: 2026/2027 (id 27951)
+  id 1111 · CONCACAF Champions Cup (North & Central America) · temporada actual: 2027 (id 28239)
+  id 1122 · Copa Libertadores (South America) · temporada actual: 2026 (id 26784)
+  id 1251 · Super Cup (Spain) · temporada actual: 2026/2027 (id 27668)
+  id 1673 · Ligue 1 Play-offs (France) · temporada actual: 2026/2027 (id 28102)
+  id 1678 · Pro League Play-offs (Saudi Arabia) · temporada actual: None (id None)
+  id 3211 · Leagues Cup (North & Central America) · temporada actual: None (id None)
 
 =========== 2. Ids de las ligas que nos interesan (para escogerlas en el plan) ===========
-  ! leagues/search/Liga%20MX: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
-  Liga MX: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
-  ! leagues/search/Premier%20League: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
-  Premier League: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
-  ! leagues/search/La%20Liga: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
-  La Liga: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
-  ! leagues/search/Serie%20A: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
-  Serie A: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
-  ! leagues/search/Bundesliga: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
-  Bundesliga: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
-  ! leagues/search/Ligue%201: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
-  Ligue 1: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  Liga MX: 743 Liga MX (Mexico)
+  Premier League: 8 Premier League (England)
+  La Liga: 564 La Liga (Spain)
+  Serie A: 384 Serie A (Italy)
+  Bundesliga: 82 Bundesliga (Germany) | 163 Bundesliga Play-offs (Germany)
+  Ligue 1: 301 Ligue 1 (France) | 1673 Ligue 1 Play-offs (France)
   ! leagues/search/Champions%20League: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
   Champions League: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
   ! leagues/search/Friendlies: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
@@ -31,114 +43,727 @@ Ligas a las que tienes acceso: 4
   ! leagues/search/World%20Cup: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
   World Cup: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
 
-=========== 3. Superliga (id 271) · temporada 2026/2027 (id 27897) ===========
-Tabla: 12 renglones
-  1. FC København · 24 pts · {"Overall Matches Played": 9, "Overall Won": 8, "Overall Draw": 0, "Overall Lost": 1, "Overal Goals Scored": 23, "Overall Goals Conceded": 8, "Home Matched Played": 4, "Home Won": 4, "Home Draw": 0, "
-  2. FC Midtjylland · 19 pts · {"Overall Matches Played": 9, "Overall Won": 5, "Overall Draw": 4, "Overall Lost": 0, "Overal Goals Scored": 17, "Overall Goals Conceded": 9, "Home Matched Played": 4, "Home Won": 3, "Home Draw": 1, "
-  3. Viborg FF · 17 pts · {"Overall Matches Played": 9, "Overall Won": 5, "Overall Draw": 2, "Overall Lost": 2, "Overal Goals Scored": 15, "Overall Goals Conceded": 8, "Home Matched Played": 5, "Home Won": 4, "Home Draw": 0, "
+=========== 3. Liga MX (id 743) · temporada 2026/2027 (id 28009) ===========
+Tabla: 18 renglones
+  1. Toluca · 20 pts · {"Overall Matches Played": 10, "Overall Won": 6, "Overall Draw": 2, "Overall Lost": 2, "Overal Goals Scored": 23, "Overall Goals Conceded": 12, "Home Matched Played": 5, "Home Won": 3, "Home Draw": 0,
+  2. América · 20 pts · {"Overall Matches Played": 9, "Overall Won": 6, "Overall Draw": 2, "Overall Lost": 1, "Overal Goals Scored": 21, "Overall Goals Conceded": 10, "Home Matched Played": 4, "Home Won": 3, "Home Draw": 1, 
+  3. Guadalajara · 18 pts · {"Overall Matches Played": 10, "Overall Won": 5, "Overall Draw": 3, "Overall Lost": 2, "Overal Goals Scored": 17, "Overall Goals Conceded": 10, "Home Matched Played": 5, "Home Won": 3, "Home Draw": 0,
   Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
 Goleadores (top 5 de 10):
-  1. Mohamed Elyounoussi (FC København): 6
-  2. Friday Etim (FC Midtjylland): 4
-  3. Birger Meling (FC København): 4
-  4. Kelvin Ehibhatiomhan (Horsens): 4
-  5. Mohamed Cherif Haidara (Sønderjyske Fodbold): 4
+  1. Salomón Rondón (Pachuca): 10
+  2. Henry Martin  (América): 6
+  3. Julián Carranza (Necaxa): 6
+  4. Óscar Estupiñán (Juárez): 6
+  5. Lucas Ocampos (Monterrey): 5
 Asistidores (top 5 de 10):
-  1. Mark Brink (Nordsjælland): 3
-  2. Villads Westh (Silkeborg IF): 3
-  3. Jimi Tauriainen (Horsens): 3
-  4. Valdemar Byskov (FC Midtjylland): 2
-  5. Sami Jalal (Viborg FF): 2
-Partidos del 2026-09-10 al 2026-10-15: 18 · estados: {'FT': 12, 'NS': 6}
-  Ejemplo: FC København 2-0 Horsens · 2026-09-11 17:00:00 · jornada: 8
+  1. Carlos Rodríguez (Cruz Azul): 5
+  2. José Paradela (Cruz Azul): 5
+  3. Juan Brunetta (Tigres UANL): 4
+  4. Kevin Álvarez (América): 4
+  5. Jhojan Julio (Atlante): 4
+Partidos del 2026-09-10 al 2026-10-15: 38 · estados: {'FT': 29, 'NS': 9}
+  Ejemplo: Pumas UNAM 3-1 León · 2026-09-11 03:05:00 · jornada: 7
 
-  --- Partido completo: Viborg FF 4-1 Nordsjælland (2026-09-20 16:00:00, Energi Viborg Arena) ---
-  Eventos: 16 · {'Substitution': 9, 'Goal': 5, 'Yellowcard': 2}
-    16' Goal: Mads Søndergaard 
-    26' Goal: Alexander Lind → Mark Brink
-    33' Goal: Dorian Hanza → Asker Beck
-    41' Goal: Charly Nouck → Sami Jalal
-  Alineaciones: 39 jugadores (22 titulares, 17 banca) · formaciones: ['3-4-3', '4-3-3']
-  Posiciones de los titulares: {'Defender': 7, 'Midfielder': 7, 'Attacker': 6, 'Goalkeeper': 2}
+  --- Partido completo: Necaxa 2-4 América (2026-09-28 03:10:00, Estadio Victoria de Aguascalientes) ---
+  Eventos: 22 · {'Substitution': 10, 'Yellowcard': 5, 'Goal': 3, 'Penalty': 3, 'VAR': 1}
+    37' Goal: Owen González → Julián Carranza
+    39' Goal: Henry Martin  
+    43' Penalty: Julián Carranza 
+    45' Penalty: Henry Martin  
+  Alineaciones: 42 jugadores (22 titulares, 20 banca) · formaciones: ['4-4-2', '4-1-4-1']
+  Posiciones de los titulares: {'Defender': 8, 'Midfielder': 9, 'Attacker': 3, 'Goalkeeper': 2}
   Coordenadas en cancha (formation_field): 100% de titulares
-  DT: ['Jens Fønsskov Olsen', 'Nickolai Lund']
-  Estadísticas de equipo: 12 datos · Assists, Ball Possession %, Corners, Goals, Successful Dribbles Percentage, Yellowcards
-  Estadísticas por jugador: 31 de 39 jugadores traen datos
-  Qué tan completos (de los que jugaron): Minutes Played 100%, Cumulative Minutes Played 100%, Accurate Passes Percentage 97%, Accurate Passes 97%, Touches 97%, Rating 97%, Passes 97%, Possession Lost 94%, Total Duels 87%, Backward Passes 84%, Goals Conceded 84%, Duels Lost 84%, Ball Recovery 81%, Duels Won 74%, Duels Won Percentage 74%, Clearances 68%, Turn Over 68%, Long Balls 65%
-  Calificación (ej.): [('Peter Ankersen', 6.76), ('Noah Markmann', 6.07), ('Juho Lähteenmäki', 6.87)]
-  Duelos previos: 34 · el más reciente: Viborg FF 4-1 Nordsjælland
-  Plantel de Viborg FF: 25 jugadores · posiciones: {'Attacker': 9, 'Defender': 8, 'Goalkeeper': 2, 'Midfielder': 6}
+  DT: ['Jorge Guillermo Almada Álves', 'Juan Máximo Reynoso Guzmán']
+  Estadísticas de equipo: 84 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Injuries, Interceptions, Key Passes, Long Passes, Offsides, Passes, Penalties, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Success
+  Estadísticas por jugador: 33 de 42 jugadores traen datos
+  Qué tan completos (de los que jugaron): Touches 103%, Accurate Passes Percentage 100%, Cumulative Minutes Played 100%, Minutes Played 100%, Rating 100%, Possession Lost 100%, Passes 100%, Accurate Passes 100%, Total Duels 94%, Passes In Final Third 88%, Ball Recovery 88%, Duels Won 88%, Duels Won Percentage 88%, Long Balls 84%, Backward Passes 84%, Duels Lost 81%, Goals Conceded 81%, Turn Over 78%, Tackles 66%, Long Balls Won 62%, Long Balls Won Percentage 59%, Aerials Lost 56%, Interceptions 56%, Aerials Won 50%, Shots Total 47%, Total Crosses 47%, Chances Created 44%, Key Passes 44%, Clearances 41%, Tacles Won Percentage 41%, Tackles Won 41%, Dribbled Past 41%, Aerials 38%, Aerials Won Percentage 38%, Dispossessed 38%, Fouls 38%, Fouls Drawn 38%, Dribble Attempts 38%, Shots On Target 34%, Successful Dribbles 31%
+  Calificación (ej.): [('Emilio Lara', 7.53), ('Kevin Álvarez', 6.34), ('Edwin Cerrillo', 6.87)]
+  Duelos previos: 5 · el más reciente: Necaxa 2-4 América
+  Plantel de Necaxa: 25 jugadores · posiciones: {'Attacker': 5, 'Midfielder': 10, 'Defender': 8, 'Goalkeeper': 2}
+  ! teams/3951 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Necaxa: 0 en total, 0 vigentes
+  ! teams/2687 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de América: 0 en total, 0 vigentes
   Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
 
-  --- Previa: Nordsjælland ?-? Odense BK (2026-10-09 17:00:00) ---
+  --- Previa: Puebla ?-? León (2026-10-10 01:00:00) ---
   Bajas antes del partido: 0
   Alineación probable/confirmada ya publicada: 0 jugadores
   Clima del partido: no
 
-=========== 3. Premiership (id 501) · temporada 2026/2027 (id 28275) ===========
-Tabla: 12 renglones
-  1. Celtic · 18 pts · {"Overall Matches Played": 7, "Overall Won": 6, "Overall Draw": 0, "Overall Lost": 1, "Overal Goals Scored": 14, "Overall Goals Conceded": 4, "Home Matched Played": 4, "Home Won": 3, "Home Draw": 0, "
-  2. Rangers · 16 pts · {"Overall Matches Played": 7, "Overall Won": 5, "Overall Draw": 1, "Overall Lost": 1, "Overal Goals Scored": 8, "Overall Goals Conceded": 4, "Home Matched Played": 3, "Home Won": 2, "Home Draw": 0, "H
-  3. Hearts · 13 pts · {"Overall Matches Played": 7, "Overall Won": 4, "Overall Draw": 1, "Overall Lost": 2, "Overal Goals Scored": 14, "Overall Goals Conceded": 8, "Home Matched Played": 3, "Home Won": 3, "Home Draw": 0, "
+=========== 3. Premier League (id 8) · temporada 2026/2027 (id 28083) ===========
+Tabla: 20 renglones
+  1. Manchester City · 15 pts · {"Overall Matches Played": 5, "Overall Won": 5, "Overall Draw": 0, "Overall Lost": 0, "Overal Goals Scored": 13, "Overall Goals Conceded": 5, "Home Matched Played": 3, "Home Won": 3, "Home Draw": 0, "
+  2. Arsenal · 12 pts · {"Overall Matches Played": 5, "Overall Won": 4, "Overall Draw": 0, "Overall Lost": 1, "Overal Goals Scored": 8, "Overall Goals Conceded": 4, "Home Matched Played": 2, "Home Won": 2, "Home Draw": 0, "H
+  3. Brighton & Hove Albion · 10 pts · {"Overall Matches Played": 5, "Overall Won": 3, "Overall Draw": 1, "Overall Lost": 1, "Overal Goals Scored": 16, "Overall Goals Conceded": 5, "Home Matched Played": 3, "Home Won": 2, "Home Draw": 1, "
   Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
 Goleadores (top 5 de 10):
-  1. Josh Fowler (St. Johnstone): 4
-  2. Camilo Durán (Celtic): 3
-  3. Benjamin Nygren (Celtic): 3
-  4. Kevin Nisbet (Aberdeen): 3
-  5. Killian Phillips (St. Mirren): 3
+  1. Erling Haaland (Manchester City): 5
+  2. Alexander Isak (Liverpool): 4
+  3. João Pedro (Chelsea): 3
+  4. Pascal Groß (Brighton & Hove Albion): 3
+  5. Rayan Cherki (Manchester City): 3
 Asistidores (top 5 de 10):
-  1. Josh McPake (Hearts): 4
-  2. Benjamin Nygren (Celtic): 3
-  3. Camilo Durán (Celtic): 3
-  4. Tawanda Maswanhise (Motherwell): 2
-  5. Kevin Nisbet (Aberdeen): 2
-Partidos del 2026-09-10 al 2026-10-15: 15 · estados: {'FT': 9, 'NS': 6}
-  Ejemplo: Motherwell 0-4 Aberdeen · 2026-09-15 18:45:00 · jornada: 3
+  1. Daichi Kamada (Crystal Palace): 3
+  2. Cody Gakpo (Liverpool): 3
+  3. Pascal Groß (Brighton & Hove Albion): 3
+  4. Antoine Semenyo (Manchester City): 3
+  5. Evanilson (AFC Bournemouth): 3
+Partidos del 2026-09-10 al 2026-10-15: 30 · estados: {'FT': 20, 'NS': 10}
+  Ejemplo: Liverpool 0-0 Fulham · 2026-09-12 14:00:00 · jornada: 4
 
-  --- Partido completo: Celtic 0-1 Rangers (2026-09-20 11:00:00, Celtic Park) ---
-  Eventos: 18 · {'Substitution': 10, 'Yellowcard': 6, 'Goal': 1, 'VAR': 1}
-    33' Goal: Ryan Naderi 
-    46' Substitution: Kasper Høgh → Luke McCowan
-    63' Substitution: James Forrest → Benjamin Nygren
-    71' Substitution: Findlay Curtis → Min-su Kim
-  Alineaciones: 40 jugadores (22 titulares, 18 banca) · formaciones: ['4-4-1-1', '3-4-2-1']
-  Posiciones de los titulares: {'Goalkeeper': 2, 'Defender': 7, 'Attacker': 5, 'Midfielder': 8}
+  --- Partido completo: Fulham 1-1 Manchester United (2026-09-20 15:30:00, Craven Cottage) ---
+  Eventos: 13 · {'Substitution': 8, 'Yellowcard': 3, 'Own Goal': 1, 'Goal': 1}
+    63' Own Goal: Lisandro Martínez 
+    89' Goal: Matheus Cunha → Patrick Dorgu
+    71' Substitution: Kevin → Oscar Bobb
+    71' Substitution: César Palacios → Alex Iwobi
+  Alineaciones: 40 jugadores (22 titulares, 18 banca) · formaciones: ['4-2-3-1', '4-2-3-1']
+  Posiciones de los titulares: {'Goalkeeper': 2, 'Defender': 8, 'Attacker': 2, 'Midfielder': 10}
   Coordenadas en cancha (formation_field): 100% de titulares
-  DT: ["Martin O'Neill", 'Derek McInnes']
-  Estadísticas de equipo: 10 datos · Ball Possession %, Corners, Goals, Successful Dribbles Percentage, Yellowcards
-  Estadísticas por jugador: 32 de 40 jugadores traen datos
-  Qué tan completos (de los que jugaron): Cumulative Minutes Played 100%, Minutes Played 100%, Passes 100%, Touches 100%, Accurate Passes 97%, Accurate Passes Percentage 97%, Possession Lost 97%, Rating 91%, Total Duels 91%, Duels Won 88%, Duels Won Percentage 88%, Duels Lost 84%, Passes In Final Third 81%, Backward Passes 81%, Long Balls 78%, Ball Recovery 78%, Long Balls Won 66%, Aerials Won 62%
-  Calificación (ej.): [('Viljami Sinisalo', 7.39), ('Liam Scales', 6.71), ('Auston Trusty', 6.85)]
-  Duelos previos: 67 · el más reciente: Celtic 0-1 Rangers
-  Plantel de Celtic: 29 jugadores · posiciones: {'Defender': 10, 'Attacker': 9, 'Midfielder': 7, 'Goalkeeper': 3}
+  DT: ['Álvaro Arbeloa Coca', 'Michael Carrick']
+  Estadísticas de equipo: 84 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Hit Woodwork, Injuries, Interceptions, Key Passes, Long Passes, Offsides, Passes, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Succ
+  Estadísticas por jugador: 30 de 40 jugadores traen datos
+  Qué tan completos (de los que jugaron): Cumulative Minutes Played 100%, Touches 100%, Passes 100%, Rating 100%, Minutes Played 100%, Accurate Passes 97%, Possession Lost 97%, Accurate Passes Percentage 97%, Total Duels 90%, Passes In Final Third 83%, Backward Passes 83%, Duels Lost 83%, Duels Won 80%, Duels Won Percentage 80%, Ball Recovery 77%, Goals Conceded 73%, Clearances 70%, Long Balls 70%, Shots Total 63%, Chances Created 57%, Key Passes 57%, Long Balls Won Percentage 53%, Long Balls Won 53%, Dribble Attempts 50%, Aerials Won 50%, Total Crosses 47%, Tackles 43%, Successful Dribbles 43%, Aerials Lost 43%, Interceptions 40%, Tackles Won 40%, Tacles Won Percentage 40%, Dribbled Past 40%, Fouls 33%, Shots Off Target 33%, Shots Blocked 33%, Shots On Target 30%, Fouls Drawn 30%, Dispossessed 27%, Blocked Shots 23%
+  Calificación (ej.): [('Bernd Leno', 7.1), ('Calvin Bassey', 7.25), ('Joachim Andersen', 6.49)]
+  Duelos previos: 6 · el más reciente: Fulham 1-1 Manchester United
+  Plantel de Fulham: 26 jugadores · posiciones: {'Midfielder': 10, 'Attacker': 5, 'Goalkeeper': 3, 'Defender': 8}
+  ! teams/11 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Fulham: 0 en total, 0 vigentes
+  ! teams/14 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Manchester United: 0 en total, 0 vigentes
   Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
 
-  --- Previa: Rangers ?-? Kilmarnock (2026-10-10 14:00:00) ---
+  --- Previa: Arsenal ?-? Leeds United (2026-10-10 11:30:00) ---
   Bajas antes del partido: 0
   Alineación probable/confirmada ya publicada: 0 jugadores
   Clima del partido: no
 
-=========== 3. Premiership Play-Offs (id 513) · temporada 2026/2027 (id 27934) ===========
-  ! standings/seasons/27934: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+=========== 3. FA Cup (id 24) · temporada 2026/2027 (id 28020) ===========
+  ! standings/seasons/28020: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
 Tabla: 0 renglones
-  ! topscorers/seasons/27934: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Goleadores (top 5 de 10):
+  1. Anisius Lewis (Braintree Town): 2
+  2. Ryan Viggars (Worksop Town): 2
+  3. Josh Wilde (Worksop Town): 1
+  4. Kane Crichlow (Dagenham & Redbridge): 1
+  5. Alfie Rutherford (Dorking Wanderers): 1
+Asistidores (top 5 de 7):
+  1. Connor Brown (Gainsborough Trinity): 2
+  2. Dennon Lewis (Dorking Wanderers): 1
+  3. Josh Wilde (Worksop Town): 1
+  4. Bobby-Joe Taylor (Farnham Town): 1
+  5. James McShane (Dorking Wanderers): 1
+Partidos del 2026-09-10 al 2026-10-15: 50 · estados: {'FT': 50}
+  Ejemplo: Jersey Bulls 1-3 Burgess Hill Town · 2026-09-15 18:45:00 · jornada: None
+
+  --- Partido completo: Merthyr Town 1-1 Truro City (2026-09-19 14:00:00, Penydarren Park) ---
+  Eventos: 2 · {'Goal': 2}
+    81' Goal: Elis Watts 
+    90' Goal: Tom Harrison 
+  Alineaciones: 0 jugadores (0 titulares, 0 banca) · formaciones: []
+  Posiciones de los titulares: {}
+  Coordenadas en cancha (formation_field): – de titulares
+  DT: ['John Askey', 'Paul Michael']
+  Estadísticas de equipo: 32 datos · Attacks, Ball Safe, Corners, Dangerous Attacks, Fouls, Goal Attempts, Goal Kicks, Goals, Offsides, Saves, Shots Blocked, Shots Off Target, Shots On Target, Shots Total, Substitutions, Yellowcards
+  Estadísticas por jugador: 0 de 0 jugadores traen datos
+  Qué tan completos (de los que jugaron): 
+  Duelos previos: 2 · el más reciente: Truro City 2-0 Merthyr Town
+  Plantel de Merthyr Town: 15 jugadores · posiciones: {'Midfielder': 6, 'Defender': 6, 'Attacker': 2, 'Goalkeeper': 1}
+  ! teams/872 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Merthyr Town: 0 en total, 0 vigentes
+  ! teams/132 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Truro City: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+=========== 3. Carabao Cup (id 27) · temporada 2026/2027 (id 27917) ===========
+  ! standings/seasons/27917: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+Goleadores (top 5 de 10):
+  1. Harry Leonard (Peterborough United): 4
+  2. Yousef Salech (Cardiff City): 3
+  3. Thierno Barry (Everton): 3
+  4. Reyes Cleary (Barnsley): 3
+  5. Ryan Christie (AFC Bournemouth): 3
+Asistidores (top 5 de 10):
+  1. Morgan Rogers (Chelsea): 3
+  2. Jaidon Anthony (Brentford): 3
+  3. Jack Clarke (Ipswich Town): 2
+  4. Amar Dedic (Newcastle United): 2
+  5. Mark Helm (Fleetwood Town): 2
+Partidos del 2026-09-10 al 2026-10-15: 10 · estados: {'FTP': 1, 'FT': 9}
+  Ejemplo: Peterborough United 3-3 Barnsley · 2026-09-15 18:30:00 · jornada: None
+
+  --- Partido completo: Manchester City 5-0 Norwich City (2026-09-17 18:30:00, Etihad Stadium) ---
+  Eventos: 13 · {'Substitution': 7, 'Goal': 5, 'Yellowcard': 1}
+    29' Goal: Floyd Samba → Allan
+    32' Goal: Rayan Cherki → Ayyoub Bouaddi
+    48' Goal: Allan → Rayan Aït-Nouri
+    54' Goal: Floyd Samba → Rayan Aït-Nouri
+  Alineaciones: 40 jugadores (22 titulares, 18 banca) · formaciones: ['4-2-3-1', '4-2-3-1']
+  Posiciones de los titulares: {'Midfielder': 10, 'Defender': 8, 'Goalkeeper': 2, 'Attacker': 2}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Enzo Maresca', 'Philippe Clement']
+  Estadísticas de equipo: 80 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Interceptions, Key Passes, Long Passes, Offsides, Passes, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Successful Long Passes Perce
+  Estadísticas por jugador: 29 de 40 jugadores traen datos
+  Qué tan completos (de los que jugaron): Rating 100%, Passes 100%, Accurate Passes 100%, Cumulative Minutes Played 100%, Accurate Passes Percentage 100%, Possession Lost 100%, Touches 100%, Minutes Played 100%, Total Duels 93%, Duels Won 90%, Duels Won Percentage 90%, Ball Recovery 86%, Backward Passes 86%, Passes In Final Third 83%, Duels Lost 79%, Long Balls 76%, Tackles 69%, Long Balls Won 62%, Long Balls Won Percentage 62%, Tackles Won 55%, Tacles Won Percentage 55%, Goals Conceded 55%, Dribble Attempts 52%, Dribbled Past 52%, Clearances 52%, Dispossessed 48%, Shots Total 41%, Interceptions 41%, Successful Dribbles 38%, Fouls 34%, Fouls Drawn 34%, Chances Created 31%, Key Passes 31%, Aerials Lost 31%, Aerials Won 28%, Total Crosses 28%, Shots Off Target 24%, Shots Blocked 17%, Blocked Shots 17%, Goals 14%
+  Calificación (ej.): [('Mateo Kovacic', 7.21), ('Rayan Cherki', 7.83), ('Rayan Aït-Nouri', 7.61)]
+  Duelos previos: 1 · el más reciente: Manchester City 5-0 Norwich City
+  Plantel de Manchester City: 24 jugadores · posiciones: {'Attacker': 6, 'Midfielder': 6, 'Goalkeeper': 3, 'Defender': 9}
+  ! teams/9 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Manchester City: 0 en total, 0 vigentes
+  ! teams/33 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Norwich City: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+=========== 3. Bundesliga (id 82) · temporada 2026/2027 (id 28321) ===========
+Tabla: 18 renglones
+  1. Borussia Dortmund · 12 pts · {"Overall Matches Played": 4, "Overall Won": 4, "Overall Draw": 0, "Overall Lost": 0, "Overal Goals Scored": 9, "Overall Goals Conceded": 2, "Home Matched Played": 2, "Home Won": 2, "Home Draw": 0, "H
+  2. FC Bayern München · 10 pts · {"Overall Matches Played": 4, "Overall Won": 3, "Overall Draw": 1, "Overall Lost": 0, "Overal Goals Scored": 14, "Overall Goals Conceded": 2, "Home Matched Played": 2, "Home Won": 2, "Home Draw": 0, "
+  3. SC Freiburg · 10 pts · {"Overall Matches Played": 4, "Overall Won": 3, "Overall Draw": 1, "Overall Lost": 0, "Overal Goals Scored": 12, "Overall Goals Conceded": 3, "Home Matched Played": 2, "Home Won": 2, "Home Draw": 0, "
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
+Goleadores (top 5 de 10):
+  1. Patrik Schick (Bayer 04 Leverkusen): 4
+  2. Younes Ebnoutalib (Eintracht Frankfurt): 4
+  3. Michael Olise (FC Bayern München): 4
+  4. Yuito Suzuki (SC Freiburg): 4
+  5. Phillip Tietz (FSV Mainz 05): 4
+Asistidores (top 5 de 10):
+  1. Marco Grüll (Werder Bremen): 4
+  2. Matthias Ginter (SC Freiburg): 3
+  3. Miguel Gutiérrez (Bayer 04 Leverkusen): 3
+  4. Derry Scherhant (SC Freiburg): 3
+  5. Sheraldo Becker (FSV Mainz 05): 3
+Partidos del 2026-09-10 al 2026-10-15: 27 · estados: {'FT': 18, 'NS': 9}
+  Ejemplo: FC Union Berlin 1-3 Schalke 04 · 2026-09-11 18:30:00 · jornada: 3
+
+  --- Partido completo: Paderborn 3-1 TSG Hoffenheim (2026-09-20 17:30:00, Home Deluxe Arena) ---
+  Eventos: 15 · {'Substitution': 10, 'Goal': 4, 'Yellowcard': 1}
+    29' Goal: Santiago Castañeda 
+    42' Goal: Stefano Marino → Laurin Curda
+    50' Goal: Adam Daghim → Max Moerstedt
+    69' Goal: Steffen Tigges → Jonah Sticker
+  Alineaciones: 40 jugadores (22 titulares, 18 banca) · formaciones: ['4-4-2', '3-5-2']
+  Posiciones de los titulares: {'Midfielder': 9, 'Goalkeeper': 2, 'Attacker': 4, 'Defender': 7}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Ralf Kettemann', 'Christian Ilzer']
+  Estadísticas de equipo: 82 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Hit Woodwork, Interceptions, Key Passes, Long Passes, Offsides, Passes, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Successful Lon
+  Estadísticas por jugador: 32 de 40 jugadores traen datos
+  Qué tan completos (de los que jugaron): Minutes Played 100%, Passes 100%, Touches 100%, Rating 100%, Accurate Passes 100%, Accurate Passes Percentage 100%, Cumulative Minutes Played 100%, Total Duels 100%, Possession Lost 100%, Backward Passes 94%, Duels Lost 94%, Duels Won Percentage 91%, Duels Won 91%, Ball Recovery 91%, Passes In Final Third 81%, Goals Conceded 78%, Long Balls 72%, Tackles 66%, Clearances 66%, Aerials Won 62%, Aerials Lost 59%, Shots Total 56%, Long Balls Won 56%, Long Balls Won Percentage 56%, Interceptions 53%, Dribble Attempts 50%, Chances Created 47%, Key Passes 47%, Tackles Won 47%, Tacles Won Percentage 47%, Total Crosses 44%, Aerials 44%, Aerials Won Percentage 44%, Fouls 41%, Dispossessed 41%, Blocked Shots 38%, Dribbled Past 38%, Shots Blocked 38%, Fouls Drawn 34%, Successful Dribbles 34%
+  Calificación (ej.): [('Jonah Sticker', 7.31), ('Santiago Castañeda', 7.93), ('Tom Baack', 6.69)]
+  Duelos previos: 1 · el más reciente: Paderborn 3-1 TSG Hoffenheim
+  Plantel de Paderborn: 32 jugadores · posiciones: {'Midfielder': 11, 'Goalkeeper': 3, 'Attacker': 10, 'Defender': 8}
+  ! teams/2642 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Paderborn: 0 en total, 0 vigentes
+  ! teams/2726 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de TSG Hoffenheim: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Borussia Dortmund ?-? Werder Bremen (2026-10-09 18:30:00) ---
+  Bajas antes del partido: 0
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: no
+
+=========== 3. DFB Pokal (id 109) · temporada 2026/2027 (id 27898) ===========
+  ! standings/seasons/27898: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+Goleadores (top 5 de 10):
+  1. Phillip Tietz (FSV Mainz 05): 4
+  2. Jonathan Burkardt (Eintracht Frankfurt): 3
+  3. Lars Gindorf (Hannover 96): 3
+  4. Dzenan Pejcinovic (VfB Stuttgart): 3
+  5. Can Uzun (Eintracht Frankfurt): 2
+Asistidores (top 5 de 10):
+  1. Felix Keidel (Elversberg): 3
+  2. Keita Kosugi (Eintracht Frankfurt): 3
+  3. Can Uzun (Eintracht Frankfurt): 3
+  4. Julian Ryerson (Borussia Dortmund): 2
+  5. Maximilian Entrup (Eintracht Braunschweig): 2
+  ! fixtures/between/2026-09-10/2026-10-15: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Partidos del 2026-09-10 al 2026-10-15: 0 · estados: {}
+  No hay partidos terminados en ese rango.
+
+=========== 3. Bundesliga Play-offs (id 163) · temporada 2026/2027 (id 28156) ===========
+  ! standings/seasons/28156: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+  ! topscorers/seasons/28156: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
 Goleadores (top 5 de 0):
-  ! topscorers/seasons/27934: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  ! topscorers/seasons/28156: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
 Asistidores (top 5 de 0):
   ! fixtures/between/2026-09-10/2026-10-15: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
 Partidos del 2026-09-10 al 2026-10-15: 0 · estados: {}
   No hay partidos terminados en ese rango.
 
-=========== 3. Superliga Play-offs (id 1659) · temporada None (id None) ===========
-Sin temporada actual.
+=========== 3. Ligue 1 (id 301) · temporada 2026/2027 (id 28082) ===========
+Tabla: 18 renglones
+  1. Monaco · 13 pts · {"Overall Matches Played": 5, "Overall Won": 4, "Overall Draw": 1, "Overall Lost": 0, "Overal Goals Scored": 8, "Overall Goals Conceded": 3, "Home Matched Played": 2, "Home Won": 2, "Home Draw": 0, "H
+  2. Olympique Lyonnais · 11 pts · {"Overall Matches Played": 5, "Overall Won": 3, "Overall Draw": 2, "Overall Lost": 0, "Overal Goals Scored": 10, "Overall Goals Conceded": 2, "Home Matched Played": 3, "Home Won": 2, "Home Draw": 1, "
+  3. Paris · 11 pts · {"Overall Matches Played": 5, "Overall Won": 3, "Overall Draw": 2, "Overall Lost": 0, "Overal Goals Scored": 8, "Overall Goals Conceded": 3, "Home Matched Played": 3, "Home Won": 2, "Home Draw": 1, "H
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
+Goleadores (top 5 de 10):
+  1. Kamory Doumbia (Brest): 4
+  2. Lassine Sinayoko (Paris): 4
+  3. Amine Gouiri (Olympique Marseille): 4
+  4. Ferran Torres (Paris Saint Germain): 4
+  5. Paris Brunner (Monaco): 4
+Asistidores (top 5 de 10):
+  1. Cristian Cásseres Jr. (Toulouse): 4
+  2. Pavel Sulc (Olympique Lyonnais): 3
+  3. Florian Thauvin (Lens): 3
+  4. Panos Katseris (Lorient): 3
+  5. Aleksandr Golovin (Monaco): 2
+Partidos del 2026-09-10 al 2026-10-15: 27 · estados: {'FT': 18, 'NS': 9}
+  Ejemplo: Rennes 1-0 Olympique Marseille · 2026-09-11 18:45:00 · jornada: 4
+
+  --- Partido completo: Olympique Marseille 1-2 Paris Saint Germain (2026-09-20 18:45:00, Stade Vélodrome) ---
+  Eventos: 17 · {'Substitution': 9, 'Yellowcard': 4, 'Goal': 3, 'Yellow/Red card': 1}
+    66' Goal: Ferran Torres → Désiré Doué
+    72' Goal: Angel Gomes → Amine Gouiri
+    74' Goal: Marquinhos  → Nuno Mendes 
+    30' Substitution: Angel Gomes → Igor Paixão
+  Alineaciones: 40 jugadores (22 titulares, 18 banca) · formaciones: ['4-3-3', '4-4-2']
+  Posiciones de los titulares: {'Goalkeeper': 2, 'Defender': 8, 'Midfielder': 7, 'Attacker': 5}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Bruno Génésio', 'Luis Enrique Martínez García']
+  Estadísticas de equipo: 84 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Interceptions, Key Passes, Long Passes, Offsides, Passes, Redcards, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Successful Long Pa
+  Estadísticas por jugador: 31 de 40 jugadores traen datos
+  Qué tan completos (de los que jugaron): Rating 100%, Minutes Played 100%, Touches 100%, Cumulative Minutes Played 100%, Possession Lost 97%, Accurate Passes 97%, Passes 97%, Accurate Passes Percentage 97%, Total Duels 90%, Passes In Final Third 84%, Long Balls 81%, Long Balls Won Percentage 81%, Long Balls Won 81%, Backward Passes 77%, Duels Won 77%, Ball Recovery 74%, Duels Won Percentage 74%, Duels Lost 74%, Goals Conceded 71%, Shots Total 58%, Clearances 55%, Tackles 55%, Total Crosses 52%, Aerials Won 48%, Key Passes 48%, Chances Created 48%, Dribble Attempts 42%, Aerials Lost 42%, Shots Blocked 35%, Shots Off Target 32%, Tackles Won 32%, Tacles Won Percentage 32%, Dispossessed 32%, Dribbled Past 32%, Blocked Shots 29%, Shots On Target 29%, Aerials 29%, Aerials Won Percentage 29%, Interceptions 26%, Fouls 26%
+  Calificación (ej.): [('Jeffrey de Lange', 7.84), ('CJ Egan-Riley', 6.59), ('Angel Gomes', 7.26)]
+  Duelos previos: 5 · el más reciente: Olympique Marseille 1-2 Paris Saint Germain
+  Plantel de Olympique Marseille: 22 jugadores · posiciones: {'Attacker': 7, 'Defender': 7, 'Goalkeeper': 3, 'Midfielder': 5}
+  ! teams/44 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Olympique Marseille: 0 en total, 0 vigentes
+  ! teams/591 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Paris Saint Germain: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Lens ?-? Olympique Lyonnais (2026-10-09 18:45:00) ---
+  Bajas antes del partido: 0
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: no
+
+=========== 3. Coupe de France (id 307) · temporada 2026/2027 (id 28289) ===========
+  ! standings/seasons/28289: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+  ! topscorers/seasons/28289: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Goleadores (top 5 de 0):
+  ! topscorers/seasons/28289: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Asistidores (top 5 de 0):
+  ! fixtures/between/2026-09-10/2026-10-15: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Partidos del 2026-09-10 al 2026-10-15: 0 · estados: {}
+  No hay partidos terminados en ese rango.
+
+=========== 3. Serie A (id 384) · temporada 2026/2027 (id 27895) ===========
+Tabla: 20 renglones
+  1. Roma · 13 pts · {"Overall Matches Played": 5, "Overall Won": 4, "Overall Draw": 1, "Overall Lost": 0, "Overal Goals Scored": 14, "Overall Goals Conceded": 3, "Home Matched Played": 3, "Home Won": 2, "Home Draw": 1, "
+  2. Inter · 13 pts · {"Overall Matches Played": 5, "Overall Won": 4, "Overall Draw": 1, "Overall Lost": 0, "Overal Goals Scored": 15, "Overall Goals Conceded": 8, "Home Matched Played": 3, "Home Won": 3, "Home Draw": 0, "
+  3. Lazio · 13 pts · {"Overall Matches Played": 5, "Overall Won": 4, "Overall Draw": 1, "Overall Lost": 0, "Overal Goals Scored": 8, "Overall Goals Conceded": 3, "Home Matched Played": 2, "Home Won": 1, "Home Draw": 1, "H
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
+Goleadores (top 5 de 10):
+  1. Donyell Malen (Roma): 6
+  2. Lautaro Martínez  (Inter): 4
+  3. Gustavo Varela (Monza): 4
+  4. Antonio Raimondo (Frosinone): 4
+  5. Vasilije Adžić (Sassuolo): 3
+Asistidores (top 5 de 10):
+  1. Paulo Dybala (Roma): 4
+  2. Romano Schmid (Frosinone): 3
+  3. Andy Diouf (Inter): 3
+  4. Juan Miranda (Bologna): 2
+  5. Mattia Zaccagni  (Lazio): 2
+Partidos del 2026-09-10 al 2026-10-15: 30 · estados: {'FT': 20, 'NS': 10}
+  Ejemplo: Venezia 2-4 Fiorentina · 2026-09-11 18:45:00 · jornada: 4
+
+  --- Partido completo: AC Milan 3-0 Lecce (2026-09-20 18:45:00, Stadio Giuseppe Meazza) ---
+  Eventos: 14 · {'Substitution': 10, 'Goal': 3, 'Yellowcard': 1}
+    14' Goal: Christian Pulisic → Strahinja Pavlović
+    61' Goal: Adrien Rabiot → Gonçalo Ramos
+    73' Goal: Diego Moreira 
+    46' Substitution: Paco Esteban → Nikola Stulic
+  Alineaciones: 50 jugadores (22 titulares, 28 banca) · formaciones: ['4-3-3', '3-4-2-1']
+  Posiciones de los titulares: {'Midfielder': 7, 'Defender': 7, 'Attacker': 6, 'Goalkeeper': 2}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Ruben Filipe Marques Amorim', 'Eusebio Di Francesco']
+  Estadísticas de equipo: 80 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Interceptions, Key Passes, Long Passes, Offsides, Passes, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Successful Long Passes Perce
+  Estadísticas por jugador: 32 de 50 jugadores traen datos
+  Qué tan completos (de los que jugaron): Touches 100%, Minutes Played 100%, Cumulative Minutes Played 100%, Possession Lost 100%, Total Duels 100%, Accurate Passes 97%, Rating 97%, Passes 97%, Accurate Passes Percentage 97%, Duels Won 94%, Duels Won Percentage 94%, Backward Passes 88%, Ball Recovery 88%, Duels Lost 84%, Tackles 72%, Passes In Final Third 69%, Dribble Attempts 56%, Clearances 53%, Tackles Won 53%, Tacles Won Percentage 53%, Long Balls 53%, Fouls Drawn 50%, Long Balls Won Percentage 47%, Long Balls Won 47%, Aerials Lost 47%, Goals Conceded 47%, Fouls 44%, Aerials Won 44%, Dispossessed 44%, Shots Total 41%, Successful Dribbles 41%, Dribbled Past 41%, Total Crosses 38%, Key Passes 34%, Chances Created 28%, Aerials Won Percentage 28%, Aerials 28%, Shots On Target 22%, Shots Blocked 19%, Interceptions 16%
+  Calificación (ej.): [('Pervis Estupiñán', 7.08), ('Koni De Winter', 6.71), ('Ruben Loftus-Cheek', 6.44)]
+  Duelos previos: 6 · el más reciente: AC Milan 3-0 Lecce
+  Plantel de AC Milan: 28 jugadores · posiciones: {'Midfielder': 10, 'Defender': 10, 'Attacker': 5, 'Goalkeeper': 3}
+  ! teams/113 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de AC Milan: 0 en total, 0 vigentes
+  ! teams/7790 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Lecce: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Genoa ?-? Fiorentina (2026-10-10 13:00:00) ---
+  Bajas antes del partido: 0
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: no
+
+=========== 3. Coppa Italia (id 390) · temporada 2026/2027 (id 28279) ===========
+  ! standings/seasons/28279: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+Goleadores (top 5 de 10):
+  1. Joel Pohjanpalo (Palermo): 3
+  2. Giorgi Kvernadze (Frosinone): 2
+  3. Akor Adams (Venezia): 2
+  4. Giuseppe Ambrosino (Modena): 2
+  5. Simone Lontani (Parma): 2
+Asistidores (top 5 de 10):
+  1. Davide Bragantini (Mantova): 2
+  2. Patrick Cutrone (Monza): 2
+  3. Dennis Johnsen (Palermo): 2
+  4. Marco D'Alessandro (Catanzaro): 1
+  5. Alberto Cerri (Arezzo): 1
+Partidos del 2026-09-10 al 2026-10-15: 2 · estados: {'FT': 2}
+  Ejemplo: Genoa 1-0 Südtirol · 2026-09-15 16:00:00 · jornada: None
+
+  --- Partido completo: Fiorentina 3-0 Pisa (2026-09-15 19:00:00, Stadio Artemio Franchi) ---
+  Eventos: 18 · {'Substitution': 10, 'Yellowcard': 5, 'Goal': 3}
+    40' Goal: Mateo Pellegrino 
+    71' Goal: Wilfried Gnonto → Alieu Njie
+    90' Goal: Pedro Gonçalves → Álex Jiménez
+    46' Substitution: Viery → Radu Drăgușin
+  Alineaciones: 46 jugadores (22 titulares, 24 banca) · formaciones: ['3-4-2-1', '4-3-3']
+  Posiciones de los titulares: {'Defender': 7, 'Midfielder': 7, 'Attacker': 6, 'Goalkeeper': 2}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Paolo Vanoli', 'Paolo Bianco']
+  Estadísticas de equipo: 78 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Kicks, Goals, Hit Woodwork, Interceptions, Key Passes, Long Passes, Offsides, Passes, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Successful Long Passes Percentage, Succe
+  Estadísticas por jugador: 32 de 46 jugadores traen datos
+  Qué tan completos (de los que jugaron): Rating 100%, Cumulative Minutes Played 100%, Accurate Passes 100%, Passes 100%, Touches 100%, Accurate Passes Percentage 100%, Minutes Played 100%, Possession Lost 97%, Backward Passes 94%, Total Duels 91%, Ball Recovery 88%, Duels Won 81%, Duels Won Percentage 81%, Duels Lost 78%, Long Balls 75%, Passes In Final Third 75%, Turn Over 66%, Tackles 66%, Long Balls Won 59%, Long Balls Won Percentage 59%, Dribble Attempts 56%, Tacles Won Percentage 53%, Tackles Won 53%, Clearances 50%, Goals Conceded 50%, Fouls Drawn 47%, Interceptions 44%, Shots Total 44%, Fouls 44%, Dribbled Past 41%, Total Crosses 38%, Dispossessed 38%, Successful Dribbles 34%, Aerials Won 31%, Aerials Lost 28%, Chances Created 28%, Key Passes 28%, Shots Off Target 22%, Shots On Target 16%, Blocked Shots 12%
+  Calificación (ej.): [('Radu Drăgușin', 7.41), ('Marco Brescianini', 6.36), ('Marin Pongracic', 7)]
+  Duelos previos: 3 · el más reciente: Fiorentina 3-0 Pisa
+  Plantel de Fiorentina: 25 jugadores · posiciones: {'Midfielder': 5, 'Defender': 9, 'Attacker': 8, 'Goalkeeper': 3}
+  ! teams/109 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Fiorentina: 0 en total, 0 vigentes
+  ! teams/1072 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Pisa: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+=========== 3. Liga Portugal (id 462) · temporada 2026/2027 (id 27947) ===========
+Tabla: 18 renglones
+  1. Porto · 21 pts · {"Overall Matches Played": 7, "Overall Won": 7, "Overall Draw": 0, "Overall Lost": 0, "Overal Goals Scored": 18, "Overall Goals Conceded": 3, "Home Matched Played": 4, "Home Won": 4, "Home Draw": 0, "
+  2. Benfica · 16 pts · {"Overall Matches Played": 7, "Overall Won": 5, "Overall Draw": 1, "Overall Lost": 1, "Overal Goals Scored": 22, "Overall Goals Conceded": 7, "Home Matched Played": 3, "Home Won": 2, "Home Draw": 1, "
+  3. Sporting CP · 15 pts · {"Overall Matches Played": 7, "Overall Won": 4, "Overall Draw": 3, "Overall Lost": 0, "Overal Goals Scored": 17, "Overall Goals Conceded": 8, "Home Matched Played": 4, "Home Won": 3, "Home Draw": 1, "
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
+Goleadores (top 5 de 10):
+  1. Vangelis Pavlidis (Benfica): 8
+  2. Luis Suárez (Sporting CP): 6
+  3. Gianluca Prestianni (Benfica): 5
+  4. Gonçalo Paciência (Santa Clara): 5
+  5. Georgios Koutsias (Famalicão): 5
+Asistidores (top 5 de 10):
+  1. Pepê (Porto): 4
+  2. Naïs Djouahra (Arouca): 4
+  3. Cihan Kahraman (Academico Viseu): 4
+  4. Geny Catamo (Sporting CP): 3
+  5. Mathias de Amorim (Famalicão): 3
+Partidos del 2026-09-10 al 2026-10-15: 28 · estados: {'FT': 19, 'NS': 9}
+  Ejemplo: Estrela Amadora 2-1 Sporting Braga · 2026-09-10 19:15:00 · jornada: 3
+
+  --- Partido completo: Porto 3-1 Benfica (2026-09-20 19:30:00, Estádio Do Dragão) ---
+  Eventos: 22 · {'Substitution': 10, 'Yellowcard': 7, 'Goal': 4, 'Yellow/Red card': 1}
+    31' Goal: Gabri Veiga → Pepê
+    51' Goal: Alexander Bah → Gianluca Prestianni
+    54' Goal: Victor Froholdt → André Silva
+    60' Goal: In-beom Hwang → André Silva
+  Alineaciones: 46 jugadores (22 titulares, 24 banca) · formaciones: ['4-2-3-1', '4-3-3']
+  Posiciones de los titulares: {'Defender': 8, 'Midfielder': 8, 'Attacker': 4, 'Goalkeeper': 2}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Marco Alexandre Saraiva Da Silva', 'Francesco Farioli']
+  Estadísticas de equipo: 88 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Counter Attacks, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Injuries, Interceptions, Key Passes, Long Passes, Offsides, Passes, Redcards, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long
+  Estadísticas por jugador: 32 de 46 jugadores traen datos
+  Qué tan completos (de los que jugaron): Rating 100%, Passes 100%, Accurate Passes 100%, Cumulative Minutes Played 100%, Touches 100%, Accurate Passes Percentage 100%, Minutes Played 100%, Total Duels 97%, Possession Lost 91%, Backward Passes 91%, Duels Won Percentage 84%, Duels Won 84%, Passes In Final Third 84%, Ball Recovery 81%, Duels Lost 78%, Goals Conceded 72%, Tackles 62%, Fouls Drawn 59%, Long Balls 56%, Fouls 56%, Shots Total 53%, Tacles Won Percentage 47%, Tackles Won 47%, Key Passes 47%, Chances Created 47%, Clearances 44%, Long Balls Won 41%, Long Balls Won Percentage 41%, Dribble Attempts 41%, Interceptions 38%, Total Crosses 34%, Dispossessed 34%, Aerials Won 31%, Aerials Lost 31%, Shots Blocked 28%, Shots On Target 28%, Shots Off Target 28%, Blocked Shots 25%, Yellowcards 22%, Successful Dribbles 16%
+  Calificación (ej.): [('Clément Lenglet', 5.68), ('Alessandro Circati', 6.2), ('Alexander Bah', 7.33)]
+  Duelos previos: 5 · el más reciente: Porto 3-1 Benfica
+  Plantel de Porto: 29 jugadores · posiciones: {'Defender': 10, 'Attacker': 9, 'Midfielder': 7, 'Goalkeeper': 3}
+  ! teams/652 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Porto: 0 en total, 0 vigentes
+  ! teams/605 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Benfica: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Moreirense ?-? Gil Vicente (2026-10-09 17:45:00) ---
+  Bajas antes del partido: 0
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: no
+
+=========== 3. La Liga (id 564) · temporada 2026/2027 (id 27965) ===========
+Tabla: 20 renglones
+  1. FC Barcelona · 21 pts · {"Overall Matches Played": 7, "Overall Won": 7, "Overall Draw": 0, "Overall Lost": 0, "Overal Goals Scored": 31, "Overall Goals Conceded": 7, "Home Matched Played": 3, "Home Won": 3, "Home Draw": 0, "
+  2. Atlético de Madrid · 16 pts · {"Overall Matches Played": 7, "Overall Won": 5, "Overall Draw": 1, "Overall Lost": 1, "Overal Goals Scored": 16, "Overall Goals Conceded": 7, "Home Matched Played": 4, "Home Won": 3, "Home Draw": 1, "
+  3. Real Betis · 16 pts · {"Overall Matches Played": 7, "Overall Won": 5, "Overall Draw": 1, "Overall Lost": 1, "Overal Goals Scored": 9, "Overall Goals Conceded": 7, "Home Matched Played": 3, "Home Won": 3, "Home Draw": 0, "H
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
+Goleadores (top 5 de 10):
+  1. Raphinha (FC Barcelona): 12
+  2. Lamine Yamal (FC Barcelona): 7
+  3. Kylian Mbappé  (Real Madrid): 7
+  4. Sergio Camello (Rayo Vallecano): 7
+  5. Yassir Zabiri (Racing Santander): 6
+Asistidores (top 5 de 10):
+  1. Anthony Gordon (FC Barcelona): 4
+  2. Lamine Yamal (FC Barcelona): 4
+  3. Javi Hernández (Espanyol): 4
+  4. Alberto Moleiro (Villarreal): 3
+  5. Job Ochieng (Real Sociedad): 3
+Partidos del 2026-09-10 al 2026-10-15: 38 · estados: {'FT': 28, 'NS': 10}
+  Ejemplo: Sevilla 1-0 Valencia · 2026-09-11 19:00:00 · jornada: 5
+
+  --- Partido completo: Valencia 2-3 Real Sociedad (2026-09-20 19:00:00, Estadio de Mestalla) ---
+  Eventos: 20 · {'Substitution': 10, 'Yellowcard': 4, 'Goal': 3, 'Penalty': 1, 'Own Goal': 1, 'Yellow/Red card': 1}
+    26' Goal: Luka Sucic → Job Ochieng
+    57' Goal: Aaron Ndive Mayol de la Cueva → Hugo Duro
+    75' Penalty: Carlos Soler 
+    84' Own Goal: Luken Beitia 
+  Alineaciones: 46 jugadores (22 titulares, 24 banca) · formaciones: ['4-4-2', '4-4-2']
+  Posiciones de los titulares: {'Goalkeeper': 2, 'Midfielder': 8, 'Attacker': 4, 'Defender': 8}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Óscar Sánchez Fuentes', 'Pellegrino Matarazzo']
+  Estadísticas de equipo: 86 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Interceptions, Key Passes, Long Passes, Offsides, Passes, Penalties, Redcards, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Success
+  Estadísticas por jugador: 32 de 46 jugadores traen datos
+  Qué tan completos (de los que jugaron): Cumulative Minutes Played 100%, Touches 100%, Minutes Played 100%, Passes 97%, Rating 97%, Accurate Passes 97%, Possession Lost 97%, Accurate Passes Percentage 97%, Total Duels 97%, Goals Conceded 97%, Duels Won 88%, Duels Won Percentage 88%, Duels Lost 84%, Ball Recovery 81%, Backward Passes 81%, Passes In Final Third 78%, Long Balls 62%, Tackles 62%, Dribble Attempts 62%, Key Passes 59%, Shots Total 59%, Chances Created 56%, Clearances 53%, Interceptions 53%, Successful Dribbles 50%, Long Balls Won 47%, Long Balls Won Percentage 47%, Fouls Drawn 47%, Tacles Won Percentage 47%, Tackles Won 47%, Dribbled Past 47%, Total Crosses 44%, Fouls 44%, Dispossessed 38%, Shots Off Target 38%, Aerials Lost 38%, Shots Blocked 34%, Shots On Target 34%, Aerials Won 31%, Blocked Shots 25%
+  Calificación (ej.): [('Stole Dimitrievski', 6.39), ('Guido Rodríguez', 6.91), ('Arnaut Danjuma', 7.56)]
+  Duelos previos: 5 · el más reciente: Valencia 2-3 Real Sociedad
+  Plantel de Valencia: 29 jugadores · posiciones: {'Attacker': 9, 'Midfielder': 7, 'Defender': 10, 'Goalkeeper': 3}
+  ! teams/214 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Valencia: 0 en total, 0 vigentes
+  ! teams/594 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Real Sociedad: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Málaga ?-? Espanyol (2026-10-09 19:00:00) ---
+  Bajas antes del partido: 6
+    Javi Puado   · Cruciate Ligament Tear · desde 2026-01-11 hasta 2026-10-12
+    Kike García  · Muscle Injury · desde 2026-08-04 hasta 2027-01-18
+    Julen Lobete · Cruciate Ligament Tear · desde 2026-09-04 hasta 2027-06-30
+    Aarón Ochoa · Meniscus Tear · desde 2026-08-17 hasta 2027-01-01
+    Diego Murillo · Inner Knee Ligament Tear · desde 2026-06-20 hasta 2026-12-01
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: no
+
+=========== 3. Copa Del Rey (id 570) · temporada 2026/2027 (id 28138) ===========
+  ! standings/seasons/28138: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+  ! topscorers/seasons/28138: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Goleadores (top 5 de 0):
+  ! topscorers/seasons/28138: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Asistidores (top 5 de 0):
+Partidos del 2026-09-10 al 2026-10-15: 20 · estados: {'FT': 10, 'NS': 10}
+  Ejemplo: Atlético Calatayud 2-0 Baztan · 2026-09-26 16:00:00 · jornada: None
+
+  --- Partido completo: Maracena 1-1 Tavernes (2026-09-27 16:00:00, Ciudad Deportiva Maracena) ---
+  Eventos: 2 · {'Goal': 1, 'Penalty': 1}
+    17' Goal: None 
+    45' Penalty: Falin 
+  Alineaciones: 0 jugadores (0 titulares, 0 banca) · formaciones: []
+  Posiciones de los titulares: {}
+  Coordenadas en cancha (formation_field): – de titulares
+  DT: []
+  Estadísticas de equipo: 2 datos · Goals
+  Estadísticas por jugador: 0 de 0 jugadores traen datos
+  Qué tan completos (de los que jugaron): 
+  Duelos previos: 1 · el más reciente: Maracena 1-1 Tavernes
+  Plantel de Maracena: 22 jugadores · posiciones: {'Defender': 8, 'Goalkeeper': 2, 'Attacker': 8, 'Midfielder': 4}
+  ! teams/28177 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Maracena: 0 en total, 0 vigentes
+  ! teams/265761 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Tavernes: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Baztan ?-? Atlético Calatayud (2026-10-03 15:30:00) ---
+  Bajas antes del partido: 0
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: sí
+
+=========== 3. Liga Profesional de Fútbol (id 636) · temporada 2026 (id 26808) ===========
+Tabla: 60 renglones
+  1. Instituto · 22 pts · {"Overall Matches Played": 10, "Overall Won": 7, "Overall Draw": 1, "Overall Lost": 2, "Overal Goals Scored": 13, "Overall Goals Conceded": 7, "Home Matched Played": 5, "Home Won": 5, "Home Draw": 0, 
+  1. Estudiantes · 31 pts · {"Overall Matches Played": 16, "Overall Won": 9, "Overall Draw": 4, "Overall Lost": 3, "Overal Goals Scored": 19, "Overall Goals Conceded": 7, "Home Matched Played": 8, "Home Won": 5, "Home Draw": 1, 
+  1. Independiente Rivadavia · 34 pts · {"Overall Matches Played": 16, "Overall Won": 10, "Overall Draw": 4, "Overall Lost": 2, "Overal Goals Scored": 29, "Overall Goals Conceded": 15, "Home Matched Played": 9, "Home Won": 6, "Home Draw": 1
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
+Goleadores (top 5 de 10):
+  1. Cristian Tarragona (Unión Santa Fe): 14
+  2. Junior Marabel (Sarmiento): 13
+  3. Jordy Caicedo (Huracán): 13
+  4. Agustín Módica (Gimnasia y Esgrima Mendoza): 12
+  5. Gabriel Ávalos (Independiente): 11
+Asistidores (top 5 de 10):
+  1. Julián Palacios (Unión Santa Fe): 8
+  2. Sebastián Villa (Boca Juniors): 7
+  3. Lucas Passerini (Belgrano): 7
+  4. Facundo Lencioni (Gimnasia y Esgrima Mendoza): 7
+  5. Matías Fernández (Independiente Rivadavia): 6
+Partidos del 2026-09-10 al 2026-10-15: 50 · estados: {'FT': 30, 'NS': 20}
+  Ejemplo: Newell's Old Boys 1-1 Vélez Sarsfield · 2026-09-11 20:00:00 · jornada: 9
+
+  --- Partido completo: Lanús 2-1 Estudiantes (2026-09-22 00:15:00, Estadio Ciudad de Lanús - Néstor Díaz Pérez) ---
+  Eventos: 17 · {'Substitution': 10, 'Yellowcard': 4, 'Goal': 2, 'Penalty': 1}
+    13' Goal: Gonzalo Thomás Lobos → Eduardo Salvio
+    60' Penalty: Eduardo Salvio 
+    84' Goal: Leandro González Pírez 
+    31' Substitution: Agustín Medina → Felipe Peña Biafore
+  Alineaciones: 46 jugadores (22 titulares, 24 banca) · formaciones: ['4-2-3-1', '4-2-3-1']
+  Posiciones de los titulares: {'Defender': 8, 'Midfielder': 10, 'Goalkeeper': 2, 'Attacker': 2}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Alexander Jesús Medina Reobasco', 'Mauricio Pellegrino']
+  Estadísticas de equipo: 86 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Hit Woodwork, Injuries, Interceptions, Key Passes, Long Passes, Offsides, Passes, Penalties, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long P
+  Estadísticas por jugador: 32 de 46 jugadores traen datos
+  Qué tan completos (de los que jugaron): Accurate Passes 100%, Touches 100%, Passes 100%, Cumulative Minutes Played 100%, Minutes Played 100%, Accurate Passes Percentage 100%, Rating 97%, Possession Lost 97%, Total Duels 94%, Ball Recovery 88%, Duels Won Percentage 84%, Duels Won 84%, Duels Lost 84%, Passes In Final Third 81%, Backward Passes 78%, Goals Conceded 75%, Long Balls 66%, Turn Over 59%, Long Balls Won 56%, Long Balls Won Percentage 56%, Aerials Lost 53%, Shots Total 50%, Clearances 47%, Fouls 47%, Fouls Drawn 47%, Tackles 47%, Dribble Attempts 44%, Aerials Won 41%, Interceptions 41%, Key Passes 38%, Chances Created 38%, Tacles Won Percentage 38%, Tackles Won 38%, Total Crosses 38%, Dribbled Past 34%, Dispossessed 25%, Successful Dribbles 25%, Aerials Won Percentage 22%, Aerials 22%, Shots Off Target 22%
+  Calificación (ej.): [('Santiago Núñez', 6.64), ('Gabriel Neves', 7.54), ('Guido Carrillo', 6.49)]
+  Duelos previos: 3 · el más reciente: Lanús 2-1 Estudiantes
+  Plantel de Lanús: 27 jugadores · posiciones: {'Midfielder': 10, 'Attacker': 6, 'Defender': 9, 'Goalkeeper': 2}
+  ! teams/9878 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Lanús: 0 en total, 0 vigentes
+  ! teams/9335 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Estudiantes: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Independiente ?-? Instituto (2026-10-02 22:15:00) ---
+  Bajas antes del partido: 4
+    Lorenzo Albarracín  · Muscle Injury · desde 2026-01-13 hasta None
+    Imanol Machuca · Suspension Through Sports Court · desde 2026-03-05 hasta 2026-11-04
+    Luca Rafaelli  · Hamstring Injury · desde 2026-04-03 hasta None
+    Joel Medina  · Cruciate Ligament Injury · desde 2026-09-10 hasta None
+  Alineación probable/confirmada ya publicada: 22 jugadores
+  Clima del partido: sí
+
+=========== 3. Pro League (id 944) · temporada 2026/2027 (id 27951) ===========
+Tabla: 18 renglones
+  1. Al Hilal · 18 pts · {"Overall Matches Played": 7, "Overall Won": 6, "Overall Draw": 0, "Overall Lost": 1, "Overal Goals Scored": 23, "Overall Goals Conceded": 5, "Home Matched Played": 3, "Home Won": 2, "Home Draw": 0, "
+  2. Al Ittihad · 17 pts · {"Overall Matches Played": 7, "Overall Won": 5, "Overall Draw": 2, "Overall Lost": 0, "Overal Goals Scored": 12, "Overall Goals Conceded": 6, "Home Matched Played": 4, "Home Won": 3, "Home Draw": 1, "
+  3. Al Nassr · 16 pts · {"Overall Matches Played": 7, "Overall Won": 5, "Overall Draw": 1, "Overall Lost": 1, "Overal Goals Scored": 16, "Overall Goals Conceded": 7, "Home Matched Played": 3, "Home Won": 3, "Home Draw": 0, "
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
+Goleadores (top 5 de 10):
+  1. Ivan Toney (Al Ahli): 10
+  2. Alexandre Lacazette (NEOM SC): 5
+  3. George Ilenikhena (Al Ittihad): 4
+  4. Iker Kortajarena (Al Kholood): 4
+  5. Steven Bergwijn (Al Ittihad): 4
+Asistidores (top 5 de 10):
+  1. Crysencio Summerville (Al Hilal): 3
+  2. Óscar Rodríguez  (Al Diraiyah FC): 3
+  3. Mohammed Abu Al-Shamat (Al-Qadsiah): 3
+  4. Álvaro Medrán (Al Ettifaq): 3
+  5. Rúben Neves (Al Hilal): 3
+Partidos del 2026-09-10 al 2026-10-15: 22 · estados: {'FT': 9, 'NS': 12, 'POST': 1}
+  Ejemplo: Al-Qadsiah 3-3 Al Ettifaq · 2026-09-11 15:25:00 · jornada: 7
+
+  --- Partido completo: Al Riyadh 2-0 Al Kholood (2026-09-13 18:00:00, Prince Faisal bin Fahd Stadium) ---
+  Eventos: 15 · {'Substitution': 8, 'Yellowcard': 5, 'Goal': 2}
+    66' Goal: Kader Keita → Sulaiman Hazazi
+    89' Goal: Rodrigo Abascal 
+    69' Substitution: Hussain Qasim → Sulaiman Hazazi
+    69' Substitution: Abdulelah Al-Talae → Essam Bahri
+  Alineaciones: 40 jugadores (22 titulares, 18 banca) · formaciones: ['4-2-3-1', '4-2-3-1']
+  Posiciones de los titulares: {'Midfielder': 10, 'Attacker': 2, 'Defender': 8, 'Goalkeeper': 2}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Maurício Corrêa Dulac', 'Des Buckingham']
+  Estadísticas de equipo: 84 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Hit Woodwork, Injuries, Interceptions, Key Passes, Long Passes, Offsides, Passes, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Succ
+  Estadísticas por jugador: 31 de 40 jugadores traen datos
+  Qué tan completos (de los que jugaron): Cumulative Minutes Played 100%, Rating 97%, Accurate Passes 97%, Touches 97%, Passes 97%, Minutes Played 97%, Accurate Passes Percentage 97%, Possession Lost 94%, Total Duels 87%, Passes In Final Third 87%, Ball Recovery 87%, Backward Passes 84%, Duels Won 77%, Duels Lost 77%, Duels Won Percentage 77%, Long Balls 68%, Turn Over 68%, Clearances 65%, Fouls 58%, Tackles 55%, Fouls Drawn 52%, Long Balls Won 52%, Long Balls Won Percentage 52%, Tackles Won 48%, Tacles Won Percentage 48%, Shots Total 48%, Goals Conceded 45%, Dribble Attempts 42%, Aerials Won 35%, Total Crosses 35%, Dribbled Past 35%, Interceptions 35%, Key Passes 32%, Chances Created 32%, Successful Dribbles 32%, Aerials Lost 29%, Shots Blocked 26%, Blocked Shots 23%, Dispossessed 23%, Shots Off Target 23%
+  Calificación (ej.): [('Kader Keita', 7.37), ('Teddy Okou', 7.02), ('Hassan Al-Ali', 6.08)]
+  Duelos previos: 5 · el más reciente: Al Riyadh 2-0 Al Kholood
+  Plantel de Al Riyadh: 26 jugadores · posiciones: {'Defender': 10, 'Goalkeeper': 2, 'Midfielder': 7, 'Attacker': 7}
+  ! teams/17705 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Al Riyadh: 0 en total, 0 vigentes
+  ! teams/232744 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Al Kholood: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Al Kholood ?-? Al-Qadsiah (2026-10-09 13:50:00) ---
+  Bajas antes del partido: 0
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: no
+
+=========== 3. CONCACAF Champions Cup (id 1111) · temporada 2027 (id 28239) ===========
+  ! standings/seasons/28239: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+  ! topscorers/seasons/28239: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Goleadores (top 5 de 0):
+  ! topscorers/seasons/28239: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Asistidores (top 5 de 0):
+  ! fixtures/between/2026-09-10/2026-10-15: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Partidos del 2026-09-10 al 2026-10-15: 0 · estados: {}
+  No hay partidos terminados en ese rango.
+
+=========== 3. Copa Libertadores (id 1122) · temporada 2026 (id 26784) ===========
+Tabla: 32 renglones
+  1. Coquimbo Unido · 10 pts · {"Overall Matches Played": 6, "Overall Won": 3, "Overall Draw": 1, "Overall Lost": 2, "Overal Goals Scored": 8, "Overall Goals Conceded": 6, "Home Matched Played": 3, "Home Won": 2, "Home Draw": 1, "H
+  1. Universidad Católica · 13 pts · {"Overall Matches Played": 6, "Overall Won": 4, "Overall Draw": 1, "Overall Lost": 1, "Overal Goals Scored": 8, "Overall Goals Conceded": 4, "Home Matched Played": 3, "Home Won": 1, "Home Draw": 1, "H
+  1. LDU Quito · 12 pts · {"Overall Matches Played": 6, "Overall Won": 4, "Overall Draw": 0, "Overall Lost": 2, "Overal Goals Scored": 8, "Overall Goals Conceded": 5, "Home Matched Played": 3, "Home Won": 3, "Home Draw": 0, "H
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won, Real Position
+Goleadores (top 5 de 10):
+  1. Álex Arce (Independiente Rivadavia): 9
+  2. Carlos González (Independiente del Valle): 7
+  3. Bruno Henrique (Flamengo): 5
+  4. Giorgian de Arrascaeta (Flamengo): 4
+  5. Matheus Pereira (Cruzeiro): 4
+Asistidores (top 5 de 10):
+  1. Rodrigo Garro (Corinthians): 5
+  2. Matías Fernández (Independiente Rivadavia): 5
+  3. José Manuel López (Palmeiras): 4
+  4. Alesson (Mirassol): 3
+  5. M. Díaz (Universidad Católica): 3
+Partidos del 2026-09-10 al 2026-10-15: 7 · estados: {'FT': 5, 'FTP': 1, 'NS': 1}
+  Ejemplo: Estudiantes 1-1 Corinthians · 2026-09-10 00:30:00 · jornada: None
+
+  --- Partido completo: Flamengo 1-1 Independiente del Valle (2026-09-18 00:30:00, Estadio Jornalista Mário Filho) ---
+  Eventos: 15 · {'Substitution': 7, 'Yellowcard': 5, 'Goal': 2, 'Yellow/Red card': 1}
+    31' Goal: Djorkaeff Reasco 
+    83' Goal: Giorgian de Arrascaeta → Agustín Rossi
+    59' Substitution: Giorgian de Arrascaeta → Lucas Paquetá
+    59' Substitution: Gonzalo Plata  → Jorge Carrascal
+  Alineaciones: 46 jugadores (22 titulares, 24 banca) · formaciones: ['4-1-4-1', '4-2-3-1']
+  Posiciones de los titulares: {'Goalkeeper': 2, 'Defender': 8, 'Midfielder': 10, 'Attacker': 2}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['José Leonardo Nunes Alves Sousa Jardim', 'Joaquín Papa Monestier']
+  Estadísticas de equipo: 86 datos · Accurate Crosses, Assists, Attacks, Ball Possession %, Ball Safe, Big Chances Created, Big Chances Missed, Corners, Dangerous Attacks, Dribble Attempts, Duels Won, Fouls, Free Kicks, Goal Attempts, Goal Kicks, Goals, Injuries, Interceptions, Key Passes, Long Passes, Offsides, Passes, Redcards, Saves, Shots Blocked, Shots Insidebox, Shots Off Target, Shots On Target, Shots Outsidebox, Shots Total, Substitutions, Successful Dribbles, Successful Dribbles Percentage, Successful Long Passes, Successf
+  Estadísticas por jugador: 30 de 46 jugadores traen datos
+  Qué tan completos (de los que jugaron): Cumulative Minutes Played 100%, Minutes Played 100%, Touches 100%, Rating 93%, Accurate Passes 93%, Accurate Passes Percentage 93%, Possession Lost 93%, Passes 93%, Duels Lost 86%, Total Duels 86%, Backward Passes 86%, Goals Conceded 79%, Duels Won 79%, Duels Won Percentage 79%, Ball Recovery 76%, Passes In Final Third 76%, Turn Over 69%, Dribble Attempts 66%, Long Balls 62%, Tackles 62%, Clearances 59%, Long Balls Won 52%, Long Balls Won Percentage 52%, Total Crosses 52%, Tackles Won 48%, Tacles Won Percentage 48%, Dispossessed 45%, Interceptions 41%, Shots Total 41%, Successful Dribbles 41%, Fouls Drawn 38%, Fouls 38%, Key Passes 34%, Chances Created 34%, Aerials Won 34%, Aerials Lost 34%, Accurate Crosses 31%, Successful Crosses Percentage 31%, Shots On Target 24%, Dribbled Past 24%
+  Calificación (ej.): [('Agustín Rossi', 6.58), ('Léo Ortiz', 6.81), ('Léo Pereira', 6.91)]
+  Duelos previos: 2 · el más reciente: Flamengo 1-1 Independiente del Valle
+  Plantel de Flamengo: 27 jugadores · posiciones: {'Midfielder': 8, 'Defender': 9, 'Attacker': 7, 'Goalkeeper': 3}
+  ! teams/1024 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Flamengo: 0 en total, 0 vigentes
+  ! teams/14635 → HTTP 404: {"message":"The requested include 'sideline' does not exist on Sidelined","link":"https:\/\/docs.sportmonks.com\/football\/api\/response-codes\/include-exceptions","code":5013}
+  Lesiones/suspensiones registradas de Independiente del Valle: 0 en total, 0 vigentes
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Fluminense ?-? Palmeiras (2026-10-15 00:30:00) ---
+  Bajas antes del partido: 0
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: no
+
+=========== 3. Super Cup (id 1251) · temporada 2026/2027 (id 27668) ===========
+  ! standings/seasons/27668: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+  ! topscorers/seasons/27668: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Goleadores (top 5 de 0):
+  ! topscorers/seasons/27668: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Asistidores (top 5 de 0):
+  ! fixtures/between/2026-09-10/2026-10-15: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Partidos del 2026-09-10 al 2026-10-15: 0 · estados: {}
+  No hay partidos terminados en ese rango.
+
+=========== 3. Ligue 1 Play-offs (id 1673) · temporada 2026/2027 (id 28102) ===========
+  ! standings/seasons/28102: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+  ! topscorers/seasons/28102: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Goleadores (top 5 de 0):
+  ! topscorers/seasons/28102: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Asistidores (top 5 de 0):
+  ! fixtures/between/2026-09-10/2026-10-15: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Partidos del 2026-09-10 al 2026-10-15: 0 · estados: {}
+  No hay partidos terminados en ese rango.
 
 =========== 4. Selección mexicana ===========
-  ! teams/search/Mexico: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
-Equipos encontrados: 
+Equipos encontrados: 25829 México (domestic)
+  ! fixtures/between/2026-06-23/2026-11-30/25829: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Partidos de México (últimos 100 días y próximos 60): 0
 
 =========== 5. En vivo ahora ===========
   ! livescores/inplay: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
 Partidos en vivo que ve tu plan: 0
 
-Pedidos usados: 34 · último límite reportado: {"resets_in_seconds": 3585, "remaining": 170, "requested_entity": "Fixture"}
+Pedidos usados: 148 · último límite reportado: {"resets_in_seconds": 2209, "remaining": 2429, "requested_entity": "Fixture"}
