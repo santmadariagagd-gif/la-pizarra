@@ -27,4 +27,5 @@ jobs:
           git add docs/index.html
           if [ -f momios.json ]; then git add momios.json; fi
           git diff --cached --quiet || git commit -m "Actualización automática de datos"
+          git pull --rebase   # por si mientras corría subiste archivos o salió el periódico
           git push
