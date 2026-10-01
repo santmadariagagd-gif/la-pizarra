@@ -1,0 +1,144 @@
+=== PRUEBA SPORTMONKS · 2026-10-01 ===
+=========== 1. Ligas de tu suscripción ===========
+Suscripción: [{"meta": [], "plans": [{"plan": "Cricket Free Plan", "sport": "Cricket", "category": "Standard"}, {"plan": "Football Free Plan", "sport": "Football", "category": "Standard"}], "add_ons": [], "widgets": []}]
+Ligas a las que tienes acceso: 4
+  id 271 · Superliga (Denmark) · temporada actual: 2026/2027 (id 27897)
+  id 501 · Premiership (Scotland) · temporada actual: 2026/2027 (id 28275)
+  id 513 · Premiership Play-Offs (Scotland) · temporada actual: 2026/2027 (id 27934)
+  id 1659 · Superliga Play-offs (Denmark) · temporada actual: None (id None)
+
+=========== 2. Ids de las ligas que nos interesan (para escogerlas en el plan) ===========
+  ! leagues/search/Liga%20MX: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  Liga MX: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/Premier%20League: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  Premier League: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/La%20Liga: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  La Liga: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/Serie%20A: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  Serie A: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/Bundesliga: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  Bundesliga: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/Ligue%201: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  Ligue 1: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/Champions%20League: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  Champions League: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/Friendlies: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  Friendlies: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/Gold%20Cup: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  Gold Cup: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/Nations%20League: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  Nations League: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+  ! leagues/search/World%20Cup: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+  World Cup: sin resultados (puede ser que el plan gratis no deje buscar fuera de tus ligas)
+
+=========== 3. Superliga (id 271) · temporada 2026/2027 (id 27897) ===========
+Tabla: 12 renglones
+  1. FC København · 24 pts · {"Overall Matches Played": 9, "Overall Won": 8, "Overall Draw": 0, "Overall Lost": 1, "Overal Goals Scored": 23, "Overall Goals Conceded": 8, "Home Matched Played": 4, "Home Won": 4, "Home Draw": 0, "
+  2. FC Midtjylland · 19 pts · {"Overall Matches Played": 9, "Overall Won": 5, "Overall Draw": 4, "Overall Lost": 0, "Overal Goals Scored": 17, "Overall Goals Conceded": 9, "Home Matched Played": 4, "Home Won": 3, "Home Draw": 1, "
+  3. Viborg FF · 17 pts · {"Overall Matches Played": 9, "Overall Won": 5, "Overall Draw": 2, "Overall Lost": 2, "Overal Goals Scored": 15, "Overall Goals Conceded": 8, "Home Matched Played": 5, "Home Won": 4, "Home Draw": 0, "
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
+Goleadores (top 5 de 10):
+  1. Mohamed Elyounoussi (FC København): 6
+  2. Friday Etim (FC Midtjylland): 4
+  3. Birger Meling (FC København): 4
+  4. Kelvin Ehibhatiomhan (Horsens): 4
+  5. Mohamed Cherif Haidara (Sønderjyske Fodbold): 4
+Asistidores (top 5 de 10):
+  1. Mark Brink (Nordsjælland): 3
+  2. Villads Westh (Silkeborg IF): 3
+  3. Jimi Tauriainen (Horsens): 3
+  4. Valdemar Byskov (FC Midtjylland): 2
+  5. Sami Jalal (Viborg FF): 2
+Partidos del 2026-09-10 al 2026-10-15: 18 · estados: {'FT': 12, 'NS': 6}
+  Ejemplo: FC København 2-0 Horsens · 2026-09-11 17:00:00 · jornada: 8
+
+  --- Partido completo: Viborg FF 4-1 Nordsjælland (2026-09-20 16:00:00, Energi Viborg Arena) ---
+  Eventos: 16 · {'Substitution': 9, 'Goal': 5, 'Yellowcard': 2}
+    16' Goal: Mads Søndergaard 
+    26' Goal: Alexander Lind → Mark Brink
+    33' Goal: Dorian Hanza → Asker Beck
+    41' Goal: Charly Nouck → Sami Jalal
+  Alineaciones: 39 jugadores (22 titulares, 17 banca) · formaciones: ['3-4-3', '4-3-3']
+  Posiciones de los titulares: {'Defender': 7, 'Midfielder': 7, 'Attacker': 6, 'Goalkeeper': 2}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ['Jens Fønsskov Olsen', 'Nickolai Lund']
+  Estadísticas de equipo: 12 datos · Assists, Ball Possession %, Corners, Goals, Successful Dribbles Percentage, Yellowcards
+  Estadísticas por jugador: 31 de 39 jugadores traen datos
+  Qué tan completos (de los que jugaron): Minutes Played 100%, Cumulative Minutes Played 100%, Accurate Passes Percentage 97%, Accurate Passes 97%, Touches 97%, Rating 97%, Passes 97%, Possession Lost 94%, Total Duels 87%, Backward Passes 84%, Goals Conceded 84%, Duels Lost 84%, Ball Recovery 81%, Duels Won 74%, Duels Won Percentage 74%, Clearances 68%, Turn Over 68%, Long Balls 65%
+  Calificación (ej.): [('Peter Ankersen', 6.76), ('Noah Markmann', 6.07), ('Juho Lähteenmäki', 6.87)]
+  Duelos previos: 34 · el más reciente: Viborg FF 4-1 Nordsjælland
+  Plantel de Viborg FF: 25 jugadores · posiciones: {'Attacker': 9, 'Defender': 8, 'Goalkeeper': 2, 'Midfielder': 6}
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Nordsjælland ?-? Odense BK (2026-10-09 17:00:00) ---
+  Bajas antes del partido: 0
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: no
+
+=========== 3. Premiership (id 501) · temporada 2026/2027 (id 28275) ===========
+Tabla: 12 renglones
+  1. Celtic · 18 pts · {"Overall Matches Played": 7, "Overall Won": 6, "Overall Draw": 0, "Overall Lost": 1, "Overal Goals Scored": 14, "Overall Goals Conceded": 4, "Home Matched Played": 4, "Home Won": 3, "Home Draw": 0, "
+  2. Rangers · 16 pts · {"Overall Matches Played": 7, "Overall Won": 5, "Overall Draw": 1, "Overall Lost": 1, "Overal Goals Scored": 8, "Overall Goals Conceded": 4, "Home Matched Played": 3, "Home Won": 2, "Home Draw": 0, "H
+  3. Hearts · 13 pts · {"Overall Matches Played": 7, "Overall Won": 4, "Overall Draw": 1, "Overall Lost": 2, "Overal Goals Scored": 14, "Overall Goals Conceded": 8, "Home Matched Played": 3, "Home Won": 3, "Home Draw": 0, "
+  Datos por renglón: Away Draw, Away Goals Conceded, Away Goals Scored, Away Lost, Away Matched Played, Away Points, Away Won, Goal Difference, Home Draw, Home Goals Conceded, Home Goals Scored, Home Lost, Home Matched Played, Home Points, Home Won, Overal Goals Scored, Overall Draw, Overall Goals Conceded, Overall Lost, Overall Matches Played, Overall Points, Overall Won
+Goleadores (top 5 de 10):
+  1. Josh Fowler (St. Johnstone): 4
+  2. Camilo Durán (Celtic): 3
+  3. Benjamin Nygren (Celtic): 3
+  4. Kevin Nisbet (Aberdeen): 3
+  5. Killian Phillips (St. Mirren): 3
+Asistidores (top 5 de 10):
+  1. Josh McPake (Hearts): 4
+  2. Benjamin Nygren (Celtic): 3
+  3. Camilo Durán (Celtic): 3
+  4. Tawanda Maswanhise (Motherwell): 2
+  5. Kevin Nisbet (Aberdeen): 2
+Partidos del 2026-09-10 al 2026-10-15: 15 · estados: {'FT': 9, 'NS': 6}
+  Ejemplo: Motherwell 0-4 Aberdeen · 2026-09-15 18:45:00 · jornada: 3
+
+  --- Partido completo: Celtic 0-1 Rangers (2026-09-20 11:00:00, Celtic Park) ---
+  Eventos: 18 · {'Substitution': 10, 'Yellowcard': 6, 'Goal': 1, 'VAR': 1}
+    33' Goal: Ryan Naderi 
+    46' Substitution: Kasper Høgh → Luke McCowan
+    63' Substitution: James Forrest → Benjamin Nygren
+    71' Substitution: Findlay Curtis → Min-su Kim
+  Alineaciones: 40 jugadores (22 titulares, 18 banca) · formaciones: ['4-4-1-1', '3-4-2-1']
+  Posiciones de los titulares: {'Goalkeeper': 2, 'Defender': 7, 'Attacker': 5, 'Midfielder': 8}
+  Coordenadas en cancha (formation_field): 100% de titulares
+  DT: ["Martin O'Neill", 'Derek McInnes']
+  Estadísticas de equipo: 10 datos · Ball Possession %, Corners, Goals, Successful Dribbles Percentage, Yellowcards
+  Estadísticas por jugador: 32 de 40 jugadores traen datos
+  Qué tan completos (de los que jugaron): Cumulative Minutes Played 100%, Minutes Played 100%, Passes 100%, Touches 100%, Accurate Passes 97%, Accurate Passes Percentage 97%, Possession Lost 97%, Rating 91%, Total Duels 91%, Duels Won 88%, Duels Won Percentage 88%, Duels Lost 84%, Passes In Final Third 81%, Backward Passes 81%, Long Balls 78%, Ball Recovery 78%, Long Balls Won 66%, Aerials Won 62%
+  Calificación (ej.): [('Viljami Sinisalo', 7.39), ('Liam Scales', 6.71), ('Auston Trusty', 6.85)]
+  Duelos previos: 67 · el más reciente: Celtic 0-1 Rangers
+  Plantel de Celtic: 29 jugadores · posiciones: {'Defender': 10, 'Attacker': 9, 'Midfielder': 7, 'Goalkeeper': 3}
+  Escudo/foto: el API trae imágenes (2 escudos), pero sus términos dicen que los derechos son de cada dueño: no se usarán.
+
+  --- Previa: Rangers ?-? Kilmarnock (2026-10-10 14:00:00) ---
+  Bajas antes del partido: 0
+  Alineación probable/confirmada ya publicada: 0 jugadores
+  Clima del partido: no
+
+=========== 3. Premiership Play-Offs (id 513) · temporada 2026/2027 (id 27934) ===========
+  ! standings/seasons/27934: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Tabla: 0 renglones
+  ! topscorers/seasons/27934: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Goleadores (top 5 de 0):
+  ! topscorers/seasons/27934: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Asistidores (top 5 de 0):
+  ! fixtures/between/2026-09-10/2026-10-15: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Partidos del 2026-09-10 al 2026-10-15: 0 · estados: {}
+  No hay partidos terminados en ese rango.
+
+=========== 3. Superliga Play-offs (id 1659) · temporada None (id None) ===========
+Sin temporada actual.
+
+=========== 4. Selección mexicana ===========
+  ! teams/search/Mexico: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Equipos encontrados: 
+
+=========== 5. En vivo ahora ===========
+  ! livescores/inplay: No result(s) found matching your request. Either the query did not return any results or you don't have access to it via your current subscription.
+Partidos en vivo que ve tu plan: 0
+
+Pedidos usados: 34 · último límite reportado: {"resets_in_seconds": 3585, "remaining": 170, "requested_entity": "Fixture"}
