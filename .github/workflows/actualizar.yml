@@ -24,14 +24,22 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}   # clave de The Odds API (Settings → Secrets and variables → Actions)
           FIREBASE_SA: ${{ secrets.FIREBASE_SA }}     # llave de servicio de Firebase (JSON) para los grupos de quiniela
           SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}   # Sportmonks: estadísticas de jugadores de fútbol
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}   # API-Football: estadísticas de jugadores (Liga MX ya sale de aquí)
       - name: Guardar la página nueva
         run: |
           git config user.name "La Pizarra bot"
           git config user.email "actions@github.com"
+          # Se apartan los archivos generados, se baja lo último del repositorio y se copian encima (así nunca chocan)
+          mkdir -p /tmp/gen && cp -r docs/index.html /tmp/gen/
+          if [ -d docs/datos ]; then cp -r docs/datos /tmp/gen/datos; fi
+          if [ -f momios.json ]; then cp momios.json /tmp/gen/; fi
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/gen/index.html docs/index.html
+          if [ -d /tmp/gen/datos ]; then mkdir -p docs/datos && cp -r /tmp/gen/datos/. docs/datos/; fi
+          if [ -f /tmp/gen/momios.json ]; then cp /tmp/gen/momios.json momios.json; fi
           git add docs/index.html
-          if [ -d docs/datos ]; then git add docs/datos; fi   # estadísticas de jugadores de fútbol (Sportmonks)
+          if [ -d docs/datos ]; then git add docs/datos; fi
           if [ -f momios.json ]; then git add momios.json; fi
           git diff --cached --quiet || git commit -m "Actualización automática de datos"
-          # Si mientras corría se subió algo, se acomoda encima; si chocan archivos generados, se quedan los de esta corrida
-          git pull --rebase -X theirs
           git push
