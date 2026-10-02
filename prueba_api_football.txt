@@ -1,6 +1,6 @@
 === PRUEBA API-FOOTBALL (Pro) · 2026-10-02 ===
 =========== 0. Cuenta ===========
-Plan: Pro · activo: True · pedidos hoy: 0 de 7500
+Plan: Pro · activo: True · pedidos hoy: 27 de 7500
 
 =========== 1. Liga MX (id 262) · temporada 2026 ===========
 Partidos de la temporada: 153 · estados: {'FT': 88, 'NS': 65}
@@ -50,6 +50,6 @@ Leagues Cup (772): 62 partidos · estados {'FT': 53, 'PEN': 9} · rondas: ['Fina
 México (id 16): 17 partidos en 2026 · 2026-07-01 World Cup: Mexico 2-0 Ecuador (FT) | 2026-07-06 World Cup: Mexico 2-3 England (FT) | 2026-09-27 Friendlies: Mexico 1-1 Colombia (FT) | 2026-09-30 Friendlies: Mexico 1-1 Peru (FT) | 2026-10-04 Friendlies: USA None-None Mexico (NS) | 2026-10-07 Friendlies: Mexico None-None Chile (NS)
 
 =========== 4. En vivo ahora ===========
-Partidos en vivo en todo el mundo: 8 · ej.: Primera Division: Inca Aruba 2-1 Municipal Limeño 45' | Copa de la División Profesional: Blooming 0-0 Independiente Petrolero 25' | Copa Argentina: Platense 0-0 Estudiantes L.P. 36' | CONCACAF Nations League: Dominican Republic 0-1 Haiti 44'
+Partidos en vivo en todo el mundo: 7 · ej.: Primera Division: Inca Aruba 2-1 Municipal Limeño 45' | Copa de la División Profesional: Blooming 0-0 Independiente Petrolero 27' | Copa Argentina: Platense 0-0 Estudiantes L.P. 38' | CONCACAF Nations League: Dominican Republic 0-1 Haiti 45'
 
 Pedidos usados: 28
