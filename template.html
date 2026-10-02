@@ -1857,8 +1857,9 @@ async function afSeasonEvents(key){
   const S=(sel&&L.seasons.find(x=>x.id===sel.sid))||L.currentseason||{};
   if(!S.id) return {ev:[],L,S};
   const ck=key+"|"+S.id;
+  // Las abreviaturas (teams) se esperan máximo 1.5 s: si tardan, los partidos salen sin esperar
   if(!AF_EV[ck]) AF_EV[ck]=Promise.all([afList("fixtures",`league=${lg.af}&season=${S.id}&${AF_TZ}`),
-      afList("teams",`league=${lg.af}&season=${S.id}`).then(T=>T.forEach(t=>{if(t.team?.code) AF_COD[t.team.id]=t.team.code;})).catch(()=>{})])
+      Promise.race([afList("teams",`league=${lg.af}&season=${S.id}`).then(T=>T.forEach(t=>{if(t.team?.code) AF_COD[t.team.id]=t.team.code;})).catch(()=>{}),new Promise(r=>setTimeout(r,1500))])])
     .then(([F])=>F).catch(e=>{delete AF_EV[ck]; throw e;});
   let ev=afMarcaTorneos((await AF_EV[ck]).map(f=>afEvent(f,lg)).sort((a,b)=>new Date(a.date)-new Date(b.date)));
   // Copas: fuera las rondas clasificatorias y preliminares (equipos amateur), como antes con Sportmonks
