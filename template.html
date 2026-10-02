@@ -179,6 +179,9 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 .mapa-h{font:700 20px/1.2 var(--display);margin:6px 0 10px}
 .avanza{color:var(--ink)} .avanza b{color:var(--mark)}
 .where .tv{display:block;color:var(--ink);margin-top:2px}
+.game .vivo{margin:8px 0 2px;padding-top:8px;border-top:1px dashed var(--line);font-size:14px}
+.game .vivo .pos{font:700 14px/1 var(--display);letter-spacing:.03em;color:var(--mark);margin-right:10px}
+.game .vivo .dd{color:var(--ink)} .game .vivo .last{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
 .bracket-wrap{overflow-x:auto;margin:0 0 22px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
 .bracket-svg{display:block;max-width:none}
 .bracket-svg .rnd{font:700 12px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;fill:var(--muted);text-anchor:middle}
@@ -1333,6 +1336,7 @@ function gameCard(g){
   ${g.teams.map(t=>`<div class="team${t.win?" win":""}">${t.logo?`<img src="${t.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"<span></span>"}<span class="tn">${t.n}${t.sub?`<small>${t.sub}</small>`:""}</span>${t.score!=null?`<span class="sc">${t.score}</span>`:t.ml!=null?`<span class="ml" title="Momio">${mlTxt(t.ml)}</span>`:""}</div>`).join("")}
   ${g.probs?`<div class="prob">${g.probs.map(p=>`<i style="width:${(p.p*100).toFixed(1)}%;background:${p.c}" title="${p.l}: ${Math.round(p.p*100)}%"></i>`).join("")}</div><div class="probl">${g.probs.map(p=>`<span>${p.l} ${Math.round(p.p*100)}%</span>`).join("")}</div>`:""}
   ${g.lines?.length?`<div class="lines">${g.lines.map(([k,v])=>`<span>${k} <b>${v}</b></span>`).join("")}</div>`:""}
+  ${g.vivo?`<div class="vivo">${g.vivo.pos?`<span class="pos">🏈 ${g.vivo.pos}${g.vivo.rz?" · zona roja":""}</span>`:""}${g.vivo.dd?`<span class="dd">${nflDD(g.vivo.dd)}</span>`:""}${g.vivo.last?`<p class="last">${g.vivo.last}</p>`:""}</div>`:""}
   <div class="where"><span>${g.place||""}</span><span class="wx" id="${g.wxId}">${g.wxNote||""}</span></div></article>`;
 }
 
@@ -1355,6 +1359,7 @@ function renderNflWeek(){
       teams:[{n:A.n,sub:x.a,logo:A.logo,ml:x.aml,score:sa,win:done&&sa>sh},{n:H.n,sub:x.h+" · local",logo:H.logo,ml:x.hml,score:sh,win:done&&sh>sa}],
       probs:done||live||!pr?null:[{p:pr[0],c:A.c,l:x.a},{p:pr[1],c:H.c,l:x.h}],
       lines:done||live||x.sp==null?[]:[["Línea",fav?`${fav} −${Math.abs(x.sp)}`:"Pick"],["Total",x.tot??"–"]],
+      vivo:live&&L.sit?L.sit:null,
       place:x.st,wxNote:(x.roof==="dome"||x.roof==="closed")?"Techado":"",_x:x};
   });
   $("#nflGames").innerHTML=cards.map(gameCard).join("");
@@ -3018,6 +3023,7 @@ function nflClock(st){const t=st?.type?.name||"", p=st?.period||0, c=st?.display
   if(/HALFTIME/.test(t)) return "Medio tiempo"; if(/END_PERIOD/.test(t)) return p>=4?"Fin del 4º cuarto":`Fin del ${ORD[p]||p+"º"} cuarto`;
   return p>4?`Tiempo extra · ${c}`:`${ORD[p]||p+"º"} cuarto · ${c}`;}
 const liveHot=(t,done)=>{const now=Date.now(); return !done&&t&&t<=now+5*60e3&&t>now-5*3600e3;};
+const nflDD=t=>String(t||"").replace(/^(\d)(st|nd|rd|th)\s*&\s*(\d+|Goal)/i,(m,n,_,d)=>`${n}.º y ${/goal/i.test(d)?"gol":d}`).replace(/\s+at\s+/," en ");
 async function nflLiveUpdate(force,wk=curW){
   const G=(D.sched||[]).filter(g=>g.w===wk);
   if(!force&&!G.some(g=>liveHot(g.ko?+new Date(g.ko):0,g.hs!=null||NLIVE[g.id]?.done))) return false;
@@ -3027,7 +3033,9 @@ async function nflLiveUpdate(force,wk=curW){
     const c=e.competitions?.[0], cs=c?.competitors||[], H=cs.find(x=>x.homeAway==="home"), A=cs.find(x=>x.homeAway==="away"); if(!H||!A) continue;
     const ab=t=>NFL_AB[t?.abbreviation]||t?.abbreviation, x=G.find(g=>g.h===ab(H.team)&&g.a===ab(A.team)); if(!x) continue;
     const s=e.status?.type?.state; if(s!=="in"&&s!=="post"){delete NLIVE[x.id]; continue;}
-    NLIVE[x.id]={as:+A.score||0,hs:+H.score||0,live:s==="in",done:s==="post",st:s==="in"?nflClock(e.status):"Final"};
+    const si=c.situation||{}, pos=si.possession?(String(si.possession)===String(H.id)?ab(H.team):String(si.possession)===String(A.id)?ab(A.team):null):null;
+    NLIVE[x.id]={as:+A.score||0,hs:+H.score||0,live:s==="in",done:s==="post",st:s==="in"?nflClock(e.status):"Final",
+      sit:s==="in"?{pos,dd:si.downDistanceText||si.shortDownDistanceText||"",rz:!!si.isRedZone,last:si.lastPlay?.text||""}:null};
   }
   if(wk===curW) renderNflWeek(); return true;
 }
