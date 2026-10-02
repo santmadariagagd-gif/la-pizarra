@@ -1140,6 +1140,17 @@ def af(ruta,**q):
         if e and (not isinstance(e,list) or e): raise RuntimeError(f"API-Football {ruta}: {e}")
         return j.get("response") or []
     return []
+AF_NOMBRE={"Atletico Madrid":"Atlético Madrid","Paris Saint Germain":"Paris Saint-Germain","Alaves":"Alavés","Cadiz":"Cádiz","Almeria":"Almería","Leganes":"Leganés",
+           "Malaga":"Málaga","Borussia Monchengladbach":"Borussia Mönchengladbach","Heart Of Midlothian":"Heart of Midlothian"}
+def af_codigos(lid,temporada):
+    """Abreviatura única por equipo (las de API-Football a veces se repiten o faltan)."""
+    T=af("teams",league=lid,season=temporada); cods={}; usados=set()
+    for t in T:
+        tid=t["team"]["id"]; c=(AF_EQ.get(tid,(None,None))[1] or t["team"].get("code") or "".join(w[0] for w in (t["team"].get("name") or "X").split())[:3]).upper()
+        base,n=c,2
+        while c in usados: c=f"{base[:2]}{n}"; n+=1
+        usados.add(c); cods[tid]=c
+    return cods
 def af_torneo(f):
     r=str((f.get("league") or {}).get("round") or "")
     return "Apertura" if r.startswith("Apertura") else "Clausura" if r.startswith("Clausura") else None
@@ -1150,10 +1161,14 @@ def af_torneo_actual(F):
     if not reg: return None
     ya=[f for f in reg if f["fixture"]["timestamp"]<=time.time()]
     return af_torneo(max(ya,key=lambda f:f["fixture"]["timestamp"]) if ya else min(reg,key=lambda f:f["fixture"]["timestamp"]))
-def af_player_stats(lid,nombre,F,torneo=None):
+def af_player_stats(lid,nombre,F,torneo=None,cods=None,sin_previas=False):
     """Suma partido por partido las estadísticas de jugadores de los partidos terminados de F (de un torneo, si se da)."""
     if torneo: F=[f for f in F if af_torneo(f)==torneo]
+    if sin_previas:   # Champions: fuera las rondas clasificatorias (antes de la fase de liga)
+        g=[f["fixture"]["timestamp"] for f in F if af_regular(f)]
+        if g: F=[f for f in F if af_regular(f) or f["fixture"]["timestamp"]>=min(g)]
     F=[f for f in F if (f["fixture"].get("status") or {}).get("short") in AF_FIN]
+    cods=cods or {}
     ids=[f["fixture"]["id"] for f in F]; D=[]
     for i in range(0,len(ids),20): D+=af("fixtures",ids="-".join(str(x) for x in ids[i:i+20]))
     P={}; con=0
@@ -1172,7 +1187,7 @@ def af_player_stats(lid,nombre,F,torneo=None):
         if f.get("players"): con+=1
         for T in f.get("players") or []:
             tid=T["team"]["id"]; t=eq.get(tid,T["team"]); rival=next((k for k in eq if k!=tid),None)
-            nm_eq,ab=AF_EQ.get(tid,(t.get("name") or "",str(tid)))
+            nm_eq,ab=AF_EQ.get(tid,(AF_NOMBRE.get(t.get("name"),t.get("name") or ""),cods.get(tid) or str(tid)))
             for x in T.get("players") or []:
                 s=(x.get("statistics") or [{}])[0]; g=s.get("games") or {}; mins=g.get("minutes") or 0
                 pid=x["player"]["id"]; tit=pid in pos_xi
@@ -1181,6 +1196,8 @@ def af_player_stats(lid,nombre,F,torneo=None):
                 r=P.setdefault(pid,dict(id=pid,n=(x["player"].get("name") or "").strip(),t=ab,tn=nm_eq,logo=t.get("logo") if SM_ESCUDOS else None,
                     pos=pos,ap=0,tit=0,min=0,g=0,as_=0,sh=0,sot=0,yc=0,rc=0,fc=0,fs=0,sv=0,gc=None,cs=None))
                 if tit: r["pos"]=pos
+                nn=(x["player"].get("name") or "").strip()
+                if len(nn)>len(r["n"]) and not nn.endswith("."): r["n"]=nn   # a veces viene "J. Paradela" y otras el nombre completo
                 r["ap"]+=1; r["tit"]+=1 if tit else 0; r["min"]+=mins
                 gl=s.get("goals") or {}; sh=s.get("shots") or {}; fo=s.get("fouls") or {}; ca=s.get("cards") or {}
                 r["g"]+=gl.get("total") or 0; r["as_"]+=gl.get("assists") or 0; r["sv"]+=gl.get("saves") or 0
@@ -1196,7 +1213,9 @@ def af_player_stats(lid,nombre,F,torneo=None):
     print(f"{nombre} (API-Football): {len(F)} partidos terminados, {con} con estadísticas por jugador, {len(res)} jugadores")
     return res
 # Ligas que ya salen de API-Football: clave en la página → (id en API-Football, nombre, ¿tiene Liguilla?)
-AF_LIGAS={"mx":(262,"Liga MX",True)}
+AF_LIGAS={"mx":(262,"Liga MX",True),"eng":(39,"Premier League",False),"esp":(140,"La Liga",False),"ita":(135,"Serie A",False),
+          "ger":(78,"Bundesliga",False),"fra":(61,"Ligue 1",False),"ucl":(2,"Champions League",False)}
+AF_SIN_PREVIAS={"ucl"}   # sin rondas clasificatorias
 # Las estadísticas de jugadores van en archivos aparte (docs/datos/jugadores_<liga>.json) que la página
 # pide solo cuando abres la pestaña Jugadores, para no hacer pesada la página principal.
 out['mxp']=[]; out['mx_logos']=[]
@@ -1210,12 +1229,12 @@ if SMK:
     for clave,(lid,nombre,lig) in SM_LIGAS.items():
         if AFK and clave in AF_LIGAS: continue   # ya sale de API-Football (abajo)
         try:
-            S,pasadas=sm_temporadas(lid)
-            guarda_jugadores(f'jugadores_{clave}.json',sm_player_stats(lid,nombre,lig,S))
+            ST,pasadas=sm_temporadas(lid)
+            guarda_jugadores(f'jugadores_{clave}.json',sm_player_stats(lid,nombre,lig,ST))
             # Temporadas pasadas: se calculan una sola vez (ya no cambian) y se guardan en su propio archivo.
             # En Liga MX y Argentina, un archivo por torneo (Apertura / Clausura); la temporada actual también
             # puede tener un torneo ya terminado (p. ej. el Apertura cuando va el Clausura).
-            for T in [S]+pasadas:
+            for T in [ST]+pasadas:
                 if lig:
                     fases=[st for st in (sm(f"seasons/{T['id']}",include="stages")["data"].get("stages") or []) if st.get("type_id")==223 and (st.get("name") or "").split(" ")[0] in ("Apertura","Clausura")]
                     for st in fases:
@@ -1224,7 +1243,7 @@ if SMK:
                         if os.path.exists(os.path.join(carpeta,arch)): continue
                         try: guarda_jugadores(arch,sm_player_stats(lid,f"{nombre} {st['name']} {str(st['starting_at'])[:4]}",lig,T,st["id"]))
                         except Exception as ex: print(f"{nombre} {st['name']}: no se pudo:",ex)
-                elif T is not S:
+                elif T is not ST:
                     arch=f'jugadores_{clave}_{T["id"]}.json'
                     if os.path.exists(os.path.join(carpeta,arch)): continue
                     guarda_jugadores(arch,sm_player_stats(lid,f"{nombre} {T.get('name')}",lig,T))
@@ -1242,7 +1261,8 @@ if AFK:
             if actual is None: print(f"{nombre} (API-Football): sin temporadas"); continue
             F=af("fixtures",league=lid,season=actual,timezone="America/Mexico_City")
             torneo=af_torneo_actual(F) if lig else None
-            guarda_jugadores(f'jugadores_{clave}.json',af_player_stats(lid,f"{nombre} {torneo or actual}",F,torneo))
+            cods=af_codigos(lid,actual); sp=clave in AF_SIN_PREVIAS
+            guarda_jugadores(f'jugadores_{clave}.json',af_player_stats(lid,f"{nombre} {torneo or actual}",F,torneo,cods,sp))
             # Torneos y temporadas pasadas: una sola vez (ya no cambian), cada uno en su archivo.
             # Liga MX: jugadores_mx_<temporada>_<Apertura|Clausura>.json (temporada 2025 = Apertura 2025 + Clausura 2026)
             for año in [a for a in años if a<=actual][:3]:
@@ -1251,9 +1271,11 @@ if AFK:
                     if año==actual and (t==torneo or not lig): continue
                     arch=f'jugadores_{clave}_{año}_{t}.json' if t else f'jugadores_{clave}_{año}.json'
                     if os.path.exists(os.path.join(carpeta,arch)): continue
-                    if Fa is None: Fa=F if año==actual else af("fixtures",league=lid,season=año,timezone="America/Mexico_City")
+                    if Fa is None:
+                        Fa=F if año==actual else af("fixtures",league=lid,season=año,timezone="America/Mexico_City")
+                        ca=cods if año==actual else af_codigos(lid,año)
                     if t and not any(af_torneo(f)==t and (f["fixture"].get("status") or {}).get("short") in AF_FIN for f in Fa): continue
-                    try: guarda_jugadores(arch,af_player_stats(lid,f"{nombre} {t or ''} {año+1 if t=='Clausura' else año}".replace("  "," "),Fa,t))
+                    try: guarda_jugadores(arch,af_player_stats(lid,f"{nombre} {t or ''} {año+1 if t=='Clausura' else año}".replace("  "," "),Fa,t,ca,sp))
                     except Exception as ex: print(f"{nombre} {t or año}: no se pudo:",ex)
         except Exception as ex:
             print(f"{nombre} (API-Football): no se pudieron obtener estadísticas de jugadores:",ex)
