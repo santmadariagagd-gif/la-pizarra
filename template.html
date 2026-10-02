@@ -2406,8 +2406,10 @@ function mxSeason(){
 const OD_STOP=new Set(["fc","cf","club","de","del","la","el","ac","sc","cd","ud","afc","sd","ssc","as","us","rc","and","the","1","calcio","sv","vfb","vfl","tsg","fk","ca","og","osc","stade","ogc","rcd","sad","real","united","city","borussia","olympique"]);  // palabras que comparten muchos equipos
 const OD_ALIAS={internazionale:"inter",munchen:"munich",koln:"cologne",wolves:"wolverhampton",spurs:"tottenham",man:"manchester",psg:"paris",atleti:"atletico",chivas:"guadalajara",gallos:"queretaro",rayados:"monterrey",tuzos:"pachuca",bravos:"juarez",xolos:"tijuana",unam:"pumas",uanl:"tigres"};
 const odNorm=s=>new Set(String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").split(" ").filter(w=>w&&!OD_STOP.has(w)).map(w=>OD_ALIAS[w]||w));
-const odTeamWords=t=>{const W=new Set(); [t?.displayName,t?.shortDisplayName,t?.name,t?.location,t?.abbreviation].forEach(x=>odNorm(x).forEach(w=>W.add(w))); return W;};
-const odScore=(W,name)=>{const N=odNorm(name); if(!N.size) return 0; let k=0; N.forEach(w=>{if(W.has(w)) k++;}); return k/N.size;};
+const odTeamWords=t=>{const W=new Set(); [t?.displayName,t?.shortDisplayName,t?.name,t?.location,t?.abbreviation].forEach(x=>odNorm(x).forEach(w=>W.add(w))); W.n=odNorm(t?.displayName).size||W.size; return W;};
+// Se compara contra el nombre más corto de los dos: API-Football dice "Brighton" y The Odds API "Brighton and Hove Albion"
+// (antes se dividía entre las palabras del nombre largo y esos partidos se quedaban sin momios).
+const odScore=(W,name)=>{const N=odNorm(name); if(!N.size) return 0; let k=0; N.forEach(w=>{if(W.has(w)) k++;}); return k/Math.min(N.size,W.n||N.size);};
 function odFind(H,A,date){
   const L=D.odds_fut||[]; if(!L.length||!date) return null; const t0=+new Date(date);
   let best=null,bs=0; const WH=odTeamWords(H.team), WA=odTeamWords(A.team);
