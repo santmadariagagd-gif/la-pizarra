@@ -2928,10 +2928,12 @@ async function loadMxPlayers(){
     $("#mxpTitle").textContent=`Líderes de ${flLabel()}`;
     const pk="pizarra_mxp3_"+FLIG; // caché de líderes, separado por competencia
     let cached=null; try{cached=JSON.parse(localStorage.getItem(pk)||"null")}catch(e){}
-    if(LEAGUES[FLIG].sm&&SM_SEL[FLIG]){ MXP=[]; $("#mxpMsg").textContent="Las estadísticas de jugadores solo están para el torneo en curso."; return; }
     if(LEAGUES[FLIG].sm){
-      // Ligas de Sportmonks: las estadísticas las arma build_site.py una vez al día (docs/datos/jugadores_<liga>.json)
-      const key=FLIG, j=await fetch(`datos/jugadores_${key}.json`,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null); if(key!==FLIG) return;
+      // Ligas de Sportmonks: las estadísticas las arma build_site.py (docs/datos/jugadores_<liga>.json; torneos pasados:
+      // jugadores_<liga>_<temporada>[_<torneo>].json, calculados una sola vez)
+      const key=FLIG, sel=SM_SEL[key], arch=sel?`datos/jugadores_${key}_${sel.sid}${sel.stage?"_"+sel.stage:""}.json`:`datos/jugadores_${key}.json`;
+      const j=await fetch(arch,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null); if(key!==FLIG) return;
+      if(!j&&sel){ MXP=[]; $("#mxpMsg").textContent="Las estadísticas de ese torneo todavía no están calculadas; se generan con la actualización diaria."; return; }
       const E=j?.equipos||{};
       MXP=(j?.filas||[]).map(r=>({...r,tn:E[r.t]?.[0]||"",logo:E[r.t]?.[1]||null,ga:(r.g||0)+(r.as||0),acc:r.sh>0&&r.sot!=null?r.sot/r.sh:null,g90:r.g90??null}));
     }

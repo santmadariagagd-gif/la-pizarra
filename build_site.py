@@ -1034,10 +1034,15 @@ def sm_tipo(n):
     if n in ("goal","penalty"): return "gol"
     if "substitution" in n: return "cambio"
     return None
-def sm_player_stats(liga_id,nombre,con_liguilla):
-    L=sm(f"leagues/{liga_id}",include="currentSeason;seasons")["data"]; S=L.get("currentseason") or L.get("current_season") or {}
-    if not S.get("id"):   # sin temporada en curso (p. ej. Leagues Cup): la última
-        ss=sorted([x for x in L.get("seasons") or [] if x.get("starting_at")],key=lambda x:x["starting_at"],reverse=True); S=ss[0] if ss else {}
+def sm_temporadas(liga_id):
+    """Temporada actual (o la última) y las 2 anteriores de una liga."""
+    L=sm(f"leagues/{liga_id}",include="currentSeason;seasons")["data"]
+    ss=sorted([x for x in L.get("seasons") or [] if x.get("starting_at")],key=lambda x:x["starting_at"],reverse=True)
+    S=L.get("currentseason") or L.get("current_season") or (ss[0] if ss else {})
+    return S,[x for x in ss if x.get("id")!=S.get("id")][:2]
+def sm_player_stats(liga_id,nombre,con_liguilla,S=None,stage_id=None):
+    """Estadísticas de jugadores de una temporada (S) y, en Liga MX/Argentina, de un torneo (stage_id)."""
+    if S is None: S=sm_temporadas(liga_id)[0]
     if not S.get("id"): print(f"{nombre} (Sportmonks): sin temporada actual"); return []
     ini=date.fromisoformat(S["starting_at"]); fin=min(date.today(),date.fromisoformat(S.get("ending_at") or date.today().isoformat())+timedelta(days=21))
     F={}
@@ -1051,10 +1056,12 @@ def sm_player_stats(liga_id,nombre,con_liguilla):
     if con_liguilla:   # Liga MX: solo el torneo actual (Apertura o Clausura) y su Liguilla
         num=lambda f:str((f.get("round") or {}).get("name") or "").isdigit()
         reg=[f for f in F if num(f)]
-        cur=next((f["stage_id"] for f in reg if (f.get("stage") or {}).get("is_current")),None) or (max(reg,key=lambda f:f["starting_at_timestamp"])["stage_id"] if reg else None)
-        if cur:
+        cur=stage_id or next((f["stage_id"] for f in reg if (f.get("stage") or {}).get("is_current")),None) or (max(reg,key=lambda f:f["starting_at_timestamp"])["stage_id"] if reg else None)
+        if cur and not any(f["stage_id"]==cur for f in reg): F=[]
+        elif cur:
             t0=min(f["starting_at_timestamp"] for f in reg if f["stage_id"]==cur)
-            F=[f for f in F if f["stage_id"]==cur or (not num(f) and f["starting_at_timestamp"]>=t0)]
+            base=((next((f for f in reg if f["stage_id"]==cur),{}).get("stage") or {}).get("name") or "").split(" ")[0].split(",")[0].split("-")[0].strip()
+            F=[f for f in F if f["stage_id"]==cur or (not num(f) and f["starting_at_timestamp"]>=t0 and (not base or ((f.get("stage") or {}).get("name") or "").startswith(base)))]
     F=[f for f in F if (f.get("state") or {}).get("developer_name") in SM_FIN and (f.get("stage") or {}).get("type_id")!=225]   # 225 = rondas clasificatorias (amateur)
     P={}
     for f in F:
@@ -1112,15 +1119,33 @@ SM_LIGAS={"mx":(743,"Liga MX",True),"eng":(8,"Premier League",False),"esp":(564,
 # Las estadísticas de jugadores van en archivos aparte (docs/datos/jugadores_<liga>.json) que la página
 # pide solo cuando abres la pestaña Jugadores, para no hacer pesada la página principal.
 out['mxp']=[]; out['mx_logos']=[]
+def guarda_jugadores(nombre_archivo,filas):
+    equipos={}
+    for r in filas: equipos[r["t"]]=[r.pop("tn"),r.pop("logo")]
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos',nombre_archivo),'w',encoding='utf-8') as f:
+        json.dump({"t":datetime.now(ZoneInfo("America/Mexico_City")).isoformat(timespec="minutes"),"equipos":equipos,"filas":filas},f,ensure_ascii=False,separators=(",",":"))
 if SMK:
-    os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'),exist_ok=True)
+    carpeta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'); os.makedirs(carpeta,exist_ok=True)
     for clave,(lid,nombre,lig) in SM_LIGAS.items():
         try:
-            filas=sm_player_stats(lid,nombre,lig)
-            equipos={}
-            for r in filas: equipos[r["t"]]=[r.pop("tn"),r.pop("logo")]
-            with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos',f'jugadores_{clave}.json'),'w',encoding='utf-8') as f:
-                json.dump({"t":datetime.now(ZoneInfo("America/Mexico_City")).isoformat(timespec="minutes"),"equipos":equipos,"filas":filas},f,ensure_ascii=False,separators=(",",":"))
+            S,pasadas=sm_temporadas(lid)
+            guarda_jugadores(f'jugadores_{clave}.json',sm_player_stats(lid,nombre,lig,S))
+            # Temporadas pasadas: se calculan una sola vez (ya no cambian) y se guardan en su propio archivo.
+            # En Liga MX y Argentina, un archivo por torneo (Apertura / Clausura); la temporada actual también
+            # puede tener un torneo ya terminado (p. ej. el Apertura cuando va el Clausura).
+            for T in [S]+pasadas:
+                if lig:
+                    fases=[st for st in (sm(f"seasons/{T['id']}",include="stages")["data"].get("stages") or []) if st.get("type_id")==223 and (st.get("name") or "").split(" ")[0] in ("Apertura","Clausura")]
+                    for st in fases:
+                        if st.get("is_current") or not st.get("starting_at") or st["starting_at"]>date.today().isoformat(): continue
+                        arch=f'jugadores_{clave}_{T["id"]}_{st["id"]}.json'
+                        if os.path.exists(os.path.join(carpeta,arch)): continue
+                        try: guarda_jugadores(arch,sm_player_stats(lid,f"{nombre} {st['name']} {str(st['starting_at'])[:4]}",lig,T,st["id"]))
+                        except Exception as ex: print(f"{nombre} {st['name']}: no se pudo:",ex)
+                elif T is not S:
+                    arch=f'jugadores_{clave}_{T["id"]}.json'
+                    if os.path.exists(os.path.join(carpeta,arch)): continue
+                    guarda_jugadores(arch,sm_player_stats(lid,f"{nombre} {T.get('name')}",lig,T))
         except Exception as ex:
             print(f"{nombre} (Sportmonks): no se pudieron obtener estadísticas de jugadores:",ex)
 else:
