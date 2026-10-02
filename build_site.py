@@ -24,7 +24,7 @@ out={}
 # Igual que se probó para Liga MX: una consulta SPARQL por liga y por actualización, futbolistas de
 # clubes de ese país con foto libre en Commons. Liga MX se queda con escudos (así lo prefirió Santiago).
 # El emparejamiento (nombre EXACTO + club) se hace en el navegador, igual que antes.
-import urllib.request, urllib.parse
+import urllib.request, urllib.parse, time
 def wd_query_text(country_qid):
     return f"""SELECT ?j ?nombre ?clubLabel ?foto WHERE {{
   ?club wdt:P17 wd:{country_qid} ; wdt:P31 wd:Q476028 .
@@ -1116,6 +1116,87 @@ SM_LIGAS={"mx":(743,"Liga MX",True),"eng":(8,"Premier League",False),"esp":(564,
           "fac":(24,"FA Cup",False),"efl":(27,"Carabao Cup",False),"cdr":(570,"Copa del Rey",False),"cit":(390,"Coppa Italia",False),
           "dfb":(109,"DFB-Pokal",False),"cdf":(307,"Coupe de France",False),"lib":(1122,"Copa Libertadores",False),
           "ccc":(1111,"Concachampions",False),"lgc":(3211,"Leagues Cup",False)}
+# ---------- API-Football: estadísticas de jugadores (reemplazo de Sportmonks, plan Pro con licencia comercial) ----------
+# Pide la temporada completa (1 pedido) y luego el detalle de los partidos terminados de 20 en 20 (fixtures?ids=, que
+# trae alineaciones, eventos y estadísticas por jugador). Liga MX: un archivo por torneo (Apertura / Clausura).
+# El plan Pro permite 5 pedidos por segundo: se espera 0.35 s entre pedidos y se reintenta si contesta "rateLimit".
+AFK=os.environ.get("API_FOOTBALL_KEY","").strip()
+AF_FIN={"FT","AET","PEN","AWD","WO"}
+# Nombres y abreviaturas de siempre (las de API-Football vienen sin acentos y repetidas). Igual que AF_EQ en template.html.
+AF_EQ={2278:("Guadalajara","GUA"),2279:("Tigres UANL","TUA"),2280:("Tijuana","TIJ"),2281:("Toluca","TOL"),2282:("Monterrey","MNT"),2283:("Atlas","ATS"),
+       2285:("Santos Laguna","SLA"),2286:("Pumas UNAM","PUM"),2287:("América","AME"),2288:("Necaxa","NXA"),2289:("León","LEO"),2290:("Querétaro","QUE"),
+       2291:("Puebla","PUE"),2292:("Pachuca","PCH"),2295:("Cruz Azul","CAZ"),2298:("Juárez","JUA"),2312:("Atlante","ATL"),2314:("Atlético San Luis","ASL"),14002:("Mazatlán","MAZ")}
+AF_USADOS=[0]
+def af(ruta,**q):
+    url="https://v3.football.api-sports.io/"+ruta+("?"+urllib.parse.urlencode(q) if q else "")
+    for intento in range(4):
+        time.sleep(0.35)
+        req=urllib.request.Request(url,headers={"x-apisports-key":AFK,"Accept":"application/json","User-Agent":"LaPizarra/1.0 (+https://lapizarra.mx)"})
+        with urllib.request.urlopen(req,timeout=90) as r:
+            j=json.loads(r.read().decode("utf-8"))
+        AF_USADOS[0]+=1
+        e=j.get("errors")
+        if e and "rateLimit" in json.dumps(e) and intento<3: time.sleep(2+3*intento); continue
+        if e and (not isinstance(e,list) or e): raise RuntimeError(f"API-Football {ruta}: {e}")
+        return j.get("response") or []
+    return []
+def af_torneo(f):
+    r=str((f.get("league") or {}).get("round") or "")
+    return "Apertura" if r.startswith("Apertura") else "Clausura" if r.startswith("Clausura") else None
+def af_regular(f):
+    return str((f.get("league") or {}).get("round") or "").rsplit("-",1)[-1].strip().isdigit()
+def af_torneo_actual(F):
+    reg=[f for f in F if af_regular(f) and af_torneo(f)]
+    if not reg: return None
+    ya=[f for f in reg if f["fixture"]["timestamp"]<=time.time()]
+    return af_torneo(max(ya,key=lambda f:f["fixture"]["timestamp"]) if ya else min(reg,key=lambda f:f["fixture"]["timestamp"]))
+def af_player_stats(lid,nombre,F,torneo=None):
+    """Suma partido por partido las estadísticas de jugadores de los partidos terminados de F (de un torneo, si se da)."""
+    if torneo: F=[f for f in F if af_torneo(f)==torneo]
+    F=[f for f in F if (f["fixture"].get("status") or {}).get("short") in AF_FIN]
+    ids=[f["fixture"]["id"] for f in F]; D=[]
+    for i in range(0,len(ids),20): D+=af("fixtures",ids="-".join(str(x) for x in ids[i:i+20]))
+    P={}; con=0
+    for f in D:
+        eq={f["teams"]["home"]["id"]:f["teams"]["home"],f["teams"]["away"]["id"]:f["teams"]["away"]}
+        goles={f["teams"]["home"]["id"]:(f.get("goals") or {}).get("home") or 0,f["teams"]["away"]["id"]:(f.get("goals") or {}).get("away") or 0}
+        pos_xi={}
+        for L in f.get("lineups") or []:
+            xi=L.get("startXI") or []
+            filas=[int(str(p["player"].get("grid")).split(":")[0]) for p in xi if p["player"].get("grid")]
+            for p in xi:
+                g=p["player"].get("grid")
+                if g:
+                    fila=int(str(g).split(":")[0]); pos_xi[p["player"]["id"]]="G" if fila==1 else "D" if fila==2 else "F" if fila==max(filas) else "M"
+                else: pos_xi[p["player"]["id"]]=p["player"].get("pos") or "M"
+        if f.get("players"): con+=1
+        for T in f.get("players") or []:
+            tid=T["team"]["id"]; t=eq.get(tid,T["team"]); rival=next((k for k in eq if k!=tid),None)
+            nm_eq,ab=AF_EQ.get(tid,(t.get("name") or "",str(tid)))
+            for x in T.get("players") or []:
+                s=(x.get("statistics") or [{}])[0]; g=s.get("games") or {}; mins=g.get("minutes") or 0
+                pid=x["player"]["id"]; tit=pid in pos_xi
+                if not (tit or mins>0): continue
+                pos=pos_xi.get(pid) or (g.get("position") or "M")[:1]
+                r=P.setdefault(pid,dict(id=pid,n=(x["player"].get("name") or "").strip(),t=ab,tn=nm_eq,logo=t.get("logo") if SM_ESCUDOS else None,
+                    pos=pos,ap=0,tit=0,min=0,g=0,as_=0,sh=0,sot=0,yc=0,rc=0,fc=0,fs=0,sv=0,gc=None,cs=None))
+                if tit: r["pos"]=pos
+                r["ap"]+=1; r["tit"]+=1 if tit else 0; r["min"]+=mins
+                gl=s.get("goals") or {}; sh=s.get("shots") or {}; fo=s.get("fouls") or {}; ca=s.get("cards") or {}
+                r["g"]+=gl.get("total") or 0; r["as_"]+=gl.get("assists") or 0; r["sv"]+=gl.get("saves") or 0
+                r["sh"]+=sh.get("total") or 0; r["sot"]+=sh.get("on") or 0; r["fc"]+=fo.get("committed") or 0; r["fs"]+=fo.get("drawn") or 0
+                r["yc"]+=ca.get("yellow") or 0; r["rc"]+=ca.get("red") or 0
+                if tit and pos=="G":
+                    rec=goles.get(rival,0); r["gc"]=(r["gc"] or 0)+rec; r["cs"]=(r["cs"] or 0)+(1 if rec==0 else 0)
+    res=[]
+    for r in P.values():
+        if not r["n"]: continue
+        r["as"]=r.pop("as_"); r["pg"]=r["pos"]; r["g90"]=round(r["g"]*90/r["min"],2) if r["min"]>=90 else None
+        res.append(r)
+    print(f"{nombre} (API-Football): {len(F)} partidos terminados, {con} con estadísticas por jugador, {len(res)} jugadores")
+    return res
+# Ligas que ya salen de API-Football: clave en la página → (id en API-Football, nombre, ¿tiene Liguilla?)
+AF_LIGAS={"mx":(262,"Liga MX",True)}
 # Las estadísticas de jugadores van en archivos aparte (docs/datos/jugadores_<liga>.json) que la página
 # pide solo cuando abres la pestaña Jugadores, para no hacer pesada la página principal.
 out['mxp']=[]; out['mx_logos']=[]
@@ -1127,6 +1208,7 @@ def guarda_jugadores(nombre_archivo,filas):
 if SMK:
     carpeta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'); os.makedirs(carpeta,exist_ok=True)
     for clave,(lid,nombre,lig) in SM_LIGAS.items():
+        if AFK and clave in AF_LIGAS: continue   # ya sale de API-Football (abajo)
         try:
             S,pasadas=sm_temporadas(lid)
             guarda_jugadores(f'jugadores_{clave}.json',sm_player_stats(lid,nombre,lig,S))
@@ -1150,6 +1232,34 @@ if SMK:
             print(f"{nombre} (Sportmonks): no se pudieron obtener estadísticas de jugadores:",ex)
 else:
     print("Sportmonks: falta el secret SPORTMONKS_KEY; las estadísticas de jugadores de fútbol no se actualizan")
+if AFK:
+    carpeta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'); os.makedirs(carpeta,exist_ok=True)
+    for clave,(lid,nombre,lig) in AF_LIGAS.items():
+        try:
+            L=(af("leagues",id=lid) or [{}])[0]
+            años=sorted([s["year"] for s in L.get("seasons") or []],reverse=True)
+            actual=next((s["year"] for s in L.get("seasons") or [] if s.get("current")),años[0] if años else None)
+            if actual is None: print(f"{nombre} (API-Football): sin temporadas"); continue
+            F=af("fixtures",league=lid,season=actual,timezone="America/Mexico_City")
+            torneo=af_torneo_actual(F) if lig else None
+            guarda_jugadores(f'jugadores_{clave}.json',af_player_stats(lid,f"{nombre} {torneo or actual}",F,torneo))
+            # Torneos y temporadas pasadas: una sola vez (ya no cambian), cada uno en su archivo.
+            # Liga MX: jugadores_mx_<temporada>_<Apertura|Clausura>.json (temporada 2025 = Apertura 2025 + Clausura 2026)
+            for año in [a for a in años if a<=actual][:3]:
+                Fa=None
+                for t in (("Apertura","Clausura") if lig else (None,)):
+                    if año==actual and (t==torneo or not lig): continue
+                    arch=f'jugadores_{clave}_{año}_{t}.json' if t else f'jugadores_{clave}_{año}.json'
+                    if os.path.exists(os.path.join(carpeta,arch)): continue
+                    if Fa is None: Fa=F if año==actual else af("fixtures",league=lid,season=año,timezone="America/Mexico_City")
+                    if t and not any(af_torneo(f)==t and (f["fixture"].get("status") or {}).get("short") in AF_FIN for f in Fa): continue
+                    try: guarda_jugadores(arch,af_player_stats(lid,f"{nombre} {t or ''} {año+1 if t=='Clausura' else año}".replace("  "," "),Fa,t))
+                    except Exception as ex: print(f"{nombre} {t or año}: no se pudo:",ex)
+        except Exception as ex:
+            print(f"{nombre} (API-Football): no se pudieron obtener estadísticas de jugadores:",ex)
+    print(f"API-Football: {AF_USADOS[0]} pedidos en esta corrida (el plan Pro deja 7,500 al día)")
+else:
+    print("API-Football: falta el secret API_FOOTBALL_KEY; Liga MX sigue con Sportmonks para las estadísticas de jugadores")
 # ---------- Postemporada NFL, si la temporada terminara hoy ----------
 # Sigue el orden oficial de desempate de la NFL (nfl.com/standings/tie-breaking-procedures):
 # cabeza a cabeza → récord de división (empates de división) o de conferencia (comodines) → rivales en

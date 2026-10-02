@@ -787,7 +787,7 @@ const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
 // torneo (Partidos, Grupos, Llaves, Jugadores), sel (Selección). sm = id en Sportmonks; las que no tienen sm siguen en ESPN.
 // pais = código para la bandera; cid = id numérico del país en el mapa (Natural Earth); region para agrupar en Explorar.
 const LEAGUES={
-  mx:{slug:"mex.1",label:"Liga MX",liguilla:true,players:true,pr:true,photos:false,rk:"ligamx",sm:743,tipo:"liga",pais:"MX",cid:"484",region:"México"},
+  mx:{slug:"mex.1",label:"Liga MX",liguilla:true,players:true,pr:true,photos:false,rk:"ligamx",sm:743,af:262,tipo:"liga",pais:"MX",cid:"484",region:"México"},
   sel:{slug:"fifa.friendly",label:"Selección mexicana",liguilla:false,players:false,pr:false,photos:false,rk:null,nat:true,tipo:"sel",pais:"MX",cid:"484",region:"México"},
   eng:{slug:"eng.1",label:"Premier League",liguilla:false,players:true,pr:true,photos:true,rk:"premier",sm:8,tipo:"liga",pais:"GB",cid:"826",region:"Europa"},
   fac:{slug:"",label:"FA Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:24,tipo:"copa",pais:"GB",cid:"826",region:"Europa"},
@@ -866,7 +866,7 @@ function showSport(sp){
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
   $(".nflart").toggleAttribute("hidden",sp==="mx"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
   $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:sp==="mx"?flLabel():`Fantasy Football · Semana ${D.gweek}`;
-  setLogo(sp==="mx"?(LEAGUES[FLIG].nat?pickLogo(SEL_LOGOS):LEAGUES[FLIG].sm?null:pickLogo(MX_LOGOS)):D.nfl_logo);
+  setLogo(sp==="mx"?(LEAGUES[FLIG].nat?pickLogo(SEL_LOGOS):comercial(LEAGUES[FLIG])?null:pickLogo(MX_LOGOS)):D.nfl_logo);
   $("#heroSub").textContent= sp==="mx"?"":`Datos actualizados hasta la semana ${D.week}.`;
   $("#tempWrap").hidden=sp!=="mx"; if(sp==="mx") pintaTemporadas();
   showTab(sp==="nfl"?"nflgames":sp==="mx"?"mxexplore":"fmatch");
@@ -902,7 +902,7 @@ function selectLeague(key){
   applyLeagueTabs();
   mxLoaded=false; mxtLoaded=false; mxLgLoaded=false; mxpLoaded=false; mxprLoaded=false; selLoaded=false; uclKoLoaded=false; $("#mxhistQ").value=""; $("#mxGames").dataset.src=""; MXJ=[]; curJ=0; MXP=[]; MX_TABLE_ROWS=null;
   $("#mxGames").innerHTML=""; $("#jSel").innerHTML=""; $("#mxMsg").textContent="Cargando partidos…";   // que no se quede la liga anterior en pantalla
-  if(LEAGUES[FLIG].sm){ const k=FLIG; setLogo(null); smLeague(k).then(L=>{if(FLIG===k&&SM_ESCUDOS) setLogo(L.image_path);}).catch(()=>{}); }
+  if(comercial(LEAGUES[FLIG])){ const k=FLIG; setLogo(null); smLeague(k).then(L=>{if(FLIG===k&&SM_ESCUDOS) setLogo(L.image_path);}).catch(()=>{}); }
   pintaTemporadas();
   if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true"){ $("#heroTitle").textContent=flLabel(); if(LEAGUES[FLIG].nat) setLogo(pickLogo(SEL_LOGOS)); }
   const cur=document.querySelector('.subnav[data-for=mx] button[aria-current]');
@@ -1751,6 +1751,235 @@ async function geocode(city){
   return geoCache[q];
 }
 
+// ---------- API-Football (vía el mismo intermediario: datos.lapizarramx.workers.dev/af/) ----------
+// Reemplazo de Sportmonks (plan Pro, licencia comercial). Las ligas con "af" en LEAGUES salen de aquí; el traductor
+// entrega lo MISMO que el de Sportmonks (eventos tipo ESPN, summary, tabla, temporadas), así el resto de la página no cambia.
+// Para comparar con Sportmonks mientras exista: abrir la página con ?fuente=sm (ej. lapizarra.mx/?fuente=sm).
+// Estructura revisada con respuestas reales (muestra del 2 oct 2026, Liga MX 262, temporadas 2025 y 2026):
+// - fixture: fixture.id, fixture.date (ya en hora de CDMX con timezone=), fixture.status.short (NS, TBD, 1H, HT, 2H, ET, BT, P,
+//   FT, AET, PEN, PST, CANC, ABD, SUSP, INT, AWD, WO), elapsed/extra, venue {name, city} (SIN coordenadas), referee (texto).
+//   teams.home/away {id, name, logo, winner}, goals, score.penalty. league.round "Apertura - 10" / "Apertura - Quarter-finals".
+// - Una temporada de Liga MX = Apertura (año) + Clausura (año + 1). La Liguilla: "Play-In Semi-finals", "Play-In Final",
+//   "Quarter-finals", "Semi-finals", "Final" (con el prefijo del torneo).
+// - fixtures?id= trae events, lineups, statistics y players en un solo pedido.
+//   events: type Goal (detail Normal Goal / Penalty / Own Goal / Missed Penalty), Card (Yellow Card / Red Card / Second Yellow card),
+//   subst (player = el que SALE, assist = el que ENTRA), Var. En autogol, team = el equipo al que se le cuenta el gol.
+//   Los penales de la tanda vienen con comments "Penalty Shootout" (no son goles del partido).
+//   lineups: formation "4-2-3-1", startXI[].player.grid "fila:columna" (fila 1 = portero), substitutes[], coach.
+// - standings: response[0].league.standings = lista de grupos; Liga MX trae "Liga MX: Apertura" (y Clausura en temporadas pasadas).
+// - Nombres sin acentos y abreviaturas repetidas (CLU): se usan los nombres y abreviaturas de siempre (AF_EQ) para que
+//   ranking.json y la página no cambien.
+const AF_PROXY="https://datos.lapizarramx.workers.dev/af/";
+const AF_TZ="timezone="+encodeURIComponent(TZ);
+// (funciones normales y no "const": así existen desde que arranca la página, aunque se usen antes de esta línea)
+function usaAF(lg){return !!(lg&&lg.af&&!/[?&]fuente=sm\b/.test(location.search));}
+function comercial(lg){return !!(lg&&(lg.sm||usaAF(lg)));}
+async function afGet(ruta,q){
+  for(let i=0;;i++){
+    const j=await fetch(AF_PROXY+ruta+(q?"?"+q:"")).then(r=>r.json());
+    const e=j?.errors, err=e&&(Array.isArray(e)?e.length:Object.keys(e).length);
+    if(!err) return j;
+    if(i<1&&/rateLimit/i.test(JSON.stringify(e))){ await new Promise(r=>setTimeout(r,1500)); continue; }
+    throw new Error("API-Football "+JSON.stringify(e));
+  }
+}
+const afList=(ruta,q)=>afGet(ruta,q).then(j=>j.response||[]);
+// Equipos de la Liga MX: nombre y abreviatura de siempre (mismos que con Sportmonks)
+const AF_EQ={2278:["Guadalajara","GUA"],2279:["Tigres UANL","TUA"],2280:["Tijuana","TIJ"],2281:["Toluca","TOL"],2282:["Monterrey","MNT"],2283:["Atlas","ATS"],
+  2285:["Santos Laguna","SLA"],2286:["Pumas UNAM","PUM"],2287:["América","AME"],2288:["Necaxa","NXA"],2289:["León","LEO"],2290:["Querétaro","QUE"],2291:["Puebla","PUE"],
+  2292:["Pachuca","PCH"],2295:["Cruz Azul","CAZ"],2298:["Juárez","JUA"],2312:["Atlante","ATL"],2314:["Atlético San Luis","ASL"],14002:["Mazatlán","MAZ"]};
+const AF_ESTADIO={"Estadio AKRON":"Estadio Akron","Estadio Miguel Hidalgo":"Estadio Hidalgo","Estadio La Corregidora":"Estadio Corregidora","Estadio Olimpico Universitario":"Estadio Olímpico Universitario",
+  "Estadio Olímpico de Universitario":"Estadio Olímpico Universitario","Estadio Nemesio Diez":"Estadio Nemesio Díez","Estadio Olimpico Benito Juarez":"Estadio Olímpico Benito Juárez",
+  "Alfonso Lastras Ramirez":"Estadio Alfonso Lastras","Estadio Alfonso Lastras Ramírez":"Estadio Alfonso Lastras","Estadio Cuauhtemoc":"Estadio Cuauhtémoc","Estadio Leon":"Estadio León",
+  "Estadio León (Nou Camp)":"Estadio León","Estadio BBVA Bancomer":"Estadio BBVA","Estadio TSM Corona":"Estadio Corona","Estadio de Mazatlan":"Estadio El Encanto",
+  "Estadio Universitario (UANL)":"Estadio Universitario","Estadio Universitario de Nuevo León":"Estadio Universitario"};
+const AF_CIUDAD={"Mexico City":"Ciudad de México","D.F.":"Ciudad de México","Monterey":"Monterrey","Pachuca de Soto":"Pachuca","Torreon":"Torreón","San Luis de Potosi":"San Luis Potosí",
+  "Santiago de Queretaro":"Querétaro","Santiago Querétaro":"Querétaro","Santiago de Querétaro":"Querétaro","Ciudad Juarez":"Ciudad Juárez","Leon":"León","León de los Aldamas":"León",
+  "Mazatlan":"Mazatlán","San Nicolas de los Garza":"San Nicolás de los Garza","Toluca de Lerdo":"Toluca","Guadalupe":"Monterrey"};
+const afNombre=t=>AF_EQ[t?.id]?.[0]||t?.name||"";
+const afTeam=t=>{const n=afNombre(t); return {id:String(t?.id),displayName:n,shortDisplayName:SM_SHORT[n]||n,name:n,location:n,abbreviation:AF_EQ[t?.id]?.[1]||t?.code||"",logo:SM_ESCUDOS?t?.logo:null};};
+const AF_POST=new Set(["FT","AET","PEN","AWD","WO"]);
+const AF_VIVO=new Set(["1H","HT","2H","ET","BT","P","LIVE"]);
+const AF_SUSP={PST:"Pospuesto",CANC:"Cancelado",ABD:"Suspendido",SUSP:"Suspendido",INT:"Interrumpido"};
+const afSt=f=>f.fixture?.status?.short||"";
+function afState(f){const s=afSt(f); return AF_POST.has(s)?"post":AF_VIVO.has(s)?"in":"pre";}
+function afClock(f){const s=afSt(f), S=f.fixture?.status||{};
+  if(s==="HT") return "Medio tiempo"; if(s==="BT") return "Descanso"; if(s==="P") return "Penales";
+  return S.elapsed!=null?`${S.elapsed}${S.extra?"+"+S.extra:""}'`:"En vivo";}
+// "Apertura - 10" → {stage:"Apertura", round:"10"}; "Apertura - Quarter-finals" → {stage:"Apertura - Quarter-finals", round:"Quarter-finals"}
+function afRonda(r){r=String(r||""); const m=r.match(/^(.*?)\s*-\s*(\d+)$/); if(m) return {stage:m[1],round:m[2],num:true};
+  const p=r.split(/\s+-\s+/); return {stage:r,round:p[p.length-1],num:false};}
+const AF_FASE_GRUPOS=/group|league stage|regular season|^apertura$|^clausura$/i;
+function afEvent(f,lg){
+  const H=f.teams?.home||{}, A=f.teams?.away||{}, st=afState(f), s=afSt(f), R=afRonda(f.league?.round), v=f.fixture?.venue||{};
+  const pen=f.score?.penalty, gl=f.goals||{};
+  return {id:String(f.fixture.id),date:new Date(f.fixture.timestamp*1000).toISOString(),timeValid:s!=="TBD",
+    status:{type:{state:st,shortDetail:st==="in"?afClock(f):"",name:s==="PEN"?"FT_PEN":s}},
+    competitions:[{competitors:[{homeAway:"home",score:gl.home!=null?String(gl.home):null,team:afTeam(H),records:[],winner:H.winner===true},
+                                {homeAway:"away",score:gl.away!=null?String(gl.away):null,team:afTeam(A),records:[],winner:A.winner===true}],
+      venue:v.name?{fullName:AF_ESTADIO[v.name.trim()]||v.name.trim(),address:{city:AF_CIUDAD[v.city]||v.city}}:null,odds:[]}],
+    _sm:true,_af:true,_round:R.round,_stage:R.stage,_stageId:R.stage,_stageOrder:0,_ko:!R.num&&!AF_FASE_GRUPOS.test(R.stage),_leg:null,_agg:null,
+    _pen:s==="PEN"&&pen?.home!=null?[pen.home,pen.away]:null,_aet:s==="AET"||(s==="PEN"&&f.score?.extratime?.home!=null),_serie:null,
+    _lig:!!(lg?.liguilla&&lg.tipo==="liga"&&!R.num),_susp:AF_SUSP[s]||null,_lat:null,_lon:null};
+}
+// Liga: temporadas disponibles y la actual (con la forma que espera la página: currentseason, seasons, image_path)
+const AF_LG={};
+function afLeague(key){
+  const lg=LEAGUES[key];
+  if(!AF_LG[key]) AF_LG[key]=afList("leagues",`id=${lg.af}`).then(r=>{const x=r[0]||{}, ss=(x.seasons||[]).map(s=>({id:s.year,name:String(s.year),starting_at:s.start,ending_at:s.end,current:s.current}));
+    const cur=ss.find(s=>s.current)||[...ss].sort((a,b)=>b.id-a.id)[0]||{};
+    return {id:lg.af,name:x.league?.name,image_path:x.league?.logo,currentseason:cur,seasons:ss};}).catch(e=>{delete AF_LG[key]; throw e;});
+  return AF_LG[key];
+}
+const afTorneo=e=>(String(e._stage||"").match(/^(Apertura|Clausura)/i)||[])[1]||null;
+// Torneo (Apertura/Clausura) que se muestra: el elegido, o el del último partido de temporada regular que ya empezó
+function afTorneoActual(ev,sel){
+  if(sel?.stage) return sel.stage;
+  const reg=ev.filter(e=>/^\d+$/.test(e._round||"")&&afTorneo(e)), now=Date.now();
+  const ya=reg.filter(e=>+new Date(e.date)<=now).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+  return afTorneo(ya||[...reg].sort((a,b)=>new Date(a.date)-new Date(b.date))[0]||{});
+}
+const AF_EV={};
+async function afSeasonEvents(key){
+  const lg=LEAGUES[key], L=await afLeague(key), sel=SM_SEL[key];
+  const S=(sel&&L.seasons.find(x=>x.id===sel.sid))||L.currentseason||{};
+  if(!S.id) return {ev:[],L,S};
+  const ck=key+"|"+S.id;
+  if(!AF_EV[ck]) AF_EV[ck]=afList("fixtures",`league=${lg.af}&season=${S.id}&${AF_TZ}`).catch(e=>{delete AF_EV[ck]; throw e;});
+  let ev=(await AF_EV[ck]).map(f=>afEvent(f,lg)).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(lg.liguilla){ const t=afTorneoActual(ev,sel); if(t){ ev=ev.filter(e=>afTorneo(e)===t); S._stage={name:t}; } }
+  return {ev,L,S};
+}
+// Tabla (en Liga MX, la del torneo que se está viendo)
+const AF_TB={};
+function afStandings(key){
+  const ck="af|"+smSelKey(key);
+  if(AF_TB[ck]) return AF_TB[ck];
+  AF_TB[ck]=(async()=>{
+    const lg=LEAGUES[key], {ev,S}=await afSeasonEvents(key);
+    const G=(await afList("standings",`league=${lg.af}&season=${S.id}`))[0]?.league?.standings||[];
+    const t=lg.liguilla?(S._stage?.name||afTorneoActual(ev,SM_SEL[key])):null;
+    let grupos=G;
+    if(t){ const g=G.find(x=>new RegExp(t,"i").test(x[0]?.group||"")); grupos=g?[g]:G.slice(0,1); }
+    const varios=!t&&grupos.length>1;
+    const rows=grupos.flatMap(g=>g.map(r=>({grupo:varios?(r.group||"").replace(/^.*?:\s*/,""):null,n:afNombre(r.team),id:String(r.team?.id),logo:SM_ESCUDOS?r.team?.logo:null,
+      rk:r.rank,pj:r.all?.played,g:r.all?.win,e:r.all?.draw,p:r.all?.lose,gf:r.all?.goals?.for,gc:r.all?.goals?.against,dg:r.goalsDiff,pts:r.points,zn:null})));
+    return {rows,titulo:t?`${t} ${t==="Clausura"?S.id+1:S.id}`:`Temporada ${S.id}${lg.tipo==="liga"&&!/^(mx)$/.test(key)?"-"+String(S.id+1).slice(2):""}`};
+  })();
+  AF_TB[ck].catch(()=>{delete AF_TB[ck];});
+  return AF_TB[ck];
+}
+// Goleo y asistencias (para la previa)
+const AF_TOP={};
+function afTop(key,tipo){
+  const k=key+"|"+tipo;
+  if(!AF_TOP[k]) AF_TOP[k]=afLeague(key).then(L=>afList(tipo===208?"players/topscorers":"players/topassists",`league=${LEAGUES[key].af}&season=${(L.currentseason||{}).id}`)).catch(()=>[]);
+  return AF_TOP[k];
+}
+// Temporadas para el selector (Liga MX: por torneo)
+async function afOpcionesTemporada(key){
+  const lg=LEAGUES[key], L=await afLeague(key), cur=L.currentseason||{};
+  const ss=[...L.seasons].filter(s=>s.id<=cur.id).sort((a,b)=>b.id-a.id).slice(0,3), now=Date.now(), ops=[];
+  const curT=now>=Date.UTC(cur.id+1,0,1)?"Clausura":"Apertura";
+  for(const S of ss){
+    if(lg.liguilla){
+      for(const [t,y,m] of [["Clausura",S.id+1,0],["Apertura",S.id,6]]){ if(now<Date.UTC(y,m,1)) continue;
+        ops.push({label:`${t} ${y}`,sid:S.id,stage:t,actual:S.id===cur.id&&t===curT}); }
+    } else ops.push({label:S.name,sid:S.id,stage:null,actual:S.id===cur.id});
+  }
+  return ops;
+}
+// Partido completo con la forma del "summary" de ESPN
+const AF_TSTAT={"Ball Possession":"possessionPct","Total Shots":"totalShots","Shots on Goal":"shotsOnTarget","expected_goals":"expectedGoals","Corner Kicks":"wonCorners",
+  "Fouls":"foulsCommitted","Yellow Cards":"yellowCards","Red Cards":"redCards","Offsides":"offsides","Goalkeeper Saves":"saves","Total passes":"totalPasses",
+  "Passes accurate":"accuratePasses","Passes %":"passPct","Blocked Shots":"blockedShots"};
+function afEvType(x){const t=x.type, d=String(x.detail||"");
+  if(/shootout/i.test(x.comments||"")) return null;
+  if(t==="Goal"){ if(/own/i.test(d)) return "Own Goal"; if(/missed/i.test(d)) return null; if(/penalty/i.test(d)) return "Penalty - Scored"; return "Goal"; }
+  if(t==="Card") return /red|second yellow/i.test(d)?"Red Card":/yellow/i.test(d)?"Yellow Card":null;
+  if(t==="subst") return "Substitution";
+  return null;}
+async function afSummary(e,key){
+  const f=(await afList("fixtures",`id=${e.id}&${AF_TZ}`))[0]; if(!f) return null;
+  const H=f.teams.home, A=f.teams.away, loc={[H.id]:"home",[A.id]:"away"}, nT=t=>afNombre(t);
+  // Nombres de jugador por id (en los eventos a veces vienen abreviados y sin acentos): se usan los de las estadísticas
+  const NM={}; (f.players||[]).forEach(t=>(t.players||[]).forEach(p=>{NM[p.player.id]=p.player.name;}));
+  (f.lineups||[]).forEach(L=>[...(L.startXI||[]),...(L.substitutes||[])].forEach(p=>{if(!NM[p.player.id]) NM[p.player.id]=p.player.name;}));
+  const nm=p=>(p&&(NM[p.id]||p.name)||"").trim();
+  const clk=x=>`${x.time?.elapsed??""}${x.time?.extra?"+"+x.time.extra:""}'`;
+  const evs=(f.events||[]).map((x,i)=>({x,t:afEvType(x),i})).filter(o=>o.t).sort((a,b)=>(a.x.time?.elapsed||0)-(b.x.time?.elapsed||0)||(a.x.time?.extra||0)-(b.x.time?.extra||0)||a.i-b.i);
+  // El lado de cada gol: el equipo que trae el evento (en autogoles ya es el que se beneficia). Si al final no cuadra
+  // con el marcador y voltear los autogoles lo arregla, se voltean.
+  const lado=evs.map(({x})=>x.team?.id);
+  {const cnt=sel=>{let h=0,a=0; evs.forEach((o,i)=>{if(!/Goal|Penalty/.test(o.t)) return; const tid=sel(o,i); if(tid===H.id) h++; else if(tid===A.id) a++;}); return [h,a];};
+   const ok=([h,a])=>h===(f.goals?.home??h)&&a===(f.goals?.away??a);
+   const flip=(o,i)=>o.t==="Own Goal"?(lado[i]===H.id?A.id:H.id):lado[i];
+   if(!ok(cnt((o,i)=>lado[i]))&&ok(cnt(flip))) evs.forEach((o,i)=>{lado[i]=flip(o,i);});}
+  const keyEvents=evs.map(({x,t},i)=>{
+    const tm=lado[i]===H.id?nT(H):lado[i]===A.id?nT(A):"";
+    const who=t==="Substitution"?[nm(x.assist),nm(x.player)]:[nm(x.player),t==="Goal"?nm(x.assist):null];
+    return {type:{text:t},clock:{displayValue:clk(x)},team:{displayName:tm},text:t==="Substitution"?`Substitution. ${who[0]} replaces ${who[1]}.`:"",
+      participants:who.filter(Boolean).map(n=>({athlete:{displayName:n}}))};});
+  // Estadísticas de equipo
+  const box=[H,A].map(t=>({homeAway:loc[t.id],team:afTeam(t),statistics:((f.statistics||[]).find(s=>s.team?.id===t.id)?.statistics||[]).map(s=>{const k=AF_TSTAT[s.type]; if(!k) return null;
+    let v=s.value; if(v==null) v=k==="expectedGoals"?null:0; if(v==null) return null; if(k==="possessionPct") v=String(v).replace("%","");
+    return {name:k,displayValue:String(v)};}).filter(Boolean)}));
+  // Alineaciones y estadísticas por jugador
+  const subs=evs.filter(o=>o.t==="Substitution").map(o=>o.x);
+  const rosters=[H,A].map(t=>{
+    const L=(f.lineups||[]).find(l=>l.team?.id===t.id)||{}, PS={};
+    ((f.players||[]).find(p=>p.team?.id===t.id)?.players||[]).forEach(p=>{PS[p.player.id]=p.statistics?.[0]||{};});
+    const xi=L.startXI||[], rowOf=p=>+(String(p.player?.grid||"").split(":")[0])||null, colOf=p=>+(String(p.player?.grid||"").split(":")[1])||0;
+    const maxRow=Math.max(0,...xi.map(rowOf).filter(Boolean));
+    const lista=[...xi.map(p=>[p,true]),...(L.substitutes||[]).map(p=>[p,false])];
+    const roster=lista.map(([p,starter])=>{
+      const pl=p.player||{}, r=starter?rowOf(p):null, s=PS[pl.id]||{}, g=s.games||{};
+      const ab=starter?(r?(r===1?"G":r===2?"D":r===maxRow?"F":"M"):(pl.pos||"M")):"SUB";
+      const inn=subs.find(x=>x.assist?.id===pl.id), out=subs.find(x=>x.player?.id===pl.id);
+      const jugo=(g.minutes||0)>0||starter;
+      const stats=jugo&&PS[pl.id]?[["totalGoals",s.goals?.total||0],["goalAssists",s.goals?.assists||0],["yellowCards",s.cards?.yellow||0],["redCards",s.cards?.red||0],
+        ["totalShots",s.shots?.total||0],["shotsOnTarget",s.shots?.on||0],["foulsCommitted",s.fouls?.committed||0],["foulsSuffered",s.fouls?.drawn||0],["saves",s.goals?.saves||0],
+        ["goalsConceded",s.goals?.conceded||0],["offsides",s.offsides||0],["minutesPlayed",g.minutes||0],["rating",g.rating!=null?+(+g.rating).toFixed(1):null]]
+        .filter(([,v])=>v!=null).map(([name,value])=>({name,value})):[];
+      const n=nm(pl);
+      return {starter,subbedIn:!!inn,subbedOut:!!out,subbedOutFor:out?{athlete:{id:String(out.assist?.id),displayName:nm(out.assist)}}:undefined,
+        jersey:pl.number,athlete:{id:String(pl.id),displayName:n,shortName:n.split(" ").slice(-1)[0]},position:{abbreviation:ab},formationPlace:r?r*10+colOf(p):0,stats,
+        plays:(inn||out)?[{substitution:true,clock:{displayValue:clk(inn||out)}}]:[]};});
+    return {homeAway:loc[t.id],team:afTeam(t),formation:L.formation||"",roster};
+  });
+  const arb=(f.fixture?.referee||"").split(",")[0].trim()||null;
+  const sm={keyEvents,boxscore:{teams:box},rosters,_tv:[],_arbitro:arb};
+  if(afState(f)==="pre"){
+    // Previa: tabla, forma (últimos 5 de la liga), enfrentamientos previos, goleador/asistidor y bajas
+    const [tb,{ev},gol,asi,h2h,les]=await Promise.all([afStandings(key).catch(()=>({rows:[]})),mxSeason(),afTop(key,208),afTop(key,209),
+      afList("fixtures/headtohead",`h2h=${H.id}-${A.id}&last=10&${AF_TZ}`).catch(()=>[]),afList("injuries",`fixture=${e.id}`).catch(()=>[])]);
+    sm.standings={groups:[{standings:{entries:tb.rows.map(r=>({id:r.id,stats:[["rank",r.rk],["points",r.pts],["gamesPlayed",r.pj],["wins",r.g],["ties",r.e],["losses",r.p],["pointDifferential",(r.dg>0?"+":"")+r.dg]].map(([name,displayValue])=>({name,displayValue}))}))}}]};
+    const done=ev.filter(x=>x.status?.type?.state==="post");
+    sm.lastFiveGames=[H,A].map(p=>({team:{id:String(p.id)},events:done.filter(x=>x.competitions[0].competitors.some(c=>c.team.id===String(p.id))).slice(-5).reverse().map(x=>{
+      const cs=x.competitions[0].competitors, me=cs.find(c=>c.team.id===String(p.id)), op=cs.find(c=>c!==me), h=cs[0], a=cs[1];
+      const gf=+me.score, ga=+op.score; return {gameResult:gf>ga?"W":gf<ga?"L":"D",homeTeamId:h.team.id,homeTeamScore:h.score,awayTeamScore:a.score,gameDate:x.date,opponent:{displayName:op.team.displayName},competitionName:""};})}));
+    const prevs=h2h.filter(x=>afState(x)==="post").sort((a,b)=>b.fixture.timestamp-a.fixture.timestamp).slice(0,5);
+    sm.seasonseries=[{type:"head-to-head",events:prevs.map(x=>({date:new Date(x.fixture.timestamp*1000).toISOString(),statusType:{name:afSt(x)==="PEN"?"STATUS_FINAL_PEN":"FT"},
+      competitors:[{homeAway:"home",score:String(x.goals?.home??""),team:{id:String(x.teams.home.id)},winner:x.teams.home.winner===true},{homeAway:"away",score:String(x.goals?.away??""),team:{id:String(x.teams.away.id)},winner:x.teams.away.winner===true}]}))}];
+    const top=(L,p,k)=>L.map(x=>({n:x.player?.name,s:(x.statistics||[]).find(s=>s.team?.id===p.id)})).filter(x=>x.s&&(x.s.goals?.[k]||0)>0).sort((a,b)=>b.s.goals[k]-a.s.goals[k])[0];
+    sm.leaders=[H,A].map(p=>({team:{id:String(p.id)},leaders:[["goalsLeaders","Goals",top(gol,p,"total"),"total"],["assistsLeaders","Assists",top(asi,p,"assists"),"assists"]].filter(x=>x[2])
+      .map(([nmk,l,x,k])=>({name:nmk,leaders:[{athlete:{displayName:x.n||""},displayValue:`${l}: ${x.s.goals[k]}, Matches: ${x.s.games?.appearences??""}`}]}))}));
+    const B=les.map(b=>({tid:b.team?.id,n:b.player?.name||"",tipo:/suspend/i.test(b.player?.reason||"")?"Suspendido":smBajaEs(b.player?.reason||""),duda:/questionable|doubt/i.test(b.player?.type||""),fin:null})).filter(b=>b.n);
+    sm._bajas=[H,A].map(p=>({team:afTeam(p),bajas:B.filter(b=>b.tid===p.id).map(b=>({...b,tipo:b.duda?b.tipo+" (duda)":b.tipo}))}));
+  }
+  return sm;
+}
+// En vivo: actualiza marcador y reloj de los partidos de la jornada que se está viendo
+async function afLive(lg,G){
+  const L=await afList("fixtures",`live=${lg.af}&${AF_TZ}`).catch(()=>null); if(!L) return 0;
+  let n=0; for(const f of L){const o=G.find(e=>e.id===String(f.fixture.id)); if(!o) continue; const x=afEvent(f,lg); o.status=x.status; o.competitions=x.competitions; o._susp=x._susp; n++;}
+  // Los que estaban en vivo y ya no aparecen: terminaron → se piden una vez para dejarlos en "Final"
+  const fin=G.filter(e=>e.status?.type?.state==="in"&&!L.some(f=>String(f.fixture.id)===e.id)).map(e=>e.id);
+  if(fin.length){ const F=await afList("fixtures",`ids=${fin.slice(0,20).join("-")}&${AF_TZ}`).catch(()=>[]);
+    for(const f of F){const o=G.find(e=>e.id===String(f.fixture.id)); if(!o) continue; const x=afEvent(f,lg); o.status=x.status; o.competitions=x.competitions; o._susp=x._susp; n++;} }
+  return n;
+}
+
 // ---------- Sportmonks (vía el intermediario de Cloudflare: datos.lapizarramx.workers.dev) ----------
 // Las ligas con "sm" en LEAGUES salen de Sportmonks (licencia comercial) en lugar de ESPN. Un "traductor"
 // convierte cada respuesta al mismo formato que daba ESPN, así Partidos, detalle, Tabla, Power Ranking,
@@ -1816,6 +2045,7 @@ function smEvent(f,lg){
 const SM_LG={};
 function smLeague(key){
   const lg=LEAGUES[key];
+  if(usaAF(lg)) return afLeague(key);
   if(!SM_LG[key]) SM_LG[key]=smGet(`leagues/${lg.sm}`,"include=currentSeason;seasons").then(j=>{const L=j.data||{};
     if(!(L.currentseason||L.current_season)){const ss=(L.seasons||[]).filter(x=>x.starting_at).sort((a,b)=>b.starting_at.localeCompare(a.starting_at)); if(ss[0]) L.currentseason=ss[0];}   // sin temporada actual: la última
     return L;}).catch(e=>{delete SM_LG[key]; throw e;});
@@ -1824,6 +2054,7 @@ function smLeague(key){
 const smDay=t=>new Date(t).toISOString().slice(0,10);
 // Todos los partidos de la temporada actual (en tramos de 90 días; la API acepta hasta 100).
 async function smSeasonEvents(key){
+  if(usaAF(LEAGUES[key])) return afSeasonEvents(key);
   const lg=LEAGUES[key], L=await smLeague(key), sel=SM_SEL[key];
   const S=(sel&&(L.seasons||[]).find(x=>x.id===sel.sid))||L.currentseason||L.current_season||{};
   if(!S.id) return {ev:[],L,S};
@@ -1852,6 +2083,7 @@ async function smSeasonEvents(key){
 // Tabla de la temporada (en Liga MX, la del torneo actual)
 const SM_TB={};
 function smStandings(key){
+  if(usaAF(LEAGUES[key])) return afStandings(key);
   const ck=smSelKey(key);
   if(SM_TB[ck]) return SM_TB[ck];
   SM_TB[ck]=(async()=>{
@@ -1871,6 +2103,7 @@ function smStandings(key){
 // Goleo y asistencias de la temporada (208 = goles, 209 = asistencias)
 const SM_TOP={};
 function smTop(key,tipo){
+  if(usaAF(LEAGUES[key])) return afTop(key,tipo);
   const k=key+"|"+tipo;
   if(!SM_TOP[k]) SM_TOP[k]=smLeague(key).then(L=>smGet(`topscorers/seasons/${(L.currentseason||L.current_season||{}).id}`,`include=player;participant&filters=seasonTopscorerTypes:${tipo}&per_page=50`)).then(j=>j.data||[]).catch(()=>[]);
   return SM_TOP[k];
@@ -1880,7 +2113,7 @@ const SM_BAJA=[[/suspen/i,"Suspendido"],[/cruciate/i,"Ligamento cruzado"],[/meni
   [/groin/i,"Ingle"],[/calf/i,"Pantorrilla"],[/thigh/i,"Muslo"],[/ankle/i,"Tobillo"],[/knee/i,"Rodilla"],[/foot|toe/i,"Pie"],[/hip/i,"Cadera"],[/back/i,"Espalda"],
   [/shoulder/i,"Hombro"],[/concussion|head/i,"Cabeza"],[/fractur|broken/i,"Fractura"],[/ligament/i,"Ligamento"],[/muscle/i,"Lesión muscular"],
   [/ill|sick|virus|flu/i,"Enfermedad"],[/knock/i,"Golpe"],[/injur/i,"Lesión"]];
-const ETAPA_ES=[[/^final$/i,"Final"],[/3rd place/i,"Tercer lugar"],[/semi/i,"Semifinales"],[/quarter/i,"Cuartos de final"],[/8th finals|round of 16/i,"Octavos de final"],
+const ETAPA_ES=[[/play[- ]?in semi/i,"Play-In · Semifinal"],[/play[- ]?in final/i,"Play-In · Final"],[/^final$/i,"Final"],[/3rd place/i,"Tercer lugar"],[/semi/i,"Semifinales"],[/quarter/i,"Cuartos de final"],[/8th finals|round of 16/i,"Octavos de final"],
   [/16th finals|round of 32/i,"Dieciseisavos de final"],[/play[- ]?in/i,"Play-In"],[/reclasificaci/i,"Reclasificación"],[/group stage/i,"Fase de grupos"],[/regular season/i,"Temporada regular"],
   [/extra preliminary round replays/i,"Repeticiones de la ronda preliminar extra"],[/preliminary round replays/i,"Repeticiones de la ronda preliminar"],[/extra preliminary/i,"Ronda preliminar extra"],[/preliminary/i,"Ronda preliminar"],
   [/^(\d+)(st|nd|rd|th) round qualifying replays$/i,"Repeticiones de la $1ª ronda clasificatoria"],[/^(\d+)(st|nd|rd|th) round qualifying$/i,"$1ª ronda clasificatoria"],[/^(\d+)(st|nd|rd|th) round$/i,"Ronda $1"],[/^round (\d+)$/i,"Ronda $1"],[/^round of (\d+)$/i,"Ronda de $1"]];
@@ -1894,6 +2127,7 @@ function smCanales(f){
   return [...new Set(base.map(t=>t.n.replace(/\s+(HD|Mobile|App|Online)$/i,"")))].slice(0,4);
 }
 async function smDondeVerlo(ids){
+  if(usaAF(LEAGUES[FLIG])) return;   // API-Football no trae canales de TV
   ids=ids.filter(Boolean); if(!ids.length) return;
   const falta=ids.filter(id=>!SM_TV[id]);
   if(falta.length){ try{ const j=await smGet(`fixtures/multi/${falta.slice(0,50).join(",")}`,"include=tvstations.tvstation"); (j.data||[]).forEach(f=>{SM_TV[String(f.id)]=smCanales(f);}); }catch(e){} }
@@ -1911,6 +2145,7 @@ function smEvType(n){n=(n||"").toLowerCase();
   if(/own goal/.test(n)) return "Own Goal"; if(/yellow\/red|yellowred|red ?card|redcard/.test(n)) return "Red Card"; if(/yellow ?card|yellowcard/.test(n)) return "Yellow Card";
   if(n==="penalty") return "Penalty - Scored"; if(n==="goal") return "Goal"; if(/substitution/.test(n)) return "Substitution"; return null;}
 async function smSummary(e,key){
+  if(e._af) return afSummary(e,key);
   const inc="participants;scores;state;venue;periods;events.type;lineups.details.type;lineups.position;statistics.type;formations;coaches";
   let f=null;
   try{ f=(await smGet(`fixtures/${e.id}`,`include=${inc};lineups.player;sidelined.sideline.type;sidelined.player;tvstations.tvstation;referees.referee`)).data; }
@@ -1986,6 +2221,7 @@ const SM_SEL={};
 const smSelKey=key=>key+"|"+(SM_SEL[key]?.sid||"")+"|"+(SM_SEL[key]?.stage||"");
 const SM_FASES={};   // fases (Apertura/Clausura) por temporada, para Liga MX y Argentina
 async function smOpcionesTemporada(key){
+  if(usaAF(LEAGUES[key])) return afOpcionesTemporada(key);
   const lg=LEAGUES[key], L=await smLeague(key);
   const cur=L.currentseason||L.current_season||{}, ss=(L.seasons||[]).filter(x=>x.starting_at).sort((a,b)=>b.starting_at.localeCompare(a.starting_at)).slice(0,3);
   const ops=[];
@@ -2001,7 +2237,7 @@ async function smOpcionesTemporada(key){
 }
 async function pintaTemporadas(){
   const key=FLIG, lg=LEAGUES[key], W=$("#tempWrap");
-  if(!lg.sm){W.hidden=true; return;}
+  if(!comercial(lg)){W.hidden=true; return;}
   let ops=[]; try{ops=await smOpcionesTemporada(key);}catch(e){}
   if(key!==FLIG) return;
   if(ops.length<2){W.hidden=true; return;}
@@ -2011,7 +2247,7 @@ async function pintaTemporadas(){
   W.hidden=false;
   $("#tempSel").onchange=e=>{
     const [sid,stage]=e.target.value.split("|"), esActual=actual&&+sid===actual.sid&&(stage||"")===(actual.stage||"");
-    if(esActual) delete SM_SEL[key]; else SM_SEL[key]={sid:+sid,stage:stage?+stage:null};
+    if(esActual) delete SM_SEL[key]; else SM_SEL[key]={sid:+sid,stage:stage?(/^\d+$/.test(stage)?+stage:stage):null};
     mxLoaded=false; mxtLoaded=false; mxLgLoaded=false; mxpLoaded=false; mxprLoaded=false; MXJ=[]; curJ=0; MX_TABLE_ROWS=null; $("#mxGames").innerHTML=""; $("#jSel").innerHTML="";
     const cur=document.querySelector('.subnav[data-for=mx] button[aria-current]'); showTab(cur&&!cur.hidden?cur.dataset.tab:"mxgames");
   };
@@ -2042,7 +2278,7 @@ function mxGroups(ev,playoffAware,allTeams){
   const porJornada=false;
   // Copas y torneos (Sportmonks): se agrupa por ronda ("Octavos de final", "Semifinales", y en la fase de grupos
   // "Fase de grupos · Jornada 3"), con ida y vuelta juntas; es más fácil de buscar que por fechas.
-  if(sorted.some(e=>e._sm)&&LEAGUES[FLIG]?.sm&&LEAGUES[FLIG].tipo!=="liga"){
+  if(sorted.some(e=>e._sm)&&comercial(LEAGUES[FLIG])&&LEAGUES[FLIG].tipo!=="liga"){
     const byR=new Map();
     for(const e of sorted){
       const k=e._ko||!/^\d+$/.test(e._round||"")?etapaEs(e._stage||"Eliminatoria"):`${e._stage&&/apertura|clausura/i.test(e._stage)?e._stage.split(/[ ,-]/)[0]+" · ":"Fase de grupos · "}Jornada ${e._round}`;
@@ -2082,7 +2318,7 @@ function mxGroups(ev,playoffAware,allTeams){
 }
 function mxSeason(){
   const key=FLIG;
-  if(LEAGUES[key].sm){
+  if(comercial(LEAGUES[key])){
     const ck=smSelKey(key);
     if(MXS_CACHE[ck]) return MXS_CACHE[ck];
     MXS_CACHE[ck]=(async()=>{
@@ -2194,7 +2430,7 @@ async function renderMxJ(){
   $("#mxMsg").textContent=first-Date.now()>5*864e5&&J[curJ-1]&&J[curJ-1].games.every(e=>e.status?.type?.state==="post")?`${flLabel()} regresa el ${fDay(new Date(first))} después de la pausa.`:"";
   const cards=ev.map(mxCard);
   $("#mxGames").innerHTML=cards.map(gameCard).join("");
-  if(LEAGUES[FLIG].sm) smDondeVerlo(cards.filter(c=>!c.status||c.live).map(c=>c.gid));
+  if(comercial(LEAGUES[FLIG])) smDondeVerlo(cards.filter(c=>!c.status||c.live).map(c=>c.gid));
   for(const c of cards){ if(c.status||c.tbd) continue; const g=c.lat!=null?{latitude:c.lat,longitude:c.lon}:await geocode(c.city); if(g) fillWeather(document.getElementById(c.wxId),g.latitude,g.longitude,c.when.getTime()); }
 }
 $("#jSel").onchange=e=>{curJ=+e.target.value;renderMxJ();};
@@ -2202,7 +2438,7 @@ $("#jPrev").onclick=()=>{if(curJ>0){curJ--;renderMxJ();}};
 $("#jNext").onclick=()=>{if(curJ<MXJ.length-1){curJ++;renderMxJ();}};
 
 // ----- Detalle de partido Liga MX -----
-const MXSTAT={possessionPct:"Posesión (%)",totalShots:"Tiros",shotsOnTarget:"Tiros a gol",bigChances:"Ocasiones claras",wonCorners:"Tiros de esquina",foulsCommitted:"Faltas",yellowCards:"Amarillas",redCards:"Rojas",offsides:"Fueras de lugar",saves:"Atajadas",totalPasses:"Pases",accuratePasses:"Pases completos",passPct:"Precisión de pase",totalCrosses:"Centros",totalTackles:"Barridas",interceptions:"Intercepciones",totalClearance:"Despejes",blockedShots:"Tiros bloqueados",effectiveTackles:"Barridas exitosas",penaltyKickGoals:"Goles de penal",penaltyKickShots:"Penales"};
+const MXSTAT={possessionPct:"Posesión (%)",totalShots:"Tiros",shotsOnTarget:"Tiros a gol",expectedGoals:"Goles esperados (xG)",bigChances:"Ocasiones claras",wonCorners:"Tiros de esquina",foulsCommitted:"Faltas",yellowCards:"Amarillas",redCards:"Rojas",offsides:"Fueras de lugar",saves:"Atajadas",totalPasses:"Pases",accuratePasses:"Pases completos",passPct:"Precisión de pase",totalCrosses:"Centros",totalTackles:"Barridas",interceptions:"Intercepciones",totalClearance:"Despejes",blockedShots:"Tiros bloqueados",effectiveTackles:"Barridas exitosas",penaltyKickGoals:"Goles de penal",penaltyKickShots:"Penales"};
 const EVT=t=>/own goal/i.test(t)?"Autogol":/penalty/i.test(t)&&/goal|scored/i.test(t)?"Gol de penal":/goal/i.test(t)?"Gol":/yellow/i.test(t)?"Amarilla":/red/i.test(t)?"Roja":/substitution/i.test(t)?"Cambio":t;
 const ICON={"Gol":"⚽","Gol de penal":"⚽","Autogol":"⚽","Amarilla":"🟨","Roja":"🟥","Cambio":"🔁"};
 function lineRank(p){p=(p||"").toUpperCase();
@@ -2328,12 +2564,12 @@ async function openMx(id,quiet){
     if(goals.length){
       // Marcador parcial en cada gol; solo se muestra si al final cuadra con el resultado real.
       const hN=H.team?.displayName, isH=k=>k.tm===hN; let gh=0,ga=0;
-      const run=goals.map(k=>{if(/Gol/.test(k.tp)){if(isH(k))gh++; else ga++; return `${gh}-${ga}`;} return "";});
+      const run=goals.map(k=>{if(/gol/i.test(k.tp)){if(isH(k))gh++; else ga++; return `${gh}-${ga}`;} return "";});
       const okRun=gh===(+hs||0)&&ga===(+as||0);
       const ic=k=>k.tp==="Amarilla"?`<span class="ic card"></span>`:k.tp==="Roja"?`<span class="ic card r"></span>`:`<span class="ic">⚽</span>`;
       const sub=(k,i)=>[k.tp==="Gol"&&k.who[1]?`asist. ${k.who[1]}`:k.tp==="Gol de penal"?"penal":k.tp==="Autogol"?"autogol":k.tp==="Roja"?"roja":"",okRun?run[i]:""].filter(Boolean).join(" · ");
       h+=`<h3>Goles y tarjetas</h3><ul class="tl">${goals.map((k,i)=>{const sd=isH(k)?"h":"a";
-        return `<li class="${/Gol/.test(k.tp)?"g":""}"><span class="mn">${k.m}</span><div class="e ${sd}">${ic(k)}<span class="who">${k.who[0]||""}${sub(k,i)?`<small>${sub(k,i)}</small>`:""}</span></div></li>`;}).join("")}</ul>`;
+        return `<li class="${/gol/i.test(k.tp)?"g":""}"><span class="mn">${k.m}</span><div class="e ${sd}">${ic(k)}<span class="who">${k.who[0]||""}${sub(k,i)?`<small>${sub(k,i)}</small>`:""}</span></div></li>`;}).join("")}</ul>`;
     }
     const bt=sm.boxscore?.teams||[];
     if(bt.length===2&&bt[0].statistics?.length){
@@ -2773,7 +3009,7 @@ async function loadMxLiguilla(){
   if(mxLgLoaded) return; mxLgLoaded=true;
   try{
     const key=FLIG, L=LEAGUES[key];
-    if(L.sm&&L.tipo!=="liga"){
+    if(comercial(L)&&L.tipo!=="liga"){
       // Copas y torneos: llaves con todas las rondas de eliminación (en copas, solo las principales)
       const {ev}=await mxSeason(); if(key!==FLIG) return;
       const ko=ev.filter(e=>e._ko);   // por tipo de fase (224/225): algunas rondas de eliminación traen jornada numérica
@@ -2820,7 +3056,7 @@ async function loadMxTable(){
   try{
     $("#mxtTitle").textContent=LEAGUES[FLIG].liguilla?"Tabla general":LEAGUES[FLIG].cup?`Fase de liga · ${flLabel()}`:`Tabla · ${flLabel()}`;
     {const G0=$("#mxGrupos"); if(G0) G0.innerHTML=""; $("#mxTable").closest(".tbl").style.display="";}
-    if(LEAGUES[FLIG].sm){
+    if(comercial(LEAGUES[FLIG])){
       const key=FLIG, {rows,titulo}=await smStandings(key); if(key!==FLIG) return;
       if(!rows.length) throw new Error("vacía");
       $("#mxtMsg").textContent=titulo;
@@ -2933,8 +3169,8 @@ async function loadMxPlayers(){
     $("#mxpTitle").textContent=`Líderes de ${flLabel()}`;
     const pk="pizarra_mxp3_"+FLIG; // caché de líderes, separado por competencia
     let cached=null; try{cached=JSON.parse(localStorage.getItem(pk)||"null")}catch(e){}
-    if(LEAGUES[FLIG].sm){
-      // Ligas de Sportmonks: las estadísticas las arma build_site.py (docs/datos/jugadores_<liga>.json; torneos pasados:
+    if(comercial(LEAGUES[FLIG])){
+      // Ligas de Sportmonks / API-Football: las estadísticas las arma build_site.py (docs/datos/jugadores_<liga>.json; torneos pasados:
       // jugadores_<liga>_<temporada>[_<torneo>].json, calculados una sola vez)
       const key=FLIG, sel=SM_SEL[key], arch=sel?`datos/jugadores_${key}_${sel.sid}${sel.stage?"_"+sel.stage:""}.json`:`datos/jugadores_${key}.json`;
       const j=await fetch(arch,{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null); if(key!==FLIG) return;
@@ -2985,12 +3221,12 @@ async function loadMxPlayers(){
       MXP=[...P.values()].map(r=>({...r,ap:null,pg:(r.pos||"M")[0].toUpperCase().replace(/[^GDMF]/,"M"),ga:r.as==null?null:r.g+r.as}));
       try{localStorage.setItem(pk,JSON.stringify({t:Date.now(),rows:MXP}))}catch(e){}
     }
-    if(!MXP.length){$("#mxpMsg").textContent=LEAGUES[FLIG].sm?"Las estadísticas de jugadores se generan con la próxima actualización automática.":"ESPN todavía no reporta estadísticas de jugadores para este torneo.";return;}
+    if(!MXP.length){$("#mxpMsg").textContent=comercial(LEAGUES[FLIG])?"Las estadísticas de jugadores se generan con la próxima actualización automática.":"ESPN todavía no reporta estadísticas de jugadores para este torneo.";return;}
     $("#mxpMsg").textContent="";
     const teamsOpt=[...new Map(MXP.map(r=>[r.t,r.tn])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
     $("#mxpTeam").innerHTML=`<option value="">Todos los equipos</option>`+teamsOpt.map(([a,n])=>`<option value="${a}">${n}</option>`).join("");
     const LEADS=[];
-    const lead=(k,label,fmtf=v=>fmt(v))=>{const r=[...MXP].filter(r=>r[k]!=null).sort((a,b)=>b[k]-a[k])[0]; if(!(r&&r[k]>0)) return ""; LEADS.push(r); return leaderCard(label,fmtf(r[k]),{...r,img:r.id&&!LEAGUES[FLIG].sm?`https://a.espncdn.com/i/headshots/soccer/players/full/${r.id}.png`:null,logo:r.logo});};
+    const lead=(k,label,fmtf=v=>fmt(v))=>{const r=[...MXP].filter(r=>r[k]!=null).sort((a,b)=>b[k]-a[k])[0]; if(!(r&&r[k]>0)) return ""; LEADS.push(r); return leaderCard(label,fmtf(r[k]),{...r,img:r.id&&!comercial(LEAGUES[FLIG])?`https://a.espncdn.com/i/headshots/soccer/players/full/${r.id}.png`:null,logo:r.logo});};
     $("#mxLeaders").innerHTML=[lead("g","Goles"),lead("as","Asistencias"),lead("ga","Goles + asistencias"),lead("sot","Tiros a gol"),lead("sv","Atajadas"),lead("cs","Porterías en cero"),lead("yc","Tarjetas amarillas")].join("");
     mxpState.render();
     if(LEAGUES[FLIG].photos) leaderPhotos(LEADS,FLIG);
@@ -3043,6 +3279,7 @@ async function mxLiveUpdate(){
   if(!MXJ.length||!MXJ[curJ]||LEAGUES[FLIG]?.nat) return false;
   const G=MXJ[curJ].games, hot=G.filter(e=>{const s=e.status?.type?.state; return s==="in"||(s==="pre"&&liveHot(+new Date(e.date),false));});
   if(!hot.length) return false;
+  if(usaAF(LEAGUES[FLIG])){ const n=await afLive(LEAGUES[FLIG],G); if(n) renderMxJ(); return n>0; }
   if(LEAGUES[FLIG].sm){
     const lg=LEAGUES[FLIG], j=await smGet("livescores",`include=participants;scores;state;periods;round;stage;venue&filters=fixtureLeagues:${lg.sm}`).catch(()=>null);
     let n=0;
