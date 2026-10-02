@@ -2003,8 +2003,11 @@ async function afSummary(e,key){
   return sm;
 }
 // En vivo: actualiza marcador y reloj de los partidos de la jornada que se está viendo
+// Un solo pedido en vivo para TODAS las ligas de API-Football (live=39-61-262…): el Worker guarda una sola copia de 15 s
+// que comparten todos los visitantes, vean la liga que vean. Así cuesta lo mismo una liga que diez.
+const AF_VIVO_IDS=()=>[...new Set(Object.values(LEAGUES).filter(usaAF).map(l=>l.af))].sort((a,b)=>a-b).join("-");
 async function afLive(lg,G){
-  const L=await afList("fixtures",`live=${lg.af}&${AF_TZ}`).catch(()=>null); if(!L) return 0;
+  const L=await afList("fixtures",`live=${AF_VIVO_IDS()}&${AF_TZ}`).catch(()=>afList("fixtures",`live=all&${AF_TZ}`)).catch(()=>null); if(!L) return 0;
   let n=0; for(const f of L){const o=G.find(e=>e.id===String(f.fixture.id)); if(!o) continue; const x=afEvent(f,lg); o.status=x.status; o.competitions=x.competitions; o._susp=x._susp; n++;}
   // Los que estaban en vivo y ya no aparecen: terminaron → se piden una vez para dejarlos en "Final"
   const fin=G.filter(e=>e.status?.type?.state==="in"&&!L.some(f=>String(f.fixture.id)===e.id)).map(e=>e.id);
