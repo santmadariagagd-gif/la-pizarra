@@ -790,27 +790,27 @@ const LEAGUES={
   mx:{slug:"mex.1",label:"Liga MX",liguilla:true,players:true,pr:true,photos:false,rk:"ligamx",sm:743,af:262,tipo:"liga",pais:"MX",cid:"484",region:"México"},
   sel:{slug:"fifa.friendly",label:"Selección mexicana",liguilla:false,players:false,pr:false,photos:false,rk:null,nat:true,tipo:"sel",pais:"MX",cid:"484",region:"México"},
   eng:{slug:"eng.1",label:"Premier League",liguilla:false,players:true,pr:true,photos:true,rk:"premier",sm:8,af:39,tipo:"liga",pais:"GB",cid:"826",region:"Europa"},
-  fac:{slug:"",label:"FA Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:24,tipo:"copa",pais:"GB",cid:"826",region:"Europa"},
-  efl:{slug:"",label:"Carabao Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:27,tipo:"copa",pais:"GB",cid:"826",region:"Europa"},
+  fac:{slug:"",label:"FA Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:24,af:45,tipo:"copa",pais:"GB",cid:"826",region:"Europa"},
+  efl:{slug:"",label:"Carabao Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:27,af:48,tipo:"copa",pais:"GB",cid:"826",region:"Europa"},
   esp:{slug:"esp.1",label:"La Liga",liguilla:false,players:true,pr:true,photos:true,rk:"laliga",sm:564,af:140,tipo:"liga",pais:"ES",cid:"724",region:"Europa"},
-  cdr:{slug:"",label:"Copa del Rey",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:570,tipo:"copa",pais:"ES",cid:"724",region:"Europa"},
-  sup:{slug:"",label:"Supercopa de España",liguilla:false,players:false,pr:false,photos:false,rk:null,sm:1251,tipo:"copa",pais:"ES",cid:"724",region:"Europa"},
+  cdr:{slug:"",label:"Copa del Rey",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:570,af:143,tipo:"copa",pais:"ES",cid:"724",region:"Europa"},
+  sup:{slug:"",label:"Supercopa de España",liguilla:false,players:false,pr:false,photos:false,rk:null,sm:1251,af:556,tipo:"copa",pais:"ES",cid:"724",region:"Europa"},
   ita:{slug:"ita.1",label:"Serie A",liguilla:false,players:true,pr:true,photos:true,rk:"seriea",sm:384,af:135,tipo:"liga",pais:"IT",cid:"380",region:"Europa"},
-  cit:{slug:"",label:"Coppa Italia",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:390,tipo:"copa",pais:"IT",cid:"380",region:"Europa"},
+  cit:{slug:"",label:"Coppa Italia",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:390,af:137,tipo:"copa",pais:"IT",cid:"380",region:"Europa"},
   ger:{slug:"ger.1",label:"Bundesliga",liguilla:false,players:true,pr:true,photos:true,rk:"bundesliga",sm:82,af:78,tipo:"liga",pais:"DE",cid:"276",region:"Europa"},
-  dfb:{slug:"",label:"DFB-Pokal",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:109,tipo:"copa",pais:"DE",cid:"276",region:"Europa"},
+  dfb:{slug:"",label:"DFB-Pokal",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:109,af:81,tipo:"copa",pais:"DE",cid:"276",region:"Europa"},
   fra:{slug:"fra.1",label:"Ligue 1",liguilla:false,players:true,pr:true,photos:true,rk:"ligue1",sm:301,af:61,tipo:"liga",pais:"FR",cid:"250",region:"Europa"},
-  cdf:{slug:"",label:"Coupe de France",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:307,tipo:"copa",pais:"FR",cid:"250",region:"Europa"},
-  por:{slug:"",label:"Liga Portugal",liguilla:false,players:true,pr:true,photos:false,rk:"portugal",sm:462,tipo:"liga",pais:"PT",cid:"620",region:"Europa"},
+  cdf:{slug:"",label:"Coupe de France",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:307,af:66,tipo:"copa",pais:"FR",cid:"250",region:"Europa"},
+  por:{slug:"",label:"Liga Portugal",liguilla:false,players:true,pr:true,photos:false,rk:"portugal",sm:462,af:94,tipo:"liga",pais:"PT",cid:"620",region:"Europa"},
   // Champions: fase de liga de 36 + eliminación directa. Desde el 2 oct 2026 sale de API-Football (af: 2); sin las rondas
   // clasificatorias de julio y agosto (sinPrevias). Con ?fuente=sm vuelve a ESPN (tipo y pestañas de antes).
   ucl:{slug:"uefa.champions",label:"Champions League",liguilla:false,players:true,pr:false,photos:false,rk:null,cup:true,af:2,sinPrevias:true,tipo:"liga",pais:"EU",cid:null,region:"Europa",cids:["826","724","380","276","250","620"]},
-  arg:{slug:"",label:"Liga Profesional Argentina",liguilla:true,players:true,pr:false,photos:false,rk:null,sm:636,tipo:"torneo",pais:"AR",cid:"032",region:"Sudamérica"},
+  arg:{slug:"",label:"Liga Profesional Argentina",liguilla:true,players:true,pr:false,photos:false,rk:null,sm:636,af:128,anual:true,zonas:true,tipo:"torneo",pais:"AR",cid:"032",region:"Sudamérica"},
   // cids: países del mapa donde también aparece el torneo (internacionales)
-  lib:{slug:"",label:"Copa Libertadores",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1122,tipo:"torneo",pais:"SUD",cid:null,region:"Sudamérica",cids:["032","076","170","152","858","600","218","604","068","862"]},
-  ccc:{slug:"",label:"Concachampions",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1111,tipo:"copa",pais:"CON",cid:null,region:"Concacaf",cids:["484","840","124"]},
-  lgc:{slug:"",label:"Leagues Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:3211,tipo:"torneo",pais:"CON",cid:null,region:"Concacaf",cids:["484","840","124"]},
-  sau:{slug:"",label:"Liga Profesional Saudí",liguilla:false,players:true,pr:true,photos:false,rk:"saudi",sm:944,tipo:"liga",pais:"SA",cid:"682",region:"Asia"},
+  lib:{slug:"",label:"Copa Libertadores",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1122,af:13,tipo:"torneo",pais:"SUD",cid:null,region:"Sudamérica",cids:["032","076","170","152","858","600","218","604","068","862"]},
+  ccc:{slug:"",label:"Concachampions",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1111,af:16,tipo:"copa",pais:"CON",cid:null,region:"Concacaf",cids:["484","840","124"]},
+  lgc:{slug:"",label:"Leagues Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:3211,af:772,tipo:"torneo",pais:"CON",cid:null,region:"Concacaf",cids:["484","840","124"]},
+  sau:{slug:"",label:"Liga Profesional Saudí",liguilla:false,players:true,pr:true,photos:false,rk:"saudi",sm:944,af:307,tipo:"liga",pais:"SA",cid:"682",region:"Asia"},
 };
 const BANDERA={MX:"🇲🇽",GB:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",ES:"🇪🇸",IT:"🇮🇹",DE:"🇩🇪",FR:"🇫🇷",PT:"🇵🇹",AR:"🇦🇷",SA:"🇸🇦",EU:"🇪🇺",SUD:"🌎",CON:"🌎"};
 const PAIS_ES={MX:"México",GB:"Inglaterra",ES:"España",IT:"Italia",DE:"Alemania",FR:"Francia",PT:"Portugal",AR:"Argentina",SA:"Arabia Saudita",EU:"Europa",SUD:"Sudamérica",CON:"Concacaf"};
@@ -1838,7 +1838,12 @@ function afLeague(key){
     return {id:lg.af,name:x.league?.name,image_path:x.league?.logo,currentseason:cur,seasons:ss};}).catch(e=>{delete AF_LG[key]; throw e;});
   return AF_LG[key];
 }
-const afTorneo=e=>(String(e._stage||"").match(/^(Apertura|Clausura)/i)||[])[1]||null;
+const AF_TORNEO_NOM={"apertura":"Apertura","clausura":"Clausura","1st phase":"Apertura","2nd phase":"Clausura"};   // Argentina 2025: "1st/2nd Phase"
+const afTorneoPref=e=>{const r=String(e._stage||"").toLowerCase(); const k=Object.keys(AF_TORNEO_NOM).find(x=>r.startsWith(x)); return k?AF_TORNEO_NOM[k]:null;};
+const afTorneo=e=>e._torneo!==undefined?e._torneo:afTorneoPref(e);
+// Torneo de cada partido; una eliminatoria sin prefijo ("Round of 16" en Argentina 2025) va al torneo cuya fase regular terminó antes
+function afMarcaTorneos(ev){ let ult=null; for(const e of ev){ const t=afTorneoPref(e), reg=/^\d+$/.test(e._round||"");
+  e._torneo=t||(!reg&&ult?ult:null); if(t&&reg) ult=t; } return ev; }
 // Torneo (Apertura/Clausura) que se muestra: el elegido, o el del último partido de temporada regular que ya empezó
 function afTorneoActual(ev,sel){
   if(sel?.stage) return sel.stage;
@@ -1855,7 +1860,9 @@ async function afSeasonEvents(key){
   if(!AF_EV[ck]) AF_EV[ck]=Promise.all([afList("fixtures",`league=${lg.af}&season=${S.id}&${AF_TZ}`),
       afList("teams",`league=${lg.af}&season=${S.id}`).then(T=>T.forEach(t=>{if(t.team?.code) AF_COD[t.team.id]=t.team.code;})).catch(()=>{})])
     .then(([F])=>F).catch(e=>{delete AF_EV[ck]; throw e;});
-  let ev=(await AF_EV[ck]).map(f=>afEvent(f,lg)).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  let ev=afMarcaTorneos((await AF_EV[ck]).map(f=>afEvent(f,lg)).sort((a,b)=>new Date(a.date)-new Date(b.date)));
+  // Copas: fuera las rondas clasificatorias y preliminares (equipos amateur), como antes con Sportmonks
+  if(lg.tipo==="copa") ev=ev.filter(e=>!/qualif|prelim/i.test(e._stage||""));
   // Champions: fuera las rondas clasificatorias (todo lo que no es de fase de liga/grupos y se jugó antes de que empezara)
   if(lg.sinPrevias){ const g=ev.filter(e=>/^\d+$/.test(e._round||"")); if(g.length){ const t0=Math.min(...g.map(e=>+new Date(e.date))); ev=ev.filter(e=>/^\d+$/.test(e._round||"")||+new Date(e.date)>=t0); } }
   if(lg.liguilla){ const t=afTorneoActual(ev,sel); if(t){ ev=ev.filter(e=>afTorneo(e)===t); S._stage={name:t}; } }
@@ -1870,15 +1877,28 @@ function afStandings(key){
     const lg=LEAGUES[key], {ev,S}=await afSeasonEvents(key);
     const G=(await afList("standings",`league=${lg.af}&season=${S.id}`))[0]?.league?.standings||[];
     const t=lg.liguilla?(S._stage?.name||afTorneoActual(ev,SM_SEL[key])):null;
-    let grupos=G;
-    if(t){ const g=G.find(x=>new RegExp(t,"i").test(x[0]?.group||"")); grupos=g?[g]:G.slice(0,1); }
-    const varios=!t&&grupos.length>1;
-    const rows=grupos.flatMap(g=>g.map(r=>({grupo:varios?(r.group||"").replace(/^.*?:\s*/,""):null,n:afNombre(r.team),id:String(r.team?.id),logo:SM_ESCUDOS?r.team?.logo:null,
+    const nomT=g=>{const x=String(g[0]?.group||"").toLowerCase(); const k=Object.keys(AF_TORNEO_NOM).find(y=>x.includes(y)); return k?AF_TORNEO_NOM[k]:null;};
+    // Si no viene la tabla de ese torneo (Liga MX 2025 solo trae la del Clausura; Argentina 2025 trae "Group A/B" sin torneo;
+    // la Leagues Cup no trae tabla), se calcula con los partidos.
+    const grupos=t?G.filter(g=>nomT(g)===t):G;
+    const varios=grupos.length>1;
+    const grupoNom=x=>String(x||"").split(/\s+-\s+|,\s*|:\s*/).pop().replace(/^group\s*/i,lg.zonas?"Zona ":"Grupo ");
+    let rows=grupos.flatMap(g=>g.map(r=>({grupo:varios?grupoNom(r.group):null,n:afNombre(r.team),id:String(r.team?.id),logo:SM_ESCUDOS?r.team?.logo:null,
       rk:r.rank,pj:r.all?.played,g:r.all?.win,e:r.all?.draw,p:r.all?.lose,gf:r.all?.goals?.for,gc:r.all?.goals?.against,dg:r.goalsDiff,pts:r.points,zn:null})));
-    return {rows,titulo:t?`${t} ${t==="Clausura"?S.id+1:S.id}`:`Temporada ${afTemporadaNombre(S)}`};
+    if(!rows.length) rows=afTablaPartidos(ev);
+    return {rows,titulo:t?`${t} ${t==="Clausura"&&!lg.anual?S.id+1:S.id}`:`Temporada ${afTemporadaNombre(S)}`};
   })();
   AF_TB[ck].catch(()=>{delete AF_TB[ck];});
   return AF_TB[ck];
+}
+// Tabla calculada con los partidos terminados de fase regular o de grupos (puntos, diferencia, goles a favor)
+function afTablaPartidos(ev){
+  const T={};
+  for(const e of ev){ if(e.status?.type?.state!=="post"||e._ko||e._lig) continue; if(!(/^\d+$/.test(e._round||"")||AF_FASE_GRUPOS.test(e._stage||""))) continue;
+    const [h,a]=e.competitions[0].competitors, gh=+h.score, ga=+a.score; if(isNaN(gh)||isNaN(ga)) continue;
+    for(const [c,gf,gc] of [[h,gh,ga],[a,ga,gh]]){ const r=T[c.team.id]||(T[c.team.id]={grupo:null,n:c.team.displayName,id:c.team.id,logo:c.team.logo,pj:0,g:0,e:0,p:0,gf:0,gc:0,dg:0,pts:0,zn:null});
+      r.pj++; r.gf+=gf; r.gc+=gc; r.dg=r.gf-r.gc; if(gf>gc){r.g++; r.pts+=3;} else if(gf===gc){r.e++; r.pts++;} else r.p++; } }
+  return Object.values(T).sort((x,y)=>y.pts-x.pts||y.dg-x.dg||y.gf-x.gf).map((r,i)=>({...r,rk:i+1}));
 }
 // "2026-27" cuando la temporada cruza de año (Europa); "2026" si no (Libertadores, Liga MX por torneo)
 const afTemporadaNombre=S=>(S.ending_at||"").slice(0,4)>String(S.id)?`${S.id}-${String(S.id+1).slice(2)}`:String(S.id);
@@ -1893,10 +1913,10 @@ function afTop(key,tipo){
 async function afOpcionesTemporada(key){
   const lg=LEAGUES[key], L=await afLeague(key), cur=L.currentseason||{};
   const ss=[...L.seasons].filter(s=>s.id<=cur.id).sort((a,b)=>b.id-a.id).slice(0,3), now=Date.now(), ops=[];
-  const curT=now>=Date.UTC(cur.id+1,0,1)?"Clausura":"Apertura";
+  const curT=lg.anual?(now>=Date.UTC(cur.id,6,1)?"Clausura":"Apertura"):(now>=Date.UTC(cur.id+1,0,1)?"Clausura":"Apertura");
   for(const S of ss){
     if(lg.liguilla){
-      for(const [t,y,m] of [["Clausura",S.id+1,0],["Apertura",S.id,6]]){ if(now<Date.UTC(y,m,1)) continue;
+      for(const [t,y,m] of lg.anual?[["Clausura",S.id,6],["Apertura",S.id,0]]:[["Clausura",S.id+1,0],["Apertura",S.id,6]]){ if(now<Date.UTC(y,m,1)) continue;
         ops.push({label:`${t} ${y}`,sid:S.id,stage:t,actual:S.id===cur.id&&t===curT}); }
     } else ops.push({label:afTemporadaNombre(S),sid:S.id,stage:null,actual:S.id===cur.id});
   }
@@ -2126,7 +2146,7 @@ const SM_BAJA=[[/suspen/i,"Suspendido"],[/cruciate/i,"Ligamento cruzado"],[/meni
   [/groin/i,"Ingle"],[/calf/i,"Pantorrilla"],[/thigh/i,"Muslo"],[/ankle/i,"Tobillo"],[/knee/i,"Rodilla"],[/foot|toe/i,"Pie"],[/hip/i,"Cadera"],[/back/i,"Espalda"],
   [/shoulder/i,"Hombro"],[/concussion|head/i,"Cabeza"],[/fractur|broken/i,"Fractura"],[/ligament/i,"Ligamento"],[/muscle/i,"Lesión muscular"],
   [/ill|sick|virus|flu/i,"Enfermedad"],[/knock/i,"Golpe"],[/injur/i,"Lesión"]];
-const ETAPA_ES=[[/knockout round play-?offs/i,"Play-off"],[/league stage|league phase/i,"Fase de liga"],[/play[- ]?in semi/i,"Play-In · Semifinal"],[/play[- ]?in final/i,"Play-In · Final"],[/^final$/i,"Final"],[/3rd place/i,"Tercer lugar"],[/semi/i,"Semifinales"],[/quarter/i,"Cuartos de final"],[/8th finals|round of 16/i,"Octavos de final"],
+const ETAPA_ES=[[/knockout round play-?offs/i,"Play-off"],[/third place/i,"Tercer lugar"],[/^qualification round (\d+)$/i,"Fase previa $1"],[/^group stage$/i,"Fase de grupos"],[/league stage|league phase/i,"Fase de liga"],[/play[- ]?in semi/i,"Play-In · Semifinal"],[/play[- ]?in final/i,"Play-In · Final"],[/^final$/i,"Final"],[/3rd place/i,"Tercer lugar"],[/semi/i,"Semifinales"],[/quarter/i,"Cuartos de final"],[/8th finals|round of 16/i,"Octavos de final"],
   [/16th finals|round of 32/i,"Dieciseisavos de final"],[/play[- ]?in/i,"Play-In"],[/reclasificaci/i,"Reclasificación"],[/group stage/i,"Fase de grupos"],[/regular season/i,"Temporada regular"],
   [/extra preliminary round replays/i,"Repeticiones de la ronda preliminar extra"],[/preliminary round replays/i,"Repeticiones de la ronda preliminar"],[/extra preliminary/i,"Ronda preliminar extra"],[/preliminary/i,"Ronda preliminar"],
   [/^(\d+)(st|nd|rd|th) round qualifying replays$/i,"Repeticiones de la $1ª ronda clasificatoria"],[/^(\d+)(st|nd|rd|th) round qualifying$/i,"$1ª ronda clasificatoria"],[/^(\d+)(st|nd|rd|th) round$/i,"Ronda $1"],[/^round (\d+)$/i,"Ronda $1"],[/^round of (\d+)$/i,"Ronda de $1"]];
