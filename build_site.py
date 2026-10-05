@@ -1623,6 +1623,56 @@ try:
 except Exception as ex:
     print("Grupos: no se pudieron subir los partidos a Firebase:",ex)
 
+# Recuperación de una sola vez (bug del 5 oct 2026): hasta ese día ningún pick llegaba a los grupos (la hoja de la
+# semana nunca se creaba). Los picks sí estaban en la cuenta de cada quien (usuarios/{uid}.picks), así que GitHub los
+# copia a los grupos con su llave de administrador: solo las semanas de RECUPERAR, solo partidos que ya empezaron
+# (los abiertos los sube la página), solo si la persona ya estaba en el grupo cuando empezó el partido y sin pisar
+# nada que ya exista. Se puede correr las veces que sea: lo que ya está no se vuelve a copiar.
+RECUPERAR={2026:[4]}
+def _fb_recupera(db=None):
+    sems=RECUPERAR.get(S,[])
+    if not sems: return
+    if db is None:
+        sa=os.environ.get('FIREBASE_SA','').strip()
+        if not sa: return
+        import firebase_admin
+        from firebase_admin import credentials, firestore
+        if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
+        db=firestore.client()
+    from datetime import timezone as _tz
+    ahora=datetime.now(_tz.utc); cuentas={}
+    grupos=[gd.id for gd in db.collection('grupos').stream()]
+    for w in sems:
+        sd=db.collection('partidos_semana').document(f"{S}-{w}").get().to_dict()
+        if not sd or not sd.get('games'): continue
+        games=sd['games']; n=hojas=0
+        for g in grupos:
+            for md in db.collection('grupos').document(g).collection('miembros').stream():
+                uid=md.id; unido=(md.to_dict() or {}).get('unido')
+                if uid not in cuentas:
+                    cuentas[uid]=((db.collection('usuarios').document(uid).get().to_dict() or {}).get('picks') or {})
+                P=(cuentas[uid].get(str(S)) or {}).get(str(w)) or {}
+                if not P: continue
+                ref=db.collection('grupos').document(g).collection('picks').document(f"{uid}_{w}")
+                cur=ref.get().to_dict() or {}; add={}
+                for k,v in games.items():
+                    G=P.get(k) or {}
+                    if k in cur or not G or not v.get('ko') or v['ko']>ahora: continue
+                    if unido and unido>=v['ko']: continue          # se unió después de que empezó ese partido
+                    val={}
+                    if isinstance(G.get('ats'),dict) and G['ats'].get('t'): val['ats']=G['ats']['t']
+                    if isinstance(G.get('su'),dict) and G['su'].get('t'): val['su']=G['su']['t']
+                    if isinstance(G.get('tb'),int) and not isinstance(G.get('tb'),bool) and 0<=G['tb']<=150: val['tb']=G['tb']
+                    if val: add[k]=val
+                if add:
+                    base={} if cur else dict(uid=uid,w=w,temporada=S,ultimo=sorted(add)[-1])
+                    ref.set({**base,**add},merge=True); n+=len(add); hojas+=1
+        print(f"Grupos: recuperación de la semana {w}: {n} picks copiados de las cuentas a {hojas} hojas de grupo")
+try:
+    _fb_recupera()
+except Exception as ex:
+    print("Grupos: no se pudo hacer la recuperación:",ex)
+
 # Google Analytics: google_analytics.txt con el ID de medición (G-XXXXXXX). Es público por diseño.
 def _ga_id():
     import re as _re

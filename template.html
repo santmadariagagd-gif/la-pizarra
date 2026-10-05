@@ -3855,8 +3855,11 @@ async function grInfo(id,force){
 const grVal=G=>{const v={}; if(G?.ats?.t) v.ats=G.ats.t; if(G?.su?.t) v.su=G.su.t; if(Number.isInteger(G?.tb)) v.tb=G.tb; return v;};
 async function grWrite(g,w,key,val){
   const uid=grMe().uid, ref=ACCT.db.doc(`grupos/${g}/picks/${uid}_${w}`);
+  // Ojo (bug del 5 oct 2026): si tu hoja de la semana todavía no existe, Firebase NO contesta "no existe" sino
+  // "permiso denegado" (la regla de update lee el documento). En ese caso se intenta crearla; si de verdad no hay
+  // permiso (partido cerrado), crear también falla y ese es el error que se reporta.
   try{ await ref.update(new firebase.firestore.FieldPath(key),val,"ultimo",key); }
-  catch(e){ if(e?.code==="not-found") await ref.set({uid,w:+w,temporada:D.season,ultimo:key,[key]:val}); else throw e; }
+  catch(e){ if(e?.code==="not-found"||e?.code==="permission-denied") await ref.set({uid,w:+w,temporada:D.season,ultimo:key,[key]:val}); else throw e; }
 }
 async function grOnPick(w,key,G){
   if(!acctOk()) return; if(!GR.loaded) await grLoadIds(); if(!GR.ids.length) return;
@@ -3878,7 +3881,8 @@ function grReconcile(force){
     const P=await qnGet(), w=P.week, W=(qnPicksAll()[D.season]||{})[w]||{}, uid=grMe().uid, now=Date.now(); let wrote=0;
     GR.missing=GR.missing||{};
     await Promise.all(GR.ids.map(async g=>{
-      let doc; try{const s=await ACCT.db.doc(`grupos/${g}/picks/${uid}_${w}`).get(); doc=s.exists?s.data():{};}catch(e){console.warn("Grupos: revisión",g,e?.code||e); return;}
+      let doc; try{const s=await ACCT.db.doc(`grupos/${g}/picks/${uid}_${w}`).get(); doc=s.exists?s.data():{};}
+      catch(e){ if(e?.code==="permission-denied") doc={}; else {console.warn("Grupos: revisión",g,e?.code||e); return;} }
       let miss=0;
       for(const gm of P.games){
         const k=`${gm.a}@${gm.h}`, want=grVal(W[k]), have=doc[k]||{};
@@ -3938,7 +3942,7 @@ async function grLoad(g){
   const W={};
   for(let w=firstW;w<=cur;w++){
     const S=await grSem(w,cur); if(!S) continue;
-    const ck=`pz_grp_${g}_${w}`, cached=w<cur?grCacheGet(ck):null, P=cached||{};
+    const ck=`pz_grp2_${g}_${w}`, cached=w<cur?grCacheGet(ck):null, P=cached||{};
     if(!cached||M.some(m=>!(m.uid in cached))){
       await Promise.all(M.map(async m=>{ if(m.uid in P) return;
         try{const s=await ACCT.db.doc(`grupos/${g}/picks/${m.uid}_${w}`).get(); P[m.uid]=s.exists?s.data():null;}catch(e){P[m.uid]=null;} }));
