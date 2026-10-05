@@ -822,26 +822,31 @@ def team_metrics(pbp_,sch_,upto):
     ng=pd.DataFrame(net_g,columns=['tm','wk','v','k']).groupby(['tm','wk']).v.sum().reset_index()
     rec=ng.sort_values('wk').groupby('tm').tail(3).groupby('tm').v.mean()
     return dict(off=off,de=de,pf=pf,pa=pa,rec=rec,gm=gm)
-def power_nfl(upto):
-    cur=team_metrics(pbp_all,full,upto)
-    wprev=max(0.0,0.7*(1-(upto-1)/5))
-    prv=team_metrics(pbp_prev,sch_prev,99) if (wprev>0 and pbp_prev is not None) else None
-    T=sorted(set(cur['gm'].tm))
+# Peso de la temporada pasada: 70% con 1 partido jugado y baja hasta 0% con 6, POR EQUIPO según sus partidos jugados
+# (antes era por número de semana: el partido del jueves cambiaba el peso de los 32 equipos y movía picks ajenos).
+PESO_PREV=lambda n:1.0 if n<=0 else max(0.0,0.7*(1-(n-1)/5))
+def power_nfl(upto,pbp_=None,sch_=None):
+    pbp_=pbp_all if pbp_ is None else pbp_; sch_=full if sch_ is None else sch_
+    cur=team_metrics(pbp_,sch_,upto)
+    jug=cur['gm'].groupby('tm').size().to_dict()
+    prv=team_metrics(pbp_prev,sch_prev,99) if pbp_prev is not None else None
+    T=sorted(set(cur['gm'].tm)) if len(cur['gm']) else sorted(set(prv['gm'].tm) if prv else [])
     def bl(k,t):
-        c=cur[k].get(t,np.nan)
+        c=cur[k].get(t,np.nan) if len(cur['gm']) else np.nan
         if prv is None: return c
-        pv=prv[k].get(t,np.nan)
+        pv=prv[k].get(t,np.nan); w=PESO_PREV(jug.get(t,0))
         if pd.isna(c): return pv
-        if pd.isna(pv): return c
-        return wprev*pv+(1-wprev)*c
+        if pd.isna(pv) or w<=0: return c
+        return w*pv+(1-w)*c
     M=pd.DataFrame([dict(t=t,off=bl('off',t),de=bl('de',t),pf=bl('pf',t),pa=bl('pa',t),rec=bl('rec',t)) for t in T]).set_index('t')
     net=M.off-M.de
-    sos=cur['gm'].groupby('tm').opp.apply(lambda o: np.nanmean([net.get(x,np.nan) for x in o]))
+    sos=cur['gm'].groupby('tm').opp.apply(lambda o: np.nanmean([net.get(x,np.nan) for x in o])) if len(cur['gm']) else pd.Series(0.0,index=M.index)
     M['sos']=sos
     z=lambda s:(s-s.mean())/(s.std(ddof=0) or 1)
     M['score']=0.225*z(M.off)+0.225*z(-M.de)+0.20*z(M.sos)+0.15*z(M.rec)+0.10*z(M.pf)+0.10*z(-M.pa)
     M=M.sort_values('score',ascending=False)
     M['rank']=range(1,len(M)+1)
+    wprev=float(np.median([PESO_PREV(jug.get(t,0)) for t in M.index])) if prv is not None and len(M) else 0.0
     return M,wprev
 pbp_all=pbp
 try:
@@ -871,7 +876,7 @@ out['pr_nfl']=[dict(r=i+1,t=t,prev=int(prevM.loc[t,'rank']) if prevM is not None
     sc=round(float((M.loc[t,'score']-smin)/((smax-smin) or 1)*100),1),w=int(recs.loc[t,'w']) if t in recs.index else 0,l=int(recs.loc[t,'l']) if t in recs.index else 0,
     off=rnd(M.loc[t,'off'],3),de=rnd(M.loc[t,'de'],3),pf=rnd(M.loc[t,'pf'],1),pa=rnd(M.loc[t,'pa'],1),sos=rnd(M.loc[t,'sos'],3),rec=rnd(M.loc[t,'rec'],3),c=com.get(t,'')) for i,t in enumerate(order)]
 out['pr_wprev']=round(wprev*100)
-print(f"Power ranking NFL: semana {wk}, peso temporada pasada {round(wprev*100)}%")
+print(f"Power ranking NFL: semana {wk}, peso temporada pasada {round(wprev*100)}% (mediana; cada equipo según sus partidos)")
 
 # ----- Quiniela NFL: modelo de línea propia + líneas de ESPN Pick'em -----
 # Margen esperado del local = k × (EPA neto local − EPA neto visita) + hfa. El EPA neto es el mismo del power
@@ -924,6 +929,9 @@ except Exception as ex:
 # (sin ver el futuro) y con la línea de cierre de nflverse (marcadas "c"). Se guarda en docs/datos/picks_pizarra.json y viaja a la
 # página como D.lpz = {semana: {"VIS@LOC": {t: pick con spread, L: ventaja del local, su: pick sin spread, m: nuestra línea, c: 1 si es de cierre}}}.
 import math
+# Semana 4 de 2026 tal como se mostró en la página (antes de la regla del jueves): 14-1 contra el spread.
+# Líneas de ESPN Pick'em de esa semana. Solo se usa si el archivo de picks no tiene esa semana.
+LPZ_SEMILLA={"2026":{"4":{"PIT@CLE":{"su":"PIT","m":1.5,"t":"CLE","L":2.5},"IND@WAS":{"su":"IND","m":3.2,"t":"WAS","L":3.5},"TEN@BAL":{"su":"BAL","m":8.1,"t":"TEN","L":-11.5},"NE@BUF":{"su":"BUF","m":5.5,"t":"NE","L":-7.5},"NYJ@CHI":{"su":"CHI","m":5.5,"t":"CHI","L":-3.5},"JAX@CIN":{"su":"JAX","m":-2.6,"t":"JAX","L":-2.5},"DAL@HOU":{"su":"HOU","m":1.6,"t":"DAL","L":-2.5},"ARI@NYG":{"su":"ARI","m":0.5,"t":"NYG","L":1.5},"LA@PHI":{"su":"LA","m":-2.7,"t":"LA","L":2.5},"GB@TB":{"su":"GB","m":2.2,"t":"TB","L":3.5},"MIA@MIN":{"su":"MIN","m":8.2,"t":"MIA","L":-11.5},"KC@LV":{"su":"KC","m":-2.3,"t":"LV","L":4.5},"LAC@SEA":{"su":"SEA","m":9.3,"t":"SEA","L":-6.5},"DEN@SF":{"su":"SF","m":8.8,"t":"SF","L":-2.5},"DET@CAR":{"su":"DET","m":1.7,"t":"CAR","L":3.5},"ATL@NO":{"su":"NO","m":2.2,"t":"ATL","L":-2.5}}}}
 def _lpz():
     ruta=os.path.join(aqui,'docs','datos','picks_pizarra.json')
     try: H=json.load(open(ruta,encoding='utf-8'))
@@ -956,55 +964,50 @@ def _lpz():
                     ofi[w]={k_:v.get('L') for k_,v in (d.get('games') or {}).items() if v.get('L') is not None}
                 except Exception as ex_: print("Picks de La Pizarra: no se leyó la línea oficial de la semana",w,ex_)
         return ofi[w]
-    # EPA neto tal como lo veía la página la MAÑANA del partido: solo partidos jugados antes de ese día (así el jueves
-    # ya cuenta para el domingo, igual que en la página). Mismo cálculo y mismas mezclas que el power ranking.
-    dia=dict(zip(full.game_id,full.gameday)); nets={}
-    def net(gid):
-        d=dia.get(gid)
+    # EPA neto tal como lo veía la página la mañana de un día: solo partidos jugados ANTES de ese día.
+    nets={}
+    def net_dia(d):
         if d not in nets:
             jug=full[full.gameday<d]; pp=pbp_all[pbp_all.game_id.isin(set(jug.game_id))]
-            if len(pp):
-                up=int(pp.week.max()); cur=team_metrics(pp,jug,up); wp=max(0.0,0.7*(1-(up-1)/5))
-            else:
-                cur=None; wp=1.0
-            prv=team_metrics(pbp_prev,sch_prev,99) if (wp>0 and pbp_prev is not None) else None
-            N={}
-            for t in set(full.home_team)|set(full.away_team):
-                v=[]
-                for kk in ('off','de'):
-                    c=cur[kk].get(t,np.nan) if cur is not None else np.nan; pv=prv[kk].get(t,np.nan) if prv is not None else np.nan
-                    v.append(pv if pd.isna(c) else c if (prv is None or pd.isna(pv)) else wp*pv+(1-wp)*c)
-                if not any(pd.isna(x) for x in v): N[t]=v[0]-v[1]
-            nets[d]=N
+            M_,_=power_nfl(int(pp.week.max()) if len(pp) else 0,pp,jug); nets[d]=(M_.off-M_.de).dropna().to_dict()
         return nets[d]
     phi=lambda x:0.5*(1+math.erf(x/math.sqrt(2)))
     imp=lambda m:None if m is None else (-m/(-m+100) if m<0 else 100/(m+100))
+    # Regla (pedida por Santiago el 5 oct 2026): los picks, nuestra línea y la línea de cada partido se actualizan cada
+    # mañana hasta el día del PRIMER partido de la semana (normalmente el jueves); la corrida de esa mañana es la final.
+    # Después ya no cambian, aunque se juegue el partido del jueves o se mueva la línea.
+    dia=dict(zip(full.game_id,full.gameday))
+    for w_,G_ in LPZ_SEMILLA.get(str(S),{}).items():      # semanas que ya se jugaron antes de esta regla
+        if w_ not in T: T[w_]=json.loads(json.dumps(G_))
     nuevos=0
-    for g in sched:
-        w=g['w']; key=f"{g['a']}@{g['h']}"
-        if w<desde: continue
-        W=T.get(str(w),{})
-        ko=datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=ZoneInfo("UTC")) if g.get('ko') else None
-        empezo=g['hs'] is not None or (ko is not None and ko<=ahora)
-        if empezo and key in W: continue                     # congelado
-        if not empezo and w>semq: continue                   # semanas que todavía no se juegan en la quiniela
-        if empezo:                                           # semana pasada sin guardar: sin ver el futuro, línea de cierre
-            N=net(g['id']); L=oficial(w).get(key); cierre=L is None
-            if L is None: L=-g['sp'] if g.get('sp') is not None else None
-        else:
-            N=hoy; L=esp.get(key) if w==int(pw or 0) and key in esp else (-g['sp'] if g.get('sp') is not None else None); cierre=False
-        nh,na=N.get(g['h']),N.get(g['a'])
-        if nh is None or na is None or (isinstance(nh,float) and math.isnan(nh)) or (isinstance(na,float) and math.isnan(na)): continue
-        m=k*(nh-na)+hf
-        pv=None
-        ia,ih=imp(g.get('aml')),imp(g.get('hml'))
-        if ia is not None and ih is not None: pv=ih/(ia+ih)
-        pm=phi(m/13.45); ph=(pm+pv)/2 if pv is not None else pm
-        x=dict(su=g['h'] if ph>=0.5 else g['a'],m=round(m,1))   # m = nuestra línea (margen del local) en ese momento
-        if L is not None: x['t']=g['h'] if m+L>0 else g['a']; x['L']=L
-        if cierre: x['c']=1
-        if W.get(key)!=x: nuevos+=1
-        W[key]=x; T[str(w)]=W
+    for w in sorted({g['w'] for g in sched}):
+        if w<desde or w>semq: continue
+        G=[g for g in sched if g['w']==w and g.get('ko')]
+        if not G: continue
+        ko=lambda g:datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=ZoneInfo("UTC"))
+        g0=min(G,key=ko); fija=ahora>=ko(g0); W=T.get(str(w),{})
+        if fija and W and all(f"{g['a']}@{g['h']}" in W for g in G): continue     # semana fija y completa
+        for g in G:
+            key=f"{g['a']}@{g['h']}"
+            if fija and key in W: continue
+            if fija:     # no se alcanzó a guardar antes de que empezara la semana: como se veía la mañana del primer partido
+                N=net_dia(dia.get(g0['id'])); L=oficial(w).get(key); cierre=L is None
+                if L is None: L=-g['sp'] if g.get('sp') is not None else None
+            else:
+                N=hoy; L=esp.get(key) if w==int(pw or 0) and key in esp else (-g['sp'] if g.get('sp') is not None else None); cierre=False
+            nh,na=N.get(g['h']),N.get(g['a'])
+            if nh is None or na is None or (isinstance(nh,float) and math.isnan(nh)) or (isinstance(na,float) and math.isnan(na)): continue
+            m=k*(nh-na)+hf
+            pv=None
+            ia,ih=imp(g.get('aml')),imp(g.get('hml'))
+            if ia is not None and ih is not None: pv=ih/(ia+ih)
+            pm=phi(m/13.45); ph=(pm+pv)/2 if pv is not None else pm
+            x=dict(su=g['h'] if ph>=0.5 else g['a'],m=round(m,1))   # m = nuestra línea (margen del local) en ese momento
+            if L is not None: x['t']=g['h'] if m+L>0 else g['a']; x['L']=L
+            if cierre: x['c']=1
+            if W.get(key)!=x: nuevos+=1
+            W[key]=x
+        if W: T[str(w)]=W
     os.makedirs(os.path.dirname(ruta),exist_ok=True)
     json.dump(H,open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
     out['lpz']={w:v for w,v in T.items() if v}
@@ -1607,7 +1610,9 @@ def _fb_partidos():
         print(f"Periódico: proyecciones de la semana {F['w']} guardadas ({len(F['p'])} jugadores)")
     for w,G in sem.items():
         ref=db.collection('partidos_semana').document(f"{out['season']}-{w}")
-        prev=(ref.get().to_dict() or {}).get('games',{})
+        pd_=ref.get().to_dict() or {}; prev=pd_.get('games',{})
+        if prev and pd_.get('primero') and pd_['primero']<=ahora:
+            continue        # la semana ya empezó (normalmente el jueves): sus líneas quedan fijas para todos los partidos
         for k,v in prev.items():                      # lo que ya empezó se queda como estaba
             if v.get('ko') and v['ko']<=ahora: G[k]=v
         if not G: continue

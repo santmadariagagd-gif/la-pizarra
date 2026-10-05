@@ -1517,7 +1517,7 @@ function lpzRender(P){
     </div>
     <div class="lpznav"><button class="lpzarr" data-lw="-1" aria-label="Semana anterior" ${w<=ws[0]?"disabled":""}>‹</button><h3>Semana ${w}</h3><button class="lpzarr" data-lw="1" aria-label="Semana siguiente" ${w>=ws[ws.length-1]?"disabled":""}>›</button></div>
     <ul class="hon lpzl">${rows||`<li><div class="hn"><small>Sin picks esta semana.</small></div></li>`}</ul>
-    <p class="note" style="margin-top:12px">${sp?"Cada pick se califica con la línea con la que se hizo (la oficial de los grupos). ":""}Los picks se actualizan cada mañana y quedan fijos cuando empieza el partido.${late?" Esta semana se calculó después, solo con datos hasta la semana anterior y la línea de cierre de Las Vegas.":""}</p>`;
+    <p class="note" style="margin-top:12px">${sp?"Cada pick se califica con la línea con la que se hizo (la oficial de los grupos). ":""}Los picks se revisan cada mañana hasta el día del primer partido de la semana (normalmente el jueves); desde esa mañana quedan fijos, igual que las líneas.${late?" Esta semana se calculó después, solo con datos hasta la semana anterior y la línea de cierre de Las Vegas.":""}</p>`;
 }
 $("#qLpz").addEventListener("click",e=>{const b=e.target.closest?.("[data-lw]"); if(!b||b.disabled) return; lpzWeek+=+b.dataset.lw; qnGet().then(lpzRender);});
 // ---------- Mis picks ----------
@@ -1820,7 +1820,7 @@ function renderMxBracket(rows){
 // ---------- Power ranking NFL ----------
 (function(){
   const R=D.pr_nfl||[]; if(!R.length) return;
-  $("#prNote").textContent=D.pr_wprev>0?`La temporada pasada pesa ${D.pr_wprev}% esta semana.`:"";
+  $("#prNote").textContent=D.pr_wprev>0?`La temporada pasada todavía pesa alrededor de ${D.pr_wprev}% (menos en los equipos que ya jugaron más partidos).`:"";
   const mv=r=>r.prev==null?"–":r.prev>r.r?`<span class="up">▲${r.prev-r.r}</span>`:r.prev<r.r?`<span class="down">▼${r.r-r.prev}</span>`:"=";
   const ep=v=>v==null?"–":(v>0?"+":"")+v.toFixed(3);
   $("#prNfl").innerHTML=`<thead><tr><th class="l">#</th><th class="l"></th><th class="l">Equipo</th><th>Récord</th><th class="l">Índice</th><th>EPA of.</th><th>EPA def.</th><th>Pts a favor</th><th>Pts en contra</th><th>Forma</th><th>Calendario</th></tr></thead><tbody>${R.map(r=>{const T=NT[r.t]||{n:r.t};
