@@ -917,6 +917,99 @@ try:
 except Exception as ex:
     print("Quiniela: ESPN Pick'em no respondió desde GitHub (la página lo intenta desde el navegador):",ex)
 
+# ----- Picks de La Pizarra: lo que se muestra en la Quiniela y su récord (con y sin spread) -----
+# Cada corrida calcula el pick de La Pizarra de los partidos que NO han empezado, con la misma línea oficial de los
+# grupos (ESPN Pick'em de la semana; si no, la de nflverse) y el modelo de hoy. Lo que ya empezó queda congelado.
+# Semanas pasadas que no estaban guardadas se calculan una sola vez con datos HASTA la semana anterior (sin ver el
+# futuro) y con la línea de cierre de nflverse (marcadas "c"). Se guarda en docs/datos/picks_pizarra.json y viaja a la
+# página como D.lpz = {semana: {"VIS@LOC": {t: pick con spread, L: ventaja del local, su: pick sin spread, m: nuestra línea, c: 1 si es de cierre}}}.
+import math
+def _lpz():
+    ruta=os.path.join(aqui,'docs','datos','picks_pizarra.json')
+    try: H=json.load(open(ruta,encoding='utf-8'))
+    except Exception: H={}
+    T=H.setdefault(str(S),{})
+    ahora=datetime.now(ZoneInfo("UTC")); k,hf=out['qmodel']['k'],out['qmodel']['hfa']; hoy=out['qmodel']['net']
+    fx={"WSH":"WAS","LAR":"LA"}; esp={}
+    pk=out.get('pickem') or {}; pw=(pk.get('currentScoringPeriod') or {}).get('id')
+    for p in pk.get('propositions',[]) if pw else []:
+        O=p.get('possibleOutcomes') or []
+        A=next((o for o in O if o.get('subType')=='AWAY'),None); Hh=next((o for o in O if o.get('subType')=='HOME'),None)
+        if A and Hh and p.get('spread') is not None: esp[f"{fx.get(A['abbrev'],A['abbrev'])}@{fx.get(Hh['abbrev'],Hh['abbrev'])}"]=float(p['spread'])
+    semq=int(pw or out.get('gweek') or wk+1)          # semana de la quiniela
+    # La Pizarra empezó a dar picks en la semana 4 de 2026: antes no hay récord (no se inventan picks que no se hicieron).
+    desde=4 if S==2026 else 1
+    for w_ in [w_ for w_ in T if int(w_)<desde]: del T[w_]
+    # Para semanas pasadas, si los grupos ya tenían su línea oficial en Firebase (partidos_semana), se usa esa
+    # (es la de ESPN Pick'em que se vio en la página); si no, la de cierre de nflverse.
+    ofi={}
+    def oficial(w):
+        if w not in ofi:
+            ofi[w]={}
+            sa=os.environ.get('FIREBASE_SA','').strip()
+            if sa:
+                try:
+                    import firebase_admin
+                    from firebase_admin import credentials, firestore
+                    if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
+                    d=firestore.client().collection('partidos_semana').document(f"{S}-{w}").get().to_dict() or {}
+                    ofi[w]={k_:v.get('L') for k_,v in (d.get('games') or {}).items() if v.get('L') is not None}
+                except Exception as ex_: print("Picks de La Pizarra: no se leyó la línea oficial de la semana",w,ex_)
+        return ofi[w]
+    nets={}
+    def net(w):                                       # EPA neto con datos hasta la semana w-1
+        if w not in nets:
+            if w-1>=1:
+                M_,_=power_nfl(w-1); nets[w]=(M_.off-M_.de).to_dict()
+            elif pbp_prev is not None:
+                P_=team_metrics(pbp_prev,sch_prev,99); nets[w]=(P_['off']-P_['de']).to_dict()
+            else: nets[w]={}
+        return nets[w]
+    phi=lambda x:0.5*(1+math.erf(x/math.sqrt(2)))
+    imp=lambda m:None if m is None else (-m/(-m+100) if m<0 else 100/(m+100))
+    nuevos=0
+    for g in sched:
+        w=g['w']; key=f"{g['a']}@{g['h']}"
+        if w<desde: continue
+        W=T.get(str(w),{})
+        ko=datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=ZoneInfo("UTC")) if g.get('ko') else None
+        empezo=g['hs'] is not None or (ko is not None and ko<=ahora)
+        if empezo and key in W: continue                     # congelado
+        if not empezo and w>semq: continue                   # semanas que todavía no se juegan en la quiniela
+        if empezo:                                           # semana pasada sin guardar: sin ver el futuro, línea de cierre
+            N=net(w); L=oficial(w).get(key); cierre=L is None
+            if L is None: L=-g['sp'] if g.get('sp') is not None else None
+        else:
+            N=hoy; L=esp.get(key) if w==int(pw or 0) and key in esp else (-g['sp'] if g.get('sp') is not None else None); cierre=False
+        nh,na=N.get(g['h']),N.get(g['a'])
+        if nh is None or na is None or (isinstance(nh,float) and math.isnan(nh)) or (isinstance(na,float) and math.isnan(na)): continue
+        m=k*(nh-na)+hf
+        pv=None
+        ia,ih=imp(g.get('aml')),imp(g.get('hml'))
+        if ia is not None and ih is not None: pv=ih/(ia+ih)
+        pm=phi(m/13.45); ph=(pm+pv)/2 if pv is not None else pm
+        x=dict(su=g['h'] if ph>=0.5 else g['a'],m=round(m,1))   # m = nuestra línea (margen del local) en ese momento
+        if L is not None: x['t']=g['h'] if m+L>0 else g['a']; x['L']=L
+        if cierre: x['c']=1
+        if W.get(key)!=x: nuevos+=1
+        W[key]=x; T[str(w)]=W
+    os.makedirs(os.path.dirname(ruta),exist_ok=True)
+    json.dump(H,open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+    out['lpz']={w:v for w,v in T.items() if v}
+    # récord (solo para el log)
+    res={f"{g['a']}@{g['h']}":(g['as_'],g['hs']) for g in sched if g['hs'] is not None}; R={'ats':[0,0,0],'su':[0,0,0]}
+    for w,G in T.items():
+        for key,x in G.items():
+            if key not in res: continue
+            a,h=key.split('@'); sa,sh=res[key]
+            if 't' in x: d=(sh-sa)+x['L']; c=h if d>0 else a if d<0 else None; R['ats'][2 if c is None else 0 if c==x['t'] else 1]+=1
+            wn=h if sh>sa else a if sa>sh else None; R['su'][2 if wn is None else 0 if wn==x['su'] else 1]+=1
+    print(f"Picks de La Pizarra: {nuevos} nuevos o cambiados; temporada {R['ats'][0]}-{R['ats'][1]}-{R['ats'][2]} contra el spread, {R['su'][0]}-{R['su'][1]}-{R['su'][2]} sin spread")
+try:
+    _lpz()
+except Exception as ex:
+    print("Picks de La Pizarra: no se pudieron calcular:",ex)
+
 # ---------- Liga MX: estadísticas de jugadores partido por partido (ESPN) ----------
 import urllib.request
 from datetime import date, timedelta

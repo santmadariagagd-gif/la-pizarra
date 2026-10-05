@@ -246,6 +246,22 @@ input[type=search].hq{width:100%;max-width:440px}
 #qGames .team.pickable:hover{background:var(--hl)}
 #qGames .team.mine{background:var(--hl);border-radius:8px;box-shadow:inset 3px 0 0 var(--mark)}
 .qres{font-weight:700}.qres.ok{color:var(--good)}.qres.ko{color:var(--bad)}
+.qmine .qvs{color:var(--muted)}
+.lpzrec{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 18px}
+.lpzrec>div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.lpzrec span{display:block;color:var(--muted);font-size:13px}
+.lpzrec b{display:block;font:800 30px/1.1 var(--display);margin-top:4px;white-space:nowrap}
+.lpzrec small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.lpzrec .you{border-style:dashed}
+.lpzrec .you b{color:var(--mark)}
+.lpznav{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.lpznav h3{margin:0;flex:1;text-align:center}
+.lpzarr{font:700 22px/1 var(--display);width:38px;height:38px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.lpzarr:disabled{opacity:.3;cursor:default}
+.lpzl .qlg{width:34px;height:34px;flex:none}
+.lpzst{text-align:right;flex:none}
+.lpzst small{display:block;color:var(--muted);font-size:12px;margin-top:2px;white-space:nowrap}
+@media (max-width:560px){.lpzrec{gap:6px}.lpzrec>div{padding:10px}.lpzrec b{font-size:24px}.lpzrec span,.lpzrec small{font-size:12px}}
 .qdisc{margin:0 0 14px;padding:12px 14px;background:var(--hl);border:1px solid var(--line);border-left:4px solid var(--mark);border-radius:10px;font-size:15px;line-height:1.45;color:var(--ink)}
 .qsv .qrk{font:700 18px var(--display);color:var(--muted);min-width:1.2em}
 .qsv .qlg{width:32px;height:32px;object-fit:contain}
@@ -384,7 +400,7 @@ dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 .grc small{display:block;font:500 11px/1.2 var(--body);color:var(--muted);text-decoration:none}
 
 .qview{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:4px 0 18px}
-.qview button{font:600 18px var(--display);background:none;border:0;padding:8px 0;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.qview button{white-space:nowrap;font:600 18px var(--display);background:none;border:0;padding:8px 0;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
 .qview button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--mark)}
 
 .grbar{align-items:center}
@@ -403,6 +419,25 @@ dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 .grgrid th{font-size:12px;line-height:1.25;white-space:nowrap}
 .grgrid th small{display:block;color:var(--muted);font-weight:500}
 .grc{font:600 14px var(--display);text-align:center}
+.grlb{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.grlb li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line)}
+.grlb li:first-child{border-top:0}
+.grlb li.me{background:var(--hl);box-shadow:inset 3px 0 0 var(--mark)}
+.grlb .rk{flex:none;width:24px;text-align:center;font:800 18px var(--display);color:var(--muted)}
+.grlb li:first-child .rk{color:var(--mark)}
+.grlb .hn{flex:1;min-width:0}
+.grlb .hn b{display:block;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grlb .hn b .tu{display:inline;font:600 12px var(--body);color:var(--mark);margin-left:4px}
+.grlb .hn small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.grlb .pts{flex:none;text-align:right;font:800 26px/1 var(--display)}
+.grlb .pts small{display:block;font:500 11px var(--body);color:var(--muted);margin-top:2px}
+.grlb li.lpz{background:transparent;border-top:1px dashed var(--line)}
+.grlb li.lpz .hn b,.grlb li.lpz .pts{color:var(--muted)}
+.grgrid tr.lpz td{border-top:1px dashed var(--line);color:var(--muted)}
+.grgrid tr.lpz td.l .nm{font-style:italic}
+.grwarn{margin:6px 0 4px;padding:10px 14px;border-radius:10px;border-left:4px solid var(--bad);background:var(--surface);font-size:14px}
+.grleg{font-size:12px;color:var(--muted);margin:8px 0 0}
+.grleg .grc{font-size:12px}
 .grc.win{color:var(--good)}.grc.loss{color:var(--bad);text-decoration:line-through}.grc.push{color:var(--muted)}.grc.pend{color:var(--ink)}.grc.none{color:var(--muted)}
 .paper{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-left:5px solid #b8121b;border-radius:10px;padding:12px 16px;margin:0 0 22px;max-width:780px}
 .paper[hidden]{display:none}
@@ -645,12 +680,13 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <section class="panel hidden" id="nflq">
   <div class="headrow"><h2 id="qTitle">Quiniela</h2><div class="seg" id="qSeg"><button aria-pressed="true" data-m="ats">Con spread</button><button aria-pressed="false" data-m="su">Sin spread</button><button aria-pressed="false" data-m="surv">Survivor</button></div></div>
   <p class="qdisc"><b>Aviso:</b> los picks son predicciones basadas en estadísticas, no una recomendación de apuesta. La Pizarra no se hace responsable de los resultados. Juega con responsabilidad.</p>
-  <div class="qview" id="qView" role="tablist"><button role="tab" aria-selected="true" data-v="picks">Mis picks</button><button role="tab" aria-selected="false" data-v="grupos">Grupos</button></div>
+  <div class="qview" id="qView" role="tablist"><button role="tab" aria-selected="true" data-v="picks">Mis picks</button><button role="tab" aria-selected="false" data-v="lpz">La Pizarra</button><button role="tab" aria-selected="false" data-v="grupos">Grupos</button></div>
   <div id="qPicksView">
     <p class="note" id="qMsg"></p>
     <div id="qMine"></div>
     <div class="games" id="qGames"></div>
   </div>
+  <div id="qLpz" hidden></div>
   <div id="grBody" hidden></div>
 </section>
 <section class="panel hidden" id="nflpo">
@@ -1433,11 +1469,57 @@ function qnModel(g){ // margen esperado del local según nuestro modelo (null si
   const Q=D.qmodel; if(!Q||!Q.net) return null; const nh=Q.net[g.h], na=Q.net[g.a];
   return nh==null||na==null?null:Q.k*(nh-na)+Q.hfa;
 }
-function qnProb(g){ // [p visita, p local]: promedio entre Las Vegas y nuestro modelo
-  const m=qnModel(g), pm=m==null?null:qnPhi(m/13.45), pv=probs([g.aml,g.hml]);
+function qnProb(g,m0){ // [p visita, p local]: promedio entre Las Vegas y nuestro modelo (m0: línea guardada del pick)
+  const m=m0!=null?m0:qnModel(g), pm=m==null?null:qnPhi(m/13.45), pv=probs([g.aml,g.hml]);
   const ph=pm!=null&&pv?(pm+pv[1])/2:pm!=null?pm:pv?pv[1]:null;
   return ph==null?null:{p:[1-ph,ph],pm,pv:pv?pv[1]:null};
 }
+// ---------- Picks de La Pizarra ----------
+// D.lpz lo arma build_site.py cada mañana: {semana: {"VIS@LOC": {t: pick con spread, L: ventaja del local, su: pick sin
+// spread, c: 1 si se calculó después (semanas antes de que existiera el récord)}}}. Lo que ya empezó no cambia.
+// Se califica igual que tus picks (qnGrade) con la línea con la que se hizo el pick.
+const LPZ=D.lpz||{};
+let lpzWeek=null;
+function lpzPick(w,a,h,mode){const x=(LPZ[w]||{})[`${a}@${h}`]; if(!x) return null; return mode==="ats"?(x.t?{t:x.t,L:x.L}:null):(x.su?{t:x.su}:null);}
+function lpzRecord(mode,onlyWeek){
+  const R={w:0,l:0,p:0,pend:0};
+  for(const [wk,G] of Object.entries(LPZ)){ if(onlyWeek!=null&&+wk!==+onlyWeek) continue;
+    for(const k of Object.keys(G)){const [a,h]=k.split("@"), p=lpzPick(wk,a,h,mode); if(!p) continue;
+      const g=qnGrade(p,mode,a,h,qnResult(wk,a,h)); if(g==="win")R.w++; else if(g==="loss")R.l++; else if(g==="push")R.p++; else R.pend++;}}
+  return R;
+}
+function lpzRender(P){
+  const box=$("#qLpz"); if(!box||box.hidden) return;
+  if(qnMode==="surv"){box.innerHTML=`<p class="note">En Survivor, los 5 equipos de “Mis picks” son la recomendación de La Pizarra para esta semana.</p>`; return;}
+  const ws=Object.keys(LPZ).map(Number).filter(w=>Object.keys(LPZ[w]).length).sort((a,b)=>a-b);
+  if(!ws.length){box.innerHTML=`<p class="note">Los picks de La Pizarra aparecen aquí a partir de mañana a las 7:00 am.</p>`; return;}
+  if(lpzWeek==null||!ws.includes(lpzWeek)) lpzWeek=ws.includes(+P.week)?+P.week:ws[ws.length-1];
+  const mode=qnMode, sp=mode==="ats", w=lpzWeek, T=t=>NT[t]||{n:t};
+  const Rs=lpzRecord(mode), Rw=lpzRecord(mode,w), Ys=qnRecord(mode);
+  const pct=R=>R.w+R.l?`${Math.round(100*R.w/(R.w+R.l))}%`:"";
+  const rec=R=>R.w+R.l+R.p?`${R.w}-${R.l}${R.p?`-${R.p}`:""}`:"0-0";
+  const SK=Object.fromEntries((D.sched||[]).filter(x=>x.w===w).map(x=>[`${x.a}@${x.h}`,x]));
+  const keys=Object.keys(LPZ[w]).sort((a,b)=>new Date(SK[a]?.ko||0)-new Date(SK[b]?.ko||0)||(a<b?-1:1));
+  let late=false;
+  const rows=keys.map(k=>{
+    const [a,h]=k.split("@"), x=LPZ[w][k], p=lpzPick(w,a,h,mode); if(!p) return "";
+    if(x.c) late=true;
+    const res=qnResult(w,a,h), gr=qnGrade(p,mode,a,h,res), home=p.t===h, opp=home?a:h, s=SK[k], ko=s?.ko?new Date(s.ko):null, L=NLIVE[s?.id];
+    const st=gr==="win"?`<b class="qres ok">Acertó</b>`:gr==="loss"?`<b class="qres ko">Falló</b>`:gr==="push"?`<b class="qres">Empate</b>`
+      :L?.live?`<b>En juego</b>`:ko?`<b>${cap(fDay(ko))}</b>`:"";
+    const sub=res?`${a} ${res.as}-${res.hs} ${h}`:L?.live?`${a} ${L.as}-${L.hs} ${h} · ${L.st}`:ko?fHour(ko):"";
+    const what=sp?`${T(p.t).n} ${qnLine(home?p.L:-p.L)}`:`Gana ${T(p.t).n}`;
+    return `<li>${logoImg(T(p.t).logo,"qlg")}<div class="hn"><b>${what}</b><small>${home?"vs":"en"} ${T(opp).n}</small></div><div class="lpzst">${st}<small>${sub}</small></div></li>`;}).join("");
+  box.innerHTML=`<div class="lpzrec">
+      <div><span>Temporada ${sp?"con spread":"sin spread"}</span><b>${rec(Rs)}</b><small>${pct(Rs)?`${pct(Rs)} de aciertos`:"sin resultados todavía"}</small></div>
+      <div><span>Semana ${w}</span><b>${rec(Rw)}</b><small>${Rw.pend?`${Rw.pend} por jugarse`:pct(Rw)?`${pct(Rw)} de aciertos`:""}</small></div>
+      <div class="you"><span>Tú en la temporada</span><b>${rec(Ys)}</b><small>${Ys.w+Ys.l+Ys.p?(pct(Ys)?`${pct(Ys)} de aciertos`:""):`<button class="alink" data-qview="picks">Haz tus picks</button>`}</small></div>
+    </div>
+    <div class="lpznav"><button class="lpzarr" data-lw="-1" aria-label="Semana anterior" ${w<=ws[0]?"disabled":""}>‹</button><h3>Semana ${w}</h3><button class="lpzarr" data-lw="1" aria-label="Semana siguiente" ${w>=ws[ws.length-1]?"disabled":""}>›</button></div>
+    <ul class="hon lpzl">${rows||`<li><div class="hn"><small>Sin picks esta semana.</small></div></li>`}</ul>
+    <p class="note" style="margin-top:12px">${sp?"Cada pick se califica con la línea con la que se hizo (la oficial de los grupos). ":""}Los picks se actualizan cada mañana y quedan fijos cuando empieza el partido.${late?" Esta semana se calculó después, solo con datos hasta la semana anterior y la línea de cierre de Las Vegas.":""}</p>`;
+}
+$("#qLpz").addEventListener("click",e=>{const b=e.target.closest?.("[data-lw]"); if(!b||b.disabled) return; lpzWeek+=+b.dataset.lw; qnGet().then(lpzRender);});
 // ---------- Mis picks ----------
 // Se guardan en este navegador (localStorage "pz_mispicks"): {temporada:{semana:{"VIS@LOC":{ats:{t,L},su:{t}}}}}.
 // En "con spread" se guarda la línea del momento (L = ventaja del local) para calificar con esa misma línea.
@@ -1470,8 +1552,8 @@ const qnRecTxt=R=>`${R.w}-${R.l}${R.p?`-${R.p}`:""}${R.w+R.l?` (${Math.round(100
 function qnMineBox(P){
   const box=$("#qMine"); if(qnMode==="surv"){box.innerHTML=""; return;}
   const mode=qnMode, wk=P.week, W=(qnPicksAll()[D.season]||{})[wk]||{}, n=Object.values(W).filter(v=>v[mode]).length;
-  const Rw=qnRecord(mode,wk), Rs=qnRecord(mode), lbl=mode==="ats"?"contra el spread":"sin spread";
-  box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${grMineTxt()}${n?(acctHint(true)?`<small>${acctHint(true)}</small>`:""):`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. ${acctHint(false)}</small>`}</div>`;
+  const Rw=qnRecord(mode,wk), Rs=qnRecord(mode), lbl=mode==="ats"?"contra el spread":"sin spread", Lw=lpzRecord(mode,wk), Ls=lpzRecord(mode);
+  box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${Ls.w+Ls.l+Ls.p?`<span class="qvs">La Pizarra: ${Lw.w+Lw.l+Lw.p?`${qnRecTxt(Lw)} esta semana · `:""}${qnRecTxt(Ls)} en la temporada. <button class="alink" data-qview="lpz">Ver sus picks</button></span>`:""}${grMineTxt()}${n?(acctHint(true)?`<small>${acctHint(true)}</small>`:""):`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. ${acctHint(false)}</small>`}</div>`;
 }
 $("#qGames").addEventListener("click",e=>{
   const el=e.target.closest(".team[data-qt]"); if(!el||qnMode==="surv") return;
@@ -1499,16 +1581,19 @@ async function loadQuiniela(){
       :`<p class="note">Ya empezaron todos los partidos de la semana.</p>`;
     return;
   }
-  const rows=G.map(g=>{const m=qnModel(g), q=qnProb(g);
-    const edge=m==null?null:m+g.L;                      // puntos a favor del local contra la línea
-    return {g,m,q,edge,pick:qnMode==="ats"?(edge==null?null:edge>0?g.h:g.a):(q?(q.p[1]>=q.p[0]?g.h:g.a):null)};});
+  const rows=G.map(g=>{
+    const lp=lpzPick(P.week,g.a,g.h,qnMode), x=(LPZ[P.week]||{})[`${g.a}@${g.h}`];   // pick oficial de La Pizarra (congelado al empezar)
+    const m=x?.m!=null?x.m:qnModel(g), q=qnProb(g,x?.m);   // la línea del modelo con la que se hizo ese pick
+    const edge=m==null?null:m+(qnMode==="ats"&&lp?lp.L:g.L);   // puntos a favor del local contra la línea del pick
+    return {g,m,q,edge,lp,pick:lp?lp.t:qnMode==="ats"?(edge==null?null:edge>0?g.h:g.a):(q?(q.p[1]>=q.p[0]?g.h:g.a):null)};});
   const lastK=qnLastKey(G);
   const top=new Set(rows.filter(r=>!r.g.lock&&r.edge!=null).sort((x,y)=>Math.abs(y.edge)-Math.abs(x.edge)).slice(0,3).map(r=>r.g));
-  qnMineBox(P);
+  qnMineBox(P); lpzRender(P);
+  grReconcile().then(ch=>{ if(ch&&qnView==="grupos"&&GR.cur) grMain(GR.cur); }).catch(()=>{});
   const MW=((qnPicksAll()[D.season]||{})[P.week])||{};
   if(!qnLiveAsked&&G.some(g=>g.lock&&!qnResult(P.week,g.a,g.h))){qnLiveAsked=true; nflLiveUpdate(true,+P.week).then(ok=>{if(ok) loadQuiniela();}).catch(()=>{});}
   box.className="games"; qnRows=rows;
-  box.innerHTML=rows.map(({g,m,q,edge,pick},qi)=>{
+  box.innerHTML=rows.map(({g,m,q,edge,lp,pick},qi)=>{
     const A=T(g.a), H=T(g.h), sp=qnMode==="ats", popA=sp?g.ats[0]:g.su[0], popH=sp?g.ats[1]:g.su[1];
     const mine=MW[`${g.a}@${g.h}`]?.[qnMode], res=qnResult(P.week,g.a,g.h), gr=qnGrade(mine,qnMode,g.a,g.h,res);
     const tag=gr==="win"?`<span class="qres ok">✓ Acertaste</span>`:gr==="loss"?`<span class="qres ko">✗ Fallaste</span>`:gr==="push"?`<span class="qres">Empate</span>`
@@ -1517,7 +1602,7 @@ async function loadQuiniela(){
     const team=(t,X,home)=>{const right=sp?qnLine(home?g.L:-g.L):pc(q?.p[home?1:0]);
       const sub=[home?"local":"",sp?ats(t):(home?g.rh:g.ra)].filter(Boolean).join(" · ");
       const my=mine?.t===t, sub2=my?`Tu pick${sp&&mine.L!==g.L?` (con ${qnLine(home?mine.L:-mine.L)})`:""}`+(sub?" · "+sub:""):sub;
-      return `<div class="team${pick===t?" win":""}${my?" mine":""}${g.lock?"":" pickable"}" data-qt="${t}" data-qi="${qi}" data-qw="${P.week}" role="button" tabindex="0" aria-pressed="${my}">${logoImg(X.logo)||"<span></span>"}<span class="tn">${X.n}${pick===t?" ✓":""}<small>${sub2}</small></span><span class="ml">${right}</span></div>`;};
+      return `<div class="team${my?" mine":""}${g.lock?"":" pickable"}" data-qt="${t}" data-qi="${qi}" data-qw="${P.week}" role="button" tabindex="0" aria-pressed="${my}">${logoImg(X.logo)||"<span></span>"}<span class="tn">${X.n}<small>${sub2}</small></span><span class="ml">${right}</span></div>`;};
     let lines=[];
     if(sp){ if(m!=null){const fav=m>=0?g.h:g.a; lines.push(["Nuestra línea",Math.abs(m)<0.25?"Pick":`${fav} −${Math.abs(m).toFixed(1)}`],["Diferencia",`${Math.abs(edge).toFixed(1)} pts`]);}
             if(Math.abs(g.L%1)===0) lines.push(["Ojo","línea entera, puede empatar"]); }
@@ -1529,7 +1614,7 @@ async function loadQuiniela(){
       ${lines.length?`<div class="lines qln">${lines.map(([k,v])=>`<span>${k} <b>${v}</b></span>`).join("")}</div>`:""}
       ${(al=>al?`<div class="qalert">${al}</div>`:"")(qnAlert(g,INJ))}
       ${`${g.a}@${g.h}`===lastK?qnTbBox(g,P.week,MW[`${g.a}@${g.h}`]?.tb,res):""}
-      <div class="where"><span>${pick?`Pick de La Pizarra: <b>${T(pick).n}</b>`:""}</span><span>${pop}</span></div>
+      <div class="where"><span>${pick?`La Pizarra va con <b>${T(pick).n}</b>${sp&&lp&&lp.L!==g.L?` (${qnLine(pick===g.h?lp.L:-lp.L)})`:""}`:""}</span><span>${pop}</span></div>
       <button class="qan" type="button" data-qi="${qi}">Ver análisis ›</button></article>`;}).join("");
 }
 function qnTbBox(g,w,tb,res){
@@ -1601,7 +1686,7 @@ function qnForm(t){ // últimos 3 contra el spread
   const G=(D.sched||[]).filter(x=>(x.a===t||x.h===t)&&x.hs!=null&&x.sp!=null).sort((x,y)=>new Date(y.ko||0)-new Date(x.ko||0)).slice(0,3);
   if(!G.length) return "Sin partidos todavía";
   let w=0,l=0;
-  const s=G.map(x=>{const d=(x.hs-x.as_)-x.sp, home=x.h===t, r=d===0?"=":((d>0)===home?"✓":"✗"); if(r==="✓")w++; else if(r==="✗")l++; return `${home?"vs":"en"} ${home?x.a:x.h} ${r}`;});
+  const s=G.map(x=>{const d=(x.hs-x.as_)-x.sp, home=x.h===t, r=d===0?"empate":((d>0)===home?"cubrió":"no cubrió"); if(r==="cubrió")w++; else if(r==="no cubrió")l++; return `${home?"vs":"en"} ${home?x.a:x.h} ${r}`;});
   return `${s.join(" · ")} (${w}-${l})`;
 }
 async function qnWeather(x){
@@ -1661,7 +1746,7 @@ document.querySelectorAll("#qSeg button").forEach(b=>b.onclick=()=>{qnMode=b.dat
 let qnView="picks";
 function qnSetView(v){
   qnView=v; document.querySelectorAll("#qView button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
-  $("#qPicksView").hidden=v!=="picks"; $("#grBody").hidden=v!=="grupos"; if(v==="grupos") grRender();
+  $("#qPicksView").hidden=v!=="picks"; $("#qLpz").hidden=v!=="lpz"; $("#grBody").hidden=v!=="grupos"; if(v==="grupos") grRender(); if(v==="lpz") qnGet().then(lpzRender);
 }
 document.querySelectorAll("#qView button").forEach(b=>b.onclick=()=>qnSetView(b.dataset.v));
 
@@ -3341,7 +3426,7 @@ async function liveTick(){
     const onNfl=!$("#nflgames").classList.contains("hidden"), onMx=!$("#mxgames").classList.contains("hidden");
     if(onNfl) await nflLiveUpdate();
     if(onMx) await mxLiveUpdate();
-    if(!$("#nflq").classList.contains("hidden")&&qnMode!=="surv"&&(qnCache?.games||[]).some(g=>liveHot(g.ko?+g.ko:0,false))){ if(await nflLiveUpdate(true,+(qnCache.week||D.gweek))) loadQuiniela(); }
+    if(!$("#nflq").classList.contains("hidden")&&(qnCache?.games||[]).some(g=>liveHot(g.ko?+g.ko:0,false))){ if(await nflLiveUpdate(true,+(qnCache.week||D.gweek))){ loadQuiniela(); if(qnView==="grupos"&&GR.cur) grMain(GR.cur,true); } }
     if(dlg.open&&DLG_CUR){
       if(DLG_CUR.k==="nfl"){ if(NLIVE[DLG_CUR.id]?.live){ if(!onNfl) await nflLiveUpdate(true); openNfl(DLG_CUR.id);} }
       else{ const e=MXJ.flatMap(w=>w.games).find(x=>x.id===DLG_CUR.id);
@@ -3733,7 +3818,7 @@ async function acctInit(){
     const was=ACCT.user; ACCT.user=u||null; ACCT.ready=true; acctBtn(); acctSlHint();
     if(u&&(!was||was.uid!==u.uid)){ if(u.emailVerified){ acctPull(); if(adlg.open) adlg.close(); } else if(adlg.open) acctRender(); }
     GR.loaded=false; GR.ids=[]; GR.info={}; GR.data={};
-    if(u&&acctOk()) grLoadIds().then(()=>{ if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
+    if(u&&acctOk()) grLoadIds().then(()=>{ grReconcile(true).catch(()=>{}); if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
     if(acctOnQ()) loadQuiniela();
     if(acctOnQ()&&qnView==="grupos") grRender();
   });
@@ -3773,10 +3858,42 @@ async function grWrite(g,w,key,val){
   try{ await ref.update(new firebase.firestore.FieldPath(key),val,"ultimo",key); }
   catch(e){ if(e?.code==="not-found") await ref.set({uid,w:+w,temporada:D.season,ultimo:key,[key]:val}); else throw e; }
 }
-function grOnPick(w,key,G){
-  if(!acctOk()||!GR.ids.length) return;
-  GR.ids.forEach(g=>grWrite(g,w,key,grVal(G)).catch(e=>{console.warn("Grupos: no se guardó el pick",g,e?.code||e);
+async function grOnPick(w,key,G){
+  if(!acctOk()) return; if(!GR.loaded) await grLoadIds(); if(!GR.ids.length) return;
+  GR.ids.forEach(g=>grWrite(g,w,key,grVal(G)).then(()=>{delete GR.data[g];}).catch(e=>{console.warn("Grupos: no se guardó el pick",g,e?.code||e);
     if(e?.code==="permission-denied"){GR.warn="Este partido todavía no está abierto en los grupos (los partidos de la semana se publican cada mañana) o ya empezó."; if(!$("#nflq").classList.contains("hidden")) loadQuiniela();}}));
+}
+// Revisión automática (arreglo del 5 oct 2026): antes, un pick solo se copiaba a los grupos en el momento de tocarlo.
+// Si en ese momento la lista de grupos no había cargado, no había internet o el pick se hizo en otro dispositivo
+// (llega por la cuenta, no por el toque), el grupo nunca lo recibía y la tabla no sumaba. Ahora, cada vez que se abre
+// la Quiniela o los Grupos, se compara lo tuyo con lo que tiene cada grupo y se sube lo que falte (solo partidos
+// que no han empezado: las reglas no dejan cambiar los demás). Lo que ya no se pudo subir se avisa en la tabla.
+const grKey=o=>JSON.stringify(Object.keys(o||{}).sort().map(k=>[k,o[k]]));
+let grRecT=0, grRecP=null;
+function grReconcile(force){
+  if(!acctOk()||!GR.loaded||!GR.ids.length) return Promise.resolve(false);
+  if(grRecP) return grRecP; if(!force&&Date.now()-grRecT<90e3) return Promise.resolve(false);
+  grRecT=Date.now();
+  return grRecP=(async()=>{
+    const P=await qnGet(), w=P.week, W=(qnPicksAll()[D.season]||{})[w]||{}, uid=grMe().uid, now=Date.now(); let wrote=0;
+    GR.missing=GR.missing||{};
+    await Promise.all(GR.ids.map(async g=>{
+      let doc; try{const s=await ACCT.db.doc(`grupos/${g}/picks/${uid}_${w}`).get(); doc=s.exists?s.data():{};}catch(e){console.warn("Grupos: revisión",g,e?.code||e); return;}
+      let miss=0;
+      for(const gm of P.games){
+        const k=`${gm.a}@${gm.h}`, want=grVal(W[k]), have=doc[k]||{};
+        if(grKey(want)===grKey(have)) continue;
+        if(gm.lock||(gm.ko&&+gm.ko<=now)){ if((want.ats&&want.ats!==have.ats)||(want.su&&want.su!==have.su)) miss++; continue; }
+        try{await grWrite(g,w,k,want); wrote++;}
+        catch(e){console.warn("Grupos: no se subió el pick",g,k,e?.code||e);
+          if(e?.code==="permission-denied") GR.warn="Este partido todavía no está abierto en los grupos (los partidos de la semana se publican cada mañana) o ya empezó.";}
+      }
+      GR.missing[g]={w,n:miss};
+      if(wrote) delete GR.data[g];
+    }));
+    if(wrote) console.info(`Grupos: se subieron ${wrote} picks que faltaban`);
+    return wrote>0;
+  })().finally(()=>{grRecP=null;});
 }
 // Picks que ya tenías esta semana → al grupo nuevo
 async function grSyncWeek(g){
@@ -3859,6 +3976,14 @@ function grScore(Gd,mode){
   rows.sort((a,b)=>b.sw-a.sw||b.won-a.won||a.tbe-b.tbe||a.n.localeCompare(b.n,"es"));
   rows.winners=winners; return rows;
 }
+function grLpz(Gd,mode){   // puntos de La Pizarra en las semanas del grupo (no compite; es para medirse)
+  const now=Date.now(), r={sw:0,sl:0,sp:0,ww:0}; let any=false;
+  for(const [w,{S}] of Object.entries(Gd.W)) for(const [k,g] of Object.entries(S.games)){
+    if(g.ko>now) continue; const p=lpzPick(w,g.a,g.h,mode); if(!p) continue; any=true;
+    const gr=qnGrade(p,mode,g.a,g.h,qnResult(+w,g.a,g.h));
+    if(gr==="win"){r.sw++; if(+w===Gd.cur) r.ww++;} else if(gr==="loss") r.sl++; else if(gr==="push") r.sp++; }
+  return any?r:null;
+}
 function grGrid(Gd,mode){
   const X=Gd.W[Gd.cur]; if(!X) return `<p class="note">Los partidos de la semana ${Gd.cur} todavía no están publicados en los grupos (se publican cada mañana).</p>`;
   const now=Date.now(), G=Object.entries(X.S.games).filter(([,g])=>g.ko<=now).sort((a,b)=>a[1].ko-b[1].ko);
@@ -3871,8 +3996,11 @@ function grGrid(Gd,mode){
     const res=qnResult(Gd.cur,g.a,g.h), gr=res&&!(mode==="ats"&&g.L==null)?qnGrade(mode==="ats"?{t,L:g.L}:{t},mode,g.a,g.h,res):null;
     return `<td class="grc ${gr||"pend"}">${t}${tbs}</td>`;};
   const ln=g=>mode==="ats"&&g.L!=null?`<small>${g.h} ${g.L>0?"+":""}${g.L}</small>`:"";
-  return head+`<div class="tbl"><table class="grgrid"><thead><tr><th class="l">Jugador</th>${G.map(([k,g])=>`<th>${g.a}<br>@${g.h}${ln(g)}</th>`).join("")}</tr></thead>
-    <tbody>${Gd.M.map(m=>`<tr class="${m.uid===me?"me":""}"><td class="l"><span class="nm">${acctEsc(m.nombre||"Jugador")}</span></td>${G.map(([k,g])=>cell(m.uid,k,g)).join("")}</tr>`).join("")}</tbody></table></div>`;
+  const lcell=(k,g)=>{const p=lpzPick(Gd.cur,g.a,g.h,mode); if(!p) return `<td class="grc none">–</td>`; const res=qnResult(Gd.cur,g.a,g.h), gr=res?qnGrade(p,mode,g.a,g.h,res):null; return `<td class="grc ${gr||"pend"}">${p.t}</td>`;};
+  const hasL=G.some(([k,g])=>lpzPick(Gd.cur,g.a,g.h,mode));
+  return head+`<div class="tbl"><table class="grgrid" data-freeze="1"><thead><tr><th class="l">Jugador</th>${G.map(([k,g])=>`<th>${g.a}<br>@${g.h}${ln(g)}</th>`).join("")}</tr></thead>
+    <tbody>${Gd.M.map(m=>`<tr class="${m.uid===me?"me":""}"><td class="l"><span class="nm">${acctEsc(m.nombre||"Jugador")}</span></td>${G.map(([k,g])=>cell(m.uid,k,g)).join("")}</tr>`).join("")}${hasL?`<tr class="lpz"><td class="l"><span class="nm">La Pizarra</span></td>${G.map(([k,g])=>lcell(k,g)).join("")}</tr>`:""}</tbody></table></div>
+    <p class="grleg"><span class="grc win">LA</span> acertó · <span class="grc loss">LA</span> falló · <span class="grc push">LA</span> empate · <span class="grc pend">LA</span> en juego</p>`;
 }
 async function grRender(){
   const box=$("#grBody"); if(!box) return;
@@ -3895,13 +4023,17 @@ async function grRender(){
   if(!GR.ids.length&&!GR.join) h+=`<p class="note">Crea un grupo y comparte el link por WhatsApp. Cada quien hace sus picks en la Quiniela y aquí sale la tabla: 1 punto por acierto, con spread y sin spread.</p>`;
   h+=`<div id="grMain"></div>`;
   box.innerHTML=h; grBind();
-  if(GR.cur) grMain(GR.cur);
+  if(GR.cur){ await grReconcile().catch(()=>false); grMain(GR.cur); }
 }
-async function grMain(g){
-  const box=$("#grMain"); box.innerHTML=`<p class="note">Cargando la tabla…</p>`;
+async function grMain(g,soft){
+  const box=$("#grMain"); if(!box) return; if(!soft) box.innerHTML=`<p class="note">Cargando la tabla…</p>`;
   let Gd; try{ Gd=(GR.data[g]&&Date.now()-GR.data[g].t<60e3)?GR.data[g]:await grLoad(g); }
   catch(e){ console.warn("Grupos:",e); box.innerHTML=`<p class="note">No pudimos cargar el grupo. Intenta de nuevo en un momento.</p>`; return; }
   if(GR.cur!==g) return;
+  // Resultados: nflverse llega al día siguiente; mientras, los marcadores de ESPN (NLIVE). Si faltan, se piden una vez.
+  const Sx=Gd.W[Gd.cur]?.S;
+  if(Sx&&!GR.liveAsked&&Object.values(Sx.games).some(x=>x.ko<=Date.now()&&!qnResult(Gd.cur,x.a,x.h))){
+    GR.liveAsked=true; nflLiveUpdate(true,+Gd.cur).then(ok=>{ if(ok&&GR.cur===g&&qnView==="grupos") grMain(g,true); }).catch(()=>{}); }
   const I=Gd.info; GR.mode=qnMode==="su"?"su":"ats";
   const R=grScore(Gd,GR.mode), me=grMe().uid, wa=`https://wa.me/?text=${encodeURIComponent(`Únete a mi quiniela «${I.nombre}» en La Pizarra: ${grLink(g)}`)}`;
   box.innerHTML=`<div class="grhead"><div><h3>${acctEsc(I.nombre)}</h3><small>${Gd.M.length} ${Gd.M.length===1?"miembro":"miembros"} · Semana ${Gd.cur}</small></div>
@@ -3909,12 +4041,14 @@ async function grMain(g){
     ${qnMode==="surv"?`<p class="note">El survivor en grupos llega pronto. Mientras, aquí está la tabla con spread.</p>`:""}
     ${(()=>{const W=R.winners, ws=Object.keys(W).map(Number).sort((a,b)=>b-a); if(!ws.length) return ""; const w=ws[0], x=W[w];
       return `<div class="grwin">🏆 <span><b>Semana ${w}:</b> ${x.who.map(acctEsc).join(" y ")} con ${x.pts} ${x.pts===1?"acierto":"aciertos"}${x.usedTb?` · desempate: ${x.tb.map(v=>v??"sin pronóstico").join(", ")} (fueron ${x.tot} pts)`:""}</span></div>`;})()}
+    ${(()=>{const m=GR.missing?.[g]; return m&&m.n&&+m.w===+Gd.cur?`<p class="grwarn">${m.n===1?"Uno de tus picks":`${m.n} de tus picks`} de la semana ${m.w} no ${m.n===1?"llegó":"llegaron"} a este grupo antes de que empezara su partido, así que no ${m.n===1?"cuenta":"cuentan"} aquí. Desde ahora tus picks se revisan solos cada vez que abres la Quiniela.</p>`:"";})()}
     <h3 style="margin-top:18px">Tabla ${GR.mode==="ats"?"con spread":"sin spread"}</h3>
-    <div class="tbl"><table class="grtab"><thead><tr><th class="l" aria-label="Lugar"></th><th class="l">Jugador</th><th>Puntos</th><th>Sem. ${Gd.cur}</th><th>Semanas ganadas</th><th>Récord</th><th>%</th></tr></thead><tbody>
-    ${R.map((r,i)=>{const n=r.sw+r.sl; return `<tr class="${r.uid===me?"me":""}"><td class="rk">${i+1}</td><td class="l"><span class="nm">${acctEsc(r.n)}</span></td><td><b>${r.sw}</b></td><td>${r.ww}</td><td>${r.won}</td><td>${r.sw}-${r.sl}${r.sp?`-${r.sp}`:""}</td><td>${n?Math.round(r.sw/n*100)+"%":"–"}</td></tr>`;}).join("")}
-    </tbody></table></div>
+    <ol class="grlb">${R.map((r,i)=>{const n=r.sw+r.sl, pos=i>0&&R[i-1].sw===r.sw&&R[i-1].won===r.won&&R[i-1].tbe===r.tbe?"":i+1;
+      return `<li class="${r.uid===me?"me":""}"><span class="rk">${pos}</span><div class="hn"><b>${acctEsc(r.n)}${r.uid===me?" <small class=\"tu\">tú</small>":""}</b><small>Sem. ${Gd.cur}: ${r.ww} · Récord ${r.sw}-${r.sl}${r.sp?`-${r.sp}`:""}${n?` (${Math.round(r.sw/n*100)}%)`:""}${r.won?` · ${r.won} ${r.won===1?"semana ganada":"semanas ganadas"}`:""}</small></div><span class="pts">${r.sw}<small>${r.sw===1?"punto":"puntos"}</small></span></li>`;}).join("")}
+    ${(()=>{const L=grLpz(Gd,GR.mode); return L?`<li class="lpz"><span class="rk"><svg width="22" height="22" aria-hidden="true"><use href="#lp-logo"></use></svg></span><div class="hn"><b>La Pizarra</b><small>De referencia, no compite · Sem. ${Gd.cur}: ${L.ww} · Récord ${L.sw}-${L.sl}${L.sp?`-${L.sp}`:""}</small></div><span class="pts">${L.sw}<small>${L.sw===1?"punto":"puntos"}</small></span></li>`:"";})()}</ol>
     <h3 style="margin-top:22px">Picks de la semana ${Gd.cur}</h3>${grGrid(Gd,GR.mode)}
     <p class="note" style="margin-top:14px">${GR.mode==="ats"?"Con spread cuenta la línea oficial del grupo (la de ESPN Pick'em de cada semana). ":""}1 punto por acierto. Desempate de la semana: los puntos totales del último partido (se pone en su tarjeta, en Mis picks). <button class="alink danger" id="grLeave">Salir del grupo</button></p>`;
+  box.querySelectorAll(".tbl").forEach(freezeTable);
   $("#grCopy").onclick=async()=>{try{await navigator.clipboard.writeText(grLink(g)); $("#grCopy").textContent="¡Copiado!";}catch(e){prompt("Copia este link:",grLink(g));}};
   $("#grLeave").onclick=async()=>{ if(!confirm(`¿Salir de «${I.nombre}»? Tus picks se quedan en el grupo, pero ya no lo verás.`)) return; try{await grLeave(g); grRender();}catch(e){alert("No se pudo. Intenta de nuevo.");} };
 }
