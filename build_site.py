@@ -920,8 +920,8 @@ except Exception as ex:
 # ----- Picks de La Pizarra: lo que se muestra en la Quiniela y su récord (con y sin spread) -----
 # Cada corrida calcula el pick de La Pizarra de los partidos que NO han empezado, con la misma línea oficial de los
 # grupos (ESPN Pick'em de la semana; si no, la de nflverse) y el modelo de hoy. Lo que ya empezó queda congelado.
-# Semanas pasadas que no estaban guardadas se calculan una sola vez con datos HASTA la semana anterior (sin ver el
-# futuro) y con la línea de cierre de nflverse (marcadas "c"). Se guarda en docs/datos/picks_pizarra.json y viaja a la
+# Semanas pasadas que no estaban guardadas se calculan una sola vez con los datos que había la mañana de cada partido
+# (sin ver el futuro) y con la línea de cierre de nflverse (marcadas "c"). Se guarda en docs/datos/picks_pizarra.json y viaja a la
 # página como D.lpz = {semana: {"VIS@LOC": {t: pick con spread, L: ventaja del local, su: pick sin spread, m: nuestra línea, c: 1 si es de cierre}}}.
 import math
 def _lpz():
@@ -956,15 +956,27 @@ def _lpz():
                     ofi[w]={k_:v.get('L') for k_,v in (d.get('games') or {}).items() if v.get('L') is not None}
                 except Exception as ex_: print("Picks de La Pizarra: no se leyó la línea oficial de la semana",w,ex_)
         return ofi[w]
-    nets={}
-    def net(w):                                       # EPA neto con datos hasta la semana w-1
-        if w not in nets:
-            if w-1>=1:
-                M_,_=power_nfl(w-1); nets[w]=(M_.off-M_.de).to_dict()
-            elif pbp_prev is not None:
-                P_=team_metrics(pbp_prev,sch_prev,99); nets[w]=(P_['off']-P_['de']).to_dict()
-            else: nets[w]={}
-        return nets[w]
+    # EPA neto tal como lo veía la página la MAÑANA del partido: solo partidos jugados antes de ese día (así el jueves
+    # ya cuenta para el domingo, igual que en la página). Mismo cálculo y mismas mezclas que el power ranking.
+    dia=dict(zip(full.game_id,full.gameday)); nets={}
+    def net(gid):
+        d=dia.get(gid)
+        if d not in nets:
+            jug=full[full.gameday<d]; pp=pbp_all[pbp_all.game_id.isin(set(jug.game_id))]
+            if len(pp):
+                up=int(pp.week.max()); cur=team_metrics(pp,jug,up); wp=max(0.0,0.7*(1-(up-1)/5))
+            else:
+                cur=None; wp=1.0
+            prv=team_metrics(pbp_prev,sch_prev,99) if (wp>0 and pbp_prev is not None) else None
+            N={}
+            for t in set(full.home_team)|set(full.away_team):
+                v=[]
+                for kk in ('off','de'):
+                    c=cur[kk].get(t,np.nan) if cur is not None else np.nan; pv=prv[kk].get(t,np.nan) if prv is not None else np.nan
+                    v.append(pv if pd.isna(c) else c if (prv is None or pd.isna(pv)) else wp*pv+(1-wp)*c)
+                if not any(pd.isna(x) for x in v): N[t]=v[0]-v[1]
+            nets[d]=N
+        return nets[d]
     phi=lambda x:0.5*(1+math.erf(x/math.sqrt(2)))
     imp=lambda m:None if m is None else (-m/(-m+100) if m<0 else 100/(m+100))
     nuevos=0
@@ -977,7 +989,7 @@ def _lpz():
         if empezo and key in W: continue                     # congelado
         if not empezo and w>semq: continue                   # semanas que todavía no se juegan en la quiniela
         if empezo:                                           # semana pasada sin guardar: sin ver el futuro, línea de cierre
-            N=net(w); L=oficial(w).get(key); cierre=L is None
+            N=net(g['id']); L=oficial(w).get(key); cierre=L is None
             if L is None: L=-g['sp'] if g.get('sp') is not None else None
         else:
             N=hoy; L=esp.get(key) if w==int(pw or 0) and key in esp else (-g['sp'] if g.get('sp') is not None else None); cierre=False
