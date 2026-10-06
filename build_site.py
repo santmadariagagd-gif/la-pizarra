@@ -1480,7 +1480,7 @@ if AFK:
                     except Exception as ex: print(f"{nombre} {t or año}: no se pudo:",ex)
         except Exception as ex:
             print(f"{nombre} (API-Football): no se pudieron obtener estadísticas de jugadores:",ex)
-    # Portada "Hoy" (5 oct 2026): partidos de hoy y de los 2 días siguientes (fecha de México) de las competencias del
+    # Portada "Hoy" (5 oct 2026): partidos de ayer, hoy y los 2 días siguientes (fecha de México) de las competencias del
     # sitio y de la Selección (equipo 16 de API-Football, en cualquier torneo). Un pedido por día: fixtures?date= trae
     # todos los partidos del mundo y aquí se quedan solo los nuestros, así la página no descarga nada extra.
     # Formato corto por partido (la página lo vuelve a armar como API-Football):
@@ -1492,7 +1492,7 @@ if AFK:
         import re as _re
         AF_CLAVE={lid:k for k,(lid,_n,_l) in AF_LIGAS.items()}
         _hoy=datetime.now(ZoneInfo("America/Mexico_City")).date()
-        for _i in range(3):
+        for _i in range(-1,3):   # ayer (resultados), hoy y los 2 días siguientes
             _d=(_hoy+timedelta(days=_i)).isoformat(); _f=[]
             for f in af("fixtures",date=_d,timezone="America/Mexico_City"):
                 lg=f.get("league") or {}; T=f.get("teams") or {}; H=T.get("home") or {}; A=T.get("away") or {}

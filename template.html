@@ -620,6 +620,22 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .hqn span span{font-size:14px;font-weight:500}
 .hqn:hover{background:#ffe08a}
 .hmsg{color:var(--muted);font-size:14px;margin:0}
+.hlists{display:grid;gap:12px}
+.hlist{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.hlist .lh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 14px 6px;font:700 17px/1.15 var(--display)}
+.hrow{display:grid;grid-template-columns:46px minmax(0,1fr) 54px minmax(0,1fr);align-items:center;gap:6px;width:100%;padding:9px 14px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;cursor:pointer;text-align:left}
+.hrow:hover{background:var(--hl)}
+.hrow .t{font-size:12px;color:var(--muted);white-space:nowrap}
+.hrow .t .lv{color:#ff9a66;font-weight:600}
+.hrow .a,.hrow .b{display:flex;align-items:center;gap:6px;min-width:0;font:600 17px/1.15 var(--display)}
+.hrow .a{justify-content:flex-end;text-align:right}
+.hrow .a span,.hrow .b span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow img{width:18px;height:18px;object-fit:contain;flex:none}
+.hrow .w{color:var(--mark)}
+.hrow .x{font:700 18px/1 var(--display);text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hrow .x.vs{font-weight:500;font-size:14px;color:var(--muted)}
+.hmas2{display:block;width:100%;border:0;border-top:1px dashed var(--line);background:none;color:var(--mark);font:600 14px var(--body);padding:9px;cursor:pointer}
+.hh h3 small{text-transform:none}
 .bnav{display:none}
 @media (min-width:721px){
   .hoyhead .hm{display:none}.hoyhead .hd{display:inline}.hoyhead h2{font-size:48px}.hoyhead p{font-size:17px}
@@ -629,6 +645,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   .hh h3{font-size:26px}
   .hgrid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
   .hnflg{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .hlists{grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;align-items:start}
   .hlpz{grid-template-columns:1fr;gap:14px}
   .hqn{order:1;grid-column:auto;padding:18px}.hqn b{font-size:26px}
   .hsv{order:2}.hsv .x{font-size:20px}
@@ -727,7 +744,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="hoyhead"><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div>
   <div id="hoyVivo"></div>
   <div class="hoygrid">
-    <div class="hoymain"><div id="hoyFut"></div><div id="hoyNfl"></div></div>
+    <div class="hoymain"><div id="hoyFut"></div><div id="hoyAyer"></div><div id="hoyMan"></div><div id="hoyNfl"></div></div>
     <aside class="hoyside" id="hoyLpz"></aside>
   </div>
 </section>
@@ -4437,7 +4454,7 @@ function svBind(g){
 // Worker) y, para los que ya no están en vivo, fixtures?ids= (máximo 20 por pedido). NFL: D.sched + NLIVE (ESPN).
 const HOY_ORDEN=["mx","sel","ucl","eng","esp","ita","ger","fra","lib","ccc","lgc","arg","por","sau","fac","efl","cdr","sup","cit","dfb","cdf"];
 const HOY_MAX=4;   // partidos por competencia antes de "Ver los N partidos"
-const HOY={ev:new Map(),dia:null,extra:new Map(),abiertos:new Set(),pedido:{},pr:null,init:false,busy:false};
+const HOY={ev:new Map(),dia:null,extra:new Map(),otros:new Map(),abiertos:new Set(),pedido:{},pr:null,init:false,busy:false};
 const AF_KEY=Object.fromEntries(Object.entries(LEAGUES).filter(([,L])=>L.af).map(([k,L])=>[L.af,k]));
 const hoyYmd=(t=Date.now())=>new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(t));
 const fWeekday=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long"}).format(d);
@@ -4530,13 +4547,64 @@ function hoyFutHTML(){
       <div class="hgrid">${(todos?L:L.slice(0,HOY_MAX)).map(hoyCard).join("")}</div>
       ${!todos&&L.length>HOY_MAX?`<button class="hmas" data-hact="mas" data-hk="${k}">Ver los ${L.length} partidos</button>`:""}</div>`;}).join("")}</section>`;
 }
+// Listas compactas (un renglón por partido): resultados de ayer y partidos de mañana
+function hoyDiaEv(d){
+  return (D.hoy?.[d]||[]).filter(r=>LEAGUES[r[6]]).map(r=>{const id=String(r[0]); let e=HOY.otros.get(id);
+    if(!e){ e=hoyEv(hoyFx(r),r[6]); HOY.otros.set(id,e); } return e;});
+}
+// Hora corta para los renglones: "5 pm", "7:30 pm"
+const hoyHora=d=>fHour(d).replace(/\s*([ap])\.\s*m\./i,(m,x)=>" "+x.toLowerCase()+"m").replace(":00 "," ");
+function hoyRow(e){
+  const c=mxCard(e,0), st=e.status?.type?.state, H=c.teams[0], A=c.teams[1];
+  const izq=e._susp?`<span class="lv">${e._susp}</span>`:st==="in"?`<span class="lv">${hoyEsc(c.status)}</span>`:st==="post"?(e._pen?"Penales":"Final"):(c.tbd?"Por definir":hoyHora(c.when));
+  const lg=t=>t.logo?`<img src="${t.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
+  const mid=st==="pre"?`<span class="x vs">vs</span>`:`<span class="x">${H.score??"–"} – ${A.score??"–"}</span>`;
+  return `<button class="hrow" data-hk="${e._k}" data-hid="${e.id}"><span class="t">${izq}</span><span class="a${H.win?" w":""}"><span>${hoyEsc(esTeam(H.n))}</span>${lg(H)}</span>${mid}<span class="b${A.win?" w":""}">${lg(A)}<span>${hoyEsc(esTeam(A.n))}</span></span></button>`;
+}
+function hoyNflRow(x,res){
+  const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, L=NLIVE[x.id], sa=x.hs!=null?x.as_:L?.as, sh=x.hs!=null?x.hs:L?.hs;
+  const lg=t=>t.logo?`<img src="${t.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
+  return `<button class="hrow" data-nid="${x.id}"><span class="t">${res?"Final":hoyHora(new Date(x.ko))}</span><span class="a${res&&sa>sh?" w":""}"><span>${hoyEsc(A.n)}</span>${lg(A)}</span>${res?`<span class="x">${sa} – ${sh}</span>`:`<span class="x vs">@</span>`}<span class="b${res&&sh>sa?" w":""}">${lg(H)}<span>${hoyEsc(H.n)}</span></span></button>`;
+}
+const HOY_FILAS=6;
+function hoyListas(titulo,sub,ev,nfl,ver,clave){
+  const G={}; ev.forEach(e=>(G[e._k]=G[e._k]||[]).push(e));
+  const ks=Object.keys(G).sort((a,b)=>(HOY_ORDEN.indexOf(a)>>>0)-(HOY_ORDEN.indexOf(b)>>>0));
+  if(!ks.length&&!nfl.length) return "";
+  const caja=(k,lab,filas,n)=>{const ab=HOY.abiertos.has(clave+k);
+    return `<div class="hlist"><div class="lh"><span>${hoyEsc(lab)}</span>${k!=="nfl"?`<button class="hlink" data-hact="liga" data-hk="${k}">${ver}</button>`:""}</div>${(ab?filas:filas.slice(0,HOY_FILAS)).join("")}
+      ${!ab&&n>HOY_FILAS?`<button class="hmas2" data-hact="mas" data-hk="${clave+k}">Ver los ${n}</button>`:""}</div>`;};
+  const cajas=ks.map(k=>{const L=G[k].sort((a,b)=>new Date(a.date)-new Date(b.date)), et=hoyEtapa(L,k);
+    return caja(k,LEAGUES[k].label+(et?` · ${et}`:""),L.map(hoyRow),L.length);});
+  if(nfl.length) cajas.push(caja("nfl",nfl[0],nfl[1],nfl[1].length));
+  return `<section class="hsec"><div class="hh"><h3>${titulo}<small>${sub}</small></h3></div><div class="hlists">${cajas.join("")}</div></section>`;
+}
+function hoyOtrosHTML(){
+  if(!D.hoy) return ["",""];
+  const hoy=hoyYmd(), ayer=hoyYmd(Date.now()-864e5), man=hoyYmd(Date.now()+864e5);
+  const fecha=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(new Date(d+"T12:00:00-06:00"));
+  // Ayer: solo terminados (los que ya salen en la portada de hoy no se repiten)
+  const ea=hoyDiaEv(ayer).filter(e=>e.status?.type?.state==="post"&&!HOY.ev.has(e.id));
+  const nflA=(D.sched||[]).filter(x=>x.ko&&hoyYmd(+new Date(x.ko))===ayer&&(x.hs!=null||NLIVE[x.id]?.done));
+  const ayerH=hoyListas("Resultados de ayer",fecha(ayer),ea,nflA.length?[`NFL · Semana ${nflA[0].w}`,nflA.map(x=>hoyNflRow(x,true))]:[],"Ver todo","a");
+  // Mañana: solo si la portada está mostrando hoy (si hoy no hay partidos, mañana ya es lo principal)
+  let manH="";
+  if(HOY.dia===hoy){
+    const em=hoyDiaEv(man).filter(e=>!HOY.ev.has(e.id));
+    manH=hoyListas("Mañana",fecha(man),em,[],"Ver partidos","m");   // la NFL de mañana ya sale abajo en "NFL · Semana N"
+  }
+  return [ayerH,manH];
+}
 function hoyNflHTML(){
   // Pendiente = sin resultado, y que no haya empezado hace más de 12 h (si nflverse se atrasa, no se queda pegada la semana vieja)
   const now=Date.now(), pend=x=>x.hs==null&&!NLIVE[x.id]?.done&&(NLIVE[x.id]?.live||!x.ko||+new Date(x.ko)>now-12*36e5);
   const w=weeks.find(w=>(D.sched||[]).some(x=>x.w===w&&pend(x))); if(w==null) return "";
-  const G=(D.sched||[]).filter(x=>x.w===w&&pend(x)).sort((a,b)=>(a.ko||"").localeCompare(b.ko||"")).slice(0,4);
+  const orden=(a,b)=>(a.ko||"").localeCompare(b.ko||"");
+  let G=(D.sched||[]).filter(x=>x.w===w&&pend(x)).sort(orden).slice(0,4);
+  // Lunes o martes: a la semana le queda 1 partido; se completa con los primeros de la siguiente
+  if(G.length<4) G=G.concat((D.sched||[]).filter(x=>x.w===w+1&&pend(x)).sort(orden).slice(0,4-G.length));
   const cards=G.map(x=>{const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, L=NLIVE[x.id], when=x.ko?new Date(x.ko):null;
-    const dia=L?.live?`<span class="lv">${hoyEsc(L.st)}</span>`:when?`${cap(fWeekday(when))}${x.tbd?"":" · "+fHour(when)}`:"Por definir";
+    const dia=L?.live?`<span class="lv">${hoyEsc(L.st)}</span>`:(x.w!==w?`Semana ${x.w} · `:"")+(when?`${cap(fWeekday(when))}${x.tbd?"":" · "+fHour(when)}`:"Por definir");
     const fav=x.sp==null?null:x.sp>0?x.h:x.sp<0?x.a:"";
     const lin=L?.live?`${x.a} ${L.as} – ${L.hs} ${x.h}`:x.sp==null?"Línea por definir":`${fav?`${fav} −${Math.abs(x.sp)}`:"Pick"}${x.tot!=null?` · O/U ${x.tot}`:""}`;
     return `<button class="hn" data-nid="${x.id}"><span class="d">${dia}</span><span class="j">${hoyEsc(A.n)} @ ${hoyEsc(H.n)}</span><span class="l">${lin}</span></button>`;}).join("");
@@ -4562,7 +4630,8 @@ function hoyPaint(){
   $("#hoyFecha").textContent=cap(fDay(new Date()));
   const st=$("#hoyVivo .hstrip"), x=st?st.scrollLeft:0;
   $("#hoyVivo").innerHTML=hoyVivoHTML(); const st2=$("#hoyVivo .hstrip"); if(st2) st2.scrollLeft=x;
-  $("#hoyFut").innerHTML=hoyFutHTML(); $("#hoyNfl").innerHTML=hoyNflHTML(); $("#hoyLpz").innerHTML=hoyLpzHTML();
+  const [ayerH,manH]=hoyOtrosHTML();
+  $("#hoyFut").innerHTML=hoyFutHTML(); $("#hoyAyer").innerHTML=ayerH; $("#hoyMan").innerHTML=manH; $("#hoyNfl").innerHTML=hoyNflHTML(); $("#hoyLpz").innerHTML=hoyLpzHTML();
 }
 function hoyPR(){
   if(HOY.pr) return;
@@ -4585,7 +4654,7 @@ async function hoyAbrir(k,id){
   try{
     const {ev}=await mxSeasonOf(k), s=ev.find(x=>x.id===id);
     if(!s){ dlg.close(); return hoyIrLiga(k); }
-    const h=HOY.ev.get(id)||HOY.extra.get(id); if(h) hoyCopia(s,h);
+    const h=HOY.ev.get(id)||HOY.extra.get(id)||HOY.otros.get(id); if(h) hoyCopia(s,h);
     DLG_CUR={k:"mx",id}; await openMx(id,true);
   }catch(err){ $("#gbody").innerHTML=`<p class="note" style="text-align:center">No pudimos cargar el partido. Intenta de nuevo en un momento.</p>`; }
 }
@@ -4593,7 +4662,7 @@ $("#hoy").addEventListener("click",ev=>{
   const p=ev.target.closest("[data-hid]"); if(p) return hoyAbrir(p.dataset.hk,p.dataset.hid);
   const n=ev.target.closest("[data-nid]"); if(n){ pzTrack("hoy_partido",{liga:"nfl"}); DLG_CUR={k:"nfl",id:n.dataset.nid}; return openNfl(n.dataset.nid); }
   const a=ev.target.closest("[data-hact]"); if(!a) return; const act=a.dataset.hact; pzTrack("hoy_toque",{que:act});
-  if(act==="mas"){ HOY.abiertos.add(a.dataset.hk); $("#hoyFut").innerHTML=hoyFutHTML(); }
+  if(act==="mas"){ HOY.abiertos.add(a.dataset.hk); hoyPaint(); }
   else if(act==="liga") hoyIrLiga(a.dataset.hk);
   else if(act==="pr") hoyIrLiga("mx","mxpr");
   else if(act==="gol") hoyIrLiga("mx","mxplayers");
