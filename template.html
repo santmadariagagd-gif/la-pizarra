@@ -437,6 +437,28 @@ dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 .grgrid tr.lpz td.l .nm{font-style:italic}
 .grwarn{margin:6px 0 4px;padding:10px 14px;border-radius:10px;border-left:4px solid var(--bad);background:var(--surface);font-size:14px}
 .grleg{font-size:12px;color:var(--muted);margin:8px 0 0}
+.grnone{font-style:normal;color:var(--bad);font-weight:600}
+.qgate{display:flex;flex-direction:column;gap:6px;align-items:flex-start;margin:0 0 14px;padding:14px 16px;border-radius:10px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--mark)}
+.qgate b{font:700 18px var(--display)}
+.qgate span{color:var(--muted);font-size:14px}
+.qgate .btn{margin-top:4px}
+.svh{margin:18px 0 8px}
+.svnote{margin:0 0 12px}
+.team.off{opacity:.45;cursor:default}
+.team.pickable{cursor:pointer}
+.svchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.svchip{font:600 12px var(--body);padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.svchip.ok{color:var(--good);border-color:currentColor}
+.svchip.ko{color:var(--bad);border-color:currentColor}
+.svlb .pts{font-size:18px;color:var(--bad);letter-spacing:1px}
+.svlb .pts small{color:var(--muted);letter-spacing:0}
+.svlb li.out .hn b{color:var(--muted);text-decoration:line-through}
+.svlb .svout{color:var(--bad)!important;font:700 15px var(--display)!important}
+.svact{display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding:14px 16px;margin:10px 0;border:1px dashed var(--line);border-radius:10px}
+.svact b{font:700 18px var(--display)}
+.svact span{color:var(--muted);font-size:14px}
+.svact select{margin-left:6px;font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.svsum{margin:0 0 10px}
 .grleg .grc{font-size:12px}
 .grc.win{color:var(--good)}.grc.loss{color:var(--bad);text-decoration:line-through}.grc.push{color:var(--muted)}.grc.pend{color:var(--ink)}.grc.none{color:var(--muted)}
 .paper{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-left:5px solid #b8121b;border-radius:10px;padding:12px 16px;margin:0 0 22px;max-width:780px}
@@ -1490,7 +1512,20 @@ function lpzRecord(mode,onlyWeek){
 }
 function lpzRender(P){
   const box=$("#qLpz"); if(!box||box.hidden) return;
-  if(qnMode==="surv"){box.innerHTML=`<p class="note">En Survivor, los 5 equipos de “Mis picks” son la recomendación de La Pizarra para esta semana.</p>`; return;}
+  if(qnMode==="surv"){
+    const w=+P.week, ws=Object.keys(LPZS).map(Number);
+    if(!ws.length){box.innerHTML=`<p class="note">La ruta de La Pizarra en el survivor empieza en la semana ${SV_DESDE}; su primer pick sale la mañana después de que se publiquen las líneas.</p>`; return;}
+    const st=svRun(x=>LPZS[x]||null,1,SV_DESDE,Math.max(w,...ws)), T=t=>NT[t]||{n:t};
+    const rows=st.hist.slice().reverse().map(h=>{const p=LPZS[h.w], [a,hh]=(h.k||"@").split("@"), opp=h.t===a?hh:a;
+      const est=h.r==="win"?`<b class="qres ok">Ganó</b>`:h.r==="tie"?`<b class="qres ok">Empató</b>`:h.r==="loss"?`<b class="qres ko">Perdió</b>`:h.r==="nopick"?`<b class="qres ko">Sin pick</b>`:`<b>Por jugarse</b>`;
+      return h.t?`<li>${logoImg(T(h.t).logo,"qlg")}<div class="hn"><b>Semana ${h.w}: ${T(h.t).n}</b><small>${h.t===hh?"vs":"en"} ${T(opp).n}${p?.p!=null?` · ${Math.round(p.p*100)}% de ganar`:""}</small></div><div class="lpzst">${est}</div></li>`:"";}).join("");
+    box.innerHTML=`<div class="lpzrec"><div><span>Estado</span><b>${st.out!=null?"Eliminada":"Viva"}</b><small>${st.out!=null?`en la semana ${st.out}`:`${st.hist.filter(h=>h.r==="win"||h.r==="tie").length} semanas superadas`}</small></div>
+      <div><span>Equipos usados</span><b>${Object.keys(st.used).length}</b><small>de 32</small></div>
+      <div class="you"><span>Tu survivor</span><b>${(()=>{const y=svRun(x=>svMine()[x]||null,1,SV_DESDE,w); return y.out!=null?"Fuera":"Vivo";})()}</b><small>con 1 vida</small></div></div>
+      <ul class="hon lpzl">${rows||`<li><div class="hn"><small>Sin picks todavía.</small></div></li>`}</ul>
+      <p class="note" style="margin-top:12px">La Pizarra juega su propio survivor con una vida: cada semana escoge entre los equipos que no ha usado, planeando la temporada completa para no gastar temprano a los equipos que le van a servir después. Su pick queda fijo desde la mañana del primer partido de la semana.</p>`;
+    return;
+  }
   const ws=Object.keys(LPZ).map(Number).filter(w=>Object.keys(LPZ[w]).length).sort((a,b)=>a-b);
   if(!ws.length){box.innerHTML=`<p class="note">Los picks de La Pizarra aparecen aquí a partir de mañana a las 7:00 am.</p>`; return;}
   if(lpzWeek==null||!ws.includes(lpzWeek)) lpzWeek=ws.includes(+P.week)?+P.week:ws[ws.length-1];
@@ -1520,6 +1555,104 @@ function lpzRender(P){
     <p class="note" style="margin-top:12px">${sp?"Cada pick se califica con la línea con la que se hizo (la oficial de los grupos). ":""}Los picks se revisan cada mañana hasta el día del primer partido de la semana (normalmente el jueves); desde esa mañana quedan fijos, igual que las líneas.${late?" Esta semana se calculó después, solo con datos hasta la semana anterior y la línea de cierre de Las Vegas.":""}</p>`;
 }
 $("#qLpz").addEventListener("click",e=>{const b=e.target.closest?.("[data-lw]"); if(!b||b.disabled) return; lpzWeek+=+b.dataset.lw; qnGet().then(lpzRender);});
+// ---------- Survivor (hecho el 5 oct 2026) ----------
+// Reglas (decididas por Santiago): un equipo por semana, sin repetir en la temporada; si tu equipo pierde, pierdes una
+// vida; si empata, sigues vivo; si no haces pick, quedas eliminado (aunque tengas vidas); las vidas (1–3) las decide
+// el creador del grupo; si todos los que siguen vivos caen la misma semana, nadie queda eliminado esa semana.
+// Tu survivor se guarda en el navegador (pz_surv) y en tu cuenta (usuarios.surv) = {temporada: {semana: {k: "VIS@LOC", t: "EQ"}}}
+// y se copia a cada grupo con survivor activo (grupos/{g}/surv/{uid}_{semana} = {uid, w, temporada, k, t}).
+// La ruta de La Pizarra (D.lpzs = {semana: {t, k, p}}) la calcula build_site.py y sigue la regla del jueves.
+const SV_PK="pz_surv", SV_DESDE=+D.season===2026?5:1, LPZS=D.lpzs||{};
+const svAll=()=>{try{return JSON.parse(localStorage.getItem(SV_PK)||"{}")||{};}catch(e){return {};}};
+const svMine=()=>svAll()[D.season]||{};
+function svMerge(nube,local){ const R=JSON.parse(JSON.stringify(nube||{}));
+  for(const [s,S] of Object.entries(local||{})) for(const [w,p] of Object.entries(S||{})){ R[s]=R[s]||{}; if(!R[s][w]) R[s][w]=p; } return R; }
+function svLastKo(w){ const ks=(D.sched||[]).filter(x=>x.w===+w&&x.ko).map(x=>+new Date(x.ko)); return ks.length?Math.max(...ks):Infinity; }
+function svKo(w,k){ const [a,h]=k.split("@"), x=(D.sched||[]).find(x=>x.w===+w&&x.a===a&&x.h===h); return x?.ko?+new Date(x.ko):Infinity; }
+function svGrade(w,k,t){   // "win" | "loss" | "tie" | null (por jugarse)
+  const [a,h]=k.split("@"), r=qnResult(+w,a,h); if(!r) return null;
+  const mine=t===a?r.as:r.hs, opp=t===a?r.hs:r.as; return mine>opp?"win":mine<opp?"loss":"tie";
+}
+function svUsedMap(P,before){ const U={}; for(const [w,p] of Object.entries(P||{})) if(p?.t&&(+w<before||before==null)) U[p.t]=+w; return U; }
+// Una persona (tu survivor y La Pizarra). pk(w) → {k,t} o null.
+function svRun(pk,vidas,desde,cur,lastKo=svLastKo){
+  const st={lives:vidas,out:null,hist:[],used:{}};
+  for(let w=desde;w<=cur;w++){
+    const p=pk(w); let r=null;
+    if(p&&p.t){ r=(st.used[p.t]!=null)?"repeat":svGrade(w,p.k,p.t); if(st.used[p.t]==null) st.used[p.t]=w; }
+    else if(Date.now()>=lastKo(w)) r="nopick";
+    if(st.out!=null) continue;
+    st.hist.push({w,t:p?.t||null,k:p?.k||null,r});
+    if(r==="loss"||r==="repeat") st.lives--; if(r==="nopick") st.lives=0;
+    if(st.lives<=0){st.lives=0; st.out=w;}
+  }
+  return st;
+}
+// Un grupo: mismas reglas + "si todos caen la misma semana, siguen todos".
+function svGroupRun(uids,pk,vidas,desde,cur,lastKo){
+  const S=Object.fromEntries(uids.map(u=>[u,{lives:vidas,out:null,hist:[],used:{}}])); let saved=[];
+  for(let w=desde;w<=cur;w++){
+    const vivos=uids.filter(u=>S[u].out==null), antes=Object.fromEntries(vivos.map(u=>[u,S[u].lives]));
+    for(const u of vivos){
+      const p=pk(u,w), st=S[u]; let r=null;
+      if(p&&p.t){ r=(st.used[p.t]!=null)?"repeat":svGrade(w,p.k,p.t); if(st.used[p.t]==null) st.used[p.t]=w; }
+      else if(Date.now()>=lastKo(w)) r="nopick";
+      st.hist.push({w,t:p?.t||null,k:p?.k||null,r});
+      if(r==="loss"||r==="repeat") st.lives--; if(r==="nopick") st.lives=0;
+      if(st.lives<=0){st.lives=0; st.out=w;}
+    }
+    if(vivos.length&&vivos.every(u=>S[u].out!=null)){   // todos cayeron esta semana: nadie queda eliminado
+      vivos.forEach(u=>{S[u].lives=antes[u]; S[u].out=null; const h=S[u].hist[S[u].hist.length-1]; if(h) h.salvado=true;}); saved.push(w); }
+  }
+  const vivos=uids.filter(u=>S[u].out==null);
+  return {S,saved,winner:uids.length>1&&vivos.length===1&&uids.some(u=>S[u].out!=null)?vivos[0]:null};
+}
+const SV_R={win:"ganó",loss:"perdió",tie:"empató",repeat:"repetido",nopick:"sin pick"};
+function svChip(h){ const c=h.r==="win"||h.r==="tie"?"ok":h.r?"ko":"pend";
+  return `<span class="svchip ${c}" title="Semana ${h.w}${h.r?`: ${SV_R[h.r]}`:""}${h.salvado?" (todos cayeron: siguen todos)":""}">S${h.w} ${h.t||"—"}${h.r?` · ${SV_R[h.r]}`:""}</span>`; }
+function svDoPick(w,k,t){
+  if(+w<SV_DESDE) return false;
+  if(svKo(w,k)<=Date.now()) return false;
+  const all=svAll(), S=all[D.season]=all[D.season]||{}, cur=S[w];
+  if(cur&&cur.k&&svKo(w,cur.k)<=Date.now()) return false;          // tu pick de la semana ya empezó: no se cambia
+  const U=svUsedMap(S); if(U[t]!=null&&U[t]!==+w) return false;     // ya lo usaste
+  if(cur&&cur.t===t) delete S[w]; else { S[w]={k,t}; pzTrack("hacer_pick",{modo:"surv"}); }
+  acctLsSet(SV_PK,JSON.stringify(all)); acctPush(); svOnPick(+w); return true;
+}
+function svMineBox(P){
+  const box=$("#qMine"), w=+P.week, M=svMine(), cur=M[w];
+  const st=svRun(x=>M[x]||null,1,SV_DESDE,w), gt=acctGate();
+  const grp=typeof GR!=="undefined"&&acctOk()?GR.ids.map(id=>GR.info[id]).filter(i=>i&&i.surv):[];
+  box.innerHTML=gt+(w<SV_DESDE?`<div class="qmine"><b>Tu survivor</b><span>El survivor de La Pizarra empieza en la semana ${SV_DESDE}.</span></div>`:
+    `<div class="qmine"><b>Tu survivor</b>
+      <span>${st.out!=null?`Te eliminaron en la semana ${st.out}.`:cur?`Semana ${w}: <b>${(NT[cur.t]||{n:cur.t}).n}</b>${svKo(w,cur.k)<=Date.now()?"":" · lo puedes cambiar hasta que empiece su partido"}`:`Semana ${w}: todavía no escoges. Si no escoges, quedas eliminado.`}</span>
+      ${st.hist.filter(h=>h.w<w||h.r).length?`<span class="svchips">${st.hist.filter(h=>h.w<w||h.r).map(svChip).join("")}</span>`:""}
+      <small>${grp.length?`Cuenta en ${grp.map(i=>`«${acctEsc(i.nombre)}» (${i.surv.vidas} ${i.surv.vidas===1?"vida":"vidas"})`).join(", ")}. <button class="alink" data-qview="grupos">Ver tabla</button>`:"Un equipo por semana, sin repetir. Si pierde, quedas fuera; si empata, sigues vivo."}</small></div>`);
+}
+function svRender(P,box){   // Quiniela → Survivor: todos los partidos de la semana para escoger
+  const w=+P.week, G=P.games, T=t=>NT[t]||{n:t}, pc=v=>v==null?"":`${Math.round(v*100)}%`;
+  if(w<SV_DESDE){ box.className=""; box.innerHTML=`<p class="note">El survivor empieza en la semana ${SV_DESDE}.</p>`; return; }
+  const M=svMine(), cur=M[w], U=svUsedMap(M,w), now=Date.now(), curLocked=cur&&svKo(w,cur.k)<=now, lz=LPZS[w];
+  const L=[]; G.filter(g=>!g.lock).forEach(g=>{const q=qnProb(g); if(!q) return;
+    L.push({t:g.a,o:g.h,p:q.p[0],home:false}); L.push({t:g.h,o:g.a,p:q.p[1],home:true});});
+  L.sort((x,y)=>y.p-x.p);
+  const top=L.filter(x=>U[x.t]==null).slice(0,5);
+  const fav=top.length?`<h3 class="svh">Los más seguros de la semana</h3><ul class="hon qsv">${top.map((x,i)=>`<li><span class="qrk">${i+1}</span>${logoImg(T(x.t).logo,"qlg")}<div class="hn"><b>${T(x.t).n}</b><small>${x.home?"vs":"en"} ${T(x.o).n}${lz&&lz.t===x.t?" · La Pizarra va con él":""}</small></div><span class="hc">${pc(x.p)}</span></li>`).join("")}</ul>`:"";
+  const cards=G.map(g=>{
+    const k=`${g.a}@${g.h}`, q=qnProb(g), started=g.lock||(g.ko&&+g.ko<=now), res=qnResult(w,g.a,g.h);
+    const hora=g.ko?`<b>${cap(fDay(g.ko))}</b> · ${fHour(g.ko)}`:"<b>Fecha por definir</b>";
+    const mineHere=cur&&cur.k===k, gr=mineHere?svGrade(w,k,cur.t):null;
+    const tag=gr==="win"?`<span class="qres ok">✓ Sigues vivo</span>`:gr==="tie"?`<span class="qres ok">Empate: sigues vivo</span>`:gr==="loss"?`<span class="qres ko">✗ Perdió tu equipo</span>`
+      :res?`<span>Final ${g.a} ${res.as}-${res.hs} ${g.h}</span>`:started?`<span>Ya empezó</span>`:"";
+    const team=(t,home)=>{const X=T(t), my=mineHere&&cur.t===t, used=U[t]!=null, off=started||curLocked||used;
+      const sub=[my?"Tu pick":"",home?"local":"",used?`ya lo usaste (sem. ${U[t]})`:""].filter(Boolean).join(" · ");
+      return `<div class="team${my?" mine":""}${off?" off":" pickable"}" data-st="${t}" data-sk="${k}" data-sw="${w}" role="button" tabindex="0" aria-pressed="${my}" aria-disabled="${off}">${logoImg(X.logo)||"<span></span>"}<span class="tn">${X.n}<small>${sub}</small></span><span class="ml">${q?pc(q.p[home?1:0]):""}</span></div>`;};
+    return `<article class="game${started?" qlock":""}"><div class="when"><span>${hora}</span>${tag}</div>${team(g.a,false)}${team(g.h,true)}
+      ${lz&&lz.k===k?`<div class="where"><span>La Pizarra va con <b>${T(lz.t).n}</b></span><span></span></div>`:""}</article>`;}).join("");
+  box.className=""; box.innerHTML=`${fav}<h3 class="svh">Escoge tu equipo de la semana ${w}</h3>
+    <p class="note svnote">${curLocked?"Tu pick de esta semana ya empezó; ya no se puede cambiar.":"Toca un equipo para escogerlo; tócalo otra vez para quitarlo. Lo puedes cambiar hasta que empiece su partido. El porcentaje es su probabilidad de ganar (Las Vegas + nuestro modelo)."}</p>
+    <div class="games">${cards}</div>`;
+}
 // ---------- Mis picks ----------
 // Se guardan en este navegador (localStorage "pz_mispicks"): {temporada:{semana:{"VIS@LOC":{ats:{t,L},su:{t}}}}}.
 // En "con spread" se guarda la línea del momento (L = ventaja del local) para calificar con esa misma línea.
@@ -1550,21 +1683,38 @@ function qnRecord(mode,onlyWeek){
 const qnLastKey=games=>{const L=[...games].map(g=>({k:`${g.a}@${g.h}`,ko:+(g.ko||0)})).sort((x,y)=>x.ko-y.ko||(x.k<y.k?-1:x.k>y.k?1:0)); return L.length?L[L.length-1].k:null;};
 const qnRecTxt=R=>`${R.w}-${R.l}${R.p?`-${R.p}`:""}${R.w+R.l?` (${Math.round(100*R.w/(R.w+R.l))}%)`:""}`;
 function qnMineBox(P){
-  const box=$("#qMine"); if(qnMode==="surv"){box.innerHTML=""; return;}
+  const box=$("#qMine"); if(qnMode==="surv"){svMineBox(P); return;}
   const mode=qnMode, wk=P.week, W=(qnPicksAll()[D.season]||{})[wk]||{}, n=Object.values(W).filter(v=>v[mode]).length;
   const Rw=qnRecord(mode,wk), Rs=qnRecord(mode), lbl=mode==="ats"?"contra el spread":"sin spread", Lw=lpzRecord(mode,wk), Ls=lpzRecord(mode);
   box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${Ls.w+Ls.l+Ls.p?`<span class="qvs">La Pizarra: ${Lw.w+Lw.l+Lw.p?`${qnRecTxt(Lw)} esta semana · `:""}${qnRecTxt(Ls)} en la temporada. <button class="alink" data-qview="lpz">Ver sus picks</button></span>`:""}${grMineTxt()}${n?(acctHint(true)?`<small>${acctHint(true)}</small>`:""):`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. ${acctHint(false)}</small>`}</div>`;
 }
-$("#qGames").addEventListener("click",e=>{
-  const el=e.target.closest(".team[data-qt]"); if(!el||qnMode==="surv") return;
-  const r=qnRows[+el.dataset.qi]; if(!r||r.g.lock) return;
-  const all=qnPicksAll(), S=all[D.season]=all[D.season]||{}, W=S[el.dataset.qw]=S[el.dataset.qw]||{}, k=`${r.g.a}@${r.g.h}`, G=W[k]=W[k]||{};
-  const t=el.dataset.qt;
-  if(G[qnMode]?.t===t) delete G[qnMode]; else {G[qnMode]=qnMode==="ats"?{t,L:r.g.L}:{t}; pzTrack("hacer_pick",{modo:qnMode});}
+// Para hacer picks hay que entrar con cuenta y correo confirmado (decisión del 5 oct 2026: así todos los picks
+// llegan a la cuenta y a los grupos). Si no, el toque se guarda como pendiente, se abre "Entrar" y, al entrar, se aplica.
+let QN_PEND=null;
+function qnNeedAcct(p){ if(!D.fb||acctOk()) return false; QN_PEND=p; ACCT.why="pick"; acctOpen(); return true; }
+function qnDoPick(qw,k,t,mode){
+  const g=(qnCache?.games||[]).find(x=>`${x.a}@${x.h}`===k); if(!g||g.lock||(g.ko&&+g.ko<=Date.now())) return false;
+  const all=qnPicksAll(), S=all[D.season]=all[D.season]||{}, W=S[qw]=S[qw]||{}, G=W[k]=W[k]||{};
+  if(G[mode]?.t===t) delete G[mode]; else {G[mode]=mode==="ats"?{t,L:g.L}:{t}; pzTrack("hacer_pick",{modo:mode});}
   if(!Object.keys(G).length) delete W[k];
-  qnPicksSave(all); grOnPick(el.dataset.qw,k,G); loadQuiniela();
+  qnPicksSave(all); grOnPick(qw,k,G); return true;
+}
+function qnPendApply(){   // después de entrar: el equipo que tocó antes se escoge solo (si su partido no ha empezado)
+  const p=QN_PEND; QN_PEND=null; if(!p||!acctOk()) return;
+  if(p.surv) svDoPick(p.w,p.k,p.t); else { const cur=(qnPicksAll()[D.season]||{})[p.qw]?.[p.k]?.[p.mode]?.t; if(cur!==p.t) qnDoPick(p.qw,p.k,p.t,p.mode); }
+  if(acctOnQ()) loadQuiniela();
+}
+$("#qGames").addEventListener("click",e=>{
+  if(qnMode==="surv"){ const b=e.target.closest(".team[data-st]"); if(!b||b.classList.contains("off")) return;
+    const w=+b.dataset.sw, k=b.dataset.sk, t=b.dataset.st;
+    if(qnNeedAcct({surv:true,w,k,t})) return; if(svDoPick(w,k,t)) loadQuiniela(); return; }
+  const el=e.target.closest(".team[data-qt]"); if(!el) return;
+  const r=qnRows[+el.dataset.qi]; if(!r||r.g.lock) return;
+  const k=`${r.g.a}@${r.g.h}`;
+  if(qnNeedAcct({qw:el.dataset.qw,k,t:el.dataset.qt,mode:qnMode})) return;
+  if(qnDoPick(el.dataset.qw,k,el.dataset.qt,qnMode)) loadQuiniela();
 });
-$("#qGames").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches?.(".team[data-qt]")){e.preventDefault(); e.target.click();}});
+$("#qGames").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches?.(".team[data-qt],.team[data-st]")){e.preventDefault(); e.target.click();}});
 async function loadQuiniela(){
   document.querySelectorAll("#qSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===qnMode));
   const box=$("#qGames"); if(!qnCache) box.innerHTML=`<p class="note">Cargando…</p>`;
@@ -1574,11 +1724,9 @@ async function loadQuiniela(){
   if(!G.length){box.className=""; box.innerHTML=`<p class="note">Todavía no hay partidos para esta semana.</p>`; return;}
   const T=t=>NT[t]||{n:t}, pc=v=>v==null?"":`${Math.round(v*100)}%`;
   if(qnMode==="surv"){
-    const L=[]; G.filter(g=>!g.lock).forEach(g=>{const q=qnProb(g); if(!q) return;
-      L.push({t:g.a,o:g.h,p:q.p[0],home:false}); L.push({t:g.h,o:g.a,p:q.p[1],home:true});});
-    L.sort((x,y)=>y.p-x.p);
-    box.className=""; box.innerHTML=L.length?`<ul class="hon qsv">${L.slice(0,5).map((x,i)=>`<li><span class="qrk">${i+1}</span>${logoImg(T(x.t).logo,"qlg")}<div class="hn"><b>${T(x.t).n}</b><small>${x.home?"vs":"en"} ${T(x.o).n}</small></div><span class="hc">${pc(x.p)}</span></li>`).join("")}</ul>`
-      :`<p class="note">Ya empezaron todos los partidos de la semana.</p>`;
+    svMineBox(P); lpzRender(P); svRender(P,box);
+    svReconcile().then(ch=>{ if(ch&&qnView==="grupos"&&GR.cur) grMain(GR.cur); }).catch(()=>{});
+    if(!qnLiveAsked&&G.some(g=>g.lock&&!qnResult(P.week,g.a,g.h))){qnLiveAsked=true; nflLiveUpdate(true,+P.week).then(ok=>{if(ok) loadQuiniela();}).catch(()=>{});}
     return;
   }
   const rows=G.map(g=>{
@@ -1589,6 +1737,7 @@ async function loadQuiniela(){
   const lastK=qnLastKey(G);
   const top=new Set(rows.filter(r=>!r.g.lock&&r.edge!=null).sort((x,y)=>Math.abs(y.edge)-Math.abs(x.edge)).slice(0,3).map(r=>r.g));
   qnMineBox(P); lpzRender(P);
+  { const gt=acctGate(); if(gt) $("#qMine").insertAdjacentHTML("afterbegin",gt); }
   grReconcile().then(ch=>{ if(ch&&qnView==="grupos"&&GR.cur) grMain(GR.cur); }).catch(()=>{});
   const MW=((qnPicksAll()[D.season]||{})[P.week])||{};
   if(!qnLiveAsked&&G.some(g=>g.lock&&!qnResult(P.week,g.a,g.h))){qnLiveAsked=true; nflLiveUpdate(true,+P.week).then(ok=>{if(ok) loadQuiniela();}).catch(()=>{});}
@@ -1625,6 +1774,7 @@ function qnTbBox(g,w,tb,res){
 }
 $("#qGames").addEventListener("change",e=>{
   const el=e.target.closest?.(".qtbin"); if(!el) return;
+  if(D.fb&&!acctOk()){ el.value=""; ACCT.why="pick"; acctOpen(); return; }   // el desempate también necesita cuenta
   const v=el.value.trim(), n=v===""?null:Math.round(+v); if(n!=null&&(!isFinite(n)||n<0||n>150)){el.value=""; return;}
   const all=qnPicksAll(), S=all[D.season]=all[D.season]||{}, W=S[el.dataset.qw]=S[el.dataset.qw]||{}, k=el.dataset.k, G=W[k]=W[k]||{};
   if(n==null) delete G.tb; else G.tb=n; if(!Object.keys(G).length) delete W[k];
@@ -3633,7 +3783,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden) fmLiveTic
 // - Las contraseñas nunca pasan por aquí más que en el formulario: las guarda Firebase (con hash), no nosotros.
 // Sin firebase_config.txt en el repositorio (D.fb vacío) no aparece nada de esto y todo queda como antes.
 var ACCT={ready:false,user:null,auth:null,db:null,last:0,pushT:null,mode:"in",busy:false};
-const ACCT_V="12.19.0", ACCT_KEYS=["pz_mispicks","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
+const ACCT_V="12.19.0", ACCT_KEYS=["pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
 const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
 const acctLsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
 const acctLsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
@@ -3657,7 +3807,7 @@ function acctLoadJS(f){return new Promise((ok,no)=>{
   const go=i=>{if(i>=urls.length) return no(new Error("No cargó "+f)); const s=document.createElement("script"); s.src=urls[i]; s.async=true;
     s.onload=ok; s.onerror=()=>{s.remove(); go(i+1);}; document.head.appendChild(s);};
   go(0);});}
-const acctLocal=()=>({picks:qnPicksAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
+const acctLocal=()=>({picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
 function acctMerge(nube,local){   // {temporada:{semana:{"VIS@LOC":{ats,su}}}}: gana la nube; lo local llena lo que falte
   const R=JSON.parse(JSON.stringify(nube||{}));
   for(const [s,S] of Object.entries(local||{})) for(const [w,W] of Object.entries(S||{})) for(const [k,G] of Object.entries(W||{})) for(const [m,p] of Object.entries(G||{})){
@@ -3687,14 +3837,14 @@ async function acctPull(){
   catch(e){console.warn("Cuentas: no se pudo leer la cuenta",e?.code||e); return;}
   if(ACCT.user!==u) return;
   const L=acctLocal(), linked=acctLsGet("pz_cuenta")===u.uid, dirty=acctLsGet("pz_cuenta_sucio")==="1";
-  const cloud={picks:C.picks||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
+  const cloud={picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
   let N;
   if(linked&&exists&&!dirty) N=cloud;                         // navegador ya ligado: manda la nube
   else if(linked) N=L;                                         // cambios locales sin subir (o cuenta nueva): manda lo local
-  else N={picks:acctMerge(cloud.picks,L.picks),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
+  else N={picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
   acctLsSet("pz_cuenta",u.uid);
-  const pc=JSON.stringify(N.picks)!==JSON.stringify(L.picks), sc=N.sleeper!==L.sleeper||N.liga!==L.liga||N.espn!==L.espn||N.fsrc!==L.fsrc;
-  acctLsSet(QN_PK,JSON.stringify(N.picks));
+  const pc=JSON.stringify(N.picks)!==JSON.stringify(L.picks)||JSON.stringify(N.surv||{})!==JSON.stringify(L.surv||{}), sc=N.sleeper!==L.sleeper||N.liga!==L.liga||N.espn!==L.espn||N.fsrc!==L.fsrc;
+  acctLsSet(QN_PK,JSON.stringify(N.picks)); acctLsSet(SV_PK,JSON.stringify(N.surv||{}));
   if(N.sleeper) acctLsSet("pizarra_sleeper",N.sleeper); else acctLsDel("pizarra_sleeper");
   if(N.liga) acctLsSet("pizarra_league",N.liga); else acctLsDel("pizarra_league");
   ["espn","fsrc"].forEach(k=>{const key=k==="espn"?"pizarra_espn":"pizarra_fsrc"; if(N[k]) acctLsSet(key,N[k]); else acctLsDel(key);});
@@ -3702,6 +3852,7 @@ async function acctPull(){
   if(pc&&acctOnQ()) loadQuiniela();
   if(JSON.stringify(N)!==JSON.stringify(cloud)||!exists) acctPush(true);
   if(adlg.open) acctRender();
+  qnPendApply();
 }
 function grMineTxt(){   // en el recuadro de Mis picks: en qué grupos cuentan
   if(typeof GR==="undefined"||!acctOk()||!GR.ids.length) return "";
@@ -3709,11 +3860,16 @@ function grMineTxt(){   // en el recuadro de Mis picks: en qué grupos cuentan
   return `<small>${GR.warn?`⚠️ ${GR.warn} `:""}Cuentan en ${n.length?n.map(x=>`«${acctEsc(x)}»`).join(", "):"tus grupos"}. <button class="alink" data-qview="grupos">Ver tabla</button></small>`;
 }
 function acctHint(hasPicks){   // texto para el recuadro de Mis picks
-  if(!D.fb||!ACCT.ready) return hasPicks?"":"Se guardan en este navegador.";
-  if(ACCT.user&&!acctOk()) return `<button class="alink" data-acct>Confirma tu correo</button> para guardarlos en tu cuenta.`;
-  if(ACCT.user) return hasPicks?"":"Se guardan en tu cuenta.";
-  return hasPicks?`<button class="alink" data-acct>Entra a tu cuenta</button> para verlos también en tu teléfono o tu computadora.`
-    :`Se guardan en este navegador; <button class="alink" data-acct>entra a tu cuenta</button> para verlos en todos tus dispositivos.`;
+  if(!D.fb) return hasPicks?"":"Se guardan en este navegador.";
+  if(!ACCT.ready) return "";
+  if(ACCT.user&&!acctOk()) return "";      // el aviso grande de "Confirma tu correo" ya sale arriba
+  if(ACCT.user) return hasPicks?"":"Se guardan en tu cuenta y cuentan en tus grupos.";
+  return "";                                  // sin cuenta: sale el aviso grande de "Entra para hacer tus picks"
+}
+function acctGate(){   // aviso grande arriba de la Quiniela cuando no se pueden hacer picks
+  if(!D.fb||!ACCT.ready||acctOk()) return "";
+  if(ACCT.user) return `<div class="qgate"><b>Confirma tu correo para hacer tus picks</b><span>Te mandamos un link a ${acctEsc(ACCT.user.email||"tu correo")}. Ábrelo (revisa también spam) y regresa: tus picks se guardan en tu cuenta y cuentan en tus grupos.</span><button class="btn" data-acct>Ya lo confirmé / reenviar</button></div>`;
+  return `<div class="qgate"><b>Entra para hacer tus picks</b><span>Puedes ver todo sin cuenta. Para escoger equipos entra con Google o con tu correo: así tus picks se guardan y cuentan en tus grupos.</span><button class="btn" data-acct>Entrar</button></div>`;
 }
 function acctSlHint(){
   const p=$("#slAcct"), show=!!(D.fb&&ACCT.ready&&!ACCT.user&&SL.user);
@@ -3746,7 +3902,7 @@ function acctRender(){
   }
   const up=ACCT.mode==="up";
   box.innerHTML=`<h2>${up?"Crea tu cuenta":"Entra a tu cuenta"}</h2>
-    <p class="note">Guarda tu liga de Sleeper y tus picks de la quiniela en todos tus dispositivos.</p>
+    <p class="note">${ACCT.why==="pick"?"Para hacer tus picks entra a tu cuenta: así se guardan y cuentan en tus grupos. El equipo que tocaste se escoge solo al entrar.":"Guarda tu liga de Sleeper y tus picks de la quiniela en todos tus dispositivos."}</p>
     <div class="aform">
       <button class="agoogle" id="aGoogle">${ACCT_G}Continuar con Google</button>
       <div class="aor">o con tu correo</div>
@@ -3797,6 +3953,7 @@ const acctDelete=()=>acctRun(async()=>{
   if(ok) await acctForget(); adlg.close();
 });
 function acctOpen(){ if(!ACCT.ready) return; ACCT.mode="in"; acctRender(); if(!adlg.open) adlg.showModal(); }
+adlg.addEventListener("close",()=>{ ACCT.why=null; });
 $("#acctBtn").onclick=acctOpen;
 $("#aClose").onclick=()=>adlg.close();
 adlg.addEventListener("click",e=>{if(e.target===adlg) adlg.close();});
@@ -3950,7 +4107,8 @@ async function grLoad(g){
     }
     W[w]={S,P};
   }
-  return GR.data[g]={info,M,W,cur,t:Date.now()};
+  const SV=info.surv?await svLoadPicks(g,info,M,cur):null;
+  return GR.data[g]={info,M,W,SV,cur,t:Date.now()};
 }
 // Tabla: puntos (1 por acierto). Ganador de cada semana: más aciertos; si empatan, el desempate más cercano a los
 // puntos totales del último partido. Empates en la temporada: más semanas ganadas y luego menor error acumulado de desempate.
@@ -4027,7 +4185,7 @@ async function grRender(){
   if(!GR.ids.length&&!GR.join) h+=`<p class="note">Crea un grupo y comparte el link por WhatsApp. Cada quien hace sus picks en la Quiniela y aquí sale la tabla: 1 punto por acierto, con spread y sin spread.</p>`;
   h+=`<div id="grMain"></div>`;
   box.innerHTML=h; grBind();
-  if(GR.cur){ await grReconcile().catch(()=>false); grMain(GR.cur); }
+  if(GR.cur){ await Promise.all([grReconcile().catch(()=>false),svReconcile().catch(()=>false)]); grMain(GR.cur); }
 }
 async function grMain(g,soft){
   const box=$("#grMain"); if(!box) return; if(!soft) box.innerHTML=`<p class="note">Cargando la tabla…</p>`;
@@ -4042,16 +4200,17 @@ async function grMain(g,soft){
   const R=grScore(Gd,GR.mode), me=grMe().uid, wa=`https://wa.me/?text=${encodeURIComponent(`Únete a mi quiniela «${I.nombre}» en La Pizarra: ${grLink(g)}`)}`;
   box.innerHTML=`<div class="grhead"><div><h3>${acctEsc(I.nombre)}</h3><small>${Gd.M.length} ${Gd.M.length===1?"miembro":"miembros"} · Semana ${Gd.cur}</small></div>
       <div class="grinv"><a class="btn" href="${wa}" target="_blank" rel="noopener">Invitar por WhatsApp</a><button class="alink" id="grCopy">Copiar link</button></div></div>
-    ${qnMode==="surv"?`<p class="note">El survivor en grupos llega pronto. Mientras, aquí está la tabla con spread.</p>`:""}
+    ${qnMode==="surv"?`<h3 style="margin-top:18px">Survivor</h3>${svGroupHTML(g,Gd)}<p class="note" style="margin-top:14px"><button class="alink danger" id="grLeave">Salir del grupo</button></p>`:`
     ${(()=>{const W=R.winners, ws=Object.keys(W).map(Number).sort((a,b)=>b-a); if(!ws.length) return ""; const w=ws[0], x=W[w];
       return `<div class="grwin">🏆 <span><b>Semana ${w}:</b> ${x.who.map(acctEsc).join(" y ")} con ${x.pts} ${x.pts===1?"acierto":"aciertos"}${x.usedTb?` · desempate: ${x.tb.map(v=>v??"sin pronóstico").join(", ")} (fueron ${x.tot} pts)`:""}</span></div>`;})()}
     ${(()=>{const m=GR.missing?.[g]; return m&&m.n&&+m.w===+Gd.cur?`<p class="grwarn">${m.n===1?"Uno de tus picks":`${m.n} de tus picks`} de la semana ${m.w} no ${m.n===1?"llegó":"llegaron"} a este grupo antes de que empezara su partido, así que no ${m.n===1?"cuenta":"cuentan"} aquí. Desde ahora tus picks se revisan solos cada vez que abres la Quiniela.</p>`:"";})()}
     <h3 style="margin-top:18px">Tabla ${GR.mode==="ats"?"con spread":"sin spread"}</h3>
     <ol class="grlb">${R.map((r,i)=>{const n=r.sw+r.sl, pos=i>0&&R[i-1].sw===r.sw&&R[i-1].won===r.won&&R[i-1].tbe===r.tbe?"":i+1;
-      return `<li class="${r.uid===me?"me":""}"><span class="rk">${pos}</span><div class="hn"><b>${acctEsc(r.n)}${r.uid===me?" <small class=\"tu\">tú</small>":""}</b><small>Sem. ${Gd.cur}: ${r.ww} · Récord ${r.sw}-${r.sl}${r.sp?`-${r.sp}`:""}${n?` (${Math.round(r.sw/n*100)}%)`:""}${r.won?` · ${r.won} ${r.won===1?"semana ganada":"semanas ganadas"}`:""}</small></div><span class="pts">${r.sw}<small>${r.sw===1?"punto":"puntos"}</small></span></li>`;}).join("")}
+      return `<li class="${r.uid===me?"me":""}"><span class="rk">${pos}</span><div class="hn"><b>${acctEsc(r.n)}${r.uid===me?" <small class=\"tu\">tú</small>":""}</b><small>${(()=>{const X=Gd.W[Gd.cur], doc=X?.P?.[r.uid], has=doc&&Object.keys(doc).some(k=>k.includes("@")); return !has&&X&&(r.uid===me||Date.now()>=X.S.primero)?`<em class="grnone">${r.uid===me?"todavía no haces tus picks":"sin picks esta semana"}</em> · `:"";})()}Sem. ${Gd.cur}: ${r.ww} · Récord ${r.sw}-${r.sl}${r.sp?`-${r.sp}`:""}${n?` (${Math.round(r.sw/n*100)}%)`:""}${r.won?` · ${r.won} ${r.won===1?"semana ganada":"semanas ganadas"}`:""}</small></div><span class="pts">${r.sw}<small>${r.sw===1?"punto":"puntos"}</small></span></li>`;}).join("")}
     ${(()=>{const L=grLpz(Gd,GR.mode); return L?`<li class="lpz"><span class="rk"><svg width="22" height="22" aria-hidden="true"><use href="#lp-logo"></use></svg></span><div class="hn"><b>La Pizarra</b><small>De referencia, no compite · Sem. ${Gd.cur}: ${L.ww} · Récord ${L.sw}-${L.sl}${L.sp?`-${L.sp}`:""}</small></div><span class="pts">${L.sw}<small>${L.sw===1?"punto":"puntos"}</small></span></li>`:"";})()}</ol>
     <h3 style="margin-top:22px">Picks de la semana ${Gd.cur}</h3>${grGrid(Gd,GR.mode)}
-    <p class="note" style="margin-top:14px">${GR.mode==="ats"?"Con spread cuenta la línea oficial del grupo (la de ESPN Pick'em de cada semana). ":""}1 punto por acierto. Desempate de la semana: los puntos totales del último partido (se pone en su tarjeta, en Mis picks). <button class="alink danger" id="grLeave">Salir del grupo</button></p>`;
+    <p class="note" style="margin-top:14px">${GR.mode==="ats"?"Con spread cuenta la línea oficial del grupo (la de ESPN Pick'em de cada semana). ":""}1 punto por acierto. Desempate de la semana: los puntos totales del último partido (se pone en su tarjeta, en Mis picks). <button class="alink danger" id="grLeave">Salir del grupo</button></p>`}`;
+  svBind(g);
   box.querySelectorAll(".tbl").forEach(freezeTable);
   $("#grCopy").onclick=async()=>{try{await navigator.clipboard.writeText(grLink(g)); $("#grCopy").textContent="¡Copiado!";}catch(e){prompt("Copia este link:",grLink(g));}};
   $("#grLeave").onclick=async()=>{ if(!confirm(`¿Salir de «${I.nombre}»? Tus picks se quedan en el grupo, pero ya no lo verás.`)) return; try{await grLeave(g); grRender();}catch(e){alert("No se pudo. Intenta de nuevo.");} };
@@ -4063,6 +4222,84 @@ function grBind(){
     $("#grMake").disabled=true; try{await grCreate(n); GR.creating=false; grRender();}catch(e){console.warn("Grupos:",e); $("#grMsg").textContent="No se pudo crear el grupo. Intenta de nuevo.";} finally{const b=$("#grMake"); if(b) b.disabled=false;}};
   $("#grMake").onclick=mk; $("#grName").onkeydown=e=>{if(e.key==="Enter") mk();};
   const jb=$("#grJoinBtn"); if(jb) jb.onclick=async()=>{jb.disabled=true; try{await grJoin(GR.join); grRender();}catch(e){console.warn("Grupos:",e); $("#grMsg").textContent="No pudimos unirte al grupo. Intenta de nuevo."; jb.disabled=false;}};
+}
+// ---------- Survivor en grupos ----------
+// grupos/{g}.surv = {desde: semana en que empieza, vidas: 1–3} (lo activa el creador). Tu pick de la Quiniela → Survivor
+// se copia a cada grupo con survivor activo desde esa semana (una hoja por semana, se reescribe completa con set).
+const svGroups=w=>GR.ids.filter(id=>{const i=GR.info[id]; return i&&i.surv&&+w>=+i.surv.desde;});
+async function svWrite(g,w,p){
+  const uid=grMe().uid, ref=ACCT.db.doc(`grupos/${g}/surv/${uid}_${w}`);
+  if(!p) return;   // quitar un pick no se sube (se reemplaza al escoger otro)
+  await ref.set({uid,w:+w,temporada:D.season,k:p.k,t:p.t});
+}
+async function svOnPick(w){
+  if(!acctOk()) return; if(!GR.loaded) await grLoadIds(); await Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null)));
+  const p=svMine()[w];
+  for(const g of svGroups(w)){ try{await svWrite(g,w,p); delete GR.data[g];}catch(e){console.warn("Survivor: no se guardó en el grupo",g,e?.code||e);} }
+}
+let svRecT=0;
+async function svReconcile(force){   // igual que en la quiniela: lo tuyo contra lo que tiene cada grupo (semana actual)
+  if(!acctOk()||!GR.loaded||!GR.ids.length) return false; if(!force&&Date.now()-svRecT<90e3) return false; svRecT=Date.now();
+  await Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null)));
+  const w=+(await qnGet()).week, p=svMine()[w]; if(!p||svKo(w,p.k)<=Date.now()) return false;
+  let wrote=0;
+  for(const g of svGroups(w)){
+    let have=null; try{const s=await ACCT.db.doc(`grupos/${g}/surv/${grMe().uid}_${w}`).get(); have=s.exists?s.data():null;}catch(e){have=null;}
+    if(have&&have.k===p.k&&have.t===p.t) continue;
+    if(have&&have.k&&svKo(w,have.k)<=Date.now()) continue;
+    try{await svWrite(g,w,p); wrote++; delete GR.data[g];}catch(e){console.warn("Survivor: revisión",g,e?.code||e);}
+  }
+  return wrote>0;
+}
+function svFirstKo(w){ const ks=(D.sched||[]).filter(x=>x.w===+w&&x.ko).map(x=>+new Date(x.ko)); return ks.length?Math.min(...ks):Infinity; }
+function svStartWeek(){ let w=Math.max(SV_DESDE,+(qnCache?.week||D.gweek)); if(svFirstKo(w)<=Date.now()) w++; return w; }
+async function svActivate(g,vidas){
+  const desde=svStartWeek(); await ACCT.db.doc(`grupos/${g}`).update({surv:{desde,vidas:+vidas}});
+  delete GR.data[g]; await grInfo(g,true); svRecT=0; await svReconcile(true).catch(()=>{});
+}
+async function svLoadPicks(g,info,M,cur){   // {semana: {uid: {k,t}|null}}
+  const out={}, d=+info.surv.desde;
+  for(let w=d;w<=cur;w++){
+    const ck=`pz_sv_${g}_${w}`, done=w<cur&&Date.now()>svLastKo(w)+6*3600e3, cached=done?grCacheGet(ck):null, P=cached||{};
+    if(!cached||M.some(m=>!(m.uid in cached))){
+      await Promise.all(M.map(async m=>{ if(m.uid in P) return;
+        try{const s=await ACCT.db.doc(`grupos/${g}/surv/${m.uid}_${w}`).get(); P[m.uid]=s.exists?{k:s.data().k,t:s.data().t}:null;}catch(e){P[m.uid]=null;} }));
+      if(done&&Object.values(P).every(p=>!p||svGrade(w,p.k,p.t))) grCacheSet(ck,P);
+    }
+    out[w]=P;
+  }
+  return out;
+}
+function svGroupHTML(g,Gd){
+  const I=Gd.info, me=grMe().uid, owner=I.dueno===me;
+  if(!I.surv){
+    return owner?`<div class="svact"><b>Activa el survivor en «${acctEsc(I.nombre)}»</b><span>Cada quien escoge un equipo por semana sin repetir. Si pierde, pierde una vida; si empata, sigue vivo; si no escoge, queda eliminado. Empieza en la semana ${svStartWeek()}.</span>
+      <label>Vidas por jugador <select id="svVidas"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label><button class="btn" id="svOn">Activar survivor</button><p class="amsg" id="svMsg" aria-live="polite"></p></div>`
+      :`<p class="note">El creador del grupo todavía no activa el survivor. Mientras, tu survivor personal sigue contando en <button class="alink" data-qview="picks">Mis picks</button>.</p>`;
+  }
+  const d=+I.surv.desde, V=+I.surv.vidas, cur=Gd.cur, SP=Gd.SV||{}, now=Date.now(), T=t=>NT[t]||{n:t};
+  if(cur<d) return `<p class="note">El survivor de este grupo empieza en la semana ${d} (${V} ${V===1?"vida":"vidas"}). Escoge tu equipo en <button class="alink" data-qview="picks">Mis picks</button>.</p>${owner&&now<svFirstKo(d)?svVidasEdit(V):""}`;
+  const uids=Gd.M.map(m=>m.uid), name=Object.fromEntries(Gd.M.map(m=>[m.uid,m.nombre||"Jugador"]));
+  const run=svGroupRun(uids,(u,w)=>SP[w]?.[u]||null,V,d,cur,svLastKo);
+  const rows=uids.map(u=>({u,st:run.S[u]})).sort((a,b)=>(a.st.out==null?0:1)-(b.st.out==null?0:1)||(b.st.out??0)-(a.st.out??0)||b.st.lives-a.st.lives||name[a.u].localeCompare(name[b.u]));
+  const vis=(u,h)=>u===me||h.w<cur||(h.k&&svKo(h.w,h.k)<=now);   // picks ajenos de esta semana: cuando empieza su partido
+  const lz=svRun(w=>LPZS[w]||null,V,d,cur);
+  const vivos=rows.filter(r=>r.st.out==null).length;
+  return `${run.winner?`<div class="grwin">🏆 <span><b>${acctEsc(name[run.winner])}</b> es el último en pie.</span></div>`:""}
+    <p class="note svsum">Survivor desde la semana ${d} · ${V} ${V===1?"vida":"vidas"} · ${vivos} de ${uids.length} siguen vivos${run.saved.length?` · en la semana ${run.saved.join(", ")} cayeron todos y siguieron todos`:""}</p>
+    <ol class="grlb svlb">${rows.map(({u,st})=>{
+      const chips=st.hist.map(h=>vis(u,h)?svChip(h):`<span class="svchip pend">S${h.w} ${h.t?"ya escogió":"sin pick todavía"}</span>`).join("");
+      return `<li class="${u===me?"me":""}${st.out!=null?" out":""}"><div class="hn"><b>${acctEsc(name[u])}${u===me?' <small class="tu">tú</small>':""}</b><span class="svchips">${chips}</span></div>
+        <span class="pts">${st.out!=null?`<small class="svout">Fuera</small><small>sem. ${st.out}</small>`:`${"♥".repeat(st.lives)}<small>${st.lives} ${st.lives===1?"vida":"vidas"}</small>`}</span></li>`;}).join("")}
+      <li class="lpz"><div class="hn"><b>La Pizarra</b><small>De referencia, no compite</small><span class="svchips">${lz.hist.map(svChip).join("")}</span></div><span class="pts">${lz.out!=null?`<small class="svout">Fuera</small><small>sem. ${lz.out}</small>`:`${"♥".repeat(lz.lives)}<small>${lz.lives} ${lz.lives===1?"vida":"vidas"}</small>`}</span></li></ol>
+    <p class="note" style="margin-top:12px">Un equipo por semana, sin repetir. Si pierde, pierdes una vida; si empata, sigues vivo; si no escoges, quedas eliminado. Si todos los que siguen vivos caen la misma semana, siguen todos. Tu equipo se escoge en <button class="alink" data-qview="picks">Mis picks</button>.</p>
+    ${owner&&now<svFirstKo(d)?svVidasEdit(V):""}`;
+}
+const svVidasEdit=V=>`<div class="svact"><span>Puedes cambiar las vidas hasta que empiece la semana.</span><label>Vidas por jugador <select id="svVidas">${[1,2,3].map(n=>`<option value="${n}" ${n===V?"selected":""}>${n}</option>`).join("")}</select></label><button class="btn" id="svOn">Guardar</button><p class="amsg" id="svMsg" aria-live="polite"></p></div>`;
+function svBind(g){
+  const b=$("#svOn"); if(!b) return;
+  b.onclick=async()=>{ b.disabled=true; try{ await svActivate(g,$("#svVidas").value); grMain(g); }
+    catch(e){ console.warn("Survivor:",e?.code||e); $("#svMsg").textContent="No se pudo. Si el error sigue, faltan las reglas nuevas de Firebase."; b.disabled=false; } };
 }
 // Invitación: lapizarra.mx/?g=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("nfl"); showTab("nflq"); qnSetView("grupos");}}catch(e){}})();

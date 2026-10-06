@@ -929,6 +929,30 @@ except Exception as ex:
 # (sin ver el futuro) y con la línea de cierre de nflverse (marcadas "c"). Se guarda en docs/datos/picks_pizarra.json y viaja a la
 # página como D.lpz = {semana: {"VIS@LOC": {t: pick con spread, L: ventaja del local, su: pick sin spread, m: nuestra línea, c: 1 si es de cierre}}}.
 import math
+def _hungaro(C):   # asignación de costo mínimo (renglones ≤ columnas): devuelve la columna de cada renglón
+    n=len(C); m=len(C[0]); INF=float('inf')
+    u=[0.0]*(n+1); v=[0.0]*(m+1); p=[0]*(m+1); way=[0]*(m+1)
+    for i in range(1,n+1):
+        p[0]=i; j0=0; minv=[INF]*(m+1); used=[False]*(m+1)
+        while True:
+            used[j0]=True; i0=p[j0]; delta=INF; j1=0
+            for j in range(1,m+1):
+                if not used[j]:
+                    cur=C[i0-1][j-1]-u[i0]-v[j]
+                    if cur<minv[j]: minv[j]=cur; way[j]=j0
+                    if minv[j]<delta: delta=minv[j]; j1=j
+            for j in range(m+1):
+                if used[j]: u[p[j]]+=delta; v[j]-=delta
+                else: minv[j]-=delta
+            j0=j1
+            if p[j0]==0: break
+        while True:
+            j1=way[j0]; p[j0]=p[j1]; j0=j1
+            if j0==0: break
+    r=[None]*n
+    for j in range(1,m+1):
+        if p[j]: r[p[j]-1]=j-1
+    return r
 # Semana 4 de 2026 tal como se mostró en la página (antes de la regla del jueves): 14-1 contra el spread.
 # Líneas de ESPN Pick'em de esa semana. Solo se usa si el archivo de picks no tiene esa semana.
 LPZ_SEMILLA={"2026":{"4":{"PIT@CLE":{"su":"PIT","m":1.5,"t":"CLE","L":2.5},"IND@WAS":{"su":"IND","m":3.2,"t":"WAS","L":3.5},"TEN@BAL":{"su":"BAL","m":8.1,"t":"TEN","L":-11.5},"NE@BUF":{"su":"BUF","m":5.5,"t":"NE","L":-7.5},"NYJ@CHI":{"su":"CHI","m":5.5,"t":"CHI","L":-3.5},"JAX@CIN":{"su":"JAX","m":-2.6,"t":"JAX","L":-2.5},"DAL@HOU":{"su":"HOU","m":1.6,"t":"DAL","L":-2.5},"ARI@NYG":{"su":"ARI","m":0.5,"t":"NYG","L":1.5},"LA@PHI":{"su":"LA","m":-2.7,"t":"LA","L":2.5},"GB@TB":{"su":"GB","m":2.2,"t":"TB","L":3.5},"MIA@MIN":{"su":"MIN","m":8.2,"t":"MIA","L":-11.5},"KC@LV":{"su":"KC","m":-2.3,"t":"LV","L":4.5},"LAC@SEA":{"su":"SEA","m":9.3,"t":"SEA","L":-6.5},"DEN@SF":{"su":"SF","m":8.8,"t":"SF","L":-2.5},"DET@CAR":{"su":"DET","m":1.7,"t":"CAR","L":3.5},"ATL@NO":{"su":"NO","m":2.2,"t":"ATL","L":-2.5}}}}
@@ -1008,6 +1032,48 @@ def _lpz():
             if W.get(key)!=x: nuevos+=1
             W[key]=x
         if W: T[str(w)]=W
+    # ----- Survivor de La Pizarra (una vida, desde la semana 5 de 2026) -----
+    # Cada semana reparte los equipos que no ha usado entre TODAS las semanas que faltan (asignación húngara: la
+    # combinación con la mayor probabilidad de sobrevivir completa) y se queda con el de esta semana. Así no gasta
+    # temprano a los equipos que le van a servir después. Misma regla del jueves que los picks.
+    SVD=5 if S==2026 else 1
+    SV=H.setdefault('surv',{}).setdefault(str(S),{})
+    finales=max(g['w'] for g in sched)
+    def prob(N,g,vegas):
+        nh,na=N.get(g['h']),N.get(g['a'])
+        if nh is None or na is None: return None
+        ph=phi((k*(nh-na)+hf)/13.45)
+        if vegas:
+            ia,ih=imp(g.get('aml')),imp(g.get('hml'))
+            if ia is not None and ih is not None: ph=(ph+ih/(ia+ih))/2
+        return ph
+    for w in range(SVD,semq+1):
+        G=[g for g in sched if g['w']==w and g.get('ko')]
+        if not G: continue
+        ko=lambda g:datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=ZoneInfo("UTC"))
+        g0=min(G,key=ko); fija=ahora>=ko(g0)
+        if fija and str(w) in SV: continue
+        N=net_dia(dia.get(g0['id'])) if fija else hoy
+        usados={x['t'] for ww,x in SV.items() if int(ww)<w}
+        semanas=list(range(w,finales+1)); equipos=sorted({t for g in sched for t in (g['a'],g['h'])}-usados)
+        if not equipos: continue
+        C=[]
+        for ww in semanas:
+            fila=[]
+            for t in equipos:
+                g=next((g for g in sched if g['w']==ww and t in (g['a'],g['h'])),None)
+                pp=prob(N,g,ww==w) if g else None
+                if pp is not None and g['h']!=t: pp=1-pp
+                fila.append(-math.log(max(pp,1e-4)) if pp is not None else 10.0)
+            C.append(fila)
+        if len(semanas)>len(equipos): semanas=semanas[:len(equipos)]; C=C[:len(equipos)]
+        a=_hungaro(C); t=equipos[a[0]]
+        g=next(g for g in G if t in (g['a'],g['h'])); pp=prob(N,g,True); pp=pp if g['h']==t else 1-pp
+        x=dict(t=t,k=f"{g['a']}@{g['h']}",p=round(pp,3))
+        if SV.get(str(w))!=x: nuevos+=1
+        SV[str(w)]=x
+    out['lpzs']=SV
+    if SV: print("Survivor de La Pizarra: "+", ".join(f"sem. {w_} {x['t']} ({round(x['p']*100)}%)" for w_,x in sorted(SV.items(),key=lambda z:int(z[0]))))
     os.makedirs(os.path.dirname(ruta),exist_ok=True)
     json.dump(H,open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
     out['lpz']={w:v for w,v in T.items() if v}
