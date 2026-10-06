@@ -636,6 +636,9 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .hrow .x.vs{font-weight:500;font-size:14px;color:var(--muted)}
 .hmas2{display:block;width:100%;border:0;border-top:1px dashed var(--line);background:none;color:var(--mark);font:600 14px var(--body);padding:9px;cursor:pointer}
 .hh h3 small{text-transform:none}
+.back{flex:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;margin-right:-6px}
+.back:hover{border-color:var(--mark);color:var(--mark)}
+.back[hidden]{display:none}
 .bnav{display:none}
 @media (min-width:721px){
   .hoyhead .hm{display:none}.hoyhead .hd{display:inline}.hoyhead h2{font-size:48px}.hoyhead p{font-size:17px}
@@ -690,6 +693,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </svg>
 <div class="wrap">
 <header class="top">
+  <button class="back" id="pzBack" aria-label="Regresar" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
   <div class="logo"><svg width="30" height="30" style="flex:none"><use href="#lp-logo"></use></svg>La <span>Pizarra</span></div>
   <nav class="tabs sports" aria-label="Deporte">
     <button aria-selected="true" data-sport="hoy">Hoy</button>
@@ -962,6 +966,21 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 
 <script>
 const D = __DATA__;
+// ---------- Página ligera (5 oct 2026): datos pesados en archivos aparte ----------
+// build_site.py saca de D los datos que solo usan algunas secciones y los guarda en docs/datos/paq_<nombre>.json;
+// se descargan la primera vez que se necesitan (D.paq.v = versión de la corrida, para que nunca se mezclen días).
+// Si la página se generó con una versión vieja de build_site.py (todo dentro de D), paquete() no descarga nada.
+const PAQ_CLAVES={stats:["qb","rec","rush","def","teams"],box:["box"],previa:["h2h","starters"],fantasy:["fantasy","sleeper","ffw"],fotos:["wd_photos","wd_photos_q"],historia:["historia"]};
+const PAQ_OK={}, PAQ_P={};
+for(const n in PAQ_CLAVES) if(!D.paq?.[n]) PAQ_OK[n]=true;   // ya viene dentro de D
+for(const k of ["qb","rec","rush","def","teams","fantasy"]) if(!D[k]) D[k]=[];   // listas vacías mientras llega su paquete
+function paquete(n){
+  if(PAQ_OK[n]) return Promise.resolve();
+  if(!PAQ_P[n]) PAQ_P[n]=fetch(`datos/paq_${n}.json?v=${D.paq.v}`).then(r=>{if(!r.ok) throw new Error("paquete "+n+" "+r.status); return r.json();})
+    .then(j=>{Object.assign(D,j); PAQ_OK[n]=true;}).catch(e=>{delete PAQ_P[n]; throw e;});
+  return PAQ_P[n];
+}
+const paquetes=ns=>Promise.all(ns.map(paquete));
 const $ = s => document.querySelector(s);
 const fmt = (v,d=0) => v==null ? "–" : (d ? Number(v).toFixed(d) : Number(v).toLocaleString("es-MX"));
 const signed = (v,d=3) => v==null ? "–" : (v>0?"+":"")+Number(v).toFixed(d);
@@ -1046,13 +1065,23 @@ function loadNflPlayoffs(){
 // Qué botón de deporte se marca (arriba en computadora y en la barra de abajo en el celular) según la sección
 const FF_TABS=["fmatch","froster","fliga","fwaivers","ftrade"];
 const sportOf=id=>id==="hoy"?"hoy":id==="nflq"?"qn":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
+// Abre una sección que necesita un paquete: "Cargando…" mientras llega y, si falla, un aviso para recargar
+function paqCarga(n,fn,donde){
+  if(PAQ_OK[n]) return fn();
+  const el=donde&&$(donde), txt=t=>{ if(!el) return; if(el.tagName==="P") el.textContent=t; else el.innerHTML=t?`<p class="note">${t}</p>`:""; };
+  const puse=el&&!el.textContent.trim(); if(puse) txt("Cargando…");
+  paquete(n).then(()=>{ if(puse) txt(""); fn(); })
+    .catch(()=>txt("No pudimos cargar esta sección. Revisa tu conexión y recarga la página."));
+}
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy")?"none":"";
   const spSel=sportOf(id); document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===spSel));
   if(id==="hoy") hoyRender();
+  if(typeof navPush==="function") navPush(id);
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
+  if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
+  if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",fantasyInit,id==="fwaivers"?"#notes":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp,tab){
   if(sp==="qn") return showSport("nfl","nflq");   // Quiniela (por ahora solo NFL) tiene su propio botón
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
@@ -1082,7 +1111,7 @@ function applyLeagueTabs(){
   $('.subnav[data-for=mx] button[data-tab=mxrecords]').hidden=!L.nat;
   $('.subnav[data-for=mx] button[data-tab=mxsquad]').hidden=!L.nat;
   $('.subnav[data-for=mx] button[data-tab=mxko]').hidden=!L.cup||comercial(L);   // "Eliminatoria" de ESPN; con API-Football va en Llaves
-  $('.subnav[data-for=mx] button[data-tab=mxhist]').hidden=!(D.historia?.[FLIG]?.length);
+  $('.subnav[data-for=mx] button[data-tab=mxhist]').hidden=!(D.historia?.[FLIG]?.length||D.hist_n?.[FLIG]);
   $("#mxgames .weeknav").style.display=L.nat?"none":""; // .weeknav tiene display:flex, que le gana a "hidden"
 }
 const REGIONES=["México","Europa","Sudamérica","Concacaf","Asia"];
@@ -1108,8 +1137,8 @@ $("#flSel").onchange=e=>selectLeague(e.target.value);
 // ---------- Explorar: mapa de competencias ----------
 let EXP_FILTRO="";   // región o país elegido ("" = todo)
 // Zoom y arrastre del mapa: rueda del mouse, botones + − ⌂, y en el teléfono pellizco y arrastre (se mueve el viewBox).
-(function(){
-  const svg=$("#mapaMundo"); if(!svg) return;
+function mapaZoom(){(function(){
+  const svg=$("#mapaMundo"); if(!svg||svg.dataset.zoom) return; svg.dataset.zoom="1";
   const W=1000,H=520; let vb={x:0,y:0,w:W,h:H};
   const aplica=()=>svg.setAttribute("viewBox",`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
   const pt=(cx,cy)=>{const r=svg.getBoundingClientRect(); return [vb.x+(cx-r.left)/r.width*vb.w, vb.y+(cy-r.top)/r.height*vb.h];};
@@ -1128,9 +1157,17 @@ let EXP_FILTRO="";   // región o país elegido ("" = todo)
   svg.addEventListener("click",e=>{ if(movio){e.stopPropagation(); e.preventDefault();} },true);   // un arrastre no cuenta como clic
   document.querySelectorAll(".mapa-zoom button").forEach(b=>b.onclick=()=>{const r=svg.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2;
     if(b.dataset.z==="in") zoomEn(1.6,cx,cy); else if(b.dataset.z==="out") zoomEn(0.625,cx,cy); else {vb={x:0,y:0,w:W,h:H}; aplica();}});
-})();
+})();}
+mapaZoom();
+// El mapa (115 KB) viene aparte en datos/mapa.html (lo separa build_site.py) y se descarga al abrir Explorar
+let MAPA_P=null;
 function renderExplore(){
-  const svg=$("#mapaMundo"); if(!svg) return;
+  const svg=$("#mapaMundo");
+  if(!svg){ const h=$("#mapaHost"); if(!h) return;
+    if(!MAPA_P) MAPA_P=fetch(`datos/mapa.html?v=${D.paq?.v||""}`).then(r=>{if(!r.ok) throw 0; return r.text();})
+      .then(t=>{ const x=$("#mapaHost"); if(x) x.outerHTML=t; mapaZoom(); }).catch(()=>{MAPA_P=null;});
+    MAPA_P.then(()=>{ if($("#mapaMundo")&&!$("#mxexplore").classList.contains("hidden")) renderExplore(); });
+    return; }
   $(".hero").style.display="none";   // en Explorar no se muestra el encabezado de la liga
   const enPais=(L,cid)=>L.cid===cid||(L.cids||[]).includes(cid);
   const cids=new Set(); Object.values(LEAGUES).forEach(L=>{if(L.cid) cids.add(L.cid); (L.cids||[]).forEach(c=>cids.add(c));});
@@ -1231,6 +1268,7 @@ const wpNorm=t=>(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerC
 const WP_NOISE=new Set(["club","cf","fc","cd","de","del","la","el","futbol","deportivo","sad","sa","cv","afc","calcio","ssc","ac"]);
 function wpSameTeam(a,b){const A=wpNorm(a).filter(x=>!WP_NOISE.has(x)),B=new Set(wpNorm(b).filter(x=>!WP_NOISE.has(x))); return A.some(x=>B.has(x));}
 async function wdList(code){
+  try{ await paquete("fotos"); }catch(e){ return []; }
   if(D.wd_photos?.[code]?.length) return D.wd_photos[code];
   const key="pz_wd_"+code;
   try{const c=JSON.parse(localStorage.getItem(key)||"null"); if(c&&Date.now()-c.t<7*864e5) return c.rows;}catch(e){}
@@ -1291,7 +1329,9 @@ async function leaderPhotos(rows,code){
     for(const [img,f] of wdImgs) if(cr[f]) img.title="Foto: "+cr[f]+" · Wikimedia Commons";
   }
 }
-{const q=topOf(D.qb,"epa"),py=topOf(D.qb,"yds"),ptd=topOf(D.qb,"td"),rsh=topOf(D.rush,"yds"),ry=topOf(D.rec,"yds"),ypr=topOf(D.rec.filter(r=>r.rec>=6),"ypr");
+let STATS_LISTO=false;
+function statsInit(){ if(STATS_LISTO) return; STATS_LISTO=true;
+ {const q=topOf(D.qb,"epa"),py=topOf(D.qb,"yds"),ptd=topOf(D.qb,"td"),rsh=topOf(D.rush,"yds"),ry=topOf(D.rec,"yds"),ypr=topOf(D.rec.filter(r=>r.rec>=6),"ypr");
  const sk=topOf(D.def,"sk"),it=topOf(D.def,"int"),ff=topOf(D.def,"ff"),tk=topOf(D.def,"tk"),tfl=topOf(D.def,"tfl"),pdf=topOf(D.def,"pd");
  $("#leaders").innerHTML=`<p class="lgroup">Ofensiva</p><div class="leaders">${[
    leaderCard("EPA por jugada",signed(q?.epa),q),leaderCard("Yardas de pase",fmt(py?.yds),py),leaderCard("Pases de TD",ptd?.td,ptd),
@@ -1299,6 +1339,8 @@ async function leaderPhotos(rows,code){
   <p class="lgroup">Defensiva</p><div class="leaders">${[
    leaderCard("Capturas",fmt(sk?.sk,1),sk),leaderCard("Intercepciones",it?.int,it),leaderCard("Balones sueltos provocados",ff?.ff,ff),
    leaderCard("Tacleadas",tk?.tk,tk),leaderCard("Tacleadas con pérdida",fmt(tfl?.tfl,1),tfl),leaderCard("Pases defendidos",pdf?.pd,pdf)].join("")}</div>`;}
+ pState.render(); tState.render();
+}
 
 // Players table
 const PCOLS={
@@ -1316,19 +1358,25 @@ document.querySelectorAll("#pSeg button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#pSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
   pState.set=b.dataset.k; pState.limit=25; pState.k={qb:"epa",rec:"yds",rush:"yds",def:"sk"}[pState.set]; pState.dir="desc"; pState.render();});
 $("#pSearch").oninput=e=>{pState.q=e.target.value;pState.render();};
-pState.render();
 
 // Teams table
 const tState={k:"oepa",dir:"desc",render(){table($("#tTable"),[
  {k:"t",h:"Equipo",l:1,f:r=>`<span class="nm">${r.t}</span>`,asc:1},{k:"w",h:"Récord",f:r=>`${r.w}-${r.l}`},{k:"pf",h:"Puntos a favor"},{k:"pa",h:"Puntos en contra",asc:1},
  {k:"oepa",h:"EPA ofensiva",f:r=>signed(r.oepa)},{k:"pp",h:"% pase",f:r=>r.pp==null?"–":Math.round(r.pp*100)+"%"},{k:"rp",h:"% carrera",f:r=>r.rp==null?"–":Math.round(r.rp*100)+"%"},{k:"proe",h:"Pase vs. esperado",f:r=>r.proe==null?"–":signed(r.proe,1)+"%",tip:"Qué tanto pasa el balón por encima (+) o debajo (−) de lo esperado según la situación"},{k:"depa",h:"EPA defensiva",f:r=>signed(r.depa),asc:1},{k:"sacks",h:"Capturas"},{k:"tko",h:"Robos de balón"},
  {k:"vww",h:"Vs. récord ganador",f:r=>r.vwg?r.vw:"Sin juegos"}],D.teams,this)}};
-tState.render();
 
 // Notas de fantasy: se editan en notas.json
 const NOTES=__NOTES__;
-const byName=Object.fromEntries(D.fantasy.map(p=>[p.n,p]));
+let byName={}, pool=[], byG={}, FF_LISTO=false, SL_PEND=false;
+// Fantasy: notas, waivers e intercambios se arman cuando llega el paquete (fantasy, sleeper, ffw)
+function fantasyInit(){ if(FF_LISTO) return; FF_LISTO=true;
+byName=Object.fromEntries(D.fantasy.map(p=>[p.n,p]));
+pool=D.fantasy.filter(p=>p.ecr!=null||p.pr!=null);
+byG=Object.fromEntries(D.fantasy.filter(p=>p.g).map(p=>[p.g,p]));
 $("#notes").innerHTML=NOTES.map(([n,p,t,txt])=>{const o=byName[n]?.own; return `<article><div class="pct" title="% de ligas con dueño">${o!=null?Math.round(o)+"%":""}</div><div class="who">${n}<small>${p} · ${t}</small></div><p>${txt}</p></article>`}).join("");
+  fState.render(); setPools(pool,pool);
+  if(SL_PEND){ SL_PEND=false; slConnect(); }   // usuario de Sleeper guardado: se conecta al entrar a Fantasy
+}
 
 // Waivers / availability table
 const OPP_TIP="Veces que le dieron el balón para correr (acarreos) o le lanzaron un pase (blancos). El número de color es el cambio contra la semana anterior.";
@@ -1343,14 +1391,11 @@ const fState={k:"opp",dir:"desc",pos:"ALL",max:50,q:"",render(){
 document.querySelectorAll("#fSeg button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#fSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));fState.pos=b.dataset.p;fState.render();});
 $("#own").oninput=e=>{fState.max=+e.target.value;$("#ownOut").textContent=e.target.value;fState.render();};
 $("#fSearch").oninput=e=>{fState.q=e.target.value;fState.render();};
-fState.render();
 
 // Trade analyzer
 const val=p=>{const r=p.ecr??(p.pr?p.pr*3.2:null); return r==null?0:Math.round(10000*Math.exp(-0.022*(r-1)));};
-const pool=D.fantasy.filter(p=>p.ecr!=null||p.pr!=null);
 const opts=list=>list.map(p=>`<option value="${p.n}">${p.p} · ${p.t}</option>`).join("");
 function setPools(a,b){$("#plistA").innerHTML=opts(a);$("#plistB").innerHTML=opts(b);}
-setPools(pool,pool);
 const sides={A:[],B:[]};
 function renderTrade(){
   for(const s of ["A","B"]){const el=$("#side"+s), list=sides[s];
@@ -1371,7 +1416,6 @@ renderTrade();
 // ---------- Sleeper ----------
 const API="https://api.sleeper.app/v1";
 const getJ=async u=>{const r=await fetch(API+u);if(!r.ok)throw new Error(r.status);return r.json();};
-const byG=Object.fromEntries(D.fantasy.filter(p=>p.g).map(p=>[p.g,p]));
 function slPlayer(id){
   if(typeof id==="string"&&id.startsWith("e:")) return ESPNP[id]||{n:"Jugador",p:"?",t:"",sid:id};
   if(/^[A-Z]{2,3}$/.test(id)) return {n:id+" D/ST",p:"DEF",t:id,sid:id};
@@ -1383,6 +1427,11 @@ const SL={user:null,league:null,rosters:[],users:{},mine:null,pos:"ALL"};
 const msg=t=>$("#slMsg").textContent=t;
 async function slConnect(){
   const u=$("#slUser").value.trim(); if(!u) return;
+  if(!FF_LISTO){   // la conexión necesita el paquete de Fantasy: si no estás en Fantasy, se hace al entrar
+    if(!(typeof NAV!=="undefined"&&NAV&&FF_TABS.includes(NAV.cur))){ SL_PEND=true; return; }
+    try{ await paquete("fantasy"); }catch(e){ msg("No pudimos cargar los datos de fantasy. Intenta de nuevo."); return; }
+    SL_PEND=false; fantasyInit();
+  }
   $("#slGo").disabled=true; msg("Buscando tu usuario…");
   try{
     const user=await getJ("/user/"+encodeURIComponent(u)); if(!user) throw new Error("nouser");
@@ -1514,7 +1563,20 @@ async function forecast(lat,lon){
   if(!wxCache[k]) wxCache[k]=fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m&timezone=UTC&forecast_days=16`).then(r=>r.json()).catch(()=>null);
   return wxCache[k];
 }
-async function fillWeather(el,lat,lon,when){
+// Clima solo de las tarjetas que se ven en pantalla (antes se pedía para todas al abrir la semana)
+const WX_OBS=("IntersectionObserver" in window)?new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting) return; WX_OBS.unobserve(e.target); const f=e.target._wx; e.target._wx=null; if(f) f(); }),{rootMargin:"200px"}):null;
+function fillWeather(el,lat,lon,when){
+  if(!el||lat==null||!when) return;
+  if(WX_OBS){ el._wx=()=>fillWeatherYa(el,lat,lon,when); WX_OBS.observe(el); return; }
+  return fillWeatherYa(el,lat,lon,when);
+}
+// Igual, pero si no hay coordenadas la ciudad se busca (geocode) hasta que la tarjeta se ve
+function fillWeatherCiudad(el,lat,lon,city,when){
+  if(!el||!when) return;
+  const ya=async()=>{ const g=lat!=null?{latitude:lat,longitude:lon}:await geocode(city); if(g) fillWeatherYa(el,g.latitude,g.longitude,when); };
+  if(WX_OBS){ el._wx=ya; WX_OBS.observe(el); } else ya();
+}
+async function fillWeatherYa(el,lat,lon,when){
   if(lat==null||!when) return;
   const now=Date.now(); if(when-now>15.5*864e5||when-now<-3*3600e3){return;}
   const f=await forecast(lat,lon); if(!f?.hourly) return;
@@ -1926,6 +1988,7 @@ const qnNN=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLo
 const qnBody=t=>{const [b,x]=String(t).split(" - "); const e=QN_BODY[b]||QN_BODY[b.replace(/ /g,"_")]||b.toLowerCase(); return x?`${e} (${x})`:e;};
 let qnInjCache=null, qnRows=[];
 async function qnInj(){
+  await paquete("previa").catch(()=>{});   // titulares de Sleeper (para saber qué bajas importan)
   if(qnInjCache) return qnInjCache;
   try{const c=JSON.parse(localStorage.getItem("pz_inj")||"null"); if(c&&Date.now()-c.t<15*60e3) return (qnInjCache=c.d);}catch(e){}
   try{
@@ -1993,6 +2056,7 @@ function qnFormSU(t){ // últimos 3 resultados (ganó/perdió), para Partidos
 // Secciones de la previa de NFL (las usa el análisis de la Quiniela y la ventana de detalle de Partidos).
 // ats=true: racha contra el spread; ats=false: racha de resultados.
 async function nflPreviaHTML(a,hm,ko,ats){
+  await paquete("previa").catch(()=>{});
   const A=NT[a]||{n:a}, H=NT[hm]||{n:hm};
   let h=`<h3>Bajas de titulares</h3>`;
   const INJ=await qnInj();
@@ -2035,8 +2099,9 @@ function qnSetView(v){
 }
 document.querySelectorAll("#qView button").forEach(b=>b.onclick=()=>qnSetView(b.dataset.v));
 
-function openNfl(id){
+async function openNfl(id){
   const x=(D.sched||[]).find(g=>g.id===id); if(!x) return;
+  if(!PAQ_OK.box){ if(!dlg.open){ $("#gbody").innerHTML=`<p class="note" style="text-align:center">Cargando…</p>`; dlg.showModal(); } await paquete("box").catch(()=>{}); }
   const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, b=(D.box||{})[id], when=x.ko?new Date(x.ko):null;
   const fecha=when?`${cap(fDay(when))}${x.tbd?" · Por definir horario":" · "+fHour(when)}`:"Fecha por definir";
   const L=x.hs==null?NLIVE[id]:null;
@@ -2844,7 +2909,7 @@ async function renderMxJ(){
   const cards=ev.map(mxCard);
   $("#mxGames").innerHTML=cards.map(gameCard).join("");
   if(comercial(LEAGUES[FLIG])) smDondeVerlo(cards.filter(c=>!c.status||c.live).map(c=>c.gid));
-  for(const c of cards){ if(c.status||c.tbd) continue; const g=c.lat!=null?{latitude:c.lat,longitude:c.lon}:await geocode(c.city); if(g) fillWeather(document.getElementById(c.wxId),g.latitude,g.longitude,c.when.getTime()); }
+  for(const c of cards){ if(c.status||c.tbd) continue; fillWeatherCiudad(document.getElementById(c.wxId),c.lat,c.lon,c.city,c.when.getTime()); }
 }
 $("#jSel").onchange=e=>{curJ=+e.target.value;renderMxJ();};
 $("#jPrev").onclick=()=>{if(curJ>0){curJ--;renderMxJ();}};
@@ -3085,7 +3150,7 @@ async function loadSelGames(){
     const cu=cards(up), cd=cards(done);
     $("#mxGames").innerHTML=(cu.length?`<h3 class="grp-h">Próximos</h3>${cu.map(gameCard).join("")}`:"")+(cd.length?`<h3 class="grp-h">Resultados</h3>${cd.map(gameCard).join("")}`:"");
     $("#mxMsg").textContent="";
-    for(const c of cu){ if(c.status||c.tbd) continue; const g=await geocode(c.city); if(g) fillWeather(document.getElementById(c.wxId),g.latitude,g.longitude,c.when.getTime()); }
+    for(const c of cu){ if(c.status||c.tbd) continue; fillWeatherCiudad(document.getElementById(c.wxId),null,null,c.city,c.when.getTime()); }
   }catch(e){selLoaded=false; if(LEAGUES[FLIG].nat) $("#mxMsg").textContent="No pudimos cargar los partidos de México. Intenta recargar la página en un momento.";}
 }
 // Plantel: lista del equipo en ESPN (/teams/203/roster), agrupada por posición. El club sale de
@@ -4014,7 +4079,7 @@ function acctHint(hasPicks){   // texto para el recuadro de Mis picks
   return "";                                  // sin cuenta: sale el aviso grande de "Entra para hacer tus picks"
 }
 function acctGate(){   // aviso grande arriba de la Quiniela cuando no se pueden hacer picks
-  if(!D.fb||!ACCT.ready||acctOk()) return "";
+  if(!D.fb||acctOk()||(!ACCT.ready&&ACCT_INI)) return "";   // Firebase sin cargar y sin sesión: sale "Entra para hacer tus picks"
   if(ACCT.user) return `<div class="qgate"><b>Confirma tu correo para hacer tus picks</b><span>Te mandamos un link a ${acctEsc(ACCT.user.email||"tu correo")}. Ábrelo (revisa también spam) y regresa: tus picks se guardan en tu cuenta y cuentan en tus grupos.</span><button class="btn" data-acct>Ya lo confirmé / reenviar</button></div>`;
   return `<div class="qgate"><b>Entra para hacer tus picks</b><span>Puedes ver todo sin cuenta. Para escoger equipos entra con Google o con tu correo: así tus picks se guardan y cuentan en tus grupos.</span><button class="btn" data-acct>Entrar</button></div>`;
 }
@@ -4023,7 +4088,7 @@ function acctSlHint(){
   p.hidden=!show; p.innerHTML=show?`<button class="alink" data-acct>Entra a tu cuenta</button> para que tu liga se abra sola en cualquier dispositivo.`:"";
 }
 function acctBtn(){
-  const b=$("#acctBtn"), u=ACCT.user; b.hidden=!ACCT.ready; b.classList.toggle("in",!!u);
+  const b=$("#acctBtn"), u=ACCT.user; b.hidden=!(ACCT.ready||(D.fb?.apiKey&&!ACCT_INI)); b.classList.toggle("in",!!u);
   if(!u){b.textContent="Entrar"; b.setAttribute("aria-label","Entrar a tu cuenta"); return;}
   const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase();
   b.innerHTML=u.photoURL?`<img src="${acctEsc(u.photoURL)}" alt="" referrerpolicy="no-referrer">`:acctEsc(ini);
@@ -4099,7 +4164,11 @@ const acctDelete=()=>acctRun(async()=>{
   try{await u.delete();}catch(e){ if(ok) await acctSend(); throw e; }   // si Firebase pide volver a entrar, se restaura lo guardado
   if(ok) await acctForget(); adlg.close();
 });
-function acctOpen(){ if(!ACCT.ready) return; ACCT.mode="in"; acctRender(); if(!adlg.open) adlg.showModal(); }
+async function acctOpen(){
+  if(!ACCT.ready){ if(!D.fb?.apiKey) return; const b=$("#acctBtn"); b.disabled=true;
+    await acctAsegura(); for(let i=0;i<60&&!ACCT.ready;i++) await new Promise(r=>setTimeout(r,100));
+    b.disabled=false; acctBtn(); if(!ACCT.ready) return; }
+  ACCT.mode="in"; acctRender(); if(!adlg.open) adlg.showModal(); }
 adlg.addEventListener("close",()=>{ ACCT.why=null; });
 $("#acctBtn").onclick=acctOpen;
 $("#aClose").onclick=()=>adlg.close();
@@ -4119,7 +4188,7 @@ async function acctInit(){
     firebase.initializeApp(D.fb); ACCT.auth=firebase.auth(); ACCT.auth.languageCode="es"; ACCT.db=firebase.firestore();}
   catch(e){console.warn("Cuentas: no se pudo cargar Firebase",e); return;}
   ACCT.auth.onAuthStateChanged(u=>{
-    const was=ACCT.user; ACCT.user=u||null; ACCT.ready=true; acctBtn(); acctSlHint();
+    const was=ACCT.user; ACCT.user=u||null; ACCT.ready=true; acctBtn(); acctSlHint(); try{localStorage.setItem("pz_sesion",u?"1":"0");}catch(e){}
     if(u&&(!was||was.uid!==u.uid)){ if(u.emailVerified){ acctPull(); if(adlg.open) adlg.close(); } else if(adlg.open) acctRender(); }
     GR.loaded=false; GR.ids=[]; GR.info={}; GR.data={};
     if(u&&acctOk()) grLoadIds().then(()=>{ grReconcile(true).catch(()=>{}); if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
@@ -4129,7 +4198,16 @@ async function acctInit(){
   document.addEventListener("visibilitychange",()=>{ if(document.hidden||!ACCT.user) return;
     if(!acctOk()) acctCheck(); else if(Date.now()-ACCT.last>60e3) acctPull(); });   // al volver del correo se revisa solo
 }
-acctInit();
+// Firebase (≈ 200 KB comprimido) se carga solo si este navegador ya tenía sesión, si llega una invitación a un grupo
+// o al tocar "Entrar". Firebase guarda la sesión en IndexedDB ("firebaseLocalStorageDb"); pz_sesion lo recuerda después.
+var ACCT_INI=null;
+function acctAsegura(){ return ACCT_INI||(ACCT_INI=acctInit()); }
+async function acctHabiaSesion(){
+  try{ const f=localStorage.getItem("pz_sesion"); if(f==="1") return true; if(f==="0") return false; }catch(e){}
+  try{ if(indexedDB.databases){ const L=await indexedDB.databases(); return L.some(d=>d.name==="firebaseLocalStorageDb"); } }catch(e){}
+  return true;   // si no se puede saber, se carga como antes
+}
+if(D.fb?.apiKey){ acctBtn(); setTimeout(()=>{ acctHabiaSesion().then(s=>{ if(s||GR.join) acctAsegura(); }); },0); }
 
 // ---------- Grupos de quiniela (NFL con y sin spread; 1 punto por acierto) ----------
 // Firestore (ver reglas en la sección 2.4 del contexto):
@@ -4314,7 +4392,7 @@ function grGrid(Gd,mode){
 async function grRender(){
   const box=$("#grBody"); if(!box) return;
   if(!D.fb){box.innerHTML=`<p class="note">Muy pronto.</p>`; return;}
-  if(!ACCT.ready){box.innerHTML=`<p class="note">Cargando…</p>`; return;}
+  if(!ACCT.ready&&ACCT_INI){box.innerHTML=`<p class="note">Cargando…</p>`; return;}
   if(!ACCT.user){box.innerHTML=`<p class="note">${GR.join?"Te invitaron a un grupo de quiniela. ":""}Para crear un grupo o unirte a uno, <button class="alink" data-acct>entra a tu cuenta</button>.</p>`; return;}
   if(!acctOk()){box.innerHTML=`<p class="note">Para usar los grupos, primero <button class="alink" data-acct>confirma tu correo</button>.</p>`; return;}
   if(!GR.loaded) await grLoadIds();
@@ -4684,9 +4762,53 @@ let PRE_CORRE=false;
 async function precarga(){ if(PRE_CORRE) return; PRE_CORRE=true;
   try{ for(const k of PRECARGA){ if(document.hidden) break; await precargaLiga(k); await new Promise(r=>setTimeout(r,400)); } }finally{PRE_CORRE=false;} }
 ["focus","pointerdown"].forEach(t=>$("#flSel").addEventListener(t,()=>precarga()));
-showSport("hoy");
+
+// ---------- Botón de regresar e historial (5 oct 2026) ----------
+// Cada cambio de sección queda en el historial del navegador (lapizarra.mx/#quiniela, #mxgames-eng…), así funcionan
+// el botón ‹ de la página, el de atrás de Safari y el gesto de deslizar en el iPhone. Abrir un partido o "Tu cuenta"
+// también cuenta como un paso: atrás cierra la ventana en lugar de salirse del sitio.
+var NAV={cur:null,liga:"",restaurando:false,listo:false};   // var: showTab puede llamarse antes de esta línea
+const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch"};
+const NAV_NOMBRE=Object.fromEntries(Object.entries(NAV_ALIAS).map(([a,t])=>[t,a]));
+const navLiga=id=>id.startsWith("mx")?FLIG:"";
+const navHash=id=>"#"+(NAV_NOMBRE[id]||id)+(id.startsWith("mx")&&id!=="mxexplore"?"-"+FLIG:"");
+function navBtn(){ $("#pzBack").hidden=NAV.cur==="hoy"; }   // en la portada no hace falta
+function navPush(id){
+  if(!NAV) return;
+  const liga=navLiga(id), igual=NAV.cur===id&&NAV.liga===liga; NAV.cur=id; NAV.liga=liga;
+  if(NAV.listo&&!NAV.restaurando&&!igual){ const n=(history.state?.n||0)+1; history.pushState({tab:id,liga,n},"",navHash(id)); }
+  navBtn();
+}
+function navIr(tab,liga){
+  if(liga&&LEAGUES[liga]&&liga!==FLIG) selectLeague(liga,true);
+  const sp=sportOf(tab); if(sp==="hoy") showSport("hoy"); else showSport(sp==="qn"?"nfl":sp,tab);
+}
+window.addEventListener("popstate",e=>{
+  const st=e.state||{tab:"hoy",liga:"",n:0}, abierta=[dlg,adlg].find(d=>d.open);
+  if(abierta){ abierta.close(); }                       // atrás con una ventana abierta: solo se cierra
+  else if(st.dlg){ history.back(); return; }            // paso de una ventana que ya se cerró: se brinca
+  if(!SECTIONS.includes(st.tab)) st.tab="hoy";
+  if(st.tab!==NAV.cur||(st.liga||"")!==NAV.liga){ NAV.restaurando=true; try{ navIr(st.tab,st.liga); }finally{ NAV.restaurando=false; } window.scrollTo(0,0); }
+  navBtn();
+});
+[dlg,adlg].forEach(d=>{
+  const abre=d.showModal.bind(d);
+  d.showModal=function(){ abre(); if(NAV.listo&&!history.state?.dlg) history.pushState({...(history.state||{}),dlg:1,n:(history.state?.n||0)+1},"",location.hash); navBtn(); };
+  d.addEventListener("close",()=>{ if(history.state?.dlg) history.back(); });   // cerrada con ×, Esc o tocando afuera
+});
+// Si alguien pega una dirección con # en la misma pestaña (no la recarga)
+const navDeHash=()=>{const h=decodeURIComponent(location.hash.slice(1)), m=h.match(/^([a-z]+)(?:-([a-z]+))?$/); return m?{tab:NAV_ALIAS[m[1]]||m[1],liga:m[2]||""}:{tab:"hoy",liga:""};};
+window.addEventListener("hashchange",()=>{ const {tab,liga}=navDeHash(); if(!SECTIONS.includes(tab)) return;
+  if(tab!==NAV.cur||(tab.startsWith("mx")&&liga&&liga!==FLIG)) navIr(tab,liga); });
+$("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport("hoy"); window.scrollTo(0,0); };
 // Invitación: lapizarra.mx/?g=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("nfl"); showTab("nflq"); qnSetView("grupos");}}catch(e){}})();
+// Primera pantalla: la de la dirección (lapizarra.mx/#quiniela, #mxgames-eng…) o la portada Hoy
+(()=>{
+  if(!GR.join){ const {tab,liga}=navDeHash(); if(SECTIONS.includes(tab)&&tab!=="hoy") navIr(tab,liga); else showSport("hoy"); }
+  history.replaceState({tab:NAV.cur,liga:NAV.liga,n:0},"",NAV.cur==="hoy"?location.pathname+location.search:navHash(NAV.cur));
+  NAV.listo=true; navBtn();
+})();
 </script>
 </body>
 </html>

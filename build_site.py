@@ -1669,7 +1669,27 @@ try:
     out['fb']=_fb_config()
 except Exception as ex:
     print("Cuentas: no se pudo leer firebase_config.txt:",ex); out['fb']=None
-data=json.dumps(out,ensure_ascii=False,allow_nan=False)
+# ---------- Página ligera (5 oct 2026) ----------
+# Lo que solo usan algunas secciones sale de la página principal a docs/datos/paq_<nombre>.json; la página lo baja
+# la primera vez que lo necesita (Estadísticas, detalle de un partido NFL, Quiniela, Fantasy, fotos, Historia).
+# OJO: 'out' no se toca (más abajo se sigue usando out['ffw'] para El Pizarrón); D es una copia sin esas claves.
+PAQUETES={"stats":["qb","rec","rush","def","teams"],"box":["box"],"previa":["h2h","starters"],
+          "fantasy":["fantasy","sleeper","ffw"],"fotos":["wd_photos","wd_photos_q"],"historia":["historia"]}
+D_out=dict(out)
+try:
+    _carp=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'); os.makedirs(_carp,exist_ok=True)
+    _v=datetime.now(ZoneInfo("America/Mexico_City")).strftime("%Y%m%d%H%M")
+    D_out['paq']={'v':_v}; D_out['hist_n']={k:len(v) for k,v in (out.get('historia') or {}).items()}
+    _tam=[]
+    for _n,_ks in PAQUETES.items():
+        _txt=json.dumps({k:out.get(k) for k in _ks},ensure_ascii=False,allow_nan=False,separators=(',',':'))
+        with open(os.path.join(_carp,f'paq_{_n}.json'),'w',encoding='utf-8') as _f: _f.write(_txt)
+        for k in _ks: D_out.pop(k,None)
+        D_out['paq'][_n]=len(_txt.encode()); _tam.append(f"{_n} {len(_txt.encode())//1024} KB")
+    print("Página ligera: paquetes aparte → "+", ".join(_tam))
+except Exception as ex:
+    print("Página ligera: no se pudieron separar los paquetes (todo va dentro de la página):",ex); D_out=dict(out)
+data=json.dumps(D_out,ensure_ascii=False,allow_nan=False,separators=(',',':'))
 aqui=os.path.dirname(os.path.abspath(__file__))
 notas=json.load(open(os.path.join(aqui,'notas.json'),encoding='utf-8'))
 notas_js=json.dumps([[n['jugador'],n['posicion'],n['equipo'],n['texto']] for n in notas['notas']],ensure_ascii=False)
@@ -1790,6 +1810,14 @@ try:
 except Exception as ex:
     print("Analytics: no se pudo leer google_analytics.txt:",ex); ga_id=""
 html=open(os.path.join(aqui,'template.html'),encoding='utf-8').read().replace('__DATA__',data).replace('__NOTES__',notas_js).replace('__GA_ID__',ga_id)
+# El mapa de Explorar (≈115 KB) va en docs/datos/mapa.html y la página lo baja al abrir Explorar
+try:
+    _ls=html.split('\n'); _i=next(i for i,l in enumerate(_ls) if l.lstrip().startswith('<div class="mapa-wrap">'))
+    with open(os.path.join(aqui,'docs','datos','mapa.html'),'w',encoding='utf-8') as _f: _f.write(_ls[_i].strip())
+    _ls[_i]='  <div class="mapa-wrap" id="mapaHost"></div>'; html='\n'.join(_ls)
+    print("Página ligera: mapa de Explorar aparte (datos/mapa.html)")
+except StopIteration:
+    print("Página ligera: no encontré el mapa en la plantilla; se queda dentro de la página")
 os.makedirs(os.path.join(aqui,'docs'),exist_ok=True)
 open(os.path.join(aqui,'docs','index.html'),'w',encoding='utf-8').write(html)
 print(f'Listo: docs/index.html (temporada {S}, semana {wk})')
