@@ -630,11 +630,17 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .hf .eqs img{width:18px;height:18px;object-fit:contain;flex:none}
 .hf .eqs b{font-variant-numeric:tabular-nums}
 .hf .eqs .w{color:var(--mark)}
-.hf .pr{display:flex;flex-direction:column;align-items:flex-end;gap:5px;font-size:12px;color:var(--muted);text-align:right;min-width:0}
+.hf .pr{display:flex;flex-direction:column;align-items:flex-end;gap:5px;font-size:12px;color:var(--muted);text-align:right;min-width:0;max-width:112px}
 .hf .pr>span:first-child{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hf .tri{display:flex;width:80px;height:5px;border-radius:3px;overflow:hidden;gap:1px}
 .hf .tri i{display:block;height:100%}
 .hf .chip{font-size:13px;font-weight:600;color:var(--ink);background:var(--bg);border-radius:8px;padding:4px 8px;white-space:nowrap}
+.hchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 12px;padding-bottom:2px}
+.hchips::-webkit-scrollbar{display:none}
+.hchips button{flex:none;min-height:36px;padding:0 12px;border-radius:18px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 15px var(--display);cursor:pointer;white-space:nowrap}
+.hchips button small{margin-left:6px;font:500 12px var(--body);opacity:.85}
+.hchips button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hoyside .hh h3 small{display:block;margin:4px 0 0}
 .hmas2{display:block;width:100%;border:0;border-top:1px dashed var(--line);background:none;color:var(--mark);font:600 14px var(--body);padding:10px;cursor:pointer}
 .hmsg{color:var(--muted);font-size:14px;margin:0}
 /* NFL de la semana */
@@ -649,6 +655,34 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .hbox .k.dor{color:var(--mark);font-weight:700}
 .hdato{order:1}.hpr{order:2}.hqn{order:3}.hsv{order:4}
 .hdato .tt{font:700 23px/1.1 var(--display)}
+/* Marcador */
+.hmarc>.hh{flex-wrap:wrap}
+.mchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px 10px 0;padding:0 20px 2px 0}
+.mchips::-webkit-scrollbar{display:none}
+.mchips button{flex:none;display:flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:18px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px var(--display);cursor:pointer;white-space:nowrap}
+.mchips button small{font:600 12px var(--body);color:var(--muted)}
+.mchips button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}
+.mchips button[aria-pressed="true"] small{color:#1d2a26}
+.mchips .hdot{margin:0;width:7px;height:7px}
+.mcab{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 8px}
+.mcab b{font:700 18px var(--display)}
+/* Tabla Liga MX, Power Ranking NFL y gráfica */
+.htab .tr{display:grid;grid-template-columns:22px minmax(0,1fr) 28px 34px 30px;align-items:center;gap:8px;font-size:14px;padding:3px 0 3px 8px;border-left:3px solid transparent}
+.htab .tr.lig{border-left-color:#8FD6A6}.htab .tr.pin{border-left-color:#9CC7E6}
+.htab .tr.th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-left-color:transparent}
+.htab .tr>span:not(.eq),.htab .tr>b:last-child{text-align:right}
+.htab .tr b{font:700 17px var(--display)}
+.htab .tr b:first-child{color:var(--mark)}
+.htab .eq{display:flex;align-items:center;gap:7px;min-width:0;font:600 17px var(--display)}
+.htab .eq img{width:18px;height:18px;object-fit:contain}
+.htab .eq em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.htab .nota,.hepa .nota{font-size:12px;color:var(--muted)}
+.htab .z{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 8px;vertical-align:-1px}.htab .z:first-child{margin-left:0}
+.htab .z.lig{background:#8FD6A6}.htab .z.pin{background:#9CC7E6}
+.hprn .row{grid-template-columns:20px 22px minmax(0,1fr) 30px 32px}
+.hprn .row small{font-size:13px;color:var(--muted);text-align:right}
+.hepa svg{width:100%;height:auto;display:block;font-family:var(--body)}
+.htab{order:5}.hprn{order:6}.hepa{order:7}
 .hmov{display:flex;align-items:center;gap:12px;font:700 34px/1 var(--display)}
 .hmov img{width:36px;height:36px;object-fit:contain}
 .hmov span{color:var(--muted)}.hmov i{font-style:normal;color:var(--muted);font-size:26px}.hmov b{color:var(--mark)}
@@ -727,7 +761,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   .hoyside .hlists{grid-template-columns:1fr}
   .hoyside .hsec{margin-top:24px}
   .hrec>b{font-size:34px}
-  .hqn{order:1}.hsv{order:2}.hdato{order:3}.hpr{order:4}
+  .hqn{order:1}.hsv{order:2}.hdato{order:3}.hpr{order:4}.htab{order:5}.hprn{order:6}.hepa{order:7}
   .hqn b{font-size:28px}
 }
 @media (max-width:720px){
@@ -824,8 +858,8 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div></div>
   <div id="hoyVivo"></div>
   <div class="hoygrid">
-    <div class="hoymain"><div id="hoySem"></div><div id="hoyFut"></div><div id="hoyAyer"></div><div id="hoyMan"></div><div id="hoyNfl"></div></div>
-    <aside class="hoyside"><div id="hoyLpz"></div><div id="hoyOtros"></div></aside>
+    <div class="hoymain"><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyNfl"></div></div>
+    <aside class="hoyside"><div id="hoyLpz"></div></aside>
   </div>
 </section>
 
@@ -4631,8 +4665,7 @@ const hoyEv=(f,k)=>{const e=afEvent(f,LEAGUES[k]); e._k=k; return e;};
 function hoyCopia(dst,src){ dst.status=src.status; dst.competitions=src.competitions; dst._susp=src._susp; dst._pen=src._pen; dst._aet=src._aet; }
 // Día que se muestra: hoy; si hoy no hay partidos, el siguiente día que sí tenga (máximo 2 días adelante)
 function hoyArma(){
-  const H=D.hoy||{}, hoy=hoyYmd(), dias=Object.keys(H).filter(d=>d>=hoy).sort();
-  const dia=(H[hoy]||[]).length?hoy:(dias.find(d=>(H[d]||[]).length)||hoy);
+  const H=D.hoy||{}, dia=hoyYmd();
   if(dia===HOY.dia) return;
   HOY.dia=dia; const viejo=HOY.ev; HOY.ev=new Map();
   for(const r of H[dia]||[]){ if(!LEAGUES[r[6]]) continue; const e=hoyEv(hoyFx(r),r[6]); const o=viejo.get(e.id); if(o) hoyCopia(e,o); HOY.ev.set(e.id,e); }
@@ -4751,7 +4784,7 @@ function hoyFila(e){
   const P=st==="pre"&&c.probs?c.probs.map(p=>Math.round(p.p*100)):null;
   const fav=P?(P[0]>=P[2]?[esTeam(H.n),P[0]]:[esTeam(A.n),P[2]]):null;
   const eq=tm=>`<span class="${tm.win?"w":""}">${hoyLogo(tm.logo)}<em>${hoyEsc(esTeam(tm.n))}</em>${st!=="pre"?`<b>${tm.score??"–"}</b>`:""}</span>`;
-  return `<button class="hf" data-hk="${e._k}" data-hid="${e.id}">${t}<span class="eqs">${eq(H)}${eq(A)}</span><span class="pr">${P?`<span>${hoyEsc(fav[0])} ${fav[1]}%</span>${hoyTri(P)}`:st==="in"?`<span class="lv">En vivo</span>`:""}</span></button>`;
+  return `<button class="hf" data-hk="${e._k}" data-hid="${e.id}">${t}<span class="eqs">${eq(H)}${eq(A)}</span><span class="pr">${P?`<span>${hoyEsc(fav[0])} ${fav[1]}%</span>${hoyTri(P)}`:""}</span></button>`;
 }
 function hoyNflFila(x,res){
   const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, L=NLIVE[x.id], sa=x.hs!=null?x.as_:L?.as, sh=x.hs!=null?x.hs:L?.hs, when=x.ko?new Date(x.ko):null;
@@ -4774,25 +4807,41 @@ function hoyGrupos(ev,clave,ver){
   return Object.keys(G).sort((a,b)=>(HOY_ORDEN.indexOf(a)>>>0)-(HOY_ORDEN.indexOf(b)>>>0)).map(k=>{const L=G[k].sort((a,b)=>new Date(a.date)-new Date(b.date));
     return hoyGrupo(k,L,clave,ver,L.map(hoyFila));}).join("");
 }
-function hoyFutHTML(){
-  if(!D.hoy||!verFut()) return "";
-  const hoy=hoyYmd(), ev=[...HOY.ev.values()];
-  if(!ev.length) return `<section class="hsec"><p class="hmsg">No hay partidos de fútbol de nuestras competencias en los próximos días.</p></section>`;
-  const fd=new Date(HOY.dia+"T12:00:00-06:00");
-  const tit=HOY.dia===hoy?"Partidos de hoy":`${HOY.dia===hoyYmd(Date.now()+864e5)?"Mañana":cap(fWeekday(fd))}<small>hoy no hay partidos</small>`;
-  return `<section class="hsec"><div class="hh"><h3>${tit}</h3></div><div class="hlists">${hoyGrupos(ev,"h","Ver jornada")}</div></section>`;
-}
-function hoyOtrosHTML(){
-  if(!D.hoy) return ["",""];
+// ---- Marcador: una sola caja con pestañas Ayer · Hoy · Mañana y botones por liga (mide lo mismo con 4 o 50 partidos) ----
+const MARC_MAX=8;
+const MARC_CORTO={mx:"Liga MX",sel:"Selección",ucl:"Champions",eng:"Premier",esp:"LaLiga",ita:"Serie A",ger:"Bundesliga",fra:"Ligue 1",lib:"Libertadores",
+  ccc:"Concachampions",lgc:"Leagues Cup",arg:"Argentina",por:"Portugal",sau:"Arabia",fac:"FA Cup",efl:"Carabao Cup",cdr:"Copa del Rey",sup:"Supercopa",cit:"Coppa Italia",dfb:"DFB-Pokal",cdf:"Coupe de France"};   // renglones antes de "Ver los N"
+function marcDias(){
   const hoy=hoyYmd(), ayer=hoyYmd(Date.now()-864e5), man=hoyYmd(Date.now()+864e5);
-  const fecha=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(new Date(d+"T12:00:00-06:00"));
-  let ayerH="", manH="";
-  const ea=verFut()?hoyDiaEv(ayer).filter(e=>e.status?.type?.state==="post"&&!HOY.ev.has(e.id)):[];
-  const nflA=verNfl()?(D.sched||[]).filter(x=>x.ko&&hoyYmd(+new Date(x.ko))===ayer&&(x.hs!=null||NLIVE[x.id]?.done)):[];
-  if(ea.length||nflA.length) ayerH=`<section class="hsec"><div class="hh"><h3>Resultados de ayer<small>${fecha(ayer)}</small></h3></div><div class="hlists">${hoyGrupos(ea,"a","Ver todo")}${nflA.length?hoyGrupo("nfl",`NFL · Semana ${nflA[0].w}`,"a","",nflA.map(x=>hoyNflFila(x,true))):""}</div></section>`;
-  if(HOY.dia===hoy&&verFut()){ const em=hoyDiaEv(man).filter(e=>!HOY.ev.has(e.id));
-    if(em.length) manH=`<section class="hsec"><div class="hh"><h3>Mañana<small>${fecha(man)}</small></h3></div><div class="hlists">${hoyGrupos(em,"m","Ver partidos")}</div></section>`; }
-  return [ayerH,manH];
+  const nflDe=d=>(D.sched||[]).filter(x=>x.ko&&hoyYmd(+new Date(x.ko))===d);
+  return [["ayer","Ayer",ayer,hoyDiaEv(ayer)],["hoy","Hoy",hoy,[...HOY.ev.values()]],["man","Mañana",man,hoyDiaEv(man)]]
+    .map(([k,lab,fecha,ev])=>({k,lab,fecha,ev:verFut()?ev:[],nfl:verNfl()?nflDe(fecha):[]})).filter(d=>d.ev.length||d.nfl.length);
+}
+function marcLigas(d){   // [{k, lab, n, filas}] en orden de importancia (NFL después de Liga MX y la Selección)
+  const G={}; d.ev.forEach(e=>(G[e._k]=G[e._k]||[]).push(e));
+  const orden=["mx","sel","nfl",...HOY_ORDEN.filter(k=>k!=="mx"&&k!=="sel")];
+  const ks=Object.keys(G); if(d.nfl.length) ks.push("nfl");
+  return ks.sort((a,b)=>(orden.indexOf(a)>>>0)-(orden.indexOf(b)>>>0)).map(k=>{
+    if(k==="nfl"){ const L=d.nfl.slice().sort((a,b)=>a.ko.localeCompare(b.ko));
+      return {k,lab:"NFL",n:L.length,et:`Semana ${L[0].w}`,vivo:L.some(x=>NLIVE[x.id]?.live),filas:L.map(x=>hoyNflFila(x,x.hs!=null||!!NLIVE[x.id]?.done||!!NLIVE[x.id]?.live))}; }
+    const L=G[k].sort((a,b)=>new Date(a.date)-new Date(b.date));
+    return {k,lab:MARC_CORTO[k]||LEAGUES[k].label,n:L.length,et:hoyEtapa(L,k),vivo:L.some(e=>e.status?.type?.state==="in"),filas:L.map(hoyFila)};
+  });
+}
+function hoyMarcHTML(){
+  if(!D.hoy) return "";
+  const dias=marcDias();
+  if(!dias.length) return `<section class="hsec"><div class="hh"><h3>Partidos</h3></div><p class="hmsg">No hay partidos de nuestras competencias entre ayer y mañana.</p></section>`;
+  let d=dias.find(x=>x.k===HOY.mdia); if(!d) d=dias.find(x=>x.k==="hoy")||dias.find(x=>x.k==="man")||dias[0];
+  const ligas=marcLigas(d); let L=ligas.find(x=>x.k===HOY.mliga?.[d.k]); if(!L) L=ligas.find(x=>x.vivo)||ligas[0];
+  const ab=HOY.abiertos.has("m"+d.k+L.k), filas=hoyUlt(ab?L.filas:L.filas.slice(0,MARC_MAX));
+  const fecha=new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(new Date(d.fecha+"T12:00:00-06:00"));
+  const ver=L.k==="nfl"?`<button class="hlink" data-hact="nfl" data-w="${(L.et.match(/\d+/)||[])[0]||""}">Ver semana</button>`
+    :`<button class="hlink" data-hact="liga" data-hk="${L.k}">${LEAGUES[L.k]?.tipo==="liga"&&/^Jornada/.test(L.et)?"Ver jornada":"Ver partidos"}</button>`;
+  return `<section class="hsec hmarc"><div class="hh"><h3>Partidos<small>${fecha}</small></h3><div class="hseg">${dias.map(x=>`<button data-md="${x.k}" aria-pressed="${x===d}">${x.lab}</button>`).join("")}</div></div>
+    <div class="mchips" role="group" aria-label="Competencia">${ligas.map(x=>`<button data-ml="${x.k}" aria-pressed="${x===L}">${x.vivo?`<span class="hdot"></span>`:""}${hoyEsc(x.lab)}<small>${x.n}</small></button>`).join("")}</div>
+    <div class="mcab"><b>${hoyEsc(L.k==="nfl"?"NFL":LEAGUES[L.k].label)}${L.et?` · ${hoyEsc(L.et)}`:""}</b>${ver}</div>
+    <div class="hlist dos">${filas.join("")}${L.n>MARC_MAX?`<button class="hmas2" data-hact="mas" data-hk="m${d.k}${L.k}">${ab?"Ver menos":`Ver los ${L.n} partidos`}</button>`:""}</div></section>`;
 }
 // ---- NFL de la semana ----
 function hoyLpzUlt(){   // última semana con picks de La Pizarra ya calificados: {w, txt}
@@ -4857,10 +4906,46 @@ function hoyPrHTML(){
     return `<div class="row"><b>${i+1}</b>${hoyLogo(x.logo)}<span>${hoyEsc(x.eq)}</span>${hoySpark(x.h,64)}<i style="color:${mv[1]}">${mv[0]}</i></div>`;}).join(""):`<p class="hmsg">Calculando…</p>`;
   return `<div class="hbox hpr"><div class="hh" style="margin:0"><span class="k">Power Ranking Liga MX</span><button class="hlink" data-hact="pr">Completo</button></div>${filas}${HOY.prh?`<span class="nota">La línea es su lugar en las últimas ${HOY.prh[0].h.length} semanas</span>`:""}</div>`;
 }
+// Tabla de Liga MX resumida (top 8): 1–6 a Liguilla, 7–10 al Play-In
+function hoyTablaHTML(){
+  if(!verFut()||!HOY.mx) return "";
+  const T={};
+  for(const e of HOY.mx.ev){ if(e.status?.type?.state!=="post"||!/^\d+$/.test(e._round||"")) continue;
+    const cs=e.competitions[0].competitors;
+    for(const [me,op] of [[cs[0],cs[1]],[cs[1],cs[0]]]){ const t=me.team, x=T[t.id]=T[t.id]||{eq:t.shortDisplayName||t.displayName,logo:t.logo,pj:0,pts:0,dg:0,gf:0};
+      const g=+me.score, o=+op.score; x.pj++; x.pts+=g>o?3:g===o?1:0; x.dg+=g-o; x.gf+=g; } }
+  const L=Object.values(T).sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf).slice(0,8); if(!L.length) return "";
+  return `<div class="hbox htab"><div class="hh" style="margin:0"><span class="k">Tabla Liga MX</span><button class="hlink" data-hact="tabla">Completa</button></div>
+    <div class="tr th"><span></span><span></span><span>PJ</span><span>DG</span><span>Pts</span></div>
+    ${L.map((x,i)=>`<div class="tr ${i<6?"lig":"pin"}"><b>${i+1}</b><span class="eq">${hoyLogo(x.logo)}<em>${hoyEsc(x.eq)}</em></span><span>${x.pj}</span><span>${x.dg>0?"+":""}${x.dg}</span><b>${x.pts}</b></div>`).join("")}
+    <span class="nota"><i class="z lig"></i>Liguilla <i class="z pin"></i>Play-In</span></div>`;
+}
+// Power Ranking de la NFL (top 5) con su movimiento contra la semana anterior
+function hoyPrNflHTML(){
+  if(!verNfl()||!(D.pr_nfl||[]).length) return "";
+  const L=D.pr_nfl.slice().sort((a,b)=>a.r-b.r).slice(0,5);
+  return `<div class="hbox hpr hprn"><div class="hh" style="margin:0"><span class="k">Power Ranking NFL</span><button class="hlink" data-hact="nflpr">Completo</button></div>
+    ${L.map(x=>{const T=NT[x.t]||{n:x.t}, d=x.prev?x.prev-x.r:0, mv=d>0?[`▲ ${d}`,"var(--good)"]:d<0?[`▼ ${-d}`,"var(--bad)"]:["=","var(--muted)"];
+      return `<div class="row"><b>${x.r}</b>${hoyLogo(T.logo)}<span>${hoyEsc(T.n)}</span><small>${x.w}-${x.l}${x.t_?`-${x.t_}`:""}</small><i style="color:${mv[1]}">${mv[0]}</i></div>`;}).join("")}</div>`;
+}
+// Ataque vs. defensa (EPA por jugada): a la derecha mejor ataque, arriba mejor defensa
+function hoyEpaHTML(){
+  const P=(D.pr_nfl||[]).filter(x=>x.off!=null&&x.de!=null); if(!verNfl()||P.length<8) return "";
+  const W=300,H=230,m=18, xs=P.map(x=>x.off), ys=P.map(x=>-x.de);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys), px=v=>m+(v-x0)/((x1-x0)||1)*(W-2*m), py=v=>H-m-(v-y0)/((y1-y0)||1)*(H-2*m);
+  const mx=xs.reduce((a,b)=>a+b,0)/xs.length, my=ys.reduce((a,b)=>a+b,0)/ys.length, top=new Set(P.slice().sort((a,b)=>a.r-b.r).slice(0,5).map(x=>x.t));
+  const pts=P.map(x=>{const cx=px(x.off).toFixed(1), cy=py(-x.de).toFixed(1), t=top.has(x.t);
+    return `<g><circle cx="${cx}" cy="${cy}" r="${t?4.5:3.2}" fill="${t?"#F2D466":"#9CC7E6"}"/><text x="${cx}" y="${(cy-6).toFixed(1)}" text-anchor="middle" fill="${t?"#F2D466":"#A8B8AF"}" font-size="9" font-weight="${t?700:500}">${x.t}</text><title>${NT[x.t]?.name||x.t}: ataque ${x.off.toFixed(3)}, defensa ${x.de.toFixed(3)} EPA por jugada</title></g>`;}).join("");
+  return `<div class="hbox hepa"><div class="hh" style="margin:0"><span class="k">NFL · Ataque vs. defensa</span><button class="hlink" data-hact="nflpr">Ranking</button></div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfica de ataque contra defensa de los 32 equipos de la NFL">
+      <line x1="${px(mx)}" y1="${m-8}" x2="${px(mx)}" y2="${H-m+8}" stroke="#3A554C" stroke-dasharray="3 3"/><line x1="${m-8}" y1="${py(my)}" x2="${W-m+8}" y2="${py(my)}" stroke="#3A554C" stroke-dasharray="3 3"/>
+      <text x="${W-4}" y="12" text-anchor="end" fill="#8FD6A6" font-size="9">Buenos en todo</text><text x="4" y="${H-4}" fill="#F29C8C" font-size="9">Malos en todo</text>${pts}</svg>
+    <span class="nota">EPA por jugada en la temporada. Derecha: mejor ataque · Arriba: mejor defensa. En dorado, el top 5 del Power Ranking.</span></div>`;
+}
 function hoyLpzHTML(){
   const w=D.semana?.nfl?.w||weeks.find(w=>(D.sched||[]).some(x=>x.w===w&&x.hs==null)), sp=w!=null?LPZS[w]:null;
   const sv=sp?.t?`<span class="sp"><span>La Pizarra va con</span><b>${hoyEsc(NT[sp.t]?.n||sp.t)}</b>${sp.p!=null?`<em>${Math.round(sp.p*100)}%</em>`:""}</span>`:"";
-  return `<section class="hsec"><div class="hh"><h3>Lo de La Pizarra</h3></div><div class="hlpz">${hoyDatoHTML()}${hoyPrHTML()}
+  return `<section class="hsec"><div class="hh"><h3>Lo de La Pizarra</h3></div><div class="hlpz">${hoyDatoHTML()}${hoyPrHTML()}${hoyTablaHTML()}${hoyPrNflHTML()}${hoyEpaHTML()}
     <button class="hqn" data-hact="qn"><span><b>La Quiniela</b><span>Pronostica la jornada y compite con tus amigos</span></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d2a26" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     <button class="hbox hsv" data-hact="sv"><span class="hh" style="margin:0"><span class="k">El Survivor</span><span class="e">Entrar</span></span><span class="x">Un equipo por semana, sin repetir. Si pierde, quedas fuera.</span>${sv}</button>
   </div></section>`;
@@ -4878,18 +4963,13 @@ function hoyMx(){
     HOY.prh=Object.values(H).filter(x=>x.h[fin]!=null).map(x=>({...x,h:x.h.map(v=>v??20)})).sort((a,b)=>a.h[fin]-b.h[fin]);
   }).catch(()=>{ HOY.prh=false; }).finally(()=>{ HOY.mxP=null; if(!$("#hoy").classList.contains("hidden")) $("#hoyLpz").innerHTML=hoyLpzHTML(); });
 }
-const HOY_PC=matchMedia("(min-width:721px)");
-HOY_PC.addEventListener?.("change",()=>hoyPaint());
 function hoyPaint(){
   if($("#hoy").classList.contains("hidden")) return;
   hoyArma();
   $("#hoyFecha").textContent=cap(fDay(new Date())); $("#hoyFiltro").innerHTML=hoyFiltroHTML();
   const st=$("#hoyVivo .hstrip"), x=st?st.scrollLeft:0;
   $("#hoyVivo").innerHTML=hoyVivoHTML(); const st2=$("#hoyVivo .hstrip"); if(st2) st2.scrollLeft=x;
-  const [ayerH,manH]=hoyOtrosHTML();
-  const pc=HOY_PC.matches;   // computadora: ayer y mañana en la columna derecha, para que no quede vacía
-  $("#hoySem").innerHTML=hoySemHTML(); $("#hoyFut").innerHTML=hoyFutHTML();
-  $("#hoyAyer").innerHTML=pc?"":ayerH; $("#hoyMan").innerHTML=pc?"":manH; $("#hoyOtros").innerHTML=pc?manH+ayerH:"";
+  $("#hoySem").innerHTML=hoySemHTML(); $("#hoyMarc").innerHTML=hoyMarcHTML();
   $("#hoyNfl").innerHTML=hoyNflHTML(); $("#hoyLpz").innerHTML=hoyLpzHTML();
   if(typeof votosPinta==="function") votosPinta();
 }
@@ -4915,14 +4995,18 @@ async function hoyAbrir(k,id){
 $("#hoy").addEventListener("click",ev=>{
   if(ev.target.closest(".hvoto")) return;   // la votación tiene su propio manejo (no abre el partido)
   const f=ev.target.closest("[data-hf]"); if(f){ HOY.f=f.dataset.hf; try{localStorage.setItem("pz_hoyf",HOY.f);}catch(e){} pzTrack("hoy_filtro",{f:HOY.f}); return hoyPaint(); }
+  const tg=ev.target.closest("[data-tg]"); if(tg){ HOY_TABS[tg.dataset.tg]=tg.dataset.tk; return hoyPaint(); }
+  const md=ev.target.closest("[data-md]"); if(md){ HOY.mdia=md.dataset.md; return ($("#hoyMarc").innerHTML=hoyMarcHTML()); }
+  const ml=ev.target.closest("[data-ml]"); if(ml){ const dk=$("#hoyMarc [data-md][aria-pressed=true]")?.dataset.md||"hoy"; HOY.mliga=HOY.mliga||{}; HOY.mliga[dk]=ml.dataset.ml; pzTrack("hoy_liga",{k:ml.dataset.ml}); return ($("#hoyMarc").innerHTML=hoyMarcHTML()); }
   const t=ev.target.closest("[data-ht]"); if(t){ HOY.tab=t.dataset.ht; return ($("#hoySem").innerHTML=hoySemHTML(), typeof votosPinta==="function"&&votosPinta()); }
   const a=ev.target.closest("[data-hact]");
   if(a){ const act=a.dataset.hact; pzTrack("hoy_toque",{que:act});
-    if(act==="mas"){ HOY.abiertos.add(a.dataset.hk); hoyPaint(); }
+    if(act==="mas"){ const k=a.dataset.hk; if(HOY.abiertos.has(k)) HOY.abiertos.delete(k); else HOY.abiertos.add(k); hoyPaint(); }
     else if(act==="liga") hoyIrLiga(a.dataset.hk);
     else if(act==="pr") hoyIrLiga("mx","mxpr");
     else if(act==="gol") hoyIrLiga("mx","mxplayers");
     else if(act==="tabla") hoyIrLiga("mx","mxtable");
+    else if(act==="nflpr"){ showSport("nfl","nflpr"); window.scrollTo(0,0); }
     else if(act==="nfl"){ curW=+a.dataset.w; renderNflWeek(); showSport("nfl"); window.scrollTo(0,0); }
     else if(act==="qn"||act==="lpz"){ showSport("qn"); window.scrollTo(0,0); }
     else if(act==="sv"){ qnMode="surv"; try{localStorage.setItem("pz_qmode","surv");}catch(e){} showSport("qn"); qnSetView("picks"); window.scrollTo(0,0); }
