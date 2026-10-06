@@ -13,7 +13,7 @@ table{width:100%;border-collapse:collapse;font-size:15px}th,td{border-bottom:1px
 .pie{margin-top:40px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:12px}
 </style></head>
 <body><div class="wrap"><header><a href="/">La <span>Pizarra</span></a></header>
-<h1>Aviso de privacidad integral</h1><p class="fecha">Última actualización: 1 de octubre de 2026</p>
+<h1>Aviso de privacidad integral</h1><p class="fecha">Última actualización: 6 de octubre de 2026</p>
 <div class="caja"><p><b>Resumen:</b> La Pizarra guarda lo mínimo para que funcione tu cuenta: tu nombre y correo (o los de tu cuenta de Google), tu liga de fantasy, tus picks y tus grupos de quiniela. No vendemos tus datos. Puedes borrar tu cuenta en cualquier momento desde el sitio o escribirnos a <a href="mailto:santmadariagagd@gmail.com">santmadariagagd@gmail.com</a>.</p></div>
 
 <h2>1. Responsable</h2>
@@ -27,6 +27,7 @@ table{width:100%;border-collapse:collapse;font-size:15px}th,td{border-bottom:1px
 <tr><td>Al usar tu cuenta</td><td>Usuario y liga de Sleeper o número de liga de ESPN que conectes, tu equipo, tus picks de la quiniela (con y sin spread, desempates) y los grupos a los que perteneces.</td></tr>
 <tr><td>En los grupos de quiniela</td><td>El nombre que se muestra a los demás miembros del grupo (el de tu cuenta) y tus picks, que los demás miembros ven cuando empieza cada partido.</td></tr>
 <tr><td>Al navegar</td><td>Datos de uso del sitio que recaba Google Analytics mediante cookies (páginas y secciones visitadas, tipo de dispositivo y navegador, ubicación aproximada por país o ciudad, eventos como hacer un pick o crear un grupo). Tus preferencias también se guardan en el almacenamiento de tu navegador.</td></tr>
+<tr><td>Si votas en "¿Quién gana?"</td><td>Tu voto, un identificador aleatorio que genera tu navegador (no está ligado a tu nombre ni a tu cuenta) y una huella cifrada de tu conexión a internet, que sirve solo para evitar votos repetidos (no guardamos tu dirección IP). No necesitas cuenta para votar.</td></tr>
 <tr><td>Periódico de la liga ("El Pizarrón")</td><td>Nombres de equipos y nombres de usuario de los miembros de la liga, y sus resultados y movimientos, tal como los publica la plataforma de fantasy correspondiente.</td></tr></table>
 <p><b>No recabamos datos personales sensibles</b> ni datos financieros. Si en el futuro hay pagos, los procesará un proveedor de pagos y La Pizarra no guardará los datos de tu tarjeta.</p>
 
@@ -44,6 +45,7 @@ table{width:100%;border-collapse:collapse;font-size:15px}th,td{border-bottom:1px
 <table><tr><th>Proveedor</th><th>Para qué</th></tr>
 <tr><td>Google (Firebase Authentication y Cloud Firestore)</td><td>Inicio de sesión y almacenamiento de tu cuenta, ligas, picks y grupos.</td></tr>
 <tr><td>Google Analytics</td><td>Estadísticas de uso del sitio.</td></tr>
+<tr><td>Cloudflare (Workers y D1)</td><td>Intermediario de datos deportivos y almacenamiento de los votos de "¿Quién gana?".</td></tr>
 <tr><td>GitHub (GitHub Pages)</td><td>Alojamiento del sitio y de los periódicos de las ligas.</td></tr>
 <tr><td>Anthropic (API de Claude)</td><td>Redactar los textos del periódico de la liga a partir de los resultados, nombres de equipos y nombres de usuario de la liga.</td></tr></table>
 <p>Estos proveedores pueden tener servidores fuera de México (principalmente en Estados Unidos). Al aceptar este aviso y usar el sitio, consientes que tus datos se traten en esos servidores para las finalidades descritas. Solo compartiremos tus datos con autoridades cuando una ley o una orden de autoridad competente lo exija.</p>
