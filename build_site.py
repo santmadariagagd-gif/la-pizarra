@@ -1422,7 +1422,8 @@ def guarda_jugadores(nombre_archivo,filas):
     if '_' not in clave:   # solo el torneo actual (los pasados se llaman jugadores_mx_2025_Apertura.json)
         con=sorted([r for r in filas if (r.get("g") or 0)>0],key=lambda r:(-r["g"],r.get("min") or 0))
         if con:
-            top=con[0]; out['goleo'][clave]=dict(n=top["n"],eq=(equipos.get(top["t"]) or [top["t"]])[0],g=top["g"],e=sum(1 for r in con[1:] if r["g"]==top["g"]))
+            top=con[0]; out['goleo'][clave]=dict(n=top["n"],eq=(equipos.get(top["t"]) or [top["t"]])[0],g=top["g"],e=sum(1 for r in con[1:] if r["g"]==top["g"]),
+                g2=(con[1]["g"] if len(con)>1 else 0),top=[[r["n"],r["g"]] for r in con[:5]])
     with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos',nombre_archivo),'w',encoding='utf-8') as f:
         json.dump({"t":datetime.now(ZoneInfo("America/Mexico_City")).isoformat(timespec="minutes"),"equipos":equipos,"filas":filas},f,ensure_ascii=False,separators=(",",":"))
 if SMK:
@@ -1454,6 +1455,7 @@ else:
     print("Sportmonks: falta el secret SPORTMONKS_KEY; las estadísticas de jugadores de fútbol no se actualizan")
 if AFK:
     carpeta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'); os.makedirs(carpeta,exist_ok=True)
+    AF_FX={}   # partidos de la temporada actual por liga (para los partidos de la semana de la portada)
     for clave,(lid,nombre,lig) in AF_LIGAS.items():
         try:
             L=(af("leagues",id=lid) or [{}])[0]
@@ -1462,6 +1464,7 @@ if AFK:
             if actual is None: print(f"{nombre} (API-Football): sin temporadas"); continue
             F=af_marca_torneos(af("fixtures",league=lid,season=actual,timezone="America/Mexico_City"))
             torneo=af_torneo_actual(F) if lig else None
+            AF_FX[clave]=(F,torneo)
             cods=af_codigos(lid,actual); sp=clave in AF_SIN_PREVIAS; sc=clave in AF_SIN_CLASIF
             guarda_jugadores(f'jugadores_{clave}.json',af_player_stats(lid,f"{nombre} {torneo or actual}",F,torneo,cods,sp,sc))
             # Torneos y temporadas pasadas: una sola vez (ya no cambian), cada uno en su archivo.
@@ -1480,6 +1483,88 @@ if AFK:
                     except Exception as ex: print(f"{nombre} {t or año}: no se pudo:",ex)
         except Exception as ex:
             print(f"{nombre} (API-Football): no se pudieron obtener estadísticas de jugadores:",ex)
+    # ---------- Partidos de la semana (portada, 6 oct 2026) ----------
+    # Uno de Liga MX y uno del resto del mundo por semana (lunes a domingo, hora de México), con un "índice de interés":
+    #   arrastre de cada equipo en México (3/2/1) + clásico (+4) + partido parejo en la tabla (hasta +1) + los dos arriba
+    #   (+1) + Champions/Libertadores (+1 fase de liga, +2 eliminación directa).
+    # Se escoge el lunes y se CONGELA toda la semana (docs/datos/semana.json), para que la votación no cambie de partido.
+    # Las listas se pueden ampliar en ranking.json: "fama": {"nombre en API-Football": 3}, "clasicos": [["A","B","Nombre"]].
+    try:
+        import unicodedata as _ud, re
+        _nrm=lambda x:_ud.normalize("NFKD",str(x or "")).encode("ascii","ignore").decode().lower().strip()
+        SEM_FAMA={"club america":3,"guadalajara chivas":3,"cruz azul":3,"u.n.a.m. - pumas":3,"tigres uanl":3,"monterrey":3,
+            "toluca":2,"cf pachuca":2,"leon":2,"santos laguna":2,"atlas":2,
+            "real madrid":3,"barcelona":3,"manchester united":3,"liverpool":3,"manchester city":3,"arsenal":3,"chelsea":3,
+            "bayern munchen":3,"paris saint germain":3,"juventus":3,"inter":3,"ac milan":3,"boca juniors":3,"river plate":3,
+            "atletico madrid":2,"tottenham":2,"borussia dortmund":2,"napoli":2,"as roma":2,"lazio":2,"marseille":2,"benfica":2,
+            "fc porto":2,"sporting cp":2,"newcastle":2,"bayer leverkusen":2,"al-hilal saudi fc":2,"al-nassr":2,"flamengo":2,"palmeiras":2,
+            "aston villa":1,"everton":1,"real betis":1,"sevilla":1,"athletic club":1,"atalanta":1,"independiente":1,"racing club":1,"san lorenzo":1,"los angeles fc":1,"inter miami":1}
+        SEM_CLAS=[("club america","guadalajara chivas","Clásico Nacional"),("club america","cruz azul","Clásico Joven"),("club america","u.n.a.m. - pumas","Clásico Capitalino"),
+            ("tigres uanl","monterrey","Clásico Regio"),("atlas","guadalajara chivas","Clásico Tapatío"),("cruz azul","u.n.a.m. - pumas","Clásico de la CDMX"),
+            ("real madrid","barcelona","El Clásico"),("river plate","boca juniors","Superclásico"),("manchester united","manchester city","Derbi de Manchester"),
+            ("arsenal","tottenham","Derbi del norte de Londres"),("liverpool","everton","Derbi de Merseyside"),("liverpool","manchester united","Clásico inglés"),
+            ("inter","ac milan","Derbi de Milán"),("bayern munchen","borussia dortmund","Der Klassiker"),("paris saint germain","marseille","Le Classique"),
+            ("as roma","lazio","Derbi de Roma"),("atletico madrid","real madrid","Derbi madrileño"),("benfica","fc porto","O Clássico"),("juventus","inter","Derbi de Italia")]
+        _R=json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'ranking.json'),encoding='utf-8')) if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),'ranking.json')) else {}
+        for k,v in ((_R.get('fama') or {}).items()): SEM_FAMA[_nrm(k)]=v
+        for c in (_R.get('clasicos') or []): SEM_CLAS.append((_nrm(c[0]),_nrm(c[1]),c[2]))
+        CLAS={frozenset((a,b)):n for a,b,n in SEM_CLAS}
+        _ahora=datetime.now(ZoneInfo("America/Mexico_City")); _lun=(_ahora-timedelta(days=_ahora.weekday())).date()
+        _t0=datetime.combine(_lun,datetime.min.time(),ZoneInfo("America/Mexico_City")).timestamp(); _t1=_t0+7*86400
+        _fin=lambda f:(f.get("fixture") or {}).get("status",{}).get("short") in ("FT","AET","PEN")
+        def _tabla(F,torneo):
+            T={}
+            for f in F:
+                if not _fin(f) or not af_regular(f) or (torneo and af_torneo(f)!=torneo): continue
+                for s_,o_ in (("home","away"),("away","home")):
+                    t=f["teams"][s_]; g=f["goals"][s_]; go=f["goals"][o_]; x=T.setdefault(t["id"],[0,0,0])
+                    x[0]+=3 if g>go else 1 if g==go else 0; x[1]+=g-go; x[2]+=g
+            orden=sorted(T,key=lambda i:(-T[i][0],-T[i][1],-T[i][2]))
+            return {i:(n+1,T[i][0]) for n,i in enumerate(orden)}
+        def _forma(F,tid,antes):
+            L=[f for f in F if _fin(f) and f["fixture"]["timestamp"]<antes and tid in (f["teams"]["home"]["id"],f["teams"]["away"]["id"])]
+            L.sort(key=lambda f:f["fixture"]["timestamp"]); r=[]
+            for f in L[-5:]:
+                cas=f["teams"]["home"]["id"]==tid; g=f["goals"]["home" if cas else "away"]; go=f["goals"]["away" if cas else "home"]
+                r.append("G" if g>go else "E" if g==go else "P")
+            return r
+        def _fila(f,k):
+            fx=f["fixture"]; st=fx.get("status") or {}; v=fx.get("venue") or {}; H=f["teams"]["home"]; A=f["teams"]["away"]; G=f.get("goals") or {}; P=(f.get("score") or {}).get("penalty") or {}
+            return [fx["id"],fx["timestamp"],st.get("short") or "",st.get("elapsed"),v.get("name") or "",v.get("city") or "",k,str(f["league"].get("round") or ""),
+                    H["id"],H["name"],A["id"],A["name"],G.get("home"),G.get("away"),P.get("home"),P.get("away")]
+        cand={"mx":[],"mundo":[]}
+        for k,(F,torneo) in AF_FX.items():
+            tab={} if k in ("ucl","lib","ccc","lgc","fac","efl","cdr","sup","cit","dfb","cdf") else _tabla(F,torneo)   # copas: sin tabla
+            for f in F:
+                ts=f["fixture"]["timestamp"]; rd=str(f["league"].get("round") or "")
+                if not (_t0<=ts<_t1) or re.search(r"qualif|prelim",rd,re.I) or (f["fixture"].get("status") or {}).get("short") in ("PST","CANC","ABD"): continue
+                if k=="ucl" and re.fullmatch(r"play-?offs?",rd.strip(),re.I): continue
+                h=f["teams"]["home"]; a=f["teams"]["away"]; nh=_nrm(h["name"]); na=_nrm(a["name"])
+                sc=SEM_FAMA.get(nh,0)+SEM_FAMA.get(na,0); cl=CLAS.get(frozenset((nh,na)),"")
+                if cl: sc+=4
+                ph=tab.get(h["id"]); pa=tab.get(a["id"])
+                if ph and pa:
+                    sc+=1-min(abs(ph[1]-pa[1]),12)/12
+                    if ph[0]<=4 and pa[0]<=4: sc+=1
+                if k in ("ucl","lib"): sc+=1 if re.search(r"league|group|fase",rd,re.I) else 2
+                cand["mx" if k=="mx" else "mundo"].append((sc,ts,f,k,cl,ph,pa))
+        prev={}
+        _sem=os.path.join(carpeta,'semana.json')
+        if os.path.exists(_sem):
+            try: prev=json.load(open(_sem,encoding='utf-8'))
+            except Exception: prev={}
+        out['semana']={"lunes":_lun.isoformat()}
+        for slot,L in cand.items():
+            if not L: continue
+            fijo=(prev.get(slot) or {}).get("id") if prev.get("lunes")==_lun.isoformat() else None
+            elegido=next((c for c in L if c[2]["fixture"]["id"]==fijo),None) or max(L,key=lambda c:(c[0],-abs(c[1]-(_t0+5.5*86400))))
+            sc,ts,f,k,cl,ph,pa=elegido; F=AF_FX[k][0]
+            out['semana'][slot]=dict(id=f["fixture"]["id"],k=k,row=_fila(f,k),badge=cl,
+                lt=f"{ph[0]}º · {ph[1]} pts" if ph else "",vt=f"{pa[0]}º · {pa[1]} pts" if pa else "",
+                fl=_forma(F,f["teams"]["home"]["id"],ts),fv=_forma(F,f["teams"]["away"]["id"],ts),i=round(sc,2))
+            print(f"Partido de la semana ({slot}): {f['teams']['home']['name']} vs {f['teams']['away']['name']} (índice {sc:.1f}{', '+cl if cl else ''}{', congelado' if fijo else ''})")
+    except Exception as ex:
+        print("Partidos de la semana: no se pudieron escoger:",ex); out['semana']=out.get('semana') or {}
     # Portada "Hoy" (5 oct 2026): partidos de ayer, hoy y los 2 días siguientes (fecha de México) de las competencias del
     # sitio y de la Selección (equipo 16 de API-Football, en cualquier torneo). Un pedido por día: fixtures?date= trae
     # todos los partidos del mundo y aquí se quedan solo los nuestros, así la página no descarga nada extra.
@@ -1669,6 +1754,45 @@ try:
     out['fb']=_fb_config()
 except Exception as ex:
     print("Cuentas: no se pudo leer firebase_config.txt:",ex); out['fb']=None
+# ---------- Partido de la semana de la NFL (portada, 6 oct 2026) ----------
+# De la semana NFL en curso (la primera con partidos sin resultado). Índice: arrastre en México (3/2) + rivales de
+# división (+2) + horario estelar (+1) + línea de 3 o menos (+1) + los dos con récord ganador (+1). Se congela por semana.
+try:
+    out.setdefault('semana',{})
+    NFL_FAMA={"DAL":3,"PIT":3,"SF":3,"LV":3,"GB":3,"NE":3,"KC":3,"PHI":3,"BUF":2,"BAL":2,"DET":2,"MIA":2,"DEN":2,"NYG":2,"CHI":2,"SEA":2,"LA":2,"MIN":2}
+    NFL_DIV=[{"BUF","MIA","NE","NYJ"},{"BAL","CIN","CLE","PIT"},{"HOU","IND","JAX","TEN"},{"DEN","KC","LV","LAC"},
+             {"DAL","NYG","PHI","WAS"},{"CHI","DET","GB","MIN"},{"ATL","CAR","NO","TB"},{"ARI","LA","SF","SEA"}]
+    _S=out.get('sched') or []
+    _pend=[x for x in _S if x.get('hs') is None and x.get('ko')]
+    if _pend:
+        _w=min(x['w'] for x in _pend)
+        _rec={r['t']:(r.get('w') or 0,r.get('l') or 0) for r in (out.get('pr_nfl') or [])}
+        _prev={}
+        _semf=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos','semana.json')
+        if os.path.exists(_semf):
+            try: _prev=json.load(open(_semf,encoding='utf-8')).get('nfl') or {}
+            except Exception: _prev={}
+        def _idx(x):
+            sc=NFL_FAMA.get(x['a'],0)+NFL_FAMA.get(x['h'],0)
+            if any(x['a'] in d and x['h'] in d for d in NFL_DIV): sc+=2
+            h=int(x['ko'][11:13])
+            if h<=4: sc+=1                                    # 00–04 UTC = noche en EE.UU. (jueves, domingo y lunes por la noche)
+            if x.get('sp') is not None and abs(x['sp'])<=3: sc+=1
+            ra=_rec.get(x['a'],(0,0)); rh=_rec.get(x['h'],(0,0))
+            if ra[0]>=ra[1] and rh[0]>=rh[1] and sum(ra)+sum(rh)>0: sc+=1
+            return sc
+        G=[x for x in _S if x['w']==_w and x.get('ko')]
+        fijo=_prev.get('id') if _prev.get('w')==_w else None
+        x=next((g for g in G if g['id']==fijo),None) or max(G,key=_idx)
+        div=any(x['a'] in d and x['h'] in d for d in NFL_DIV)
+        out['semana']['nfl']=dict(w=_w,id=x['id'],badge="Rivales de división" if div else "",i=_idx(x))
+        print(f"Partido de la semana (NFL): {x['a']} @ {x['h']}, semana {_w} (índice {_idx(x)}{', congelado' if fijo else ''})")
+    _semf=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos','semana.json')
+    os.makedirs(os.path.dirname(_semf),exist_ok=True)
+    json.dump(out['semana'],open(_semf,'w',encoding='utf-8'),ensure_ascii=False)
+except Exception as ex:
+    print("Partido de la semana (NFL): no se pudo escoger:",ex)
+
 # ---------- Página ligera (5 oct 2026) ----------
 # Lo que solo usan algunas secciones sale de la página principal a docs/datos/paq_<nombre>.json; la página lo baja
 # la primera vez que lo necesita (Estadísticas, detalle de un partido NFL, Quiniela, Fantasy, fotos, Historia).
