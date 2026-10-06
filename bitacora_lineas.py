@@ -62,11 +62,16 @@ def leer_casas(clave):
     url = ("https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds"
            f"?regions=us&markets=spreads&oddsFormat=american&apiKey={clave}")
     d, hd = pedir(url)
-    out = {}
+    out = {}; ahora = datetime.now(timezone.utc)
     for ev in d:
         a = NOMBRES.get(ev.get("away_team")); h = NOMBRES.get(ev.get("home_team"))
         if not a or not h:
             continue
+        try:   # partidos que ya empezaron: sus líneas son en vivo (cambian con el marcador) y no sirven para comparar
+            if datetime.fromisoformat(ev.get("commence_time", "").replace("Z", "+00:00")) <= ahora:
+                continue
+        except ValueError:
+            pass
         casas = {}
         for b in ev.get("bookmakers", []):
             for m in b.get("markets", []):
@@ -151,9 +156,14 @@ def main():
         try:
             casas, rest = leer_casas(clave)
             foto = {k: v for k, v in casas.items() if k in sem["espn"]}
+            if not foto:
+                print("Bitácora: no hay partidos por empezar de esta semana en las casas (no se guarda foto)")
+                raise StopIteration
             sem["casas"].append({"cuando": ahora.astimezone(CDMX).strftime("%Y-%m-%d %H:%M"), "motivo": motivo, "lineas": foto,
                                  "espn": {k: v["L"] for k, v in sem["espn"].items()}})   # ESPN en ese momento
             print(f"Bitácora: foto de las casas ({motivo}): {len(foto)} partidos; créditos de The Odds API que quedan: {rest}")
+        except StopIteration:
+            pass
         except Exception as ex:
             print("Bitácora: The Odds API no respondió:", ex)
     elif motivo:
