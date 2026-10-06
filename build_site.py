@@ -1413,9 +1413,16 @@ AF_ANUAL={"arg"}   # Apertura y Clausura en el mismo año (Liga MX: Clausura = a
 # Las estadísticas de jugadores van en archivos aparte (docs/datos/jugadores_<liga>.json) que la página
 # pide solo cuando abres la pestaña Jugadores, para no hacer pesada la página principal.
 out['mxp']=[]; out['mx_logos']=[]
+# Goleador del torneo actual de cada liga (para la portada "Hoy"): {liga:{n, eq, g, e}}; e = cuántos más tienen los mismos goles.
+out['goleo']={}
 def guarda_jugadores(nombre_archivo,filas):
     equipos={}
     for r in filas: equipos[r["t"]]=[r.pop("tn"),r.pop("logo")]
+    clave=nombre_archivo[len('jugadores_'):-len('.json')]
+    if '_' not in clave:   # solo el torneo actual (los pasados se llaman jugadores_mx_2025_Apertura.json)
+        con=sorted([r for r in filas if (r.get("g") or 0)>0],key=lambda r:(-r["g"],r.get("min") or 0))
+        if con:
+            top=con[0]; out['goleo'][clave]=dict(n=top["n"],eq=(equipos.get(top["t"]) or [top["t"]])[0],g=top["g"],e=sum(1 for r in con[1:] if r["g"]==top["g"]))
     with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos',nombre_archivo),'w',encoding='utf-8') as f:
         json.dump({"t":datetime.now(ZoneInfo("America/Mexico_City")).isoformat(timespec="minutes"),"equipos":equipos,"filas":filas},f,ensure_ascii=False,separators=(",",":"))
 if SMK:
@@ -1473,8 +1480,38 @@ if AFK:
                     except Exception as ex: print(f"{nombre} {t or año}: no se pudo:",ex)
         except Exception as ex:
             print(f"{nombre} (API-Football): no se pudieron obtener estadísticas de jugadores:",ex)
+    # Portada "Hoy" (5 oct 2026): partidos de hoy y de los 2 días siguientes (fecha de México) de las competencias del
+    # sitio y de la Selección (equipo 16 de API-Football, en cualquier torneo). Un pedido por día: fixtures?date= trae
+    # todos los partidos del mundo y aquí se quedan solo los nuestros, así la página no descarga nada extra.
+    # Formato corto por partido (la página lo vuelve a armar como API-Football):
+    #   [id, timestamp, estado, minuto, estadio, ciudad, liga, ronda, id local, local, id visita, visita, goles L, goles V, penales L, penales V]
+    #   (los goles hacen falta porque a las 7 am algunos partidos de Europa ya empezaron o terminaron)
+    # Escudos: https://media.api-sports.io/football/teams/<id>.png (se arma en la página).
+    out['hoy']={}
+    try:
+        import re as _re
+        AF_CLAVE={lid:k for k,(lid,_n,_l) in AF_LIGAS.items()}
+        _hoy=datetime.now(ZoneInfo("America/Mexico_City")).date()
+        for _i in range(3):
+            _d=(_hoy+timedelta(days=_i)).isoformat(); _f=[]
+            for f in af("fixtures",date=_d,timezone="America/Mexico_City"):
+                lg=f.get("league") or {}; T=f.get("teams") or {}; H=T.get("home") or {}; A=T.get("away") or {}
+                k=AF_CLAVE.get(lg.get("id")) or ("sel" if 16 in (H.get("id"),A.get("id")) else None)
+                if not k: continue
+                rd=str(lg.get("round") or "").strip()
+                if _re.search(r"qualif|prelim",rd,_re.I): continue                         # rondas previas (como en la página)
+                if k=="ucl" and _re.fullmatch(r"play-?offs?",rd,_re.I): continue          # play-off previo de agosto
+                fx=f.get("fixture") or {}; st=fx.get("status") or {}; v=fx.get("venue") or {}; G=f.get("goals") or {}; P=(f.get("score") or {}).get("penalty") or {}
+                _f.append([fx.get("id"),fx.get("timestamp"),st.get("short") or "",st.get("elapsed"),v.get("name") or "",v.get("city") or "",
+                           k,rd,H.get("id"),H.get("name") or "",A.get("id"),A.get("name") or "",G.get("home"),G.get("away"),P.get("home"),P.get("away")])
+            out['hoy'][_d]=sorted(_f,key=lambda r:(r[1] or 0,r[0] or 0))
+        print("Hoy: "+", ".join(f"{d} {len(v)} partidos" for d,v in out['hoy'].items()))
+    except Exception as ex:
+        print("Hoy: no se pudieron obtener los partidos de los próximos días:",ex)
+    print("Goleadores (portada): "+", ".join(f"{k} {v['n']} {v['g']}" for k,v in out['goleo'].items()))
     print(f"API-Football: {AF_USADOS[0]} pedidos en esta corrida (el plan Pro deja 7,500 al día)")
 else:
+    out['hoy']={}
     print("API-Football: falta el secret API_FOOTBALL_KEY; Liga MX sigue con Sportmonks para las estadísticas de jugadores")
 # ---------- Postemporada NFL, si la temporada terminara hoy ----------
 # Sigue el orden oficial de desempate de la NFL (nfl.com/standings/tie-breaking-procedures):

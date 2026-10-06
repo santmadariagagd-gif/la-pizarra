@@ -547,6 +547,102 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   header.top nav.tabs{order:3}
   input[type=search]{width:100%}
 }
+/* ---------- Portada "Hoy en La Pizarra" (maqueta aprobada del 2 oct 2026) ---------- */
+.hoyhead{padding:8px 0 2px}
+.hoyhead h2{font:700 34px/1 var(--display);margin:0}
+.hoyhead .hd{display:none}
+.hoyhead p{color:var(--muted);margin:4px 0 0;font-size:15px}
+.hsec{margin-top:24px}
+.hh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 10px}
+.hh h3{font:700 22px/1.1 var(--display);margin:0}
+.hh small{color:var(--muted);font:400 14px var(--body);margin-left:8px}
+.hlink{font:600 14px/1 var(--body);color:var(--mark);background:none;border:0;padding:6px 0;cursor:pointer;white-space:nowrap}
+.hlink:hover{color:#ffe08a}
+.hdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ff7a3d;margin-right:8px;vertical-align:1px}
+@media (prefers-reduced-motion:no-preference){.hdot{animation:hpulse 1.6s ease-in-out infinite}}
+@keyframes hpulse{50%{opacity:.35}}
+.hvivo h3{text-transform:uppercase;letter-spacing:.06em;font-size:18px}
+.hvivo h3 small{text-transform:none;letter-spacing:0}
+.hstrip{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin-right:-20px;padding-right:20px;scrollbar-width:none}
+.hstrip::-webkit-scrollbar{display:none}
+.hv{flex:0 0 168px;scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 12px 10px;display:flex;flex-direction:column;gap:8px;cursor:pointer;text-align:left;color:var(--ink);font:inherit}
+.hv .t{display:flex;justify-content:space-between;gap:6px;font-size:12px;color:var(--muted)}
+.hv .t span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hv .t b{color:#ff9a66;font-weight:600;white-space:nowrap}
+.hv .r{display:flex;justify-content:space-between;align-items:center;gap:6px;font:600 19px/1.1 var(--display)}
+.hv .r span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hv .r b{font-size:22px}
+.hv .r b.lead{color:var(--mark)}
+.hgrp+.hgrp{margin-top:20px}
+.hday{font:700 14px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.hgrid{display:grid;gap:10px}
+.hc{display:flex;flex-direction:column;gap:8px;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--ink);text-align:left;font:inherit}
+.hc .m{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted)}
+.hc .m span:last-child{text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hc .m .lv{color:#ff9a66;font-weight:600}
+.hc .m .fin{color:var(--ink);font-weight:600}
+.hc .tr{display:flex;align-items:center;gap:8px;font:600 20px/1.15 var(--display)}
+.hc .tr img{width:20px;height:20px;object-fit:contain;flex:none}
+.hc .tr .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hc .tr .o{font:600 15px var(--body);font-variant-numeric:tabular-nums}
+.hc .tr .s{font-weight:700;font-size:22px;font-variant-numeric:tabular-nums}
+.hc .tr.w .s,.hc .tr.w .n{color:var(--mark)}
+.hbar{display:flex;height:6px;border-radius:3px;overflow:hidden;gap:2px}
+.hbar i{display:block;height:100%}
+.hpl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.hc:hover,.hv:hover,.hn:hover{border-color:var(--muted)}
+.hmas{display:block;margin:10px 0 0;font:600 14px var(--body);color:var(--mark);background:none;border:1px dashed var(--line);border-radius:10px;padding:9px;width:100%;cursor:pointer}
+.hnflg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.hn{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:5px;cursor:pointer;color:var(--ink);text-align:left;font:inherit}
+.hn .d{font-size:12px;color:var(--muted)}
+.hn .d .lv{color:#ff9a66;font-weight:600}
+.hn .j{font:600 19px/1.1 var(--display)}
+.hn .l{font-size:13px;color:var(--muted)}
+.hlpz{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.hbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;color:var(--ink);text-align:left;font:inherit}
+.hbox .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.hpr{grid-column:span 2;order:1;gap:10px}
+.hpr .row{display:flex;align-items:center;gap:12px}
+.hpr .row b{width:22px;font:700 22px/1 var(--display);color:var(--mark)}
+.hpr .row span{flex:1;min-width:0;font:600 20px/1.1 var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hpr .row img{width:22px;height:22px;object-fit:contain}
+.hpr .row i{font-style:normal;font-size:14px;font-weight:600}
+.hgol{order:2}
+.hgol .g{font:700 40px/1 var(--display);color:var(--mark)}
+.hgol .p{font-weight:600;font-size:15px;line-height:1.25}
+.hgol .q{font-size:13px;color:var(--muted)}
+.hsv{order:3;border-color:var(--mark);cursor:pointer}
+.hsv .k{color:var(--mark);font-weight:600}
+.hsv .x{font:600 19px/1.15 var(--display)}
+.hsv .e{margin-top:auto;font-weight:600;font-size:14px;color:var(--mark)}
+.hqn{grid-column:span 2;order:4;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--mark);color:#1d2a26;border:0;border-radius:14px;padding:16px;cursor:pointer;text-align:left;font:inherit}
+.hqn b{display:block;font:700 22px/1.1 var(--display)}
+.hqn span span{font-size:14px;font-weight:500}
+.hqn:hover{background:#ffe08a}
+.hmsg{color:var(--muted);font-size:14px;margin:0}
+.bnav{display:none}
+@media (min-width:721px){
+  .hoyhead .hm{display:none}.hoyhead .hd{display:inline}.hoyhead h2{font-size:48px}.hoyhead p{font-size:17px}
+  .hstrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));overflow:visible;margin-right:0;padding-right:0}.hv{flex:none}
+  .hoygrid{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+  .hoymain{flex:999 1 560px;min-width:0}.hoyside{flex:1 1 300px;min-width:0}
+  .hh h3{font-size:26px}
+  .hgrid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .hnflg{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .hlpz{grid-template-columns:1fr;gap:14px}
+  .hqn{order:1;grid-column:auto;padding:18px}.hqn b{font-size:26px}
+  .hsv{order:2}.hsv .x{font-size:20px}
+  .hpr{order:3;grid-column:auto}.hgol{order:4}
+}
+@media (max-width:720px){
+  header.top nav.tabs{display:none}
+  .bnav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:50;background:#16201d;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .bnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:58px;background:none;border:0;color:var(--muted);font:600 12px/1 var(--body);cursor:pointer;padding:0}
+  .bnav button::before{content:"";width:22px;height:3px;border-radius:2px;background:transparent}
+  .bnav button[aria-selected="true"]{color:var(--mark)}
+  .bnav button[aria-selected="true"]::before{background:var(--mark)}
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -579,13 +675,15 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <header class="top">
   <div class="logo"><svg width="30" height="30" style="flex:none"><use href="#lp-logo"></use></svg>La <span>Pizarra</span></div>
   <nav class="tabs sports" aria-label="Deporte">
+    <button aria-selected="true" data-sport="hoy">Hoy</button>
     <button aria-selected="false" data-sport="mx">Fútbol</button>
-    <button aria-selected="true" data-sport="nfl">NFL</button>
+    <button aria-selected="false" data-sport="nfl">NFL</button>
     <button aria-selected="false" data-sport="ff">Fantasy</button>
+    <button aria-selected="false" data-sport="qn">Quiniela</button>
   </nav>
   <button class="acct" id="acctBtn" aria-label="Tu cuenta" hidden>Entrar</button>
 </header>
-<nav class="subnav" data-for="nfl" aria-label="Secciones NFL">
+<nav class="subnav" data-for="nfl" aria-label="Secciones NFL" hidden>
   <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="nflq">Quiniela</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
@@ -595,7 +693,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <select id="flSel" class="league" aria-label="Competición"></select><button data-tab="mxexplore">Explorar</button><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla" id="tabLlaves">Liguilla</button><button data-tab="mxko" hidden>Eliminatoria</button><button data-tab="mxpr">Power Ranking</button><button data-tab="mxsquad" hidden>Plantel</button><button data-tab="mxhonors">Palmarés</button><button data-tab="mxhist" hidden>Historia</button><button data-tab="mxrecords" hidden>Récords</button>
 </nav>
 
-<div class="hero">
+<div class="hero" style="display:none">
   <div>
     <p class="kicker"><img id="leagueLogo" alt="" hidden><span id="heroTitle"></span></p>
     <p id="heroSub"></p>
@@ -624,8 +722,18 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   </svg>
 </div>
 
+<!-- PORTADA: HOY EN LA PIZARRA (5 oct 2026) -->
+<section class="panel" id="hoy">
+  <div class="hoyhead"><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div>
+  <div id="hoyVivo"></div>
+  <div class="hoygrid">
+    <div class="hoymain"><div id="hoyFut"></div><div id="hoyNfl"></div></div>
+    <aside class="hoyside" id="hoyLpz"></aside>
+  </div>
+</section>
+
 <!-- NFL PARTIDOS -->
-<section class="panel" id="nflgames">
+<section class="panel hidden" id="nflgames">
   <div class="headrow"><h2 id="gTitle"></h2><div class="weeknav"><button class="arrow" id="wPrev" aria-label="Semana anterior">‹</button><select id="wSel" aria-label="Semana"></select><button class="arrow" id="wNext" aria-label="Semana siguiente">›</button></div></div>
   <div class="games" id="nflGames"></div>
 </section>
@@ -829,6 +937,9 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="verdict" id="verdict"><strong>Agrega jugadores para comparar</strong><div class="meter"><i style="width:50%"></i></div><span class="note"></span></div>
 </section>
 
+<nav class="bnav" aria-label="Secciones">
+  <button aria-selected="true" data-sport="hoy">Hoy</button><button aria-selected="false" data-sport="mx">Fútbol</button><button aria-selected="false" data-sport="nfl">NFL</button><button aria-selected="false" data-sport="ff">Fantasy</button><button aria-selected="false" data-sport="qn">Quiniela</button>
+</nav>
 <footer>La Pizarra · <a href="/privacidad.html">Aviso de privacidad</a> · <a href="/terminos.html">Términos y condiciones</a> · <a href="mailto:santmadariagagd@gmail.com">Contacto</a></footer>
 </div>
 
@@ -888,7 +999,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
+const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -915,22 +1026,28 @@ function loadNflPlayoffs(){
     renderNflBracket();
   }
 }
-function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=id==="mxexplore"?"none":"";
+// Qué botón de deporte se marca (arriba en computadora y en la barra de abajo en el celular) según la sección
+const FF_TABS=["fmatch","froster","fliga","fwaivers","ftrade"];
+const sportOf=id=>id==="hoy"?"hoy":id==="nflq"?"qn":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
+function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy")?"none":"";
+  const spSel=sportOf(id); document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===spSel));
+  if(id==="hoy") hoyRender();
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") loadMxHist(); if(id==="nflhist") histRender("nfl","nfl"); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
-function showSport(sp){
-  document.querySelectorAll("nav.sports button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===sp));
+function showSport(sp,tab){
+  if(sp==="qn") return showSport("nfl","nflq");   // Quiniela (por ahora solo NFL) tiene su propio botón
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
+  if(sp==="hoy") return showTab("hoy");
   $(".nflart").toggleAttribute("hidden",sp==="mx"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
   $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:sp==="mx"?flLabel():`Fantasy Football · Semana ${D.gweek}`;
   setLogo(sp==="mx"?(LEAGUES[FLIG].nat?pickLogo(SEL_LOGOS):comercial(LEAGUES[FLIG])?null:pickLogo(MX_LOGOS)):D.nfl_logo);
   $("#heroSub").textContent= sp==="mx"?"":`Datos actualizados hasta la semana ${D.week}.`;
   $("#tempWrap").hidden=sp!=="mx"; if(sp==="mx") pintaTemporadas();
-  showTab(sp==="nfl"?"nflgames":sp==="mx"?"mxexplore":"fmatch");
+  showTab(tab||(sp==="nfl"?"nflgames":sp==="mx"?"mxexplore":"fmatch"));
 }
-document.querySelectorAll("nav.sports button").forEach(b=>b.onclick=()=>showSport(b.dataset.sport));
+document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.onclick=()=>{showSport(b.dataset.sport); window.scrollTo(0,0);});
 document.querySelectorAll(".subnav button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 
 // Selector de competencia dentro de Fútbol. Solo Liga MX tiene Liguilla; las demás pestañas
@@ -955,7 +1072,7 @@ const REGIONES=["México","Europa","Sudamérica","Concacaf","Asia"];
 $("#flSel").innerHTML=REGIONES.map(r=>`<optgroup label="${r}">${Object.entries(LEAGUES).filter(([,L])=>L.region===r).map(([k,L])=>`<option value="${k}">${BANDERA[L.pais]||""} ${L.label}</option>`).join("")}</optgroup>`).join("");
 applyLeagueTabs();
 $("#flSel").value=FLIG;
-function selectLeague(key){
+function selectLeague(key,sinMostrar){
   if(!LEAGUES[key]) return;
   FLIG=key; try{localStorage.setItem("pz_flig",FLIG)}catch(err){}
   $("#flSel").value=FLIG;
@@ -967,7 +1084,7 @@ function selectLeague(key){
   if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true"){ $("#heroTitle").textContent=flLabel(); if(LEAGUES[FLIG].nat) setLogo(pickLogo(SEL_LOGOS)); }
   const cur=document.querySelector('.subnav[data-for=mx] button[aria-current]');
   const id=cur&&!cur.hidden&&cur.dataset.tab!=="mxexplore"?cur.dataset.tab:"mxgames";
-  showTab(id);
+  if(!sinMostrar) showTab(id);
 }
 $("#flSel").onchange=e=>selectLeague(e.target.value);
 
@@ -1009,7 +1126,8 @@ function renderExplore(){
   $("#mapaLista").innerHTML=`<div class="regiones"><button aria-pressed="${!EXP_FILTRO}" data-f="">Todas</button>${REGIONES.map(r=>`<button aria-pressed="${EXP_FILTRO===r}" data-f="${r}">${r}</button>`).join("")}</div>`+
     grupos.map(([r,xs])=>`<h3 class="mapa-h">${r}</h3><div class="comps">${xs.map(([k,L])=>`<button data-k="${k}" class="${k===FLIG?"cur":""}"><span class="fl">${BANDERA[L.pais]||"⚽"}</span><span><b>${L.label}</b><small>${TIPO_ES[L.tipo]||""}${L.pais&&PAIS_ES[L.pais]&&L.tipo!=="sel"?" · "+PAIS_ES[L.pais]:""}</small></span></button>`).join("")}</div>`).join("");
   $("#mapaLista").querySelectorAll(".regiones button").forEach(b=>b.onclick=()=>{EXP_FILTRO=b.dataset.f; renderExplore();});
-  $("#mapaLista").querySelectorAll(".comps button").forEach(b=>b.onclick=()=>{selectLeague(b.dataset.k); showTab("mxgames"); window.scrollTo({top:0,behavior:"smooth"});});
+  $("#mapaLista").querySelectorAll(".comps button").forEach(b=>{b.onclick=()=>{selectLeague(b.dataset.k); showTab("mxgames"); window.scrollTo({top:0,behavior:"smooth"});};
+    b.onpointerenter=b.onfocus=()=>precargaLiga(b.dataset.k);});
 }
 
 // Generic sortable table
@@ -2588,8 +2706,11 @@ function mxGroups(ev,playoffAware,allTeams){
   });
   return {weeks,liguilla};
 }
-function mxSeason(){
-  const key=FLIG;
+// Partidos de la temporada de UNA liga (la que se ve o cualquier otra, para la precarga y la portada).
+// EV_IDX: todos los partidos ya cargados por id; así un marcador en vivo de la portada también llega al detalle.
+const EV_IDX=new Map();
+function mxSeason(){return mxSeasonOf(FLIG);}
+function mxSeasonOf(key){
   if(comercial(LEAGUES[key])){
     const ck=smSelKey(key);
     if(MXS_CACHE[ck]) return MXS_CACHE[ck];
@@ -2597,6 +2718,7 @@ function mxSeason(){
       const {ev,L}=await smSeasonEvents(key);
       if(FLIG===key&&document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(SM_ESCUDOS?L.image_path:null);
       const {weeks,liguilla}=mxGroups(ev,LEAGUES[key].liguilla,!!LEAGUES[key].cup);
+      ev.forEach(e=>EV_IDX.set(e.id,e));
       return {ev,J:weeks,liguilla};
     })();
     MXS_CACHE[ck].catch(()=>{delete MXS_CACHE[ck];});
@@ -3138,17 +3260,10 @@ function loadMxHist(){ $("#mxhistTitle").textContent=`Historia · ${flLabel()}`;
 
 // ----- Power ranking de fútbol (Liga MX y las 5 ligas europeas; misma fórmula) -----
 let mxprLoaded=false;
-async function loadMxPR(){
-  if(mxprLoaded) return; mxprLoaded=true;
-  const key=FLIG; // si el usuario cambia de liga mientras carga, no pintar la liga vieja encima
-  $("#mxprTitle").textContent=`Power Ranking ${flLabel()}`;
-  $("#prMx").innerHTML=""; $("#prMx").closest(".tbl").querySelectorAll(".frozen").forEach(e=>e.remove());
-  $("#mxprMsg").textContent="Calculando…";
-  try{
-    const {ev,J}=await mxSeason();
-    if(key!==FLIG) return;
+// Power Ranking de fútbol (misma fórmula en la pestaña y en la portada). Regresa null si no hay partidos jugados.
+function mxPrRank(key,ev,J){
     const played=ev.filter(e=>e.status?.type?.state==="post");
-    if(!played.length){$("#mxprMsg").textContent="El ranking aparece cuando haya partidos jugados.";return;}
+    if(!played.length) return null;
     const lastJ=[...J].reverse().find(j=>j.games.some(e=>e.status?.type?.state==="post"));
     const calc=games=>{
       const S={};
@@ -3175,6 +3290,20 @@ async function loadMxPR(){
     const isTeam=(s,eq)=>{const q=prKey(eq); if(!q) return false; const T=s.team||{};
       return [T.abbreviation,T.displayName,T.shortDisplayName,T.name,T.location].some(v=>v&&prKey(v)===q);};
     for(const a of aj){const i=cur.findIndex(s=>isTeam(s,a.equipo)); const mv=+a.mover||0; if(i>=0&&mv){const [s]=cur.splice(i,1); cur.splice(Math.max(0,Math.min(cur.length,i-mv)),0,s);}}
+  return {cur,prev,prevRank,aj,isTeam};
+}
+async function loadMxPR(){
+  if(mxprLoaded) return; mxprLoaded=true;
+  const key=FLIG; // si el usuario cambia de liga mientras carga, no pintar la liga vieja encima
+  $("#mxprTitle").textContent=`Power Ranking ${flLabel()}`;
+  $("#prMx").innerHTML=""; $("#prMx").closest(".tbl").querySelectorAll(".frozen").forEach(e=>e.remove());
+  $("#mxprMsg").textContent="Calculando…";
+  try{
+    const {ev,J}=await mxSeason();
+    if(key!==FLIG) return;
+    const R=mxPrRank(key,ev,J);
+    if(!R){$("#mxprMsg").textContent="El ranking aparece cuando haya partidos jugados.";return;}
+    const {cur,prev,prevRank,aj,isTeam}=R;
     const comOf=s=>(aj.find(a=>a.comentario&&isTeam(s,a.equipo))||{}).comentario||"";
     const mn=Math.min(...cur.map(s=>s.score)), mx=Math.max(...cur.map(s=>s.score));
     const tbody=cur.map((s,i)=>{const r=i+1,p=prev.length?prevRank[s.id]:null; const mvv=p==null?"–":p>r?`<span class="up">▲${p-r}</span>`:p<r?`<span class="down">▼${r-p}</span>`:"=";
@@ -3573,14 +3702,15 @@ async function mxLiveUpdate(){
 async function liveTick(){
   if(document.hidden) return;
   try{
-    const onNfl=!$("#nflgames").classList.contains("hidden"), onMx=!$("#mxgames").classList.contains("hidden");
+    const onNfl=!$("#nflgames").classList.contains("hidden"), onMx=!$("#mxgames").classList.contains("hidden"), onHoy=!$("#hoy").classList.contains("hidden");
+    if(onHoy&&await hoyRefresh()) hoyPaint();
     if(onNfl) await nflLiveUpdate();
     if(onMx) await mxLiveUpdate();
     if(!$("#nflq").classList.contains("hidden")&&(qnCache?.games||[]).some(g=>liveHot(g.ko?+g.ko:0,false))){ if(await nflLiveUpdate(true,+(qnCache.week||D.gweek))){ loadQuiniela(); if(qnView==="grupos"&&GR.cur) grMain(GR.cur,true); } }
     if(dlg.open&&DLG_CUR){
       if(DLG_CUR.k==="nfl"){ if(NLIVE[DLG_CUR.id]?.live){ if(!onNfl) await nflLiveUpdate(true); openNfl(DLG_CUR.id);} }
-      else{ const e=MXJ.flatMap(w=>w.games).find(x=>x.id===DLG_CUR.id);
-        if(e&&e.status?.type?.state==="in"){ if(!onMx) await mxLiveUpdate(); openMx(DLG_CUR.id,true);} }
+      else{ const e=EV_IDX.get(DLG_CUR.id)||MXJ.flatMap(w=>w.games).find(x=>x.id===DLG_CUR.id);
+        if(e&&e.status?.type?.state==="in"){ if(!onMx&&!onHoy) await mxLiveUpdate(); openMx(DLG_CUR.id,true);} }
     }
   }catch(err){console.warn("En vivo:",err);}
 }
@@ -4301,6 +4431,191 @@ function svBind(g){
   b.onclick=async()=>{ b.disabled=true; try{ await svActivate(g,$("#svVidas").value); grMain(g); }
     catch(e){ console.warn("Survivor:",e?.code||e); $("#svMsg").textContent="No se pudo. Si el error sigue, faltan las reglas nuevas de Firebase."; b.disabled=false; } };
 }
+// ---------- Portada "Hoy en La Pizarra" (5 oct 2026; maqueta aprobada el 2 oct) ----------
+// Partidos: D.hoy los arma build_site.py cada mañana (hoy y los 2 días siguientes, solo nuestras competencias y la
+// Selección) en formato corto. Marcadores: el mismo pedido en vivo compartido de API-Football (live=…, 15 s en el
+// Worker) y, para los que ya no están en vivo, fixtures?ids= (máximo 20 por pedido). NFL: D.sched + NLIVE (ESPN).
+const HOY_ORDEN=["mx","sel","ucl","eng","esp","ita","ger","fra","lib","ccc","lgc","arg","por","sau","fac","efl","cdr","sup","cit","dfb","cdf"];
+const HOY_MAX=4;   // partidos por competencia antes de "Ver los N partidos"
+const HOY={ev:new Map(),dia:null,extra:new Map(),abiertos:new Set(),pedido:{},pr:null,init:false,busy:false};
+const AF_KEY=Object.fromEntries(Object.entries(LEAGUES).filter(([,L])=>L.af).map(([k,L])=>[L.af,k]));
+const hoyYmd=(t=Date.now())=>new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(t));
+const fWeekday=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long"}).format(d);
+const hoyEsc=x=>String(x??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hoyNom=t=>esTeam(t?.shortDisplayName||t?.displayName||"");
+// Formato corto de build_site → partido de API-Football → evento de la página (afEvent, el mismo de todas las ligas)
+function hoyFx(r){
+  const [id,ts,st,min,ven,city,k,rd,hid,hn,aid,an,gh,ga,ph,pa]=r, logo=i=>i?`https://media.api-sports.io/football/teams/${i}.png`:null;
+  return {fixture:{id,timestamp:ts,status:{short:st,elapsed:min},venue:{name:ven,city}},league:{id:LEAGUES[k]?.af,round:rd},
+    teams:{home:{id:hid,name:hn,logo:logo(hid),winner:gh!=null&&ga!=null&&gh>ga},away:{id:aid,name:an,logo:logo(aid),winner:gh!=null&&ga!=null&&ga>gh}},
+    goals:{home:gh??null,away:ga??null},score:{penalty:{home:ph??null,away:pa??null}}};
+}
+const hoyEv=(f,k)=>{const e=afEvent(f,LEAGUES[k]); e._k=k; return e;};
+function hoyCopia(dst,src){ dst.status=src.status; dst.competitions=src.competitions; dst._susp=src._susp; dst._pen=src._pen; dst._aet=src._aet; }
+// Día que se muestra: hoy; si hoy no hay partidos, el siguiente día que sí tenga (máximo 2 días adelante)
+function hoyArma(){
+  const H=D.hoy||{}, hoy=hoyYmd(), dias=Object.keys(H).filter(d=>d>=hoy).sort();
+  const dia=(H[hoy]||[]).length?hoy:(dias.find(d=>(H[d]||[]).length)||hoy);
+  if(dia===HOY.dia) return;
+  HOY.dia=dia; const viejo=HOY.ev; HOY.ev=new Map();
+  for(const r of H[dia]||[]){ if(!LEAGUES[r[6]]) continue; const e=hoyEv(hoyFx(r),r[6]); const o=viejo.get(e.id); if(o) hoyCopia(e,o); HOY.ev.set(e.id,e); }
+}
+// Marcadores: pedido en vivo compartido + ids de los que ya empezaron y no salen en vivo (terminaron, se retrasaron…)
+async function hoyRefresh(){
+  if(HOY.busy||!D.hoy) return false; HOY.busy=true; let cambio=false;
+  try{
+    hoyArma();
+    const now=Date.now(), todos=[...HOY.ev.values()];
+    const hot=todos.filter(e=>{const s=e.status?.type?.state; return !e._susp&&(s==="in"||(s==="pre"&&+new Date(e.date)<=now+5*60e3));});
+    const pon=(f,k)=>{const id=String(f.fixture.id), x=hoyEv(f,k), e=HOY.ev.get(id);
+      if(e) hoyCopia(e,x); else if(x.status.type.state==="in") HOY.extra.set(id,x);
+      const s=EV_IDX.get(id); if(s) hoyCopia(s,x); cambio=true;};
+    if(hot.length||HOY.extra.size){
+      const L=await afList("fixtures",`live=${AF_VIVO_IDS()}&${AF_TZ}`).catch(()=>null);
+      if(L){ const ids=new Set(L.map(f=>String(f.fixture.id)));
+        for(const id of [...HOY.extra.keys()]) if(!ids.has(id)){HOY.extra.delete(id); cambio=true;}
+        for(const f of L){ const k=AF_KEY[f.league?.id]; if(k) pon(f,k); } }
+      const vivos=new Set((L||[]).map(f=>String(f.fixture.id)));
+      // Los que debieron empezar y no salen en vivo: se piden por id (los que estaban en vivo, en cada vuelta; los demás, cada 4 min)
+      const falta=hot.filter(e=>!vivos.has(e.id)&&+new Date(e.date)<=now-60e3&&now-(HOY.pedido[e.id]||0)>(e.status?.type?.state==="in"?0:4*60e3));
+      for(let i=0;i<falta.length;i+=20){ const lote=falta.slice(i,i+20); lote.forEach(e=>HOY.pedido[e.id]=now);
+        const F=await afList("fixtures",`ids=${lote.map(e=>e.id).join("-")}&${AF_TZ}`).catch(()=>[]);
+        for(const f of F){ const e=HOY.ev.get(String(f.fixture.id)); if(e) pon(f,e._k); } }
+    }
+    // NFL de hoy: si hay partido en curso o por empezar, marcador de ESPN (el mismo de la pestaña NFL)
+    const nh=(D.sched||[]).filter(x=>x.ko&&x.hs==null&&!NLIVE[x.id]?.done&&liveHot(+new Date(x.ko),false));
+    if(nh.length&&await nflLiveUpdate(true,nh[0].w).catch(()=>false)) cambio=true;
+  }finally{HOY.busy=false;}
+  return cambio;
+}
+// ---- Dibujo ----
+function hoyVivoHTML(){
+  const fut=[...HOY.ev.values(),...HOY.extra.values()].filter(e=>e.status?.type?.state==="in")
+    .sort((a,b)=>(HOY_ORDEN.indexOf(a._k)>>>0)-(HOY_ORDEN.indexOf(b._k)>>>0)||new Date(a.date)-new Date(b.date));
+  const nfl=(D.sched||[]).filter(x=>x.hs==null&&NLIVE[x.id]?.live);
+  const n=fut.length+nfl.length; if(!n) return "";
+  const fila=(nm,sc,lead)=>`<div class="r"><span>${hoyEsc(nm)}</span><b class="${lead?"lead":""}">${sc??"–"}</b></div>`;
+  const cf=fut.map(e=>{const cs=e.competitions[0].competitors, H=cs[0], A=cs[1], h=+H.score||0, a=+A.score||0;
+    return `<button class="hv" data-hk="${e._k}" data-hid="${e.id}"><div class="t"><span>${hoyEsc(LEAGUES[e._k]?.label||"")}</span><b>${hoyEsc(e.status.type.shortDetail||"En vivo")}</b></div>${fila(hoyNom(H.team),H.score,h>a)}${fila(hoyNom(A.team),A.score,a>h)}</button>`;}).join("");
+  const cn=nfl.map(x=>{const L=NLIVE[x.id], A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h};
+    return `<button class="hv" data-nid="${x.id}"><div class="t"><span>NFL</span><b>${hoyEsc(String(L.st).replace(" cuarto",""))}</b></div>${fila(A.n,L.as,L.as>L.hs)}${fila(H.n,L.hs,L.hs>L.as)}</button>`;}).join("");
+  return `<section class="hsec hvivo"><div class="hh"><h3><span class="hdot"></span>En vivo<small>${n} ${n===1?"partido":"partidos"}</small></h3></div><div class="hstrip">${cf}${cn}</div></section>`;
+}
+function hoyCard(e){
+  const c=mxCard(e,0), st=e.status?.type?.state, H=c.teams[0], A=c.teams[1];
+  const izq=e._susp?`<span class="lv">${e._susp}</span>`:st==="in"?`<span class="lv">${hoyEsc(c.status)}</span>`:st==="post"?`<span class="fin">${hoyEsc(c.status)}</span>`:(c.tbd?"Horario por definir":fHour(c.when));
+  const sede=e.competitions?.[0]?.venue?.fullName||"";
+  const fila=t=>`<div class="tr${t.win?" w":""}">${t.logo?`<img src="${t.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:""}<span class="n">${hoyEsc(esTeam(t.n))}</span>${t.score!=null?`<span class="s">${t.score}</span>`:t.ml!=null?`<span class="o">${mlTxt(t.ml)}</span>`:""}</div>`;
+  const P=c.probs?c.probs.map(p=>Math.round(p.p*100)):null;
+  return `<button class="hc" data-hk="${e._k}" data-hid="${e.id}"><div class="m"><span>${izq}</span><span>${hoyEsc(sede)}</span></div>${fila(H)}${fila(A)}
+    ${P?`<div class="hbar"><i style="flex:${P[0]};background:#c9d6cf"></i><i style="flex:${P[1]};background:#55695f"></i><i style="flex:${P[2]};background:#8fa79b"></i></div><div class="hpl"><span>Local ${P[0]}%</span><span>Empate ${P[1]}%</span><span>Visita ${P[2]}%</span></div>`:""}</button>`;
+}
+function hoyEtapa(G,k){
+  if(k==="sel") return "";
+  const num=G.map(e=>e._round).filter(r=>/^\d+$/.test(r||"")), cuenta={}; num.forEach(r=>cuenta[r]=(cuenta[r]||0)+1);
+  const top=Object.entries(cuenta).sort((a,b)=>b[1]-a[1])[0]; if(top) return `Jornada ${top[0]}`;
+  const et=G[0]?._stage?etapaEs(G[0]._stage):""; return et&&!/^\d+$/.test(et)?et:"";
+}
+function hoyFutHTML(){
+  if(!D.hoy) return "";
+  const hoy=hoyYmd(), G={};
+  for(const e of HOY.ev.values()) (G[e._k]=G[e._k]||[]).push(e);
+  const ks=Object.keys(G).sort((a,b)=>(HOY_ORDEN.indexOf(a)>>>0)-(HOY_ORDEN.indexOf(b)>>>0));
+  if(!ks.length) return `<section class="hsec"><p class="hmsg">No hay partidos de fútbol de nuestras competencias en los próximos días.</p></section>`;
+  const otroDia=HOY.dia!==hoy, fd=new Date(HOY.dia+"T12:00:00-06:00");
+  const cab=otroDia?`<p class="hday">Hoy no hay partidos · ${HOY.dia===hoyYmd(Date.now()+864e5)?"Mañana":cap(fWeekday(fd))}, ${new Intl.DateTimeFormat("es-MX",{timeZone:TZ,day:"numeric",month:"long"}).format(fd)}</p>`:"";
+  return `<section class="hsec">${cab}${ks.map(k=>{const L=G[k].sort((a,b)=>new Date(a.date)-new Date(b.date)), et=hoyEtapa(L,k), todos=HOY.abiertos.has(k);
+    const ver=(LEAGUES[k]?.tipo==="liga"&&/^Jornada/.test(et))?"Ver jornada":"Ver partidos";
+    return `<div class="hgrp"><div class="hh"><h3>${hoyEsc(LEAGUES[k].label)}${et?` · ${hoyEsc(et)}`:""}</h3><button class="hlink" data-hact="liga" data-hk="${k}">${ver}</button></div>
+      <div class="hgrid">${(todos?L:L.slice(0,HOY_MAX)).map(hoyCard).join("")}</div>
+      ${!todos&&L.length>HOY_MAX?`<button class="hmas" data-hact="mas" data-hk="${k}">Ver los ${L.length} partidos</button>`:""}</div>`;}).join("")}</section>`;
+}
+function hoyNflHTML(){
+  // Pendiente = sin resultado, y que no haya empezado hace más de 12 h (si nflverse se atrasa, no se queda pegada la semana vieja)
+  const now=Date.now(), pend=x=>x.hs==null&&!NLIVE[x.id]?.done&&(NLIVE[x.id]?.live||!x.ko||+new Date(x.ko)>now-12*36e5);
+  const w=weeks.find(w=>(D.sched||[]).some(x=>x.w===w&&pend(x))); if(w==null) return "";
+  const G=(D.sched||[]).filter(x=>x.w===w&&pend(x)).sort((a,b)=>(a.ko||"").localeCompare(b.ko||"")).slice(0,4);
+  const cards=G.map(x=>{const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, L=NLIVE[x.id], when=x.ko?new Date(x.ko):null;
+    const dia=L?.live?`<span class="lv">${hoyEsc(L.st)}</span>`:when?`${cap(fWeekday(when))}${x.tbd?"":" · "+fHour(when)}`:"Por definir";
+    const fav=x.sp==null?null:x.sp>0?x.h:x.sp<0?x.a:"";
+    const lin=L?.live?`${x.a} ${L.as} – ${L.hs} ${x.h}`:x.sp==null?"Línea por definir":`${fav?`${fav} −${Math.abs(x.sp)}`:"Pick"}${x.tot!=null?` · O/U ${x.tot}`:""}`;
+    return `<button class="hn" data-nid="${x.id}"><span class="d">${dia}</span><span class="j">${hoyEsc(A.n)} @ ${hoyEsc(H.n)}</span><span class="l">${lin}</span></button>`;}).join("");
+  return `<section class="hsec"><div class="hh"><h3>NFL · Semana ${w}</h3><button class="hlink" data-hact="nfl" data-w="${w}">Ver semana</button></div><div class="hnflg">${cards}</div></section>`;
+}
+function hoyLpzHTML(){
+  let pr="";
+  if(HOY.pr!==false){
+    const filas=HOY.pr?HOY.pr.map(({s,r,p})=>{const mv=p==null?["–","var(--muted)"]:p>r?[`▲ ${p-r}`,"var(--good)"]:p<r?[`▼ ${r-p}`,"var(--bad)"]:["=","var(--muted)"];
+      return `<div class="row"><b>${r}</b>${s.team?.logo?`<img src="${s.team.logo}" alt="" onerror="this.style.visibility='hidden'">`:""}<span>${hoyEsc(s.team?.shortDisplayName||s.team?.displayName||"")}</span><i style="color:${mv[1]}">${mv[0]}</i></div>`;}).join(""):`<p class="hmsg">Calculando…</p>`;
+    pr=`<div class="hbox hpr"><div class="hh" style="margin:0"><span class="k">Power Ranking Liga MX</span><button class="hlink" data-hact="pr">Completo</button></div>${filas}</div>`;
+  }
+  const g=D.goleo?.mx;
+  const gol=g?`<button class="hbox hgol" data-hact="gol"><span class="k">Goleador Liga MX</span><span class="g">${g.g}</span><span class="p">${hoyEsc(g.n)}</span><span class="q">${hoyEsc(g.eq)}${g.e?` · empatado con ${g.e} más`:""}</span></button>`:"";
+  return `<section class="hsec"><div class="hh"><h3>Lo de La Pizarra</h3></div><div class="hlpz">${pr}${gol}
+    <button class="hbox hsv" data-hact="sv"><span class="k">El Survivor</span><span class="x">Un equipo por semana, sin repetir. Si pierde, quedas fuera.</span><span class="e">Entrar</span></button>
+    <button class="hqn" data-hact="qn"><span><b>La Quiniela</b><span>Pronostica la jornada y compite con tus amigos</span></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d2a26" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </div></section>`;
+}
+function hoyPaint(){
+  if($("#hoy").classList.contains("hidden")) return;
+  hoyArma();
+  $("#hoyFecha").textContent=cap(fDay(new Date()));
+  const st=$("#hoyVivo .hstrip"), x=st?st.scrollLeft:0;
+  $("#hoyVivo").innerHTML=hoyVivoHTML(); const st2=$("#hoyVivo .hstrip"); if(st2) st2.scrollLeft=x;
+  $("#hoyFut").innerHTML=hoyFutHTML(); $("#hoyNfl").innerHTML=hoyNflHTML(); $("#hoyLpz").innerHTML=hoyLpzHTML();
+}
+function hoyPR(){
+  if(HOY.pr) return;
+  mxSeasonOf("mx").then(({ev,J})=>{const R=mxPrRank("mx",ev,J);
+    HOY.pr=R?R.cur.slice(0,3).map((s,i)=>({s,r:i+1,p:R.prev.length?R.prevRank[s.id]:null})):false;}).catch(()=>{HOY.pr=false;})
+    .finally(()=>{if(!$("#hoy").classList.contains("hidden")) $("#hoyLpz").innerHTML=hoyLpzHTML();});
+}
+function hoyRender(){
+  hoyPaint(); hoyPR();
+  hoyRefresh().then(c=>{if(c) hoyPaint();}).catch(()=>{});
+  if(!HOY.init){ HOY.init=true; setTimeout(precarga,2500); }
+}
+// ---- Toques ----
+function hoyIrLiga(k,tab="mxgames"){ if(FLIG!==k) selectLeague(k,true); showSport("mx",tab); window.scrollTo(0,0); }
+async function hoyAbrir(k,id){
+  pzTrack("hoy_partido",{liga:k});
+  if(!LEAGUES[k]||!comercial(LEAGUES[k])) return hoyIrLiga(k);
+  if(FLIG!==k) selectLeague(k,true);
+  $("#gbody").innerHTML=`<p class="note" style="text-align:center">Cargando…</p>`; if(!dlg.open) dlg.showModal();
+  try{
+    const {ev}=await mxSeasonOf(k), s=ev.find(x=>x.id===id);
+    if(!s){ dlg.close(); return hoyIrLiga(k); }
+    const h=HOY.ev.get(id)||HOY.extra.get(id); if(h) hoyCopia(s,h);
+    DLG_CUR={k:"mx",id}; await openMx(id,true);
+  }catch(err){ $("#gbody").innerHTML=`<p class="note" style="text-align:center">No pudimos cargar el partido. Intenta de nuevo en un momento.</p>`; }
+}
+$("#hoy").addEventListener("click",ev=>{
+  const p=ev.target.closest("[data-hid]"); if(p) return hoyAbrir(p.dataset.hk,p.dataset.hid);
+  const n=ev.target.closest("[data-nid]"); if(n){ pzTrack("hoy_partido",{liga:"nfl"}); DLG_CUR={k:"nfl",id:n.dataset.nid}; return openNfl(n.dataset.nid); }
+  const a=ev.target.closest("[data-hact]"); if(!a) return; const act=a.dataset.hact; pzTrack("hoy_toque",{que:act});
+  if(act==="mas"){ HOY.abiertos.add(a.dataset.hk); $("#hoyFut").innerHTML=hoyFutHTML(); }
+  else if(act==="liga") hoyIrLiga(a.dataset.hk);
+  else if(act==="pr") hoyIrLiga("mx","mxpr");
+  else if(act==="gol") hoyIrLiga("mx","mxplayers");
+  else if(act==="nfl"){ curW=+a.dataset.w; renderNflWeek(); showSport("nfl"); window.scrollTo(0,0); }
+  else if(act==="qn"){ showSport("qn"); window.scrollTo(0,0); }
+  else if(act==="sv"){ qnMode="surv"; try{localStorage.setItem("pz_qmode","surv");}catch(e){} showSport("qn"); qnSetView("picks"); window.scrollTo(0,0); }
+});
+// ---------- Precarga en segundo plano (Liga MX, Premier, Champions y LaLiga) ----------
+// Cuando la portada ya se dibujó, se piden en fila (una tras otra) las temporadas de las 4 ligas más vistas; así al
+// entrar a ellas los partidos salen al instante. No se hace con "ahorro de datos" ni en conexiones 2G.
+// También se precarga una liga al pasar el mouse o enfocar su botón en Explorar, y las 4 al tocar el selector.
+const PRECARGA=["mx","eng","ucl","esp"], PRE_HECHO=new Set();
+function precargaOk(){const c=navigator.connection; return !(c&&(c.saveData||/(^|-)2g$/.test(c.effectiveType||"")));}
+function precargaLiga(k){
+  if(PRE_HECHO.has(k)||!LEAGUES[k]||!comercial(LEAGUES[k])||!precargaOk()) return Promise.resolve();
+  PRE_HECHO.add(k); return mxSeasonOf(k).then(()=>{},()=>{PRE_HECHO.delete(k);});
+}
+let PRE_CORRE=false;
+async function precarga(){ if(PRE_CORRE) return; PRE_CORRE=true;
+  try{ for(const k of PRECARGA){ if(document.hidden) break; await precargaLiga(k); await new Promise(r=>setTimeout(r,400)); } }finally{PRE_CORRE=false;} }
+["focus","pointerdown"].forEach(t=>$("#flSel").addEventListener(t,()=>precarga()));
+showSport("hoy");
 // Invitación: lapizarra.mx/?g=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("nfl"); showTab("nflq"); qnSetView("grupos");}}catch(e){}})();
 </script>
