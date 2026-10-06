@@ -1,0 +1,43 @@
+name: Bitácora de líneas
+# Cada 2 horas anota la línea de ESPN Pick'em y, cuando ESPN publica la semana (o una vez al día), las de cada casa
+# de The Odds API (1 crédito por foto). Es temporal: para encontrar de dónde saca ESPN sus líneas. Ver bitacora_lineas.py
+on:
+  schedule:
+    - cron: "17 */2 * * *"   # cada 2 horas (minuto 17 para no coincidir con otras tareas)
+  workflow_dispatch:
+    inputs:
+      forzar:
+        description: "Tomar foto de las casas aunque ya haya una de hoy (gasta 1 crédito)"
+        type: boolean
+        default: false
+permissions:
+  contents: write
+concurrency:
+  group: bitacora
+  cancel-in-progress: false
+jobs:
+  bitacora:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python bitacora_lineas.py
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          FORZAR: ${{ inputs.forzar && 'si' || 'no' }}
+      - name: Guardar la bitácora
+        run: |
+          git config user.name "La Pizarra bot"
+          git config user.email "actions@github.com"
+          cp bitacora/lineas.json /tmp/lineas.json
+          for i in 1 2 3; do
+            git fetch origin main && git reset --hard origin/main
+            mkdir -p bitacora && cp /tmp/lineas.json bitacora/lineas.json
+            git add bitacora/lineas.json
+            git diff --cached --quiet && exit 0
+            git commit -m "Bitácora de líneas" && git push && exit 0
+            sleep 7
+          done
+          exit 1
