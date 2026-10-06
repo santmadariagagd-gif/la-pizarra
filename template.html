@@ -673,8 +673,26 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .hsv .sp span{color:var(--muted)}
 .hsv .sp b{font:700 19px var(--display)}
 .hsv .sp em{margin-left:auto;font-style:normal;font-weight:700;color:var(--good)}
-/* Votación (parte 2) */
+/* Votación "¿Quién gana?" */
 .hvoto:empty{display:none}
+.hvoto{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px;cursor:default}
+.hvoto .vt{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hvoto .vt b{font:700 20px var(--display)}
+.hvoto .vt small{font-size:12px;color:var(--muted)}
+.hvoto .vb{display:grid;gap:6px}
+.hvoto .vb button{min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:600 17px/1.1 var(--display);cursor:pointer;padding:4px 6px}
+.hvoto .vb button:hover{border-color:var(--mark)}
+.hvoto .vb button[aria-pressed="true"]{border-color:var(--mark);color:var(--mark)}
+.hvoto .vres{display:flex;flex-direction:column;gap:7px}
+.hvoto .vr{display:grid;grid-template-columns:minmax(0,108px) minmax(0,1fr) 42px;align-items:center;gap:8px}
+.hvoto .vr span{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hvoto .vr s{display:block;height:12px;border-radius:4px;background:var(--bg);text-decoration:none}
+.hvoto .vr s i{display:block;height:12px;border-radius:4px;background:#9CC7E6}
+.hvoto .vr.yo span{color:var(--mark)}.hvoto .vr.yo s i{background:var(--mark)}
+.hvoto .vr b{font:700 17px var(--display);text-align:right}
+.hvoto .vn{margin:0;font-size:12px;color:var(--muted)}
+.hvoto .vn b{color:var(--ink)}
+.hvoto .vc{background:none;border:0;color:var(--mark);font:600 12px var(--body);padding:4px 0;cursor:pointer}
 .back{flex:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;margin-right:-6px}
 .back:hover{border-color:var(--mark);color:var(--mark)}
 .back[hidden]{display:none}
@@ -3827,6 +3845,7 @@ async function liveTick(){
   try{
     const onNfl=!$("#nflgames").classList.contains("hidden"), onMx=!$("#mxgames").classList.contains("hidden"), onHoy=!$("#hoy").classList.contains("hidden");
     if(onHoy&&await hoyRefresh()) hoyPaint();
+    if(onHoy) votosCarga();
     if(onNfl) await nflLiveUpdate();
     if(onMx) await mxLiveUpdate();
     if(!$("#nflq").classList.contains("hidden")&&(qnCache?.games||[]).some(g=>liveHot(g.ko?+g.ko:0,false))){ if(await nflLiveUpdate(true,+(qnCache.week||D.gweek))){ loadQuiniela(); if(qnView==="grupos"&&GR.cur) grMain(GR.cur,true); } }
@@ -4672,7 +4691,7 @@ function hoySemFut(slot){
     <div class="eq3">${eq(H,S.lt)}<div class="mid">${mid}<small>${hoyEsc(e.competitions?.[0]?.venue?.fullName||"")}</small></div>${eq(A,S.vt)}</div>
     ${P?`<div class="pb">${hoyTri(P,"bar")}<div class="lab"><span><b>${P[0]}%</b>${ml(H)}</span><span>Empate ${P[1]}%</span><span>${A.ml!=null?mlTxt(A.ml)+" · ":""}<b>${P[2]}%</b></span></div></div>`:""}
     ${(S.fl?.length||S.fv?.length)?`<div class="fo"><span class="k">Últimos 5</span><div class="r"><span>${hoyEsc(esTeam(H.n))}</span>${hoyForma(S.fl)}</div><div class="r"><span>${hoyEsc(esTeam(A.n))}</span>${hoyForma(S.fv)}</div></div>`:""}
-    <div class="hvoto" data-voto="af${e.id}"></div>
+    <div class="hvoto" data-voto="af${e.id}" data-ko="${+when}" data-orden="0,1,2" data-n0="${hoyEsc(esTeam(H.n))}" data-n1="Empate" data-n2="${hoyEsc(esTeam(A.n))}" data-res="${st==="post"?(H.win?0:A.win?2:1):""}"></div>
     <span class="ver">${st==="pre"?"Ver la previa completa":"Ver el partido"}</span></div>`;
 }
 function hoySemNfl(){
@@ -4691,7 +4710,7 @@ function hoySemNfl(){
     ${P&&!fin&&!L?.live?`<div class="pb"><span class="bar"><i style="flex:${P[0]};background:#ECEFE7"></i><i style="flex:${P[1]};background:#9CC7E6"></i></span><div class="lab"><span><b>${P[0]}%</b> · ${mlTxt(x.aml)}</span><span>${fav}${x.tot!=null?` · O/U ${x.tot}`:""}</span><span>${mlTxt(x.hml)} · <b>${P[1]}%</b></span></div></div>`:""}
     <div class="fo"><span class="k">Últimos 5</span><div class="r"><span>${hoyEsc(A.n)}</span>${hoyForma(nflForma(x.a,x.w))}</div><div class="r"><span>${hoyEsc(H.n)}</span>${hoyForma(nflForma(x.h,x.w))}</div></div>
     ${lpTxt?`<p class="pk">La Pizarra va con <b>${hoyEsc(lpTxt)}</b> contra el spread</p>`:""}
-    <div class="hvoto" data-voto="nfl${x.id}"></div>
+    <div class="hvoto" data-voto="nfl${x.id}" data-ko="${when?+when:0}" data-orden="2,0" data-n0="${hoyEsc(H.n)}" data-n2="${hoyEsc(A.n)}" data-res="${fin?(sh>sa?0:sa>sh?2:1):""}"></div>
     <span class="ver">${fin?"Ver el partido":"Ver la previa completa"}</span></div>`;
 }
 function hoySemHTML(){
@@ -4851,7 +4870,7 @@ function hoyPaint(){
   if(typeof votosPinta==="function") votosPinta();
 }
 function hoyRender(){
-  hoyPaint(); hoyMx();
+  hoyPaint(); hoyMx(); votosCarga();
   hoyRefresh().then(c=>{if(c) hoyPaint();}).catch(()=>{});
   if(!HOY.init){ HOY.init=true; setTimeout(precarga,2500); }
 }
@@ -4870,7 +4889,7 @@ async function hoyAbrir(k,id){
   }catch(err){ $("#gbody").innerHTML=`<p class="note" style="text-align:center">No pudimos cargar el partido. Intenta de nuevo en un momento.</p>`; }
 }
 $("#hoy").addEventListener("click",ev=>{
-  if(ev.target.closest(".hvoto button")) return;   // los botones de votar tienen su propio manejo
+  if(ev.target.closest(".hvoto")) return;   // la votación tiene su propio manejo (no abre el partido)
   const f=ev.target.closest("[data-hf]"); if(f){ HOY.f=f.dataset.hf; try{localStorage.setItem("pz_hoyf",HOY.f);}catch(e){} pzTrack("hoy_filtro",{f:HOY.f}); return hoyPaint(); }
   const t=ev.target.closest("[data-ht]"); if(t){ HOY.tab=t.dataset.ht; return ($("#hoySem").innerHTML=hoySemHTML(), typeof votosPinta==="function"&&votosPinta()); }
   const a=ev.target.closest("[data-hact]");
@@ -4888,6 +4907,65 @@ $("#hoy").addEventListener("click",ev=>{
   const n=ev.target.closest("[data-nid]"); if(n){ pzTrack("hoy_partido",{liga:"nfl"}); DLG_CUR={k:"nfl",id:n.dataset.nid}; return openNfl(n.dataset.nid); }
 });
 $("#hoy").addEventListener("keydown",ev=>{ if((ev.key==="Enter"||ev.key===" ")&&ev.target.matches(".hx[role=button]")){ ev.preventDefault(); ev.target.click(); } });
+
+// ---------- Votación "¿Quién gana?" (6 oct 2026) ----------
+// En las tarjetas de los partidos de la semana. Sin cuenta: un voto por dispositivo (identificador aleatorio en
+// localStorage "pz_disp"), se puede cambiar hasta que empieza el partido. Los votos viven en Cloudflare D1 a través
+// del Worker (GET /votos?p=…, POST /voto). Tu voto también queda en localStorage "pz_votos" para marcarlo.
+const VOTO_URL="https://datos.lapizarramx.workers.dev";
+const VOTO={c:{},cambiar:new Set(),t:0,msg:{},
+  mio:(()=>{try{return JSON.parse(localStorage.getItem("pz_votos")||"{}")||{};}catch(e){return {};}})()};
+function votoDisp(){
+  let d=null; try{ d=localStorage.getItem("pz_disp"); }catch(e){}
+  if(!d||!/^[A-Za-z0-9_-]{16,40}$/.test(d)){ const a=new Uint8Array(16); crypto.getRandomValues(a); d=[...a].map(b=>b.toString(16).padStart(2,"0")).join("");
+    try{ localStorage.setItem("pz_disp",d); }catch(e){} }
+  return d;
+}
+const votoGuarda=()=>{ try{ localStorage.setItem("pz_votos",JSON.stringify(VOTO.mio)); }catch(e){} };
+function votosCarga(forzar){
+  const ids=[...document.querySelectorAll("#hoy .hvoto[data-voto]")].map(x=>x.dataset.voto);
+  if(!ids.length||(!forzar&&Date.now()-VOTO.t<50e3)) return;
+  VOTO.t=Date.now();
+  fetch(`${VOTO_URL}/votos?p=${encodeURIComponent(ids.join(","))}`).then(r=>r.ok?r.json():null)
+    .then(j=>{ if(j){ Object.assign(VOTO.c,j); votosPinta(); } }).catch(()=>{});
+}
+function votosPinta(){
+  for(const el of document.querySelectorAll("#hoy .hvoto[data-voto]")){
+    const id=el.dataset.voto, ko=+el.dataset.ko||0, cerrado=ko&&Date.now()>=ko, mine=VOTO.mio[id], orden=el.dataset.orden.split(",").map(Number);
+    const nom=i=>el.dataset["n"+i]||"", res=el.dataset.res===""?null:+el.dataset.res, C=VOTO.c[id], tot=C?orden.reduce((s,i)=>s+(C[i]||0),0):0;
+    const tit=`<div class="vt"><b>¿Quién gana?</b><small>${cerrado?(res!=null?"Terminó":"Votación cerrada"):tot?`${tot.toLocaleString("es-MX")} ${tot===1?"voto":"votos"}`:"Se cierra al empezar"}</small></div>`;
+    if(!cerrado&&(mine==null||VOTO.cambiar.has(id))){
+      el.innerHTML=tit+`<div class="vb" style="grid-template-columns:repeat(${orden.length},minmax(0,1fr))">${orden.map(i=>`<button data-vp="${id}" data-vr="${i}" aria-pressed="${mine===i}">${hoyEsc(nom(i))}</button>`).join("")}</div>
+        <p class="vn">${VOTO.msg[id]||(mine==null?"Vota y mira qué opina la gente.":"Escoge tu nuevo voto.")}</p>`;
+      continue;
+    }
+    if(!C){ el.innerHTML=tit+`<p class="vn">${cerrado&&mine==null?"La votación ya cerró.":"Cargando votos…"}</p>`; continue; }
+    const pct=i=>tot?Math.round((C[i]||0)/tot*100):0;
+    const filas=orden.map(i=>{const yo=mine===i, gano=res===i;
+      return `<div class="vr${yo?" yo":""}"><span>${hoyEsc(nom(i))}${yo?" ✓":""}</span><s><i style="width:${pct(i)}%"></i></s><b>${pct(i)}%</b></div>`;}).join("");
+    const pie=res!=null&&tot?`<p class="vn">Ganó ${hoyEsc(res===1?"el empate":nom(res))} · <b>el ${pct(res)}% le atinó</b>${mine!=null?(mine===res?" · tú también":" · tú no"):""}</p>`
+      :!cerrado?`<p class="vn">${VOTO.msg[id]?VOTO.msg[id]+" · ":""}<button class="vc" data-vcambio="${id}">Cambiar mi voto</button></p>`:tot?"":`<p class="vn">Nadie votó en este partido.</p>`;
+    el.innerHTML=tit+`<div class="vres">${tot?filas:`<p class="vn">Todavía no hay votos.</p>`}</div>`+pie;
+  }
+}
+async function votar(id,r){
+  const ant=VOTO.mio[id], C=VOTO.c[id]=VOTO.c[id]||[0,0,0];
+  if(ant===r){ VOTO.cambiar.delete(id); return votosPinta(); }
+  VOTO.mio[id]=r; votoGuarda(); VOTO.cambiar.delete(id); delete VOTO.msg[id];
+  if(ant!=null&&C[ant]>0) C[ant]--; C[r]++; votosPinta();   // se ve al instante; abajo se confirma con el Worker
+  pzTrack("voto",{p:id});
+  try{
+    const resp=await fetch(`${VOTO_URL}/voto`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({p:id,d:votoDisp(),r})});
+    const j=await resp.json().catch(()=>({}));
+    if(resp.ok&&j.conteo){ VOTO.c[id]=j.conteo; }
+    else { if(ant==null) delete VOTO.mio[id]; else VOTO.mio[id]=ant; votoGuarda(); VOTO.msg[id]=j.error||"No se pudo guardar tu voto. Intenta de nuevo."; VOTO.t=0; votosCarga(true); }
+  }catch(e){ if(ant==null) delete VOTO.mio[id]; else VOTO.mio[id]=ant; votoGuarda(); VOTO.msg[id]="No se pudo guardar tu voto. Revisa tu conexión."; }
+  votosPinta();
+}
+$("#hoy").addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-vp]"); if(b) return votar(b.dataset.vp,+b.dataset.vr);
+  const c=ev.target.closest("[data-vcambio]"); if(c){ VOTO.cambiar.add(c.dataset.vcambio); votosPinta(); }
+});
 // ---------- Precarga en segundo plano (Liga MX, Premier, Champions y LaLiga) ----------
 // Cuando la portada ya se dibujó, se piden en fila (una tras otra) las temporadas de las 4 ligas más vistas; así al
 // entrar a ellas los partidos salen al instante. No se hace con "ahorro de datos" ni en conexiones 2G.

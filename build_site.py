@@ -1785,7 +1785,7 @@ try:
         fijo=_prev.get('id') if _prev.get('w')==_w else None
         x=next((g for g in G if g['id']==fijo),None) or max(G,key=_idx)
         div=any(x['a'] in d and x['h'] in d for d in NFL_DIV)
-        out['semana']['nfl']=dict(w=_w,id=x['id'],badge="Rivales de división" if div else "",i=_idx(x))
+        out['semana']['nfl']=dict(w=_w,id=x['id'],ko=x['ko'],badge="Rivales de división" if div else "",i=_idx(x))   # ko: el Worker cierra la votación a esa hora
         print(f"Partido de la semana (NFL): {x['a']} @ {x['h']}, semana {_w} (índice {_idx(x)}{', congelado' if fijo else ''})")
     _semf=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos','semana.json')
     os.makedirs(os.path.dirname(_semf),exist_ok=True)
