@@ -3505,12 +3505,24 @@ async function detTemporada(key){
 async function detTempAF(pid){
   if(DET.pt[pid]!==undefined) return DET.pt[pid];
   DET.pt[pid]=null;
-  const y=new Date().getFullYear();
+  const y=new Date().getFullYear(), SEL=/friendl|nations league|world cup|qualif|gold cup|copa am[eé]rica|euro championship|olympic/i;
+  // Club actual (players/squads): si lo traspasaron a media temporada, se muestra su equipo nuevo y aparte lo de antes
+  const sq=await afList("players/squads",`player=${pid}`).catch(()=>[]);
+  const actuales=new Set((sq||[]).map(x=>x.team?.id).filter(Boolean));
   for(const season of [y,y-1]){
-    try{ const L=await afList("players",`id=${pid}&season=${season}`); const st=(L?.[0]?.statistics||[]).filter(x=>(x.games?.minutes||0)>0&&!/friendl/i.test(x.league?.name||""));
-      if(st.length){ const x=st.sort((a,b)=>(b.games.minutes||0)-(a.games.minutes||0))[0], g=x.games||{}, gl=x.goals||{};
-        DET.pt[pid]={liga:`${x.team?.name||""} · ${x.league?.name||""} ${season}`,ap:g.appearences??g.appearances??0,min:g.minutes||0,g:gl.total||0,as:gl.assists||0,
-          sot:x.shots?.on||0,yc:x.cards?.yellow||0,sv:gl.saves||0,gc:gl.conceded||0,rt:g.rating?(+g.rating).toFixed(1):null}; break; } }catch(e){}
+    let st=[]; try{ const L=await afList("players",`id=${pid}&season=${season}`); st=(L?.[0]?.statistics||[]).filter(x=>!SEL.test(x.league?.name||"")); }catch(e){}
+    const conMin=st.filter(x=>(x.games?.minutes||0)>0); if(!conMin.length&&!st.some(x=>actuales.has(x.team?.id))) continue;
+    const clubes={}; for(const x of st){ const id=x.team?.id; if(!id) continue; (clubes[id]=clubes[id]||{id,nombre:x.team.name,ligas:[],L:[]}).L.push(x); if(x.league?.name&&!clubes[id].ligas.includes(x.league.name)) clubes[id].ligas.push(x.league.name); }
+    const suma=c=>{ const r={ap:0,min:0,g:0,as:0,sot:0,yc:0,sv:0,gc:0,rs:0,rm:0};
+      for(const x of c.L){ const g=x.games||{}, gl=x.goals||{}, m=g.minutes||0; r.ap+=g.appearences??g.appearances??0; r.min+=m; r.g+=gl.total||0; r.as+=gl.assists||0; r.sot+=x.shots?.on||0; r.yc+=x.cards?.yellow||0; r.sv+=gl.saves||0; r.gc+=gl.conceded||0;
+        if(g.rating){ r.rs+=(+g.rating)*m; r.rm+=m; } }
+      r.rt=r.rm?(r.rs/r.rm).toFixed(1):null; return r; };
+    const C=Object.values(clubes).map(c=>({...c,...suma(c)}));
+    let actual=C.find(c=>actuales.has(c.id))||C.sort((a,b2)=>b2.min-a.min)[0];
+    if(!actual) continue;
+    const antes=C.filter(c=>c!==actual&&c.ap>0);
+    DET.pt[pid]={...actual,club:actual.nombre,liga:actual.ligas.join(", "),season,antes:antes.map(c=>({club:c.nombre,ap:c.ap,g:c.g,as:c.as}))};
+    break;
   }
   return DET.pt[pid];
 }
@@ -3540,7 +3552,8 @@ function detCard(R,H,A){
     else vacio="El partido todavía no empieza.";
   } else {
     if(T){ nums=[["Partidos",T.ap],["Minutos",T.min],["Goles",T.g],["Asistencias",T.as],gk?["Atajadas",T.sv]:["Tiros a gol",T.sot],gk?["Porterías en cero",T.cs]:["Amarillas",T.yc]]; nota=`${LEAGUES[FLIG]?.label||""}, torneo actual.`; }
-    else if(TA){ nums=[["Partidos",TA.ap],["Minutos",TA.min],["Goles",TA.g],["Asistencias",TA.as],gk?["Atajadas",TA.sv]:["Tiros a gol",TA.sot],["Calificación",TA.rt??"–"]]; nota=`Con su club: ${TA.liga}.`; }
+    else if(TA){ nums=[["Partidos",TA.ap],["Minutos",TA.min],["Goles",TA.g],["Asistencias",TA.as],gk?["Atajadas",TA.sv]:["Tiros a gol",TA.sot],["Calificación",TA.rt??"–"]];
+      nota=`Con su club actual, ${TA.club} (${TA.liga||"temporada"} ${/MLS|Liga Profesional|Brasileir|Primera Divisi[oó]n - Argentina/i.test(TA.liga)?TA.season:`${TA.season}-${String(TA.season+1).slice(2)}`})${TA.ap?"":": todavía no debuta"}.`+(TA.antes.length?` Antes, en la misma temporada: ${TA.antes.map(c=>`${c.club}, ${c.ap} ${c.ap===1?"partido":"partidos"}, ${c.g} ${c.g===1?"gol":"goles"}${c.as?`, ${c.as} ${c.as===1?"asistencia":"asistencias"}`:""}`).join("; ")}.`:""); }
     else vacio=DET.pt[pid]===undefined||DET.cargandoPt===pid?"Cargando…":"Sin datos de la temporada para este jugador.";
   }
   return `<div class="pjcard ${lado}"><div class="pjtop"><span class="pjn">${detEsc(p.jersey||"")}</span><span><b>${detEsc(p.athlete?.displayName||"")}</b><small>${detEsc(eq)}${pos?` · ${pos}`:""}</small></span><button class="pjx" data-pjx aria-label="Cerrar">×</button></div>
