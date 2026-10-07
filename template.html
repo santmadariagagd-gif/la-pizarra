@@ -813,6 +813,15 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .pj.on b{border-color:var(--ink);box-shadow:0 0 0 2px #1d2a26}
 .pj small{font-size:10px;line-height:1.1;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 2px #000}
 .banca{font-size:12px;color:var(--muted);margin:6px 0 0}
+.pj .sale{position:absolute;top:-6px;right:6px;font:700 10px/1 var(--body);font-style:normal;color:var(--ink);background:#F29C8C;border-radius:8px;padding:2px 4px}
+.cambiosw{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:10px}
+.cambios>b{font:700 15px var(--display)}.cambios.h>b{color:var(--mark)}.cambios.a>b{color:#9CC7E6}
+.cambios ul{list-style:none;margin:6px 0 0;padding:0}
+.cambios li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:13px}
+.cambios li:first-child{border-top:0}
+.cambios em{font:700 14px var(--display);font-style:normal;color:var(--muted)}
+.cambios span{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:baseline}
+.cambios i{font-style:normal;font-weight:700}.cambios i.in{color:var(--good)}.cambios i.out{color:var(--bad)}
 .pjvacio{border:1px dashed var(--line);border-radius:14px;padding:16px;color:var(--muted);font-size:14px;line-height:1.4}
 .pjcard{border:1px solid var(--mark);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
 .pjcard.a{border-color:#9CC7E6}
@@ -3573,14 +3582,19 @@ function detCancha(R,H,A){
   const pj=(r,lado)=>{ if(!r) return ""; const L=detLineas(r), n=L.length; let s="";
     L.forEach((li,i)=>{ const y=n<2?25:4+i*(40/(n-1)); li.forEach((p,k)=>{ const x=(k+1)/(li.length+1)*100;
       const yy=lado==="a"?y:100-y, xx=lado==="a"?100-x:x, id=`${lado}:${p.athlete?.id}`, nm=(p.athlete?.shortName||p.athlete?.displayName||"").replace(/^\w\. /,"");
-      s+=`<button class="pj ${lado}${DET.pj===id?" on":""}" data-pj="${id}" style="--x:${xx.toFixed(1)}%;--y:${(4+yy*0.92).toFixed(1)}%" aria-label="${detEsc(p.athlete?.displayName||"")}"><b>${detEsc(p.jersey||"")}</b><small>${detEsc(nm)}</small></button>`; }); });
+      const sal=(DET.K||[]).find(k=>k.tp==="Cambio"&&k.who[1]&&k.who[1].trim()===(p.athlete?.displayName||"").trim());
+      s+=`<button class="pj ${lado}${DET.pj===id?" on":""}" data-pj="${id}" style="--x:${xx.toFixed(1)}%;--y:${(4+yy*0.92).toFixed(1)}%" aria-label="${detEsc(p.athlete?.displayName||"")}"><b>${detEsc(p.jersey||"")}</b>${sal?`<i class="sale" title="Salió">${detEsc(sal.m)}</i>`:""}<small>${detEsc(nm)}</small></button>`; }); });
     return s; };
   const lab=(r,c)=>r?`<span class="${c}">${detEsc(esTeam(r.team?.shortDisplayName||r.team?.displayName||""))}${r.formation?` · ${r.formation}`:""}</span>`:"";
-  const banca=r=>{ if(!r) return ""; const S=(r.roster||[]).filter(p=>!p.starter&&p.subbedIn); return S.length?`<p class="banca"><b>${detEsc(esTeam(r.team?.shortDisplayName||""))}:</b> ${S.map(p=>`entró ${detEsc(p.athlete?.displayName)}${p.plays?.[0]?.clock?.displayValue?` (${p.plays[0].clock.displayValue})`:""}`).join(" · ")}</p>`:""; };
+  // Cambios de cada equipo (salen de los eventos; si no hay, de quién entró de la banca)
+  const banca=(r,lado)=>{ if(!r) return ""; const nom=detEsc(esTeam(r.team?.shortDisplayName||""));
+    const C=(DET.K||[]).filter(k=>k.tp==="Cambio"&&(lado==="h")===k.loc);
+    if(C.length) return `<div class="cambios ${lado}"><b>Cambios · ${nom}</b><ul>${C.map(k=>`<li><em>${detEsc(k.m)}</em><span><i class="in">↑</i>${detEsc(k.who[0]||"")}${k.who[1]?` <i class="out">↓</i>${detEsc(k.who[1])}`:""}</span></li>`).join("")}</ul></div>`;
+    const S=(r.roster||[]).filter(p=>!p.starter&&p.subbedIn); return S.length?`<p class="banca"><b>${nom}:</b> ${S.map(p=>`entró ${detEsc(p.athlete?.displayName)}${p.plays?.[0]?.clock?.displayValue?` (${p.plays[0].clock.displayValue})`:""}`).join(" · ")}</p>`:""; };
   return `<div class="dbox dali"><span class="dk">Alineaciones</span><div class="aliw"><div class="alip"><div class="alil">${lab(R.a,"a")}${lab(R.h,"h")}</div>
     <div class="duo"><svg class="v" viewBox="0 0 100 160" preserveAspectRatio="none" aria-hidden="true"><rect x="3" y="3" width="94" height="154"/><line x1="3" y1="80" x2="97" y2="80"/><circle cx="50" cy="80" r="12"/><rect x="25" y="3" width="50" height="20"/><rect x="25" y="137" width="50" height="20"/></svg>
       <svg class="hz" viewBox="0 0 160 100" preserveAspectRatio="none" aria-hidden="true"><rect x="3" y="3" width="154" height="94"/><line x1="80" y1="3" x2="80" y2="97"/><circle cx="80" cy="50" r="12"/><rect x="3" y="25" width="20" height="50"/><rect x="137" y="25" width="20" height="50"/></svg>
-      ${pj(R.a,"a")}${pj(R.h,"h")}</div>${banca(R.h)}${banca(R.a)}</div><div class="alic" id="pjcard">${detCard(R,H,A)}</div></div></div>`;
+      ${pj(R.a,"a")}${pj(R.h,"h")}</div><div class="cambiosw">${banca(R.h,"h")}${banca(R.a,"a")}</div></div><div class="alic" id="pjcard">${detCard(R,H,A)}</div></div></div>`;
 }
 function detBarras(stats,nH,nA){
   return stats.map(([n,a,b])=>{const x=parseFloat(a)||0, y=parseFloat(b)||0, t=(x+y)||1;
@@ -3623,10 +3637,10 @@ function mxDetHTML(e,c,H,A,sm){
   const okRun=gh===(+hs||0)&&ga===(+as||0);
   const ic=k=>/Gol|Autogol/.test(k.tp)?"g":k.tp==="Amarilla"?"a":k.tp==="Roja"?"r":"c";
   const desc=k=>k.tp==="Cambio"?`Entra ${k.who[0]||""}${k.who[1]?` · sale ${k.who[1]}`:""}`:`${k.who[0]||""}${k.tp==="Gol"&&k.who[1]?` · asist. ${k.who[1]}`:""}`;
-  const ev=K.map((k,i)=>({k,p:okRun?parc[i]:""})).reverse().map(({k,p})=>{const lado=k.loc?"l":"v";
+  const ev=K.map((k,i)=>({k,p:okRun?parc[i]:""})).filter(({k})=>k.tp!=="Cambio").reverse().map(({k,p})=>{const lado=k.loc?"l":"v";
     const cont=`<span class="et"><i class="ei ${ic(k)}"></i>${detEsc(k.tp)}${p?` <em>${p}</em>`:""}</span><span class="ed">${detEsc(desc(k))}</span>`;
     return `<li class="${lado}"><div class="el">${lado==="l"?cont:""}</div><span class="em">${detEsc(k.m)}</span><div class="ev">${lado==="v"?cont:""}</div></li>`;}).join("");
-  const boxEv=jug?`<div class="dbox dev"><span class="dk">Minuto a minuto</span>${ev?`<ul class="dmin">${ev}</ul>`:`<p class="note">Todavía no hay goles, tarjetas ni cambios.</p>`}</div>`:"";
+  const boxEv=jug?`<div class="dbox dev"><span class="dk">Minuto a minuto</span>${ev?`<ul class="dmin">${ev}</ul>`:`<p class="note">Todavía no hay goles ni tarjetas. Los cambios están en Alineaciones.</p>`}</div>`:"";
   // Votación (si es partido de la semana)
   const vid="af"+e.id, VC=typeof VOTO!=="undefined"?VOTO.c[vid]:null, vt=VC?VC.reduce((a,b)=>a+b,0):0;
   const boxVoto=sem&&vt?`<div class="dbox"><span class="dk">¿Quién gana? · Partido de la semana</span><div class="dpb tri"><i style="flex:${VC[0]}"></i><i style="flex:${VC[1]}"></i><i style="flex:${VC[2]}"></i></div><div class="dbl"><span>${detEsc(tH.n)} <b>${Math.round(VC[0]/vt*100)}%</b></span><span>Empate ${Math.round(VC[1]/vt*100)}%</span><span>${detEsc(tA.n)} <b>${Math.round(VC[2]/vt*100)}%</b></span></div><span class="note">${vt.toLocaleString("es-MX")} votos</span></div>`:"";
