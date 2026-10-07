@@ -914,7 +914,11 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   .hoymain{flex:999 1 560px;min-width:0}.hoyside{flex:1 1 300px;min-width:0}
   .hh h3{font-size:26px}
   .hsem .hseg{display:none}
-  .hsemg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
+  .hsemg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:stretch}
+  /* Tarjetas del mismo alto y con sus partes alineadas: el nombre del equipo siempre ocupa dos renglones de espacio
+     (si uno es largo, como "Manchester City", el otro no se recorre) y "Ver la previa" queda abajo */
+  .hsemg .hx .eq b{min-height:2.1em;display:flex;align-items:center;justify-content:center}
+  .hsemg .hx>.ver{margin-top:auto}
   /* Tarjeta que queda sola en su renglón: a todo lo ancho, en dos columnas (equipos y momios | forma y votación) */
   .hsemg>.hx:last-child:nth-child(odd){grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;row-gap:12px;align-items:start}
   .hsemg>.hx:last-child:nth-child(odd)>.top{grid-column:1/-1}
@@ -3465,14 +3469,14 @@ async function openMx(id,quiet){
   $("#gbody").innerHTML=mxDetHTML(e,c,H,A,sm); if(quiet) $("#gbody").scrollTop=keep;
   $("#gbody").querySelectorAll(".tbl").forEach(freezeTable);
   detReloj();
-  if(DET.modo==="temporada"&&DET.pj) detTemporada(FLIG).then(detCardPinta);
+  if(DET.modo==="temporada"&&DET.pj) detTempCarga();
   if(c.probs&&!c.tbd&&e.status?.type?.state==="pre"&&$("#dwx")){const g=c.lat!=null?{latitude:c.lat,longitude:c.lon}:await geocode(c.city); if(g) fillWeatherYa($("#dwx"),g.latitude,g.longitude,c.when.getTime());}
 }
 // ---------- Detalle del partido de fútbol (rediseño 6 oct 2026; maqueta "Detalle del partido v2") ----------
 // Encabezado con estado automático (Previa con cuenta regresiva · En vivo · Final), goleadores y línea de tiempo
 // 0'–90'; pestañas en el celular (Resumen · Estadísticas · Alineaciones · Previa) y todo a la vista en computadora;
 // una sola cancha con los dos equipos y tarjeta del jugador (en este partido / en la temporada).
-const DET={tab:null,id:null,pj:null,modo:"partido",upd:0,timer:null,ko:0,temp:{}};
+const DET={tab:null,id:null,pj:null,modo:"partido",upd:0,timer:null,ko:0,temp:{},pt:{},K:[],est:null,min:0,cargandoPt:null};
 const detEsc=x=>String(x??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const detMin=m=>{const x=String(m||"").match(/(\d+)(?:\s*\+\s*(\d+))?/); return x?{b:+x[1],e:+(x[2]||0)}:{b:0,e:0};};
 function detEventos(sm,H){
@@ -3496,20 +3500,60 @@ async function detTemporada(key){
   try{ const r=await fetch(`datos/jugadores_${key}.json`); DET.temp[key]=r.ok?await r.json():null; }catch(e){ DET.temp[key]=null; }
   return DET.temp[key];
 }
+// Temporada del jugador en API-Football (players?id=&season=): se usa cuando no está en nuestro archivo de la liga
+// (Selección, copas, jugadores nuevos). Se toma la competencia donde más minutos tiene (normalmente su liga).
+async function detTempAF(pid){
+  if(DET.pt[pid]!==undefined) return DET.pt[pid];
+  DET.pt[pid]=null;
+  const y=new Date().getFullYear();
+  for(const season of [y,y-1]){
+    try{ const L=await afList("players",`id=${pid}&season=${season}`); const st=(L?.[0]?.statistics||[]).filter(x=>(x.games?.minutes||0)>0&&!/friendl/i.test(x.league?.name||""));
+      if(st.length){ const x=st.sort((a,b)=>(b.games.minutes||0)-(a.games.minutes||0))[0], g=x.games||{}, gl=x.goals||{};
+        DET.pt[pid]={liga:`${x.team?.name||""} · ${x.league?.name||""} ${season}`,ap:g.appearences??g.appearances??0,min:g.minutes||0,g:gl.total||0,as:gl.assists||0,
+          sot:x.shots?.on||0,yc:x.cards?.yellow||0,sv:gl.saves||0,gc:gl.conceded||0,rt:g.rating?(+g.rating).toFixed(1):null}; break; } }catch(e){}
+  }
+  return DET.pt[pid];
+}
+// Lo que se sabe del jugador en el partido cuando API-Football no publica sus estadísticas (pasa en amistosos):
+// minutos por la alineación y los cambios, goles, asistencias y tarjetas por los eventos.
+function detPartidoEventos(p){
+  const nm=p.athlete?.displayName||"", K=DET.K||[], es=n=>n&&nm&&n.trim()===nm.trim();
+  let ini=p.starter?0:null, fin=null;
+  for(const k of K){ if(k.tp!=="Cambio") continue; const m=detMin(k.m).b; if(es(k.who[0])) ini=m; if(es(k.who[1])) fin=m; }
+  if(ini==null&&p.subbedIn) ini=detMin(p.plays?.[0]?.clock?.displayValue).b||null;
+  const total=DET.est==="post"?90:Math.max(0,DET.min||0), min=ini==null?0:Math.max(0,(fin??total)-ini);
+  const goles=K.filter(k=>/^Gol/.test(k.tp)&&es(k.who[0])).length, asis=K.filter(k=>k.tp==="Gol"&&es(k.who[1])).length;
+  const am=K.filter(k=>k.tp==="Amarilla"&&es(k.who[0])).length, ro=K.filter(k=>k.tp==="Roja"&&es(k.who[0])).length;
+  return [["Minutos",min+"'"],["Goles",goles],["Asistencias",asis],["Amarillas",am],["Rojas",ro]];
+}
 function detCard(R,H,A){
   if(!DET.pj) return `<div class="pjvacio">Toca un jugador en la cancha para ver sus números en este partido y en la temporada.</div>`;
   const [lado,pid]=DET.pj.split(":"), r=lado==="h"?R.h:R.a, p=(r?.roster||[]).find(x=>String(x.athlete?.id)===pid); if(!p) return "";
   const eq=esTeam((lado==="h"?H:A).team?.shortDisplayName||""), S=Object.fromEntries((p.stats||[]).map(s=>[s.name,s.value]));
   const pos={G:"Portero",D:"Defensa",M:"Medio",F:"Delantero",SUB:"Suplente"}[p.position?.abbreviation]||"";
-  const J=DET.temp[FLIG], T=J&&(J.filas||[]).find(x=>String(x.id)===pid);
+  const J=DET.temp[FLIG], T=J&&(J.filas||[]).find(x=>String(x.id)===pid), TA=DET.pt[pid];
   const gk=p.position?.abbreviation==="G";
-  const nums=DET.modo==="partido"
-    ?(S.minutesPlayed!=null?[["Minutos",S.minutesPlayed+"'"],["Goles",S.totalGoals??0],["Asistencias",S.goalAssists??0],gk?["Atajadas",S.saves??0]:["Tiros (a gol)",`${S.totalShots??0} (${S.shotsOnTarget??0})`],gk?["Goles recibidos",S.goalsConceded??0]:["Faltas recibidas",S.foulsSuffered??0],["Calificación",S.rating??"–"]]:null)
-    :(T?[["Partidos",T.ap],["Minutos",T.min],["Goles",T.g],["Asistencias",T.as],gk?["Atajadas",T.sv]:["Tiros a gol",T.sot],gk?["Porterías en cero",T.cs]:["Amarillas",T.yc]]:null);
-  const vacio=DET.modo==="partido"?"Todavía no hay números de este partido.":J===undefined?"Cargando…":"Sin datos de la temporada para este jugador.";
+  let nums=null, nota="", vacio="";
+  if(DET.modo==="partido"){
+    if(S.minutesPlayed!=null) nums=[["Minutos",S.minutesPlayed+"'"],["Goles",S.totalGoals??0],["Asistencias",S.goalAssists??0],gk?["Atajadas",S.saves??0]:["Tiros (a gol)",`${S.totalShots??0} (${S.shotsOnTarget??0})`],gk?["Goles recibidos",S.goalsConceded??0]:["Faltas recibidas",S.foulsSuffered??0],["Calificación",S.rating??"–"]];
+    else if(DET.est!=="pre"){ nums=detPartidoEventos(p); nota="API-Football no publicó estadísticas por jugador de este partido (pasa en amistosos); esto sale de la alineación, los goles, las tarjetas y los cambios."; }
+    else vacio="El partido todavía no empieza.";
+  } else {
+    if(T){ nums=[["Partidos",T.ap],["Minutos",T.min],["Goles",T.g],["Asistencias",T.as],gk?["Atajadas",T.sv]:["Tiros a gol",T.sot],gk?["Porterías en cero",T.cs]:["Amarillas",T.yc]]; nota=`${LEAGUES[FLIG]?.label||""}, torneo actual.`; }
+    else if(TA){ nums=[["Partidos",TA.ap],["Minutos",TA.min],["Goles",TA.g],["Asistencias",TA.as],gk?["Atajadas",TA.sv]:["Tiros a gol",TA.sot],["Calificación",TA.rt??"–"]]; nota=`Con su club: ${TA.liga}.`; }
+    else vacio=DET.pt[pid]===undefined||DET.cargandoPt===pid?"Cargando…":"Sin datos de la temporada para este jugador.";
+  }
   return `<div class="pjcard ${lado}"><div class="pjtop"><span class="pjn">${detEsc(p.jersey||"")}</span><span><b>${detEsc(p.athlete?.displayName||"")}</b><small>${detEsc(eq)}${pos?` · ${pos}`:""}</small></span><button class="pjx" data-pjx aria-label="Cerrar">×</button></div>
     <div class="hseg">${[["partido","En este partido"],["temporada","En la temporada"]].map(([k,l])=>`<button data-pjm="${k}" aria-pressed="${DET.modo===k}">${l}</button>`).join("")}</div>
-    ${nums?`<div class="pjnums">${nums.map(([n,v])=>`<div><b>${detEsc(v)}</b><span>${n}</span></div>`).join("")}</div>`:`<p class="note">${vacio}</p>`}</div>`;
+    ${nums?`<div class="pjnums">${nums.map(([n,v])=>`<div><b>${detEsc(v)}</b><span>${n}</span></div>`).join("")}</div>${nota?`<p class="note">${detEsc(nota)}</p>`:""}`:`<p class="note">${vacio}</p>`}</div>`;
+}
+// Al pedir la temporada: primero el archivo de la liga; si el jugador no está ahí, API-Football
+async function detTempCarga(){
+  const pid=DET.pj?.split(":")[1]; if(!pid) return;
+  if(!LEAGUES[FLIG]?.nat&&DET.temp[FLIG]===undefined) await detTemporada(FLIG);
+  const J=DET.temp[FLIG]; if(J&&(J.filas||[]).some(x=>String(x.id)===pid)) return detCardPinta();
+  if(DET.pt[pid]===undefined){ DET.cargandoPt=pid; detCardPinta(); await detTempAF(pid); DET.cargandoPt=null; }
+  detCardPinta();
 }
 function detCancha(R,H,A){
   if(!R.h&&!R.a) return "";
@@ -3533,7 +3577,7 @@ function mxDetHTML(e,c,H,A,sm){
   const st=e.status?.type?.state, pre=st==="pre", vivo=st==="in", jug=!pre;
   const T=x=>({n:esTeam(x.team?.shortDisplayName||x.team?.displayName),logo:x.team?.logo});
   const tH=T(H), tA=T(A), hs=c.teams[0].score, as=c.teams[1].score;
-  const K=detEventos(sm,H), goles=K.filter(k=>/Gol|Autogol/.test(k.tp));
+  const K=detEventos(sm,H), goles=K.filter(k=>/Gol|Autogol/.test(k.tp)); DET.K=K; DET.est=st;
   const sem=["mx","mundo"].map(s=>D.semana?.[s]).find(S=>S&&String(S.id)===String(e.id));
   const et=hoyEtapa([e],FLIG);
   // Encabezado
@@ -3543,7 +3587,7 @@ function mxDetHTML(e,c,H,A,sm){
     :`<b class="dm">${hs??"–"} – ${as??"–"}</b>${e._pen?`<small>Penales</small>`:""}`;
   // Línea de tiempo
   const maxM=K.some(k=>detMin(k.m).b>90)||/AET|ET|PEN|prórroga|tiempo extra/i.test(c.status||"")?120:90;
-  const minVivo=vivo?Math.min(maxM,detMin(c.status).b||(/medio|MT|HT/i.test(c.status||"")?45:0)):maxM;
+  const minVivo=vivo?Math.min(maxM,detMin(c.status).b||(/medio|MT|HT/i.test(c.status||"")?45:0)):maxM; DET.min=minVivo;
   const marcas=K.filter(k=>k.tp!=="Cambio").map(k=>{const p=Math.min(detMin(k.m).b,maxM)/maxM*100;
     return `<i class="tm ${k.loc?"l":"v"} ${/Gol|Autogol/.test(k.tp)?"g":k.tp==="Roja"?"r":"a"}" style="left:${p.toFixed(1)}%" title="${detEsc(k.m+" "+k.tp+" · "+(k.who[0]||""))}"></i>`;}).join("");
   const linea=jug?`<div class="dline"><div class="dtl"><span class="pista"></span><span class="prog" style="width:${(minVivo/maxM*100).toFixed(1)}%"></span><span class="ht" style="left:${45/maxM*100}%"></span>${maxM>90?`<span class="ht" style="left:${90/maxM*100}%"></span>`:""}${marcas}</div><div class="dtx"><span>0'</span><span>Medio tiempo</span><span>${maxM}'</span></div></div>`:"";
@@ -3613,9 +3657,9 @@ function detReloj(){
 $("#gbody").addEventListener("click",ev=>{
   const t=ev.target.closest("[data-dtab]"); if(t){ DET.tab=t.dataset.dtab; $("#gbody").querySelectorAll("[data-dtab]").forEach(b=>b.setAttribute("aria-pressed",b===t));
     const map={Resumen:"dp-res","Estadísticas":"dp-sta",Alineaciones:"dp-ali",Previa:"dp-previa"}; $("#gbody").querySelectorAll(".dpan").forEach(p=>p.classList.toggle("on",p.classList.contains(map[DET.tab]))); return; }
-  const pj=ev.target.closest("[data-pj]"); if(pj){ DET.pj=DET.pj===pj.dataset.pj?null:pj.dataset.pj; return detCardPinta(); }
+  const pj=ev.target.closest("[data-pj]"); if(pj){ DET.pj=DET.pj===pj.dataset.pj?null:pj.dataset.pj; detCardPinta(); if(DET.pj&&DET.modo==="temporada") detTempCarga(); return; }
   if(ev.target.closest("[data-pjx]")){ DET.pj=null; return detCardPinta(); }
-  const m=ev.target.closest("[data-pjm]"); if(m){ DET.modo=m.dataset.pjm; if(DET.modo==="temporada"&&DET.temp[FLIG]===undefined) detTemporada(FLIG).then(detCardPinta); return detCardPinta(); }
+  const m=ev.target.closest("[data-pjm]"); if(m){ DET.modo=m.dataset.pjm; detCardPinta(); if(DET.modo==="temporada") detTempCarga(); return; }
 });
 function detCardPinta(){
   const R=DET.R; if(!R) return;
