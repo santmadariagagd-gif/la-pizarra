@@ -1946,8 +1946,18 @@ function qnFromSched(){ // respaldo: líneas de nflverse de la semana actual
     lock:g.hs!=null||(g.ko&&new Date(g.ko)<Date.now()),L:-g.sp,aml:g.aml,hml:g.hml,ra:rec[g.a]||"",rh:rec[g.h]||"",su:[null,null],ats:[null,null]}));
   return {src:"nflverse",label:`Semana ${D.gweek}`,week:D.gweek,games:G};
 }
+// Línea propia (desde la semana 7 de 2026): D.lq = {w, g:{"VIS@LOC": L}} la congela build_site.py con la regla de
+// ESPN Pick'em (línea de nflverse del martes, medio punto menos si es entera). Con ella ya no se le pide nada a ESPN.
+function qnFromLQ(){
+  const rec={}; (D.pr_nfl||[]).forEach(r=>rec[r.t]=`${r.w}-${r.l}`);
+  const G=(D.sched||[]).filter(g=>g.w===D.lq.w&&D.lq.g[`${g.a}@${g.h}`]!=null).map(g=>({a:g.a,h:g.h,ko:g.ko?new Date(g.ko):null,
+    lock:g.hs!=null||(g.ko&&new Date(g.ko)<Date.now()),L:D.lq.g[`${g.a}@${g.h}`],aml:g.aml,hml:g.hml,ra:rec[g.a]||"",rh:rec[g.h]||"",su:[null,null],ats:[null,null]}))
+    .sort((x,y)=>(x.ko||0)-(y.ko||0));
+  return {src:"pizarra",label:`Semana ${D.lq.w}`,week:D.lq.w,games:G};
+}
 async function qnGet(){
   if(qnCache) return qnCache;
+  if(D.lq?.g){ const P=qnFromLQ(); if(P.games.length) return (qnCache=P); }
   try{const c=JSON.parse(localStorage.getItem("pz_pickem")||"null"); if(c&&Date.now()-c.t<30*60e3){qnCache=qnParse(c.d); if(qnCache.games.length) return qnCache;}}catch(e){}
   try{
     const ctl=new AbortController(), tm=setTimeout(()=>ctl.abort(),9000);
@@ -2838,7 +2848,7 @@ async function afSummary(e,key){
   const arb=(f.fixture?.referee||"").split(",")[0].trim()||null;
   const sm={_f:f,keyEvents,boxscore:{teams:box},rosters,_tv:[],_arbitro:arb,_dt:[H,A].map(t=>(f.lineups||[]).find(l=>l.team?.id===t.id)?.coach?.name||null)};
   {   // previa (tabla, forma, enfrentamientos, líderes, bajas): antes y después del partido; se pide una vez por partido
-    AF_PREV[e.id]=AF_PREV[e.id]||Promise.all([afStandings(key).catch(()=>({rows:[]})),mxSeason(),afTop(key,208).catch(()=>[]),afTop(key,209).catch(()=>[]),
+    AF_PREV[e.id]=AF_PREV[e.id]||Promise.all([LEAGUES[key]?.nat?Promise.resolve({rows:[]}):afStandings(key).catch(()=>({rows:[]})),LEAGUES[key]?.nat?selSeason():mxSeason(),LEAGUES[key]?.nat?Promise.resolve([]):afTop(key,208).catch(()=>[]),LEAGUES[key]?.nat?Promise.resolve([]):afTop(key,209).catch(()=>[]),
       afList("fixtures/headtohead",`h2h=${H.id}-${A.id}&last=10&${AF_TZ}`).catch(()=>[]),afState(f)==="pre"?afList("injuries",`fixture=${e.id}`).catch(()=>[]):Promise.resolve([])]);
     // Previa: tabla, forma (últimos 5 de la liga), enfrentamientos previos, goleador/asistidor y bajas
     const [tb,{ev},gol,asi,h2h,les]=await AF_PREV[e.id].catch(e2=>{delete AF_PREV[e.id]; throw e2;});
@@ -3447,7 +3457,7 @@ async function openMx(id,quiet){
   if(!quiet){$("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando detalle…</p>`; dlg.showModal();}
   let sm=null; try{sm=e._sm?await smSummary(e,FLIG):await fetch(`${ESPN}/site/v2/sports/soccer/${e._slug||flSlug()}/summary?event=${id}`).then(r=>r.json());}catch(err){}
   if(quiet&&(!dlg.open||DLG_CUR?.id!==id)) return;   // lo cerraron o abrieron otro mientras se actualizaba
-  if(sm?._f&&usaAF(LEAGUES[FLIG])){ const x=afEvent(sm._f,LEAGUES[FLIG]); hoyCopia(e,x); }   // el detalle trae el marcador y el estado más recientes
+  if(sm?._f){ const x=afEvent(sm._f,LEAGUES[FLIG]||{}); hoyCopia(e,x); }   // el detalle trae el marcador y el estado más recientes
   const c=mxCard(e,0), comp=e.competitions?.[0]||{}, cs=comp.competitors||[];
   const H=cs.find(x=>x.homeAway==="home")||{}, A=cs.find(x=>x.homeAway==="away")||{};
   const Rs=sm?.rosters||[];
@@ -3539,7 +3549,7 @@ function mxDetHTML(e,c,H,A,sm){
   const linea=jug?`<div class="dline"><div class="dtl"><span class="pista"></span><span class="prog" style="width:${(minVivo/maxM*100).toFixed(1)}%"></span><span class="ht" style="left:${45/maxM*100}%"></span>${maxM>90?`<span class="ht" style="left:${90/maxM*100}%"></span>`:""}${marcas}</div><div class="dtx"><span>0'</span><span>Medio tiempo</span><span>${maxM}'</span></div></div>`:"";
   const cuenta=pre&&!c.tbd?`<div class="dcount"><span>Empieza en</span><span class="dcd" id="dcd"></span></div>`:"";
   const sede=e.competitions?.[0]?.venue?.fullName||"";
-  const head=`<div class="dhead"><div class="dtop">${chip}<span>${detEsc(LEAGUES[FLIG]?.label||"")}${et?` · ${detEsc(et)}`:""}</span>${sem?.badge?`<span class="badge">${detEsc(sem.badge)}</span>`:""}</div>
+  const head=`<div class="dhead"><div class="dtop">${chip}<span>${detEsc(e._comp||LEAGUES[FLIG]?.label||"")}${et?` · ${detEsc(et)}`:""}</span>${sem?.badge?`<span class="badge">${detEsc(sem.badge)}</span>`:""}</div>
     <div class="deq"><div class="dt">${logoImg(tH.logo)}<b class="${c.teams[0].win?"w":""}">${detEsc(tH.n)}</b>${jug?`<small>${gol(true)}</small>`:""}</div><div class="dc">${centro}</div><div class="dt">${logoImg(tA.logo)}<b class="${c.teams[1].win?"w":""}">${detEsc(tA.n)}</b>${jug?`<small>${gol(false)}</small>`:""}</div></div>
     ${cuenta}${linea}<div class="dpie"><span>${detEsc(sede)}</span>${vivo?`<span id="dupd">Actualizado hace un momento</span>`:""}</div></div>`;
   // Estadísticas
@@ -3626,9 +3636,27 @@ const SEL_COMP=Object.fromEntries(SEL_COMPS);
 const ES_TEAM={"Mexico":"México","United States":"Estados Unidos","USA":"Estados Unidos","Peru":"Perú","Belgium":"Bélgica","Iceland":"Islandia","Panama":"Panamá","Brazil":"Brasil","Canada":"Canadá","Germany":"Alemania","Spain":"España","France":"Francia","England":"Inglaterra","Italy":"Italia","Netherlands":"Países Bajos","Japan":"Japón","South Korea":"Corea del Sur","Korea Republic":"Corea del Sur","Haiti":"Haití","Trinidad and Tobago":"Trinidad y Tobago","Curacao":"Curazao","Curaçao":"Curazao","Morocco":"Marruecos","South Africa":"Sudáfrica","Switzerland":"Suiza","Croatia":"Croacia","Norway":"Noruega","Sweden":"Suecia","Denmark":"Dinamarca","Poland":"Polonia","Turkey":"Turquía","Türkiye":"Turquía","Saudi Arabia":"Arabia Saudita","Iran":"Irán","Egypt":"Egipto","New Zealand":"Nueva Zelanda","Scotland":"Escocia","Wales":"Gales","Czechia":"Chequia","Czech Republic":"Chequia","Ukraine":"Ucrania","Cameroon":"Camerún","Ivory Coast":"Costa de Marfil","Côte d'Ivoire":"Costa de Marfil","Tunisia":"Túnez","Algeria":"Argelia","Uzbekistan":"Uzbekistán","Jordan":"Jordania","Cape Verde":"Cabo Verde","Cape Verde Islands":"Cabo Verde","Ireland":"Irlanda","Republic of Ireland":"Irlanda","Northern Ireland":"Irlanda del Norte","Greece":"Grecia","Hungary":"Hungría","Romania":"Rumania","Russia":"Rusia","Finland":"Finlandia","Slovakia":"Eslovaquia","Slovenia":"Eslovenia","Albania":"Albania","Bosnia and Herzegovina":"Bosnia y Herzegovina","Dominican Republic":"República Dominicana","Suriname":"Surinam","Guadeloupe":"Guadalupe","Martinique":"Martinica","Iraq":"Irak","China PR":"China","Paraguay":"Paraguay"};
 const esTeam=n=>ES_TEAM[n]||n;
 let SEL_CACHE=null;
+// Desde el 6 oct 2026 los partidos de México salen de API-Football (equipo 16: últimos 15 y próximos 10, de cualquier
+// torneo), con el mismo detalle que las ligas. Si API-Football falla, se usa ESPN como antes.
+const SEL_AF=16;
+const SEL_TORNEO=n=>{const t=String(n||""); return /friendl/i.test(t)?"Amistoso":/nations league/i.test(t)?"Nations League":/gold cup/i.test(t)?"Copa Oro":
+  /world cup.*qualif|qualification/i.test(t)?"Eliminatoria":/world cup/i.test(t)?"Mundial":/copa am[eé]rica/i.test(t)?"Copa América":t;};
+async function selSeasonAF(){
+  const [A,B]=await Promise.all([afList("fixtures",`team=${SEL_AF}&last=15&${AF_TZ}`),afList("fixtures",`team=${SEL_AF}&next=10&${AF_TZ}`)]);
+  const byId=new Map(); [...(A||[]),...(B||[])].forEach(f=>byId.set(f.fixture.id,f));
+  const ev=[...byId.values()].map(f=>{const e=afEvent(f,{}); e._k="sel"; e._comp=SEL_TORNEO(f.league?.name); e._round=null; e._stage=null; e.league={name:e._comp}; return e;}).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(!ev.length) throw new Error("sin partidos");
+  ev.forEach(e=>EV_IDX.set(e.id,e));
+  return {ev};
+}
 function selSeason(){
   if(SEL_CACHE) return SEL_CACHE;
-  SEL_CACHE=(async()=>{
+  SEL_CACHE=selSeasonAF().catch(err=>{ console.warn("Selección: API-Football falló, se usa ESPN",err); return selSeasonESPN(); });
+  SEL_CACHE.catch(()=>{SEL_CACHE=null;});
+  return SEL_CACHE;
+}
+function selSeasonESPN(){
+  return (async()=>{
     const get=(slug,fx)=>fetch(`${ESPN}/site/v2/sports/soccer/${slug}/teams/${SEL_ID}/schedule${fx?"?fixture=true":""}`).then(r=>r.ok?r.json():{events:[]}).then(j=>(j.events||[]).map(e=>{e._slug=e.league?.slug||slug; return e;})).catch(()=>[]);
     const lists=await Promise.all(SEL_COMPS.flatMap(([s])=>[get(s,false),get(s,true)]));
     const byId=new Map(); lists.flat().forEach(e=>{if(e?.id) byId.set(e.id,e);});
@@ -3643,8 +3671,6 @@ function selSeason(){
     if(!ev.length) throw new Error("sin partidos");
     return {ev};
   })();
-  SEL_CACHE.catch(()=>{SEL_CACHE=null;});
-  return SEL_CACHE;
 }
 let selLoaded=false;
 async function loadSelGames(){
@@ -3656,7 +3682,7 @@ async function loadSelGames(){
     const up=ev.filter(e=>e.status?.type?.state!=="post");
     const done=ev.filter(e=>e.status?.type?.state==="post").reverse(); // del más reciente al más viejo
     let i=0;
-    const cards=list=>list.map(e=>{const c=mxCard(e,i++); c.place=[SEL_COMP[e._slug]||e.league?.name||"",c.place].filter(Boolean).join(" · ");
+    const cards=list=>list.map(e=>{const c=mxCard(e,i++); c.place=[e._comp||SEL_COMP[e._slug]||e.league?.name||"",c.place].filter(Boolean).join(" · ");
       c.teams.forEach(t=>{t.n=esTeam(t.n); t.sub=t.sub.replace(/ · $/,"");}); return c;});
     const cu=cards(up), cd=cards(done);
     $("#mxGames").innerHTML=(cu.length?`<h3 class="grp-h">Próximos</h3>${cu.map(gameCard).join("")}`:"")+(cd.length?`<h3 class="grp-h">Resultados</h3>${cd.map(gameCard).join("")}`:"");
@@ -5384,11 +5410,11 @@ function hoyRender(){
 function hoyIrLiga(k,tab="mxgames"){ if(FLIG!==k) selectLeague(k,true); showSport("mx",tab); window.scrollTo(0,0); }
 async function hoyAbrir(k,id){
   pzTrack("hoy_partido",{liga:k});
-  if(!LEAGUES[k]||!comercial(LEAGUES[k])) return hoyIrLiga(k);
+  if(!LEAGUES[k]||!(comercial(LEAGUES[k])||LEAGUES[k].nat)) return hoyIrLiga(k);
   if(FLIG!==k) selectLeague(k,true);
   $("#gbody").innerHTML=`<p class="note" style="text-align:center">Cargando…</p>`; if(!dlg.open) dlg.showModal();
   try{
-    const {ev}=await mxSeasonOf(k), s=ev.find(x=>x.id===id);
+    const {ev}=LEAGUES[k].nat?await selSeason():await mxSeasonOf(k), s=ev.find(x=>x.id===id);
     if(!s){ dlg.close(); return hoyIrLiga(k); }
     const h=HOY.ev.get(id)||HOY.extra.get(id)||HOY.otros.get(id); if(h) hoyCopia(s,h);
     DLG_CUR={k:"mx",id}; await openMx(id,true);

@@ -922,6 +922,47 @@ try:
 except Exception as ex:
     print("Quiniela: ESPN Pick'em no respondió desde GitHub (la página lo intenta desde el navegador):",ex)
 
+# ----- Línea propia de la Quiniela (6 oct 2026) -----
+# La bitácora de líneas (semana 5 de 2026) mostró que ESPN Pick'em toma la línea de consenso de nflverse el día que
+# publica la semana y, si es número entero, le quita medio punto (7 → 6.5, −3 → −2.5) para que no haya empates:
+# coincidió en 15 de 15 partidos. Desde LQ_DESDE la Quiniela y los grupos usan esa misma regla con la línea de
+# nflverse CONGELADA la primera vez que se ve después de que termina la semana anterior (normalmente el martes en la
+# mañana). Cada partido se congela una sola vez (docs/datos/lineas_quiniela.json) y ya no cambia. Antes de LQ_DESDE se
+# sigue usando ESPN Pick'em como siempre.
+LQ_DESDE={2026:7}
+def _lq_regla(sp):
+    v=-float(sp)                                      # L = ventaja del local (negativo = el local es favorito)
+    if v==int(v): v=(v-0.5) if v>0 else (v+0.5) if v<0 else -0.5   # entero: medio punto hacia cero; "pick": local por medio punto
+    return v
+LQ=None
+try:
+    from datetime import timedelta
+    _lqf=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos','lineas_quiniela.json')
+    try: _LQ=json.load(open(_lqf,encoding='utf-8'))
+    except Exception: _LQ={}
+    _ahora=datetime.now(ZoneInfo("UTC"))
+    _ko=lambda g:datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=ZoneInfo("UTC")) if g.get('ko') else None
+    _pend=[g for g in sched if g.get('hs') is None and g.get('ko') and _ko(g)>_ahora]
+    if _pend:
+        W=min(g['w'] for g in _pend)
+        _ant=[g for g in sched if g['w']==W-1]
+        _ant_fin=all(g.get('hs') is not None or (g.get('ko') and _ko(g)<_ahora-timedelta(hours=6)) for g in _ant)
+        T=_LQ.setdefault(str(S),{}).setdefault(str(W),{})
+        if _ant_fin:
+            for g in sched:
+                k=f"{g['a']}@{g['h']}"
+                if g['w']!=W or k in T or g.get('sp') is None or g.get('tbd'): continue
+                if _ko(g) and _ko(g)<=_ahora: continue
+                T[k]=dict(L=_lq_regla(g['sp']),sp=g['sp'],t=_ahora.strftime("%Y-%m-%dT%H:%MZ"))
+        os.makedirs(os.path.dirname(_lqf),exist_ok=True)
+        json.dump(_LQ,open(_lqf,'w',encoding='utf-8'),ensure_ascii=False,indent=1)
+        if W>=LQ_DESDE.get(S,99) and T:
+            LQ=dict(w=W,g={k:v['L'] for k,v in T.items()})
+            out['lq']=LQ
+        print(f"Línea propia de la Quiniela: semana {W}, {len(T)} partidos congelados"+("" if _ant_fin else " (todavía no termina la semana anterior; se congela después)")+(" — EN USO" if LQ else (" — todavía no hay líneas de nflverse para esta semana" if W>=LQ_DESDE.get(S,99) else f" — se usará desde la semana {LQ_DESDE.get(S,'?')}")))
+except Exception as ex:
+    print("Línea propia de la Quiniela: no se pudo calcular:",ex)
+
 # ----- Picks de La Pizarra: lo que se muestra en la Quiniela y su récord (con y sin spread) -----
 # Cada corrida calcula el pick de La Pizarra de los partidos que NO han empezado, con la misma línea oficial de los
 # grupos (ESPN Pick'em de la semana; si no, la de nflverse) y el modelo de hoy. Lo que ya empezó queda congelado.
@@ -968,6 +1009,7 @@ def _lpz():
         O=p.get('possibleOutcomes') or []
         A=next((o for o in O if o.get('subType')=='AWAY'),None); Hh=next((o for o in O if o.get('subType')=='HOME'),None)
         if A and Hh and p.get('spread') is not None: esp[f"{fx.get(A['abbrev'],A['abbrev'])}@{fx.get(Hh['abbrev'],Hh['abbrev'])}"]=float(p['spread'])
+    if LQ: esp=dict(LQ['g']); pw=LQ['w']               # línea propia (desde LQ_DESDE): reemplaza a ESPN Pick'em
     semq=int(pw or out.get('gweek') or wk+1)          # semana de la quiniela
     # La Pizarra empezó a dar picks en la semana 4 de 2026: antes no hay récord (no se inventan picks que no se hicieron).
     desde=4 if S==2026 else 1
@@ -1841,6 +1883,12 @@ def _fb_partidos():
             if not A or not H or p.get('spread') is None or not p.get('date'): continue
             a=fx.get(A['abbrev'],A['abbrev']); h=fx.get(H['abbrev'],H['abbrev'])
             sem.setdefault(int(pw),{})[f"{a}@{h}"]=dict(a=a,h=h,ko=datetime.fromtimestamp(p['date']/1000,tz=_tz.utc),L=float(p['spread']))
+    if LQ:   # línea propia: se sube con la hora de inicio de nflverse
+        sem={}
+        for g in sched:
+            k_=f"{g['a']}@{g['h']}"
+            if g['w']==LQ['w'] and k_ in LQ['g'] and g.get('ko'):
+                sem.setdefault(LQ['w'],{})[k_]=dict(a=g['a'],h=g['h'],ko=datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=_tz.utc),L=LQ['g'][k_])
     gw=out.get('gweek') or 0
     for w in (gw,gw+1):
         if not w or w in sem: continue
