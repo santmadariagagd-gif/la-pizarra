@@ -2,40 +2,46 @@
   "instrucciones": "Edita esta lista cada semana. Escribe el nombre del jugador igual que aparece en la página para que salga su % de ligas con dueño.",
   "notas": [
     {
-      "jugador": "Braelon Allen",
+      "jugador": "Emanuel Wilson",
       "posicion": "RB",
-      "equipo": "NYJ",
-      "texto": "Breece Hall se lastimó el cuádriceps en Detroit y se espera que se pierda al menos una semana. Allen hereda el trabajo principal y puede rendir como RB2 mientras Hall no esté. Es la prioridad de la semana."
+      "equipo": "SEA",
+      "texto": "Jadarian Price se fue a la lista de lesionados (pecho) y Wilson se quedó con el trabajo principal: 21 acarreos, 81 yardas, 2 TD y 27 puntos PPR contra los Chargers, jugando el 60% de los snaps. Seattle firmó a Joe Mixon y Zach Charbonnet está cerca de regresar, así que no es para siempre, pero estas semanas debería tener 15+ toques. Es la prioridad de la semana."
     },
     {
-      "jugador": "Ollie Gordon II",
+      "jugador": "Will Shipley",
       "posicion": "RB",
-      "equipo": "MIA",
-      "texto": "De'Von Achane se rompió el ligamento cruzado y se pierde la temporada. Gordon se quedó con todo el trabajo: 17 acarreos, un TD en la línea de gol y 3 recepciones. Jaylen Wright también es opción, pero viene de lesión."
+      "equipo": "PHI",
+      "texto": "Saquon Barkley salió en el segundo cuarto por el isquiotibial y Tank Bigsby necesita cirugía y se va a la lista de lesionados al menos un mes. Shipley jugó el 48% de los snaps. Si Barkley no juega en Jacksonville, Shipley sería el corredor principal. Su estado se aclara esta semana: agrégalo ya, que está libre casi en todas las ligas."
     },
     {
-      "jugador": "Mack Hollins",
+      "jugador": "Keon Coleman",
       "posicion": "WR",
-      "equipo": "NE",
-      "texto": "A.J. Brown está fuera hasta mediados de octubre por un esguince de tobillo. Hollins es el receptor principal de los Patriots mientras tanto: 6 recepciones de 9 blancos para 87 yardas en la semana 3."
+      "equipo": "BUF",
+      "texto": "DJ Moore se volvió a lastimar el hombro y podría perderse varias semanas. Coleman ya lo aprovechó: 6 recepciones de 7 blancos, 116 yardas y un TD contra New England, y fue el receptor de Buffalo con más snaps (78%). Con Josh Allen lanzando, vale la pena."
     },
     {
-      "jugador": "Keenan Allen",
+      "jugador": "Tre' Harris",
       "posicion": "WR",
-      "equipo": "IND",
-      "texto": "Con Alec Pierce en la lista de lesionados, recibió 9 blancos, con 63 yardas y un TD. Esta semana juega contra Washington, la defensa que más puntos le permite a los receptores."
+      "equipo": "LAC",
+      "texto": "Ladd McConkey salió con una lesión en el pie y Jim Harbaugh dijo que va semana a semana. Harris jugó el 93% de los snaps, más que cualquier receptor de los Chargers. Si McConkey no juega, Harris debería recibir muchos más blancos."
     },
     {
-      "jugador": "Juwan Johnson",
+      "jugador": "Mike Gesicki",
       "posicion": "TE",
-      "equipo": "NO",
-      "texto": "Es el tercer mejor tight end de fantasy en lo que va de la temporada. En la semana 3 hizo 8 recepciones, 53 yardas y 2 TD. Si está libre en tu liga, agrégalo."
+      "equipo": "CIN",
+      "texto": "Lleva un TD en cada uno de sus tres partidos (11 recepciones, 155 yardas) y en la semana 4 jugó su mayor porcentaje de snaps del año (62%). Ja'Marr Chase tiene una conmoción y Tee Higgins una lesión en el aductor, así que puede haber más pases para él. Buena opción si buscas tight end para esta semana."
     },
     {
-      "jugador": "Kenyon Sadiq",
+      "jugador": "Tyler Higbee",
       "posicion": "TE",
-      "equipo": "NYJ",
-      "texto": "El novato explotó con 7 recepciones, 105 yardas y un TD. Con Breece Hall fuera y Adonai Mitchell lastimado de un dedo, debería seguir teniendo mucho volumen."
+      "equipo": "LAR",
+      "texto": "Terrance Ferguson se fue a la lista de lesionados por el tobillo y Higbee queda como el tight end principal de los Rams. Recibió 17 blancos en las últimas dos semanas (13 recepciones, 129 yardas y un TD)."
+    },
+    {
+      "jugador": "Kirk Cousins",
+      "posicion": "QB",
+      "equipo": "LV",
+      "texto": "Ha lanzado al menos 2 TD en los cuatro partidos (11 en total) y contra Kansas City sumó 365 yardas. Si tu quarterback descansa o está lastimado, es la mejor opción disponible en muchas ligas."
     }
   ]
 }
