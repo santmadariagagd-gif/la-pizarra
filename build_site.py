@@ -1707,6 +1707,12 @@ if AFK:
         print(f"Lo último: {len(out['noticias'])} notas ("+", ".join(f"{t} {sum(1 for n in out['noticias'] if n['tipo']==t)}" for t in ("lesion","suspension","racha","goles","fichaje","tecnico"))+")")
     except Exception as ex:
         out['noticias']=[]; print("Lo último: no se pudieron armar las notas:",ex)
+    # Bota de Oro (8 oct 2026): goleadores de las ~55 primeras divisiones de Europa con su factor (bota.py)
+    try:
+        from bota import bota as _bota
+        out['bota']=_bota(af,out.get('sel_plantel'))
+    except Exception as ex:
+        out['bota']={}; print("Bota de Oro: no se pudo armar:",ex)
     print("Goleadores (portada): "+", ".join(f"{k} {v['n']} {v['g']}" for k,v in out['goleo'].items()))
     print(f"API-Football: {AF_USADOS[0]} pedidos en esta corrida (el plan Pro deja 7,500 al día)")
 else:
@@ -1916,7 +1922,7 @@ except Exception as ex:
 # la primera vez que lo necesita (Estadísticas, detalle de un partido NFL, Quiniela, Fantasy, fotos, Historia).
 # OJO: 'out' no se toca (más abajo se sigue usando out['ffw'] para El Pizarrón); D es una copia sin esas claves.
 PAQUETES={"stats":["qb","rec","rush","def","teams"],"box":["box"],"previa":["h2h","starters"],
-          "fantasy":["fantasy","sleeper","ffw"],"fotos":["wd_photos","wd_photos_q"],"historia":["historia"]}
+          "fantasy":["fantasy","sleeper","ffw"],"fotos":["wd_photos","wd_photos_q"],"historia":["historia"],"goleo":["bota"]}
 D_out=dict(out)
 try:
     _carp=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'); os.makedirs(_carp,exist_ok=True)

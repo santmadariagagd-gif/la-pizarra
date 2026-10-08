@@ -649,6 +649,27 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .hchips button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .hoyside .hh h3 small{display:block;margin:4px 0 0}
 .hmas2{display:block;width:100%;border:0;border-top:1px dashed var(--line);background:none;color:var(--mark);font:600 14px var(--body);padding:10px;cursor:pointer}
+/* Goleo y Bota de Oro (8 oct 2026) */
+.gotabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));max-width:460px;margin:4px 0 12px}
+.gohead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:6px 0 10px}.gohead h3{margin:0;font:700 24px/1.05 var(--display)}.gohead small{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.goreg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin:0 0 10px}.goreg summary{cursor:pointer;color:var(--mark);font-weight:600;min-height:40px;display:flex;align-items:center}
+.goreg p{margin:6px 0 10px;font-size:14px;line-height:1.45}.goreg b.f2{color:var(--mark)}.goreg b.f15{color:var(--alt)}
+.gobus{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border-radius:23px;background:var(--surface);border:1px solid var(--line);color:var(--muted);margin:0 0 10px;max-width:520px}
+.gobus input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font:400 16px var(--body);outline:none}
+.golist{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.gorow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line)}.gorow:first-child{border-top:0}
+.gorow>.r{width:28px;flex:none;font:700 21px var(--display);color:var(--muted)}.gorow>.r.uno{color:var(--mark)}
+.gorow .b{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.gorow .b>b{font:700 19px/1.1 var(--display)}.gorow .b>span{font-size:13px;color:var(--muted)}
+.gorow .m{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.gof{padding:1px 7px;border-radius:9px;font-weight:700}.gof.f2{color:var(--mark);background:rgba(242,212,102,.15)}.gof.f15{color:var(--alt);background:rgba(156,199,230,.15)}.gof.f1{color:var(--ink);background:rgba(236,239,231,.12)}
+.gocal{padding:1px 7px;border-radius:9px;border:1px solid var(--line)}
+.gorow .p{flex:none;display:flex;flex-direction:column;align-items:flex-end}.gorow .p b{font:700 26px/1 var(--display);color:var(--mark)}.gorow .p small{font-size:12px;color:var(--muted)}
+.gorow.yo{background:rgba(242,212,102,.08)}
+.golig{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.golig .c{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:7px}
+.golig .c>div{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.golig .c>div b{font:700 19px var(--display)}.golig .c>div span{font-size:13px;color:var(--mark)}
+.golig .c p{display:flex;align-items:center;gap:10px;margin:0;font-size:15px}.golig .c p i{width:16px;font:700 16px var(--display);font-style:normal;color:var(--muted)}.golig .c p span{flex:1;min-width:0}.golig .c p b{font:700 19px var(--display)}
+.gonota{font-size:13px;line-height:1.4;color:var(--muted);margin:10px 0 0}
 /* "Lo último" (7 oct 2026): titulares de la semana */
 .hult>.hh{flex-wrap:wrap}.hult .hh h3 small{display:block;font:400 13px/1.3 var(--body);color:var(--muted);margin-top:4px}
 .ulist{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
@@ -1038,7 +1059,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fmatch">Matchup</button><button data-tab="froster">Roster</button><button data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
 </nav>
 <nav class="subnav" data-for="mx" aria-label="Secciones Liga MX" hidden>
-  <select id="flSel" class="league" aria-label="Competición"></select><button data-tab="mxexplore">Explorar</button><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla" id="tabLlaves">Liguilla</button><button data-tab="mxko" hidden>Eliminatoria</button><button data-tab="mxpr">Power Ranking</button><button data-tab="mxsquad" hidden>Plantel</button><button data-tab="mxhonors">Palmarés</button><button data-tab="mxhist" hidden>Historia</button><button data-tab="mxrecords" hidden>Récords</button>
+  <select id="flSel" class="league" aria-label="Competición"></select><button data-tab="mxexplore">Explorar</button><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla" id="tabLlaves">Liguilla</button><button data-tab="mxko" hidden>Eliminatoria</button><button data-tab="mxpr">Power Ranking</button><button data-tab="mxgoleo">Goleo</button><button data-tab="mxsquad" hidden>Plantel</button><button data-tab="mxhonors">Palmarés</button><button data-tab="mxhist" hidden>Historia</button><button data-tab="mxrecords" hidden>Récords</button>
 </nav>
 
 <div class="hero" style="display:none">
@@ -1184,6 +1205,12 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <p class="note">Super Bowls ganados por franquicia, de mayor a menor.</p>
   <div class="tbl"><table id="nflHonorsTable"></table></div>
 </section>
+<section class="panel hidden" id="mxgoleo">
+  <h2>Goleo</h2>
+  <div class="hseg gotabs" role="group" aria-label="Goleo"><button data-go="bota" aria-pressed="true">Bota de Oro</button><button data-go="ligas" aria-pressed="false">Por liga</button><button data-go="mex" aria-pressed="false">Mexicanos</button></div>
+  <p class="note" id="goMsg" aria-live="polite">Cargando…</p>
+  <div id="goBody"></div>
+</section>
 <section class="panel hidden" id="mxpr">
   <h2 id="mxprTitle">Power Ranking</h2>
   <p class="note" id="mxprMsg" aria-live="polite">Calculando…</p>
@@ -1302,7 +1329,7 @@ const D = __DATA__;
 // build_site.py saca de D los datos que solo usan algunas secciones y los guarda en docs/datos/paq_<nombre>.json;
 // se descargan la primera vez que se necesitan (D.paq.v = versión de la corrida, para que nunca se mezclen días).
 // Si la página se generó con una versión vieja de build_site.py (todo dentro de D), paquete() no descarga nada.
-const PAQ_CLAVES={stats:["qb","rec","rush","def","teams"],box:["box"],previa:["h2h","starters"],fantasy:["fantasy","sleeper","ffw"],fotos:["wd_photos","wd_photos_q"],historia:["historia"]};
+const PAQ_CLAVES={stats:["qb","rec","rush","def","teams"],box:["box"],previa:["h2h","starters"],fantasy:["fantasy","sleeper","ffw"],fotos:["wd_photos","wd_photos_q"],historia:["historia"],goleo:["bota"]};
 const PAQ_OK={}, PAQ_P={};
 for(const n in PAQ_CLAVES) if(!D.paq?.[n]) PAQ_OK[n]=true;   // ya viene dentro de D
 for(const k of ["qb","rec","rush","def","teams","fantasy"]) if(!D[k]) D[k]=[];   // listas vacías mientras llega su paquete
@@ -1367,7 +1394,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
+const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -1412,7 +1439,7 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
+  if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
   if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",fantasyInit,id==="fwaivers"?"#notes":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp,tab){
   if(sp==="qn") return showSport("nfl","nflq");   // Quiniela (por ahora solo NFL) tiene su propio botón
@@ -5414,6 +5441,61 @@ function hoyMarcHTML(){
     <div class="mcab"><b>${hoyEsc(L.k==="nfl"?"NFL":LEAGUES[L.k].label)}${L.et?` · ${hoyEsc(L.et)}`:""}</b>${ver}</div>
     <div class="hlist dos">${filas.join("")}${L.n>MARC_MAX?`<button class="hmas2" data-hact="mas" data-hk="m${d.k}${L.k}">${ab?"Ver menos":`Ver los ${L.n} partidos`}</button>`:""}</div></section>`;
 }
+// ---------- Goleo y Bota de Oro (8 oct 2026) ----------
+// D.bota (paquete "goleo", lo arma bota.py): ls = ranking de la Bota de Oro, mex = mexicanos en Europa, faltan = ligas
+// sin datos completos. Fila: [id, nombre, nac, puntos, goles, min, asist, penales, clubes, ligas, factor, año calendario].
+// "Por liga" usa D.goleo (los 5 primeros de cada torneo de la portada).
+const GO={tab:"bota",q:"",max:25};
+const goNum=v=>String(v).replace(".",",");
+const goNorm=s=>(s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+function goFila(r,pos,lider){
+  const [,n,,pts,g,mins,,, clubs,ligas,f,cal]=r, fc=f>=2?"f2":f>=1.5?"f15":"f1";
+  const p90=mins?goNum((pts/mins*90).toFixed(2)):"–", dif=lider&&pos>1?` · a ${goNum(+(lider-pts).toFixed(1))} del líder`:"";
+  return `<div class="gorow"><b class="r${pos===1?" uno":""}">${pos||"–"}</b><span class="b"><b>${hoyEsc(n)}</b><span>${hoyEsc(clubs)} · ${hoyEsc(ligas)}</span>
+    <span class="m"><span class="gof ${fc}">×${goNum(f)}</span>${mins?`${mins.toLocaleString("es-MX")} min · ${p90} pts/90`:""}${cal?`<span class="gocal">Año calendario</span>`:""}${dif}</span></span>
+    <span class="p"><b>${goNum(pts)}</b><small>${g} ${g===1?"gol":"goles"}</small></span></div>`;
+}
+function goLista(){
+  const L=D.bota?.ls||[], lider=L[0]?.[3], q=goNorm(GO.q.trim());
+  const lista=q?L.map((r,i)=>[r,i+1]).filter(([r])=>goNorm(r[1]+" "+r[8]).includes(q)):L.slice(0,GO.max).map((r,i)=>[r,i+1]);
+  if(!lista.length) return `<p class="umsg"><b>No lo encontramos</b>Solo contamos a los 20 mejores goleadores de cada liga de Europa. Si todavía no mete goles de liga, no aparece.</p>`;
+  return `<div class="golist">${lista.map(([r,p])=>goFila(r,p,lider)).join("")}</div>${!q&&L.length>GO.max?`<button class="hmas2" id="goMas">Ver los ${L.length} jugadores</button>`:""}`;
+}
+function goRender(){
+  document.querySelectorAll(".gotabs [data-go]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.go===GO.tab));
+  const B=D.bota||{}, L=B.ls||[], pos=new Map(L.map((r,i)=>[r[0],i+1])), lider=L[0]?.[3];
+  if(GO.tab!=="ligas"&&!L.length){ $("#goMsg").textContent="Todavía no hay datos de la Bota de Oro. Se actualizan cada mañana."; $("#goBody").innerHTML=""; return; }
+  $("#goMsg").textContent="";
+  if(GO.tab==="bota"){
+    const falt=(B.faltan||[]).length?`<p class="gonota">Datos incompletos de: ${hoyEsc(B.faltan.join(", "))}. Algún goleador de esas ligas puede no aparecer.</p>`:"";
+    $("#goBody").innerHTML=`<div class="gohead"><div><h3>Bota de Oro ${hoyEsc(B.temp||"")}</h3><small>Puntos = goles de liga × factor de la liga${B.al?` · al ${new Intl.DateTimeFormat("es-MX",{day:"numeric",month:"long",timeZone:"UTC"}).format(new Date(B.al+"T12:00:00Z"))}`:""}</small></div></div>
+      <details class="goreg"><summary>¿Cómo se cuenta?</summary>
+        <p><b class="f2">×2</b> · Premier, LaLiga, Serie A, Bundesliga y Ligue 1 (las 5 mejores del ranking UEFA).</p>
+        <p><b class="f15">×1.5</b> · De la 6ª a la 22ª del ranking: Portugal, Países Bajos, Bélgica, Turquía, Chequia, Grecia, Polonia, Dinamarca, Noruega, Chipre, Suiza, Austria, Escocia, Suecia, Croacia, Israel y Hungría.</p>
+        <p><b>×1</b> · Las demás ligas de Europa.</p>
+        <p style="color:var(--muted)">Solo cuentan goles de liga. Si hay empate en puntos gana quien jugó menos minutos, luego quien dio más asistencias y luego quien metió menos penales. Las ligas de año calendario (Suecia, Noruega, Finlandia…) van adelantadas porque terminan en noviembre: compara con los puntos por 90 minutos.</p></details>
+      <label class="gobus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <input id="goQ" type="search" placeholder="Busca un jugador o equipo (Mbappé, Porto…)" aria-label="Buscar jugador" value="${hoyEsc(GO.q)}"></label>
+      <div id="goLista">${goLista()}</div>${falt}`;
+  } else if(GO.tab==="mex"){
+    const M=(B.mex||[]).slice().sort((a,b)=>b[3]-a[3]);
+    $("#goBody").innerHTML=`<div class="gohead"><div><h3>Mexicanos en Europa</h3><small>Sus puntos para la Bota de Oro ${hoyEsc(B.temp||"")} y su lugar en la tabla</small></div></div>
+      ${M.length?`<div class="golist">${M.map(r=>goFila(r,pos.get(r[0]),lider)).join("")}</div>`:`<p class="umsg"><b>Sin datos todavía</b>Se actualizan cada mañana.</p>`}
+      <p class="gonota">Incluye a los convocados de la Selección que juegan en ligas de Europa y a cualquier mexicano entre los 20 mejores goleadores de su liga.</p>`;
+  } else {
+    const G=D.goleo||{}, orden=["mx","esp","eng","ita","ger","fra","por","ucl","arg","sau","lib","ccc"].filter(k=>G[k]?.top?.length);
+    $("#goBody").innerHTML=`<div class="gohead"><div><h3>Goleo por liga</h3><small>Los 5 primeros de cada torneo</small></div></div><div class="golig">${orden.map(k=>{const x=G[k], t=x.top, d=t.length>1?t[0][1]-t[1][1]:0;
+      const emp=t.filter(y=>y[1]===t[0][1]).length;
+      const dif=emp>1?(emp>=t.length?`Empate en la cima con ${t[0][1]}`:`${emp} empatados con ${t[0][1]}`):d>0?`${hoyEsc(t[0][0].split(" ").slice(-1)[0])} le saca ${d}`:"";
+      return `<div class="c"><div><b>${hoyEsc(LEAGUES[k]?.label||k)}</b><span>${dif}</span></div>${t.map((y,i)=>`<p><i>${i+1}</i><span>${hoyEsc(y[0])}</span><b>${y[1]}</b></p>`).join("")}</div>`;}).join("")}</div>`;
+  }
+}
+$("#mxgoleo").addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-go]"); if(b){ GO.tab=b.dataset.go; pzTrack("goleo_tab",{t:GO.tab}); return goRender(); }
+  if(ev.target.closest("#goMas")){ GO.max=1e4; return ($("#goLista").innerHTML=goLista()); }
+});
+$("#mxgoleo").addEventListener("input",ev=>{ if(ev.target.id!=="goQ") return; GO.q=ev.target.value; $("#goLista").innerHTML=goLista(); });
+
 // ---- Lo último (7 oct 2026): titulares de la semana que arma build_site.py (noticias.py) ----
 const ULT_TIPO={lesion:["Lesión",'<circle cx="8" cy="8" r="6.5"/><path d="M8 5v6M5 8h6"/>'],suspension:["Suspendido",'<rect x="4" y="2" width="8" height="12" rx="1.5"/>'],
   racha:["Racha",'<path d="M2 12l4-4 3 3 5-6"/><path d="M10 5h4v4"/>'],goles:["Goles",'<circle cx="8" cy="8" r="6.5"/><path d="M8 4.5l3 2.2-1.2 3.6H6.2L5 6.7z"/>'],
@@ -5688,10 +5770,10 @@ async function precarga(){ if(PRE_CORRE) return; PRE_CORRE=true;
 // el botón ‹ de la página, el de atrás de Safari y el gesto de deslizar en el iPhone. Abrir un partido o "Tu cuenta"
 // también cuenta como un paso: atrás cierra la ventana en lugar de salirse del sitio.
 var NAV={cur:null,liga:"",restaurando:false,listo:false};   // var: showTab puede llamarse antes de esta línea
-const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch"};
+const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo"};
 const NAV_NOMBRE=Object.fromEntries(Object.entries(NAV_ALIAS).map(([a,t])=>[t,a]));
 const navLiga=id=>id.startsWith("mx")?FLIG:"";
-const navHash=id=>"#"+(NAV_NOMBRE[id]||id)+(id.startsWith("mx")&&id!=="mxexplore"?"-"+FLIG:"");
+const navHash=id=>"#"+(NAV_NOMBRE[id]||id)+(id.startsWith("mx")&&id!=="mxexplore"&&id!=="mxgoleo"?"-"+FLIG:"");
 function navBtn(){ $("#pzBack").hidden=NAV.cur==="hoy"; }   // en la portada no hace falta
 function navPush(id){
   if(!NAV) return;
