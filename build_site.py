@@ -1671,8 +1671,12 @@ if AFK:
                             tin=(m.get("teams") or {}).get("in") or {}
                             if str(m.get("date") or "")[:10]<=_hoyd.isoformat() and tin.get("id") and tin.get("id")!=16 and not _inter.search(tin.get("name") or ""):
                                 mov.append((str(m.get("date"))[:10],tin))
+                    # Solo se cree el traspaso si el jugador tiene partidos con ese equipo esta temporada: API-Football a
+                    # veces apunta a otro club del mismo nombre (Romo, Sandoval y Camberos salían en el CD Guadalajara de España)
+                    ids_temp={(st.get("team") or {}).get("id") for st in ((R[0].get("statistics") if R else None) or [])}
                     if mov:
-                        t=max(mov,key=lambda x:x[0])[1]; return dict(id=t.get("id"),n=AF_EQ.get(t.get("id"),(t.get("name"),))[0] or t.get("name"),logo=t.get("logo"))
+                        t=max(mov,key=lambda x:x[0])[1]
+                        if t.get("id") in ids_temp: return dict(id=t.get("id"),n=AF_EQ.get(t.get("id"),(t.get("name"),))[0] or t.get("name"),logo=t.get("logo"))
                 except Exception: pass
                 mejor=None
                 for st in ((R[0].get("statistics") if R else None) or []):
@@ -1685,7 +1689,9 @@ if AFK:
             for J in _J.values():
                 try: R=af("players",id=J["id"],season=_ano) or af("players",id=J["id"],season=_ano-1)
                 except Exception: R=[]
-                if R: J["edad"]=(R[0].get("player") or {}).get("age")
+                if R:
+                    J["edad"]=(R[0].get("player") or {}).get("age")
+                    J["n"]=(R[0].get("player") or {}).get("name") or J["n"]   # las alineaciones traen los nombres sin acentos
                 J["club"]=_club(J["id"],R)
                 out['sel_plantel'].append(J)
         print(f"Plantel de la Selección (última convocatoria): {len(out['sel_plantel'])} jugadores, partidos: "
