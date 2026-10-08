@@ -1,0 +1,24 @@
+name: Probar noticias
+on:
+  workflow_dispatch:        # solo se corre a mano (botón "Run workflow")
+permissions:
+  contents: write
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python probar_noticias.py
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+      - name: Guardar reporte
+        run: |
+          git config user.name "La Pizarra bot"
+          git config user.email "actions@github.com"
+          git add prueba_noticias.txt
+          git diff --cached --quiet || git commit -m "Reporte de prueba de noticias"
+          git pull --rebase
+          git push
