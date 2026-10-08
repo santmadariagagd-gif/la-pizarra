@@ -1,0 +1,208 @@
+[
+ {
+  "tipo": "lesion",
+  "liga": "eng",
+  "eq": "Chelsea",
+  "t": "2026-10-10T14:00:00+00:00",
+  "txt": "Joao Pedro (Chelsea) es baja para el sábado contra Bournemouth por una lesión en la rodilla.",
+  "peso": 12,
+  "fx": 1557419
+ },
+ {
+  "tipo": "lesion",
+  "liga": "eng",
+  "eq": "Chelsea",
+  "t": "2026-10-10T14:00:00+00:00",
+  "txt": "C. Palmer (Chelsea) es baja para el sábado contra Bournemouth por una lesión muscular.",
+  "peso": 12,
+  "fx": 1557419
+ },
+ {
+  "tipo": "lesion",
+  "liga": "esp",
+  "eq": "Barcelona",
+  "t": "2026-10-10T16:30:00+00:00",
+  "txt": "Raphinha (Barcelona) está en duda para el sábado contra Getafe por una lesión muscular.",
+  "peso": 12,
+  "fx": 1570404
+ },
+ {
+  "tipo": "lesion",
+  "liga": "fra",
+  "eq": "PSG",
+  "t": "2026-10-10T18:45:00+00:00",
+  "txt": "F. Torres (PSG) es baja para el sábado contra Le Mans por una lesión en el tobillo.",
+  "peso": 12,
+  "fx": 1552780
+ },
+ {
+  "tipo": "lesion",
+  "liga": "nfl",
+  "eq": "Buccaneers",
+  "t": "2026-10-07T20:14:20.899828-06:00",
+  "txt": "Baker Mayfield (QB, Buccaneers) no entrenó por una lesión en el pulgar. Hay que seguir su estado para la semana 5.",
+  "peso": 9.4
+ },
+ {
+  "tipo": "lesion",
+  "liga": "eng",
+  "eq": "Arsenal",
+  "t": "2026-10-10T11:30:00+00:00",
+  "txt": "E. Konsa (Arsenal) es baja para el sábado contra Leeds por una lesión muscular.",
+  "peso": 6,
+  "fx": 1557417
+ },
+ {
+  "tipo": "lesion",
+  "liga": "eng",
+  "eq": "Arsenal",
+  "t": "2026-10-10T11:30:00+00:00",
+  "txt": "W. Saliba (Arsenal) es baja para el sábado contra Leeds por una lesión en la espalda.",
+  "peso": 6,
+  "fx": 1557417
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ita",
+  "eq": "Genoa",
+  "t": "2026-10-10T13:00:00+00:00",
+  "txt": "L. Colombo (Genoa) es baja para el sábado contra Fiorentina por una lesión en el tobillo.",
+  "peso": 6,
+  "fx": 1550140
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ger",
+  "eq": "Bayern Múnich",
+  "t": "2026-10-10T13:30:00+00:00",
+  "txt": "T. Buchmann (Bayern Múnich) es baja para el sábado contra FC Augsburg por una lesión en la rodilla.",
+  "peso": 6,
+  "fx": 1575180
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ger",
+  "eq": "Bayern Múnich",
+  "t": "2026-10-10T13:30:00+00:00",
+  "txt": "J. Musiala (Bayern Múnich) es baja para el sábado contra FC Augsburg por una lesión muscular.",
+  "peso": 6,
+  "fx": 1575180
+ },
+ {
+  "tipo": "lesion",
+  "liga": "eng",
+  "eq": "Sunderland",
+  "t": "2026-10-10T14:00:00+00:00",
+  "txt": "B. Brobbey (Sunderland) está en duda para el sábado contra Brighton por una lesión muscular.",
+  "peso": 6,
+  "fx": 1557426
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ita",
+  "eq": "Inter de Milán",
+  "t": "2026-10-10T16:00:00+00:00",
+  "txt": "H. Calhanoglu (Inter de Milán) está en duda para el sábado contra Parma por una lesión muscular.",
+  "peso": 6,
+  "fx": 1550141
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ita",
+  "eq": "Inter de Milán",
+  "t": "2026-10-10T16:00:00+00:00",
+  "txt": "J. Stones (Inter de Milán) está en duda para el sábado contra Parma por una lesión.",
+  "peso": 6,
+  "fx": 1550141
+ },
+ {
+  "tipo": "lesion",
+  "liga": "esp",
+  "eq": "Barcelona",
+  "t": "2026-10-10T16:30:00+00:00",
+  "txt": "R. Bardghji (Barcelona) es baja para el sábado contra Getafe por una lesión en la rodilla.",
+  "peso": 6,
+  "fx": 1570404
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ita",
+  "eq": "Frosinone",
+  "t": "2026-10-10T18:45:00+00:00",
+  "txt": "A. Raimondo (Frosinone) está en duda para el sábado contra Napoli por problemas de salud.",
+  "peso": 6,
+  "fx": 1550144
+ },
+ {
+  "tipo": "lesion",
+  "liga": "fra",
+  "eq": "Lorient",
+  "t": "2026-10-10T18:45:00+00:00",
+  "txt": "P. Katseris (Lorient) está en duda para el sábado contra Paris FC por una lesión en el isquiotibial.",
+  "peso": 6,
+  "fx": 1552777
+ },
+ {
+  "tipo": "suspension",
+  "liga": "fra",
+  "eq": "Monaco",
+  "t": "2026-10-10T18:45:00+00:00",
+  "txt": "P. Brunner (Monaco) está suspendido para el partido de el sábado contra Toulouse.",
+  "peso": 6,
+  "fx": 1552778
+ },
+ {
+  "tipo": "lesion",
+  "liga": "fra",
+  "eq": "PSG",
+  "t": "2026-10-10T18:45:00+00:00",
+  "txt": "S. Mayulu (PSG) está en duda para el sábado contra Le Mans por una lesión en la ingle.",
+  "peso": 6,
+  "fx": 1552780
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ita",
+  "eq": "Juventus",
+  "t": "2026-10-11T18:45:00+00:00",
+  "txt": "K. Yıldız (Juventus) es baja para el domingo contra Cagliari por una lesión en el pie.",
+  "peso": 6,
+  "fx": 1550138
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ger",
+  "eq": "Dortmund",
+  "t": "2026-10-09T18:30:00+00:00",
+  "txt": "E. Can (Dortmund) es baja para el viernes contra Werder Bremen por una lesión en la rodilla.",
+  "peso": 4,
+  "fx": 1575176
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ger",
+  "eq": "Dortmund",
+  "t": "2026-10-09T18:30:00+00:00",
+  "txt": "G. Konstantelias (Dortmund) es baja para el viernes contra Werder Bremen por una lesión en la rodilla.",
+  "peso": 4,
+  "fx": 1575176
+ },
+ {
+  "tipo": "lesion",
+  "liga": "ger",
+  "eq": "Leverkusen",
+  "t": "2026-10-10T13:30:00+00:00",
+  "txt": "M. Culbreath (Leverkusen) es baja para el sábado contra FSV Mainz 05 por una lesión en el pie.",
+  "peso": 4,
+  "fx": 1575181
+ },
+ {
+  "tipo": "lesion",
+  "liga": "esp",
+  "eq": "Atlético de Madrid",
+  "t": "2026-10-10T14:15:00+00:00",
+  "txt": "A. Sorloth (Atlético de Madrid) está en duda para el sábado contra Alaves por una lesión muscular.",
+  "peso": 4,
+  "fx": 1570403
+ }
+]
