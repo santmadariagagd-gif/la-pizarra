@@ -398,6 +398,16 @@ button.hfc{cursor:pointer}
 .hfc .px{background:var(--bg);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}.hfc .px b{color:var(--ink);font:700 16px/1.15 var(--display)}
 .hfc .nt{display:flex;align-items:flex-start;gap:6px;font-size:13px;line-height:1.3}.hfc .nt .utag{height:20px;font-size:12px;flex:none}
 .favst{color:var(--mark);margin-right:3px}
+.hfjug{margin-top:12px}.hfjbtn{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:46px;padding:0 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 18px var(--display);cursor:pointer}
+.hfjbtn small{font:400 14px var(--body);color:var(--muted);margin-left:6px}.hfjbtn svg{transition:transform .15s}.hfjbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.hfjl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hfjl button{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 13px 0 6px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 16px var(--display);cursor:pointer}
+.hfjl button i{width:28px;height:28px;border-radius:14px;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font:700 10px var(--body);font-style:normal}
+.jfi h2{margin:6px 0 2px;font:700 30px/1.05 var(--display)}.jfi .sub{color:var(--muted);margin:0 0 14px}
+.jfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:0 0 14px}
+.jfg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}.jfg b{font:700 26px/1 var(--display)}.jfg span{font-size:12px;color:var(--muted)}
+.jfg div.d{border-color:var(--mark)}.jfg div.d b{color:var(--mark)}
+.jfi .jfx{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}.jfi .jfx>*{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:15px;color:var(--ink);text-align:left;font-family:inherit}
+.jfi .jfx button{cursor:pointer}.jfi .jfx small{display:block;color:var(--muted);font-size:12px;margin-bottom:2px}
 @media (min-width:721px){.hfstrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));overflow:visible;margin-right:0;padding-right:0}}
 .hfchips{display:flex;gap:6px;flex-wrap:wrap}.hfchips span{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 13px 0 6px;border-radius:19px;border:1px solid var(--line);background:var(--surface);font:600 16px var(--display)}
 .hfchips span i{width:26px;height:26px;border-radius:13px;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:10px;overflow:hidden}.hfchips img{width:20px;height:20px;object-fit:contain}
@@ -5596,28 +5606,39 @@ function favTarjetaEq(k,x){
   const abre=p&&LEAGUES[p[2]]?` data-hk="${p[2]}" data-hid="${p[0]}"`:"";
   return `<${abre?"button":"div"} class="hfc"${abre}><span class="t">${logo}<span><b>${hoyEsc(x.n)}</b><small>${hoyEsc(sub)}</small></span></span>${favForma(I.f)}${px}${favNota(n=>String(n.tid)===id)}</${abre?"button":"div"}>`;
 }
-function favTarjetaJug(k,x){
-  const id=+k.slice(1), ape=(x.n||"").split(" ").slice(-1)[0];
-  let g=null,a=null,club=x.club||"",tid=null;
-  if(["mx","eng","esp","ita","ger","fra","por"].includes(x.lg)){
-    favJugLiga(x.lg); const J=FAV_JF[x.lg], f=J?.filas?.find(r=>r.id===id);
-    if(f){ g=f.g; a=f.as; const eq=J.equipos?.[f.t]; if(eq){ club=eq[0]; tid=(eq[1]||"").match(/teams\/(\d+)/)?.[1]; } }
-  }
-  const b=[...(D.bota?.ls||[]),...(D.bota?.mex||[])].find(r=>r[0]===id);
-  if(g==null&&b){ g=b[4]; a=b[6]; }
-  const pos=b&&D.bota?.ls?.indexOf(b)>=0?D.bota.ls.indexOf(b)+1:null;
+// Ficha de un jugador que sigues (se abre en la ventana de detalle): estadísticas de su liga (jugadores_<liga>.json) o, si
+// no está en esas ligas, de la Bota de Oro; lugar en la Bota, convocado con México, próximo partido de su club y su nota.
+async function favFicha(k){
+  const x=FAV.jug[k]; if(!x) return;
+  const id=+k.slice(1), ape=(x.n||"").split(" ").slice(-1)[0], LG=["mx","eng","esp","ita","ger","fra","por"];
+  $("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando…</p>`; if(!dlg.open) dlg.showModal();
+  pzTrack("fav_ficha",{});
+  if(LG.includes(x.lg)){ favJugLiga(x.lg); await FAV_JFP[x.lg]; }
+  const J=FAV_JF[x.lg], f=J?.filas?.find(r=>r.id===id), eq=f?J.equipos?.[f.t]:null, tid=eq?(eq[1]||"").match(/teams\/(\d+)/)?.[1]:null;
+  const b=[...(D.bota?.ls||[]),...(D.bota?.mex||[])].find(r=>r[0]===id), posB=b?(D.bota.ls||[]).indexOf(b)+1:0;
+  const club=eq?eq[0]:(b?b[8]:x.club)||"", liga=f?(FAV_LIGA[x.lg]||""):(b?b[9]:""), logo=eq&&SM_ESCUDOS?logoImg(eq[1],"tlogo"):"";
+  const POS={G:"Portero",D:"Defensa",M:"Medio",F:"Delantero"};
+  const v=(n,t,d)=>n==null?"":`<div${d?' class="d"':""}><b>${n}</b><span>${t}</span></div>`;
+  const st=f?[v(f.g,f.g===1?"Gol":"Goles",1),v(f.as,f.as===1?"Asistencia":"Asistencias",1),v(f.ap,"Partidos"),v(f.tit,"De titular"),v(f.min!=null?f.min.toLocaleString("es-MX"):null,"Minutos"),
+      v(f.g90!=null?String(f.g90).replace(".",","):null,"Goles por 90 min"),f.pos==="G"?v(f.sv,"Atajadas")+v(f.cs,"Sin goles en contra")+v(f.gc,"Goles en contra"):v(f.sh,"Tiros")+v(f.sot,"Tiros a puerta"),v(f.yc,"Amarillas"),v(f.rc,"Rojas")].join("")
+    :b?[v(b[4],b[4]===1?"Gol":"Goles",1),v(b[6],"Asistencias",1),v(b[5]?b[5].toLocaleString("es-MX"):null,"Minutos"),v(b[7],"Penales anotados")].join(""):"";
   const I=tid?D.eq_info?.[tid]:null, p=I?.p;
-  const datos=[a!=null?`${a} ${a===1?"asistencia":"asistencias"}`:"",pos?`${pos}º en la Bota de Oro`:"",(D.sel_plantel||[]).some(s=>s.id===id)?"Convocado con México":""].filter(Boolean).join(" · ");
-  const px=p?`<span class="px"><b>${p[5]?"vs":"visita a"} ${hoyEsc(esTeam(p[4]))}</b>${favCuando(p[1])}</span>`:"";
-  const abre=p&&LEAGUES[p[2]]?` data-hk="${p[2]}" data-hid="${p[0]}"`:"";
-  return `<${abre?"button":"div"} class="hfc"${abre}><span class="t"><i>${favIni(x.n)}</i><span><b>${hoyEsc(x.n)}</b><small>${hoyEsc(club)}</small></span>${g!=null?`<em>${g}</em>`:""}</span>
-    ${datos?`<span class="px">${hoyEsc(datos)}</span>`:""}${px}${favNota(n=>ape.length>2&&n.tit.includes(ape))}</${abre?"button":"div"}>`;
+  const extra=[posB?`<div><small>Bota de Oro ${hoyEsc(D.bota.temp||"")}</small><b>${posB}º</b> con ${goNum(b[3])} puntos (${b[4]} goles × ${goNum(b[10])})</div>`:"",
+    (D.sel_plantel||[]).some(s=>s.id===id)?`<div><small>Selección</small>Convocado en la última fecha FIFA</div>`:"",
+    p?`<button data-hk="${p[2]}" data-hid="${p[0]}"><small>Próximo partido de ${hoyEsc(club)}</small><b>${p[5]?"vs":"visita a"} ${hoyEsc(esTeam(p[4]))}</b> · ${favCuando(p[1])}</button>`:"",
+    favNota(n=>ape.length>2&&n.tit.includes(ape))?`<div><small>Lo último</small>${favNota(n=>ape.length>2&&n.tit.includes(ape))}</div>`:""].filter(Boolean).join("");
+  $("#gbody").innerHTML=`<div class="jfi"><h2>${hoyEsc(x.n)}</h2><p class="sub">${logo}${hoyEsc([club,liga,f?POS[f.pos]:""].filter(Boolean).join(" · "))}</p>
+    ${st?`<div class="jfg">${st}</div>`:`<p class="note">Todavía no tenemos sus estadísticas de esta temporada.</p>`}
+    ${extra?`<div class="jfx">${extra}</div>`:""}<p class="note">Estadísticas de liga de la temporada actual.</p></div>`;
 }
+$("#gbody").addEventListener("click",ev=>{ const p=ev.target.closest(".jfi [data-hid]"); if(p){ hoyAbrir(p.dataset.hk,p.dataset.hid); } });
 function hoyFavHTML(){
   const E=Object.entries(FAV.eq), J=Object.entries(FAV.jug);
   if(!E.length&&!J.length) return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3></div><div class="hfcta"><b>Sigue a tus equipos y jugadores</b><span>Elige tus equipos de la Liga MX, Europa o la NFL, y a tus jugadores, para verlos primero aquí.</span><button class="btn" data-hact="fav">Elegir equipos</button></div></section>`;
   return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3><button class="hlink" data-hact="fav">Editar</button></div>
-    <div class="hfstrip">${E.map(([k,x])=>favTarjetaEq(k,x)).join("")}${J.map(([k,x])=>favTarjetaJug(k,x)).join("")}</div></section>`;
+    ${E.length?`<div class="hfstrip">${E.map(([k,x])=>favTarjetaEq(k,x)).join("")}</div>`:""}
+    ${J.length?`<div class="hfjug"><button class="hfjbtn" data-hact="mas" data-hk="jug" aria-expanded="${HOY.abiertos.has("jug")}"><span>Mis jugadores<small>${J.length}</small></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+      ${HOY.abiertos.has("jug")?`<div class="hfjl">${J.map(([k,x])=>`<button data-jf="${hoyEsc(k)}"><i>${favIni(x.n)}</i>${hoyEsc(x.n)}</button>`).join("")}</div>`:""}</div>`:""}</section>`;
 }
 
 // ---------- Goleo y Bota de Oro (8 oct 2026) ----------
@@ -5868,6 +5889,7 @@ $("#hoy").addEventListener("click",ev=>{
     else if(act==="qn"||act==="lpz"){ showSport("qn"); window.scrollTo(0,0); }
     else if(act==="sv"){ qnMode="surv"; try{localStorage.setItem("pz_qmode","surv");}catch(e){} showSport("qn"); qnSetView("picks"); window.scrollTo(0,0); }
     return; }
+  const jf=ev.target.closest("[data-jf]"); if(jf) return favFicha(jf.dataset.jf);
   const p=ev.target.closest("[data-hid]"); if(p) return hoyAbrir(p.dataset.hk,p.dataset.hid);
   const n=ev.target.closest("[data-nid]"); if(n){ pzTrack("hoy_partido",{liga:"nfl"}); DLG_CUR={k:"nfl",id:n.dataset.nid}; return openNfl(n.dataset.nid); }
 });
