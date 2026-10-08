@@ -371,6 +371,24 @@ dialog#gdlg::backdrop{background:rgba(0,0,0,.55)}
 .acct.in img{width:100%;height:100%;object-fit:cover}
 dialog#adlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(420px,94vw);max-height:92vh}
 dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
+/* Mis equipos (8 oct 2026) */
+dialog#fdlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(620px,96vw);max-height:92vh}
+dialog#fdlg::backdrop{background:rgba(0,0,0,.55)}
+#fdlg h2{margin:4px 0 6px;font:700 30px/1 var(--display)}#fdlg .note{margin:0 0 12px}
+#fdlg .ftabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:0 0 10px}#fdlg .ftabs button{padding:0 2px;font-size:14px;min-width:0}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.fgh{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.fit{display:flex;align-items:center;gap:9px;min-height:52px;padding:0 10px 0 8px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 16px/1.1 var(--display);text-align:left;cursor:pointer}
+.fit[aria-pressed="true"]{border-color:var(--mark);background:#2F4A41}
+.fit .fl{width:32px;height:32px;flex:none;border-radius:16px;background:var(--bg);border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;overflow:hidden}
+.fit .fl img{width:24px;height:24px;object-fit:contain}
+.fit .fn{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.fit .fn small{font:400 12px var(--body);color:var(--muted)}
+.fit svg{flex:none;fill:none;stroke:#6F8A80}.fit[aria-pressed="true"] svg{fill:var(--mark);stroke:var(--mark)}
+.fpie{position:sticky;bottom:0;display:flex;justify-content:flex-end;padding:12px 0 0;background:var(--bg)}
+.hfav .hh{flex-wrap:wrap}.hfcta{background:var(--surface);border:1px dashed var(--mark);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.hfcta b{font:700 21px var(--display)}.hfcta span{color:var(--muted);font-size:15px;line-height:1.4}
+.hfchips{display:flex;gap:6px;flex-wrap:wrap}.hfchips span{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 13px 0 6px;border-radius:19px;border:1px solid var(--line);background:var(--surface);font:600 16px var(--display)}
+.hfchips span i{width:26px;height:26px;border-radius:13px;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:10px;overflow:hidden}.hfchips img{width:20px;height:20px;object-fit:contain}
 #adlg h2{margin:4px 0 6px}
 #adlg .note{margin:0 0 18px}
 .aform{display:flex;flex-direction:column;gap:10px}
@@ -1096,7 +1114,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div></div>
   <div id="hoyVivo"></div>
   <div class="hoygrid">
-    <div class="hoymain"><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyUlt"></div><div id="hoyNfl"></div></div>
+    <div class="hoymain"><div id="hoyFav"></div><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyUlt"></div><div id="hoyNfl"></div></div>
     <aside class="hoyside"><div id="hoyLpz"></div></aside>
   </div>
 </section>
@@ -1216,6 +1234,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <p class="note" id="mxprMsg" aria-live="polite">Calculando…</p>
   <div class="tbl"><table id="prMx" class="prt" data-freeze="3"></table></div>
 </section>
+<dialog id="fdlg" aria-label="Mis equipos"><div class="dlg"><button class="x" id="fClose" aria-label="Cerrar">×</button><div id="fbody"></div></div></dialog>
 <dialog id="adlg" aria-label="Tu cuenta"><div class="dlg"><button class="x" id="aClose" aria-label="Cerrar">×</button><div id="abody"></div></div></dialog>
 <dialog id="gdlg" aria-label="Detalle del partido"><div class="dlg"><button class="x" id="gClose" aria-label="Cerrar">×</button><div id="gbody"></div></div></dialog>
 
@@ -4704,7 +4723,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden) fmLiveTic
 // - Las contraseñas nunca pasan por aquí más que en el formulario: las guarda Firebase (con hash), no nosotros.
 // Sin firebase_config.txt en el repositorio (D.fb vacío) no aparece nada de esto y todo queda como antes.
 var ACCT={ready:false,user:null,auth:null,db:null,last:0,pushT:null,mode:"in",busy:false};
-const ACCT_V="12.19.0", ACCT_KEYS=["pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
+const ACCT_V="12.19.0", ACCT_KEYS=["pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
 const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
 const acctLsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
 const acctLsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
@@ -4728,7 +4747,7 @@ function acctLoadJS(f){return new Promise((ok,no)=>{
   const go=i=>{if(i>=urls.length) return no(new Error("No cargó "+f)); const s=document.createElement("script"); s.src=urls[i]; s.async=true;
     s.onload=ok; s.onerror=()=>{s.remove(); go(i+1);}; document.head.appendChild(s);};
   go(0);});}
-const acctLocal=()=>({picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
+const acctLocal=()=>({fav:favLee(),picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
 function acctMerge(nube,local){   // {temporada:{semana:{"VIS@LOC":{ats,su}}}}: gana la nube; lo local llena lo que falte
   const R=JSON.parse(JSON.stringify(nube||{}));
   for(const [s,S] of Object.entries(local||{})) for(const [w,W] of Object.entries(S||{})) for(const [k,G] of Object.entries(W||{})) for(const [m,p] of Object.entries(G||{})){
@@ -4758,14 +4777,15 @@ async function acctPull(){
   catch(e){console.warn("Cuentas: no se pudo leer la cuenta",e?.code||e); return;}
   if(ACCT.user!==u) return;
   const L=acctLocal(), linked=acctLsGet("pz_cuenta")===u.uid, dirty=acctLsGet("pz_cuenta_sucio")==="1";
-  const cloud={picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
+  const cloud={fav:{eq:C.fav?.eq||{},jug:C.fav?.jug||{}},picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
   let N;
   if(linked&&exists&&!dirty) N=cloud;                         // navegador ya ligado: manda la nube
   else if(linked) N=L;                                         // cambios locales sin subir (o cuenta nueva): manda lo local
-  else N={picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
+  else N={fav:{eq:{...L.fav.eq,...cloud.fav.eq},jug:{...L.fav.jug,...cloud.fav.jug}},picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
   acctLsSet("pz_cuenta",u.uid);
   const pc=JSON.stringify(N.picks)!==JSON.stringify(L.picks)||JSON.stringify(N.surv||{})!==JSON.stringify(L.surv||{}), sc=N.sleeper!==L.sleeper||N.liga!==L.liga||N.espn!==L.espn||N.fsrc!==L.fsrc;
   acctLsSet(QN_PK,JSON.stringify(N.picks)); acctLsSet(SV_PK,JSON.stringify(N.surv||{}));
+  if(JSON.stringify(N.fav)!==JSON.stringify(L.fav)){ acctLsSet(FAV_K,JSON.stringify(N.fav)); FAV=favLee(); favRepinta(); }
   if(N.sleeper) acctLsSet("pizarra_sleeper",N.sleeper); else acctLsDel("pizarra_sleeper");
   if(N.liga) acctLsSet("pizarra_league",N.liga); else acctLsDel("pizarra_league");
   ["espn","fsrc"].forEach(k=>{const key=k==="espn"?"pizarra_espn":"pizarra_fsrc"; if(N[k]) acctLsSet(key,N[k]); else acctLsDel(key);});
@@ -4860,7 +4880,7 @@ const acctForgot=()=>acctRun(async()=>{
   await ACCT.auth.sendPasswordResetEmail(m); acctMsg("Listo: si ese correo tiene cuenta, te llegará un link para cambiar tu contraseña (revisa también spam).",true);
 });
 async function acctForget(){   // quita de este navegador lo que pertenece a la cuenta
-  ACCT_KEYS.forEach(acctLsDel); acctSlClear(); if(acctOnQ()) loadQuiniela();
+  ACCT_KEYS.forEach(acctLsDel); acctSlClear(); if(acctOnQ()) loadQuiniela(); FAV=favLee(); favRepinta();
 }
 const acctOut=()=>acctRun(async()=>{
   if(acctLsGet("pz_cuenta_sucio")==="1"){clearTimeout(ACCT.pushT); await acctSend();}
@@ -5441,6 +5461,106 @@ function hoyMarcHTML(){
     <div class="mcab"><b>${hoyEsc(L.k==="nfl"?"NFL":LEAGUES[L.k].label)}${L.et?` · ${hoyEsc(L.et)}`:""}</b>${ver}</div>
     <div class="hlist dos">${filas.join("")}${L.n>MARC_MAX?`<button class="hmas2" data-hact="mas" data-hk="m${d.k}${L.k}">${ab?"Ver menos":`Ver los ${L.n} partidos`}</button>`:""}</div></section>`;
 }
+// ---------- Mis equipos (8 oct 2026, parte 1: elegir y guardar) ----------
+// localStorage "pz_fav" = {eq:{clave:{n,logo,lg}}, jug:{clave:{n,club,lg}}}. Claves: "f<id>" equipo de fútbol (API-Football;
+// "f16" = Selección), "n<ABR>" equipo de la NFL, "p<id>" jugador (API-Football). Con cuenta se guarda también en
+// usuarios/{uid}.fav (bloque Cuentas). Equipos: D.fav_eq (build_site.py) y D.nflteams; jugadores: docs/datos/jugadores_<liga>.json
+// (todos los de esas ligas) + D.bota (goleadores de Europa y mexicanos) + D.sel_plantel.
+const FAV_K="pz_fav";
+function favLee(){ try{ const x=JSON.parse(localStorage.getItem(FAV_K)||"{}")||{}; return {eq:x.eq||{},jug:x.jug||{}}; }catch(e){ return {eq:{},jug:{}}; } }
+var FAV=favLee();
+const favN=()=>Object.keys(FAV.eq).length+Object.keys(FAV.jug).length;
+const favLogoF=id=>`https://media.api-sports.io/football/teams/${id}.png`;
+const FAV_UI={tab:"mx",q:"",jug:null,jugP:null};
+const FAV_LIGA={mx:"Liga MX",eng:"Premier League",esp:"LaLiga",ita:"Serie A",ger:"Bundesliga",fra:"Ligue 1",por:"Liga Portugal",arg:"Argentina",sau:"Arabia Saudita"};
+function favGuarda(){ try{ localStorage.setItem(FAV_K,JSON.stringify(FAV)); }catch(e){} if(typeof acctPush==="function") acctPush(); favRepinta(); }
+function favRepinta(){ const h=$("#hoyFav"); if(h&&!$("#hoy").classList.contains("hidden")) h.innerHTML=hoyFavHTML(); }
+function favToggle(k,dat){
+  const grupo=k[0]==="p"?"jug":"eq", on=!FAV[grupo][k];
+  if(on) FAV[grupo][k]=dat; else delete FAV[grupo][k];
+  pzTrack("fav",{k,on}); favGuarda(); return on;
+}
+function favEquipos(tab){   // [{k,n,logo,lg,sub,h}] (h = encabezado de grupo)
+  if(tab==="nfl") return Object.entries(NT).map(([a,t])=>({k:"n"+a,n:t.name||t.n,logo:t.logo,lg:"nfl"})).sort((a,b)=>a.n.localeCompare(b.n,"es"));
+  if(tab==="sel") return [{k:"f16",n:"México",logo:favLogoF(16),lg:"sel",sub:"Selección"}];
+  const ligas=tab==="mx"?["mx"]:["eng","esp","ita","ger","fra","por","arg","sau"], R=[];
+  for(const lg of ligas){ const L=D.fav_eq?.[lg]||[]; if(!L.length) continue; if(tab!=="mx") R.push({h:FAV_LIGA[lg]});
+    L.forEach(([id,n])=>R.push({k:"f"+id,n,logo:favLogoF(id),lg})); }
+  return R;
+}
+async function favCargaJug(){
+  if(FAV_UI.jug) return FAV_UI.jug; if(FAV_UI.jugP) return FAV_UI.jugP;
+  FAV_UI.jugP=(async()=>{
+    const M=new Map(), add=(id,n,club,lg,g)=>{ if(!id||!n) return; const k="p"+id; if(!M.has(k)) M.set(k,{k,n,club:club||"",lg,g:g??null}); };
+    const ligas=["mx","eng","esp","ita","ger","fra","por"];
+    const res=await Promise.all(ligas.map(lg=>fetch(`datos/jugadores_${lg}.json`).then(r=>r.ok?r.json():null).catch(()=>null)));
+    res.forEach((j,i)=>{ if(!j) return; (j.filas||[]).forEach(f=>add(f.id,f.n,j.equipos?.[f.t]?.[0]||f.t,ligas[i],f.g)); });
+    (D.sel_plantel||[]).forEach(p=>add(p.id,p.n,p.club?.n,"sel",null));
+    [...(D.bota?.ls||[]),...(D.bota?.mex||[])].forEach(r=>add(r[0],r[1],r[8],"eu",r[4]));
+    FAV_UI.jug=[...M.values()]; return FAV_UI.jug;
+  })();
+  return FAV_UI.jugP;
+}
+function favSugeridos(){   // antes de buscar: convocados de la Selección y los líderes de la Bota de Oro
+  const S=[], vistos=new Set(), add=(id,n,club,lg)=>{ const k="p"+id; if(!id||vistos.has(k)) return; vistos.add(k); S.push({k,n,club:club||"",lg}); };
+  (D.bota?.mex||[]).forEach(r=>add(r[0],r[1],r[8],"eu"));
+  (D.sel_plantel||[]).forEach(p=>add(p.id,p.n,p.club?.n,"sel"));
+  (D.bota?.ls||[]).slice(0,8).forEach(r=>add(r[0],r[1],r[8],"eu"));
+  return S;
+}
+const FAV_ESTRELLA=`<svg width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>`;
+const favIni=n=>(n||"").split(/\s+/).filter(Boolean).map(w=>w[0]).join("").replace(/[^A-Za-zÁÉÍÓÚÑ]/g,"").slice(0,3).toUpperCase();
+function favItem(x,grupo){
+  const on=!!FAV[grupo][x.k], logo=x.logo&&SM_ESCUDOS?`<img src="${x.logo}" alt="" loading="lazy" onerror="this.remove()">`:favIni(x.n);
+  const sub=grupo==="jug"?[x.club,x.g!=null?`${x.g} ${x.g===1?"gol":"goles"}`:""].filter(Boolean).join(" · "):(x.sub||"");
+  return `<button class="fit" data-fk="${hoyEsc(x.k)}" aria-pressed="${on}"><span class="fl">${logo}</span><span class="fn">${hoyEsc(x.n)}${sub?`<small>${hoyEsc(sub)}</small>`:""}</span>${FAV_ESTRELLA}</button>`;
+}
+function favListaHTML(){
+  const q=goNorm(FAV_UI.q.trim());
+  if(FAV_UI.tab==="jug"){
+    if(q.length<2){ const S=favSugeridos(); return `<div class="fgrid"><p class="fgh">Sugeridos · escribe para buscar a cualquier otro</p>${S.map(x=>favItem(x,"jug")).join("")}</div>`; }
+    if(!FAV_UI.jug){ favCargaJug().then(()=>{ if(fdlg.open&&FAV_UI.tab==="jug") $("#fLista").innerHTML=favListaHTML(); }); return `<p class="note">Buscando…</p>`; }
+    const R=FAV_UI.jug.filter(x=>goNorm(x.n+" "+x.club).includes(q)).slice(0,40);
+    return R.length?`<div class="fgrid">${R.map(x=>favItem(x,"jug")).join("")}</div>`:`<p class="note">No lo encontramos. Buscamos en la Liga MX, las grandes ligas de Europa, los goleadores de toda Europa y la Selección.</p>`;
+  }
+  const L=favEquipos(FAV_UI.tab).filter(x=>x.h||!q||goNorm(x.n).includes(q));
+  const R=L.filter((x,i)=>!x.h||(L[i+1]&&!L[i+1].h));   // sin encabezados vacíos
+  return R.length?`<div class="fgrid">${R.map(x=>x.h?`<p class="fgh">${hoyEsc(x.h)}</p>`:favItem(x,"eq")).join("")}</div>`:`<p class="note">No hay equipos con ese nombre en esta pestaña.</p>`;
+}
+function favRender(){
+  const tabs=[["mx","Liga MX"],["mundo","Mundo"],["nfl","NFL"],["sel","México"],["jug","Jugadores"]];
+  $("#fbody").innerHTML=`<h2>Mis equipos</h2><p class="note">Toca la estrella de los equipos y jugadores que quieras seguir. ${acctOk()?"Se guardan en tu cuenta.":"Se guardan en este navegador; si entras con tu cuenta, en todos tus dispositivos."}</p>
+    <div class="hseg ftabs" role="group" aria-label="Tipo">${tabs.map(([k,l])=>`<button data-ft="${k}" aria-pressed="${FAV_UI.tab===k}">${l}</button>`).join("")}</div>
+    <label class="gobus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="fQ" type="search" autocomplete="off" placeholder="${FAV_UI.tab==="jug"?"Busca un jugador (Raúl Jiménez, Mbappé…)":"Busca un equipo"}" aria-label="Buscar" value="${hoyEsc(FAV_UI.q)}"></label>
+    <div id="fLista">${favListaHTML()}</div>
+    <div class="fpie"><button class="btn" id="fListo">Listo · ${favN()}</button></div>`;
+}
+function favAbre(tab){ if(tab) FAV_UI.tab=tab; FAV_UI.q=""; favRender(); if(!fdlg.open) fdlg.showModal(); pzTrack("fav_abre",{}); }
+const fdlg=$("#fdlg");
+$("#fClose").onclick=()=>fdlg.close();
+fdlg.addEventListener("click",ev=>{
+  if(ev.target===fdlg) return fdlg.close();
+  const t=ev.target.closest("[data-ft]"); if(t){ FAV_UI.tab=t.dataset.ft; FAV_UI.q=""; if(FAV_UI.tab==="jug") favCargaJug(); return favRender(); }
+  if(ev.target.closest("#fListo")) return fdlg.close();
+  const b=ev.target.closest("[data-fk]"); if(b){
+    const k=b.dataset.fk, grupo=k[0]==="p"?"jug":"eq";
+    let x=null;
+    if(grupo==="jug") x=(FAV_UI.jug||[]).find(y=>y.k===k)||favSugeridos().find(y=>y.k===k);
+    else x=["mx","mundo","nfl","sel"].flatMap(favEquipos).find(y=>y.k===k);
+    const dat=x?(grupo==="jug"?{n:x.n,club:x.club,lg:x.lg}:{n:x.n,logo:x.logo||"",lg:x.lg}):{n:b.textContent.trim()};
+    const on=favToggle(k,dat); b.setAttribute("aria-pressed",on); $("#fListo").textContent=`Listo · ${favN()}`;
+  }
+});
+fdlg.addEventListener("input",ev=>{ if(ev.target.id!=="fQ") return; FAV_UI.q=ev.target.value; $("#fLista").innerHTML=favListaHTML(); });
+// Portada (parte 1): invitación o la lista de lo que sigues; las tarjetas con próximo partido llegan en la parte 2
+function hoyFavHTML(){
+  const E=Object.entries(FAV.eq), J=Object.entries(FAV.jug);
+  if(!E.length&&!J.length) return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3></div><div class="hfcta"><b>Sigue a tus equipos y jugadores</b><span>Elige tus equipos de la Liga MX, Europa o la NFL, y a tus jugadores, para verlos primero aquí.</span><button class="btn" data-hact="fav">Elegir equipos</button></div></section>`;
+  const chip=([k,x])=>`<span><i>${x.logo&&SM_ESCUDOS?`<img src="${x.logo}" alt="" loading="lazy" onerror="this.remove()">`:favIni(x.n)}</i>${hoyEsc(x.n)}</span>`;
+  return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3><button class="hlink" data-hact="fav">Editar</button></div><div class="hfchips">${E.concat(J).map(chip).join("")}</div></section>`;
+}
+
 // ---------- Goleo y Bota de Oro (8 oct 2026) ----------
 // D.bota (paquete "goleo", lo arma bota.py): ls = ranking de la Bota de Oro, mex = mexicanos en Europa, faltan = ligas
 // sin datos completos. Fila: [id, nombre, nac, puntos, goles, min, asist, penales, clubes, ligas, factor, año calendario].
@@ -5645,7 +5765,7 @@ function hoyPaint(){
   $("#hoyFecha").textContent=cap(fDay(new Date())); $("#hoyFiltro").innerHTML=hoyFiltroHTML();
   const st=$("#hoyVivo .hstrip"), x=st?st.scrollLeft:0;
   $("#hoyVivo").innerHTML=hoyVivoHTML(); const st2=$("#hoyVivo .hstrip"); if(st2) st2.scrollLeft=x;
-  $("#hoySem").innerHTML=hoySemHTML(); $("#hoyMarc").innerHTML=hoyMarcHTML(); $("#hoyUlt").innerHTML=hoyUltHTML();
+  $("#hoyFav").innerHTML=hoyFavHTML(); $("#hoySem").innerHTML=hoySemHTML(); $("#hoyMarc").innerHTML=hoyMarcHTML(); $("#hoyUlt").innerHTML=hoyUltHTML();
   $("#hoyNfl").innerHTML=hoyNflHTML(); $("#hoyLpz").innerHTML=hoyLpzHTML();
   if(typeof votosPinta==="function") votosPinta();
 }
@@ -5680,6 +5800,7 @@ $("#hoy").addEventListener("click",ev=>{
   if(a){ const act=a.dataset.hact; pzTrack("hoy_toque",{que:act});
     if(act==="mas"){ const k=a.dataset.hk; if(HOY.abiertos.has(k)) HOY.abiertos.delete(k); else HOY.abiertos.add(k); hoyPaint(); }
     else if(act==="liga") hoyIrLiga(a.dataset.hk);
+    else if(act==="fav") favAbre();
     else if(act==="pr") hoyIrLiga("mx","mxpr");
     else if(act==="gol") hoyIrLiga("mx","mxplayers");
     else if(act==="tabla") hoyIrLiga("mx","mxtable");
@@ -5786,14 +5907,14 @@ function navIr(tab,liga){
   const sp=sportOf(tab); if(sp==="hoy") showSport("hoy"); else showSport(sp==="qn"?"nfl":sp,tab);
 }
 window.addEventListener("popstate",e=>{
-  const st=e.state||{tab:"hoy",liga:"",n:0}, abierta=[dlg,adlg].find(d=>d.open);
+  const st=e.state||{tab:"hoy",liga:"",n:0}, abierta=[dlg,adlg,fdlg].find(d=>d.open);
   if(abierta){ abierta.close(); }                       // atrás con una ventana abierta: solo se cierra
   else if(st.dlg){ history.back(); return; }            // paso de una ventana que ya se cerró: se brinca
   if(!SECTIONS.includes(st.tab)) st.tab="hoy";
   if(st.tab!==NAV.cur||(st.liga||"")!==NAV.liga){ NAV.restaurando=true; try{ navIr(st.tab,st.liga); }finally{ NAV.restaurando=false; } window.scrollTo(0,0); }
   navBtn();
 });
-[dlg,adlg].forEach(d=>{
+[dlg,adlg,fdlg].forEach(d=>{
   const abre=d.showModal.bind(d);
   d.showModal=function(){ abre(); if(NAV.listo&&!history.state?.dlg) history.pushState({...(history.state||{}),dlg:1,n:(history.state?.n||0)+1},"",location.hash); navBtn(); };
   d.addEventListener("close",()=>{ if(history.state?.dlg) history.back(); });   // cerrada con ×, Esc o tocando afuera

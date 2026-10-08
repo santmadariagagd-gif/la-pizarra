@@ -1358,9 +1358,11 @@ def af(ruta,**q):
     return []
 AF_NOMBRE={"Atletico Madrid":"Atlético Madrid","Paris Saint Germain":"Paris Saint-Germain","Alaves":"Alavés","Cadiz":"Cádiz","Almeria":"Almería","Leganes":"Leganés",
            "Malaga":"Málaga","Borussia Monchengladbach":"Borussia Mönchengladbach","Heart Of Midlothian":"Heart of Midlothian"}
+AF_EQUIPOS={}   # liga → [[id, nombre]] de la temporada actual (para "Mis equipos", 8 oct 2026)
 def af_codigos(lid,temporada):
     """Abreviatura única por equipo (las de API-Football a veces se repiten o faltan)."""
     T=af("teams",league=lid,season=temporada); cods={}; usados=set()
+    if lid not in AF_EQUIPOS: AF_EQUIPOS[lid]=sorted([[t["team"]["id"],AF_EQ.get(t["team"]["id"],(None,))[0] or AF_NOMBRE.get(t["team"].get("name"),t["team"].get("name") or "")] for t in T],key=lambda x:x[1])
     for t in T:
         tid=t["team"]["id"]; c=(AF_EQ.get(tid,(None,None))[1] or t["team"].get("code") or "".join(w[0] for w in (t["team"].get("name") or "X").split())[:3]).upper()
         base,n=c,2
@@ -1707,6 +1709,9 @@ if AFK:
         print(f"Lo último: {len(out['noticias'])} notas ("+", ".join(f"{t} {sum(1 for n in out['noticias'] if n['tipo']==t)}" for t in ("lesion","suspension","racha","goles","fichaje","tecnico"))+")")
     except Exception as ex:
         out['noticias']=[]; print("Lo último: no se pudieron armar las notas:",ex)
+    # "Mis equipos" (8 oct 2026): equipos de cada liga para elegir favoritos: {liga: [[id, nombre]]}
+    out['fav_eq']={k:AF_EQUIPOS[lid] for k,(lid,_n,_l) in AF_LIGAS.items() if k in ("mx","eng","esp","ita","ger","fra","por","arg","sau") and AF_EQUIPOS.get(lid)}
+    print("Mis equipos: "+", ".join(f"{k} {len(v)}" for k,v in out['fav_eq'].items()))
     # Bota de Oro (8 oct 2026): goleadores de las ~55 primeras divisiones de Europa con su factor (bota.py)
     try:
         from bota import bota as _bota
