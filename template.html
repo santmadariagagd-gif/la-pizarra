@@ -5460,7 +5460,7 @@ function hoyPrHTML(){
     return `<div class="row"><b>${i+1}</b>${hoyLogo(x.logo)}<span>${hoyEsc(x.eq)}</span>${hoySpark(x.h,64)}<i style="color:${mv[1]}">${mv[0]}</i></div>`;}).join(""):`<p class="hmsg">Calculando…</p>`;
   return `<div class="hbox hpr"><div class="hh" style="margin:0"><span class="k">Power Ranking Liga MX</span><button class="hlink" data-hact="pr">Completo</button></div>${filas}${HOY.prh?`<span class="nota">La línea es su lugar en las últimas ${HOY.prh[0].h.length} semanas</span>`:""}</div>`;
 }
-// Tabla de Liga MX resumida (top 8): 1–6 a Liguilla, 7–10 al Play-In
+// Tabla de Liga MX resumida (top 8): los 8 primeros van directo a la Liguilla (desde el Clausura 2026 ya no hay Play-In)
 function hoyTablaHTML(){
   if(!verFut()||!HOY.mx) return "";
   const T={};
@@ -5471,8 +5471,8 @@ function hoyTablaHTML(){
   const L=Object.values(T).sort((a,b)=>b.pts-a.pts||b.dg-a.dg||b.gf-a.gf).slice(0,8); if(!L.length) return "";
   return `<div class="hbox htab"><div class="hh" style="margin:0"><span class="k">Tabla Liga MX</span><button class="hlink" data-hact="tabla">Completa</button></div>
     <div class="tr th"><span></span><span></span><span>PJ</span><span>DG</span><span>Pts</span></div>
-    ${L.map((x,i)=>`<div class="tr ${i<6?"lig":"pin"}"><b>${i+1}</b><span class="eq">${hoyLogo(x.logo)}<em>${hoyEsc(x.eq)}</em></span><span>${x.pj}</span><span>${x.dg>0?"+":""}${x.dg}</span><b>${x.pts}</b></div>`).join("")}
-    <span class="nota"><i class="z lig"></i>Liguilla <i class="z pin"></i>Play-In</span></div>`;
+    ${L.map((x,i)=>`<div class="tr lig"><b>${i+1}</b><span class="eq">${hoyLogo(x.logo)}<em>${hoyEsc(x.eq)}</em></span><span>${x.pj}</span><span>${x.dg>0?"+":""}${x.dg}</span><b>${x.pts}</b></div>`).join("")}
+    <span class="nota"><i class="z lig"></i>Los 8 primeros van a la Liguilla</span></div>`;
 }
 // Power Ranking de la NFL (top 5) con su movimiento contra la semana anterior
 function hoyPrNflHTML(){
