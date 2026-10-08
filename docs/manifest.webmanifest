@@ -1,0 +1,23 @@
+{
+  "name": "La Pizarra",
+  "short_name": "La Pizarra",
+  "description": "Fútbol, NFL, fantasy y quiniela: marcadores, análisis y pronósticos en español.",
+  "lang": "es-MX",
+  "id": "/",
+  "start_url": "/?app=1",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1F332D",
+  "theme_color": "#1F332D",
+  "icons": [
+    {"src": "/iconos/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/iconos/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "/iconos/icono-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Quiniela", "url": "/?app=1#quiniela", "icons": [{"src": "/iconos/icono-192.png", "sizes": "192x192"}]},
+    {"name": "Fútbol", "url": "/?app=1#futbol", "icons": [{"src": "/iconos/icono-192.png", "sizes": "192x192"}]},
+    {"name": "NFL", "url": "/?app=1#nfl", "icons": [{"src": "/iconos/icono-192.png", "sizes": "192x192"}]}
+  ]
+}
