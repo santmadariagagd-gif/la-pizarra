@@ -403,7 +403,8 @@ button.hfc{cursor:pointer}
 .hfjl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hfjl button{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 13px 0 6px;border-radius:20px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 16px var(--display);cursor:pointer}
 .hfjl button i{width:28px;height:28px;border-radius:14px;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font:700 10px var(--body);font-style:normal}
 .jfi h2{margin:6px 0 2px;font:700 30px/1.05 var(--display)}.jfi .sub{color:var(--muted);margin:0 0 14px}
-.jfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:0 0 14px}
+.jfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin:0 0 14px}
+.jfi .tbl{margin:0 0 14px}.jfi .tbl table{width:100%;min-width:0;table-layout:auto}.jfi .tbl th,.jfi .tbl td{padding:8px 6px;white-space:nowrap}.jfi .tbl td.l,.jfi .tbl th.l{white-space:normal;padding-left:10px;width:100%}.jfi .tbl td.l .tlogo{width:18px;height:18px;vertical-align:-4px;margin-right:6px;object-fit:contain}
 .jfg div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}.jfg b{font:700 26px/1 var(--display)}.jfg span{font-size:12px;color:var(--muted)}
 .jfg div.d{border-color:var(--mark)}.jfg div.d b{color:var(--mark)}
 .jfi .jfx{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}.jfi .jfx>*{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:15px;color:var(--ink);text-align:left;font-family:inherit}
@@ -5608,28 +5609,66 @@ function favTarjetaEq(k,x){
 }
 // Ficha de un jugador que sigues (se abre en la ventana de detalle): estadísticas de su liga (jugadores_<liga>.json) o, si
 // no está en esas ligas, de la Bota de Oro; lugar en la Bota, convocado con México, próximo partido de su club y su nota.
+const FICHA_COMP=[[/^friendlies$/i,"Amistosos"],[/^la liga$/i,"LaLiga"],[/^copa del rey$/i,"Copa del Rey"],[/^fa cup$/i,"FA Cup"],[/^league cup$/i,"Carabao Cup"],[/^dfb pokal$/i,"Copa de Alemania"],[/^coupe de france$/i,"Copa de Francia"],[/^coppa italia$/i,"Copa Italia"],[/^world cup$/i,"Mundial"],[/world cup.*qualif/i,"Eliminatoria mundialista"],[/^uefa nations league$/i,"Nations League"],
+  [/concacaf nations league/i,"Nations League de Concacaf"],[/gold cup/i,"Copa Oro"],[/^euro championship$/i,"Eurocopa"],[/copa america/i,"Copa América"],
+  [/^uefa champions league$/i,"Champions League"],[/^uefa europa league$/i,"Europa League"],[/conference league/i,"Conference League"],[/super ?cup/i,"Supercopa"],
+  [/^concacaf champions/i,"Concachampions"],[/^leagues cup$/i,"Leagues Cup"],[/club world cup/i,"Mundial de Clubes"]];
+const fichaComp=n=>{ for(const [re,es] of FICHA_COMP) if(re.test(n||"")) return es; return n||""; };
+const FICHA_CACHE={};
+async function fichaAF(id){   // todas las competiciones de la temporada (club y selección) de API-Football, vía el Worker
+  const T=new Date().getMonth()>=6?new Date().getFullYear():new Date().getFullYear()-1;
+  if(!FICHA_CACHE[id]) FICHA_CACHE[id]=afList("players",`id=${id}&season=${T}`).catch(()=>null);
+  return FICHA_CACHE[id];
+}
+// Ficha de un jugador que sigues (ventana de detalle): totales de la temporada en TODAS las competiciones y desglose por
+// competencia (club y selección), de API-Football (players?id=&season=); si no responde, sus estadísticas de liga
+// (jugadores_<liga>.json) o la fila de la Bota de Oro. Además: lugar en la Bota, convocado con México, próximo partido de su club y su nota.
 async function favFicha(k){
   const x=FAV.jug[k]; if(!x) return;
   const id=+k.slice(1), ape=(x.n||"").split(" ").slice(-1)[0], LG=["mx","eng","esp","ita","ger","fra","por"];
   $("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando…</p>`; if(!dlg.open) dlg.showModal();
   pzTrack("fav_ficha",{});
   if(LG.includes(x.lg)){ favJugLiga(x.lg); await FAV_JFP[x.lg]; }
-  const J=FAV_JF[x.lg], f=J?.filas?.find(r=>r.id===id), eq=f?J.equipos?.[f.t]:null, tid=eq?(eq[1]||"").match(/teams\/(\d+)/)?.[1]:null;
+  const R=await fichaAF(id);
+  const J=FAV_JF[x.lg], f=J?.filas?.find(r=>r.id===id), eq=f?J.equipos?.[f.t]:null;
   const b=[...(D.bota?.ls||[]),...(D.bota?.mex||[])].find(r=>r[0]===id), posB=b?(D.bota.ls||[]).indexOf(b)+1:0;
-  const club=eq?eq[0]:(b?b[8]:x.club)||"", liga=f?(FAV_LIGA[x.lg]||""):(b?b[9]:""), logo=eq&&SM_ESCUDOS?logoImg(eq[1],"tlogo"):"";
-  const POS={G:"Portero",D:"Defensa",M:"Medio",F:"Delantero"};
-  const v=(n,t,d)=>n==null?"":`<div${d?' class="d"':""}><b>${n}</b><span>${t}</span></div>`;
-  const st=f?[v(f.g,f.g===1?"Gol":"Goles",1),v(f.as,f.as===1?"Asistencia":"Asistencias",1),v(f.ap,"Partidos"),v(f.tit,"De titular"),v(f.min!=null?f.min.toLocaleString("es-MX"):null,"Minutos"),
-      v(f.g90!=null?String(f.g90).replace(".",","):null,"Goles por 90 min"),f.pos==="G"?v(f.sv,"Atajadas")+v(f.cs,"Sin goles en contra")+v(f.gc,"Goles en contra"):v(f.sh,"Tiros")+v(f.sot,"Tiros a puerta"),v(f.yc,"Amarillas"),v(f.rc,"Rojas")].join("")
-    :b?[v(b[4],b[4]===1?"Gol":"Goles",1),v(b[6],"Asistencias",1),v(b[5]?b[5].toLocaleString("es-MX"):null,"Minutos"),v(b[7],"Penales anotados")].join(""):"";
-  const I=tid?D.eq_info?.[tid]:null, p=I?.p;
-  const extra=[posB?`<div><small>Bota de Oro ${hoyEsc(D.bota.temp||"")}</small><b>${posB}º</b> con ${goNum(b[3])} puntos (${b[4]} goles × ${goNum(b[10])})</div>`:"",
+  const POS={G:"Portero",D:"Defensa",M:"Medio",F:"Delantero",Goalkeeper:"Portero",Defender:"Defensa",Midfielder:"Medio",Attacker:"Delantero"};
+  const v=(n,t,d)=>n==null?"":`<div${d?' class="d"':""}><b>${n}</b><span>${t}</span></div>`, mil=n=>n!=null?n.toLocaleString("es-MX"):null;
+  const P=R?.[0], nac=P?.player?.nationality||"";
+  // Filas por competencia (solo donde jugó)
+  const filas=(P?.statistics||[]).map(st=>{ const g=st.games||{}, t=st.team||{}, l=st.league||{};
+    const sel=l.country==="World"&&(t.name===nac||/^(mexico|méxico)$/i.test(t.name||"")&&/mexic/i.test(nac));
+    return {sel,club:t.name||"",tid:t.id,logo:l.logo,comp:fichaComp(l.name),pj:g.appearences||0,tit:g.lineups||0,min:g.minutes||0,pos:g.position,
+      g:st.goals?.total||0,a:st.goals?.assists||0,sh:st.shots?.total||0,sot:st.shots?.on||0,yc:st.cards?.yellow||0,rc:(st.cards?.red||0)+(st.cards?.yellowred||0),
+      sv:st.goals?.saves||0,gc:st.goals?.conceded||0};}).filter(r=>r.pj>0||r.min>0);
+  const club=filas.filter(r=>!r.sel), sel=filas.filter(r=>r.sel);
+  const nomClub=(club.slice().sort((a,b)=>b.min-a.min)[0]?.club)||(eq?eq[0]:(b?b[8]:x.club))||"";
+  const tid=club.slice().sort((a,b)=>b.min-a.min)[0]?.tid||(eq?(eq[1]||"").match(/teams\/(\d+)/)?.[1]:null);
+  const portero=(filas.find(r=>r.pos)?.pos||f?.pos)==="Goalkeeper"||f?.pos==="G";
+  const sum=(L,c)=>L.reduce((s,r)=>s+(r[c]||0),0);
+  let st="";
+  if(filas.length){
+    const A=filas;
+    st=[v(sum(A,"g"),sum(A,"g")===1?"Gol":"Goles",1),v(sum(A,"a"),sum(A,"a")===1?"Asistencia":"Asistencias",1),v(sum(A,"pj"),"Partidos"),v(sum(A,"tit"),"De titular"),v(mil(sum(A,"min")),"Minutos"),
+      portero?v(sum(A,"sv"),"Atajadas")+v(sum(A,"gc"),"Goles en contra"):v(sum(A,"sh"),"Tiros")+v(sum(A,"sot"),"Tiros a puerta"),v(sum(A,"yc"),"Amarillas"),v(sum(A,"rc"),"Rojas")].join("");
+  } else if(f){
+    st=[v(f.g,f.g===1?"Gol":"Goles",1),v(f.as,f.as===1?"Asistencia":"Asistencias",1),v(f.ap,"Partidos"),v(f.tit,"De titular"),v(mil(f.min),"Minutos"),
+      f.pos==="G"?v(f.sv,"Atajadas")+v(f.gc,"Goles en contra"):v(f.sh,"Tiros")+v(f.sot,"Tiros a puerta"),v(f.yc,"Amarillas"),v(f.rc,"Rojas")].join("");
+  } else if(b) st=[v(b[4],b[4]===1?"Gol":"Goles",1),v(b[6],"Asistencias",1),v(mil(b[5]),"Minutos")].join("");
+  const tabla=(L,tit)=>L.length?`<h4 class="stat-cat">${hoyEsc(tit)}</h4><div class="tbl"><table><thead><tr><th class="l">Competencia</th><th>PJ</th><th>Min</th><th>G</th><th>A</th></tr></thead><tbody>${
+    L.map(r=>`<tr><td class="l">${SM_ESCUDOS&&r.logo?logoImg(r.logo,"tlogo"):""}<span class="nm">${hoyEsc(r.comp)}</span></td><td>${r.pj}</td><td>${mil(r.min)}</td><td><b>${r.g}</b></td><td>${r.a}</td></tr>`).join("")}${
+    L.length>1?`<tr><td class="l"><b>Total</b></td><td><b>${sum(L,"pj")}</b></td><td><b>${mil(sum(L,"min"))}</b></td><td><b>${sum(L,"g")}</b></td><td><b>${sum(L,"a")}</b></td></tr>`:""}</tbody></table></div>`:"";
+  const clubs=[...new Set(club.map(r=>r.club))];
+  const desglose=tabla(club,clubs.length===1?`Con ${clubs[0]}`:"Con sus clubes")+tabla(sel,`Con ${sel[0]?esTeam(sel[0].club):"su selección"}`);
+  const I=tid?D.eq_info?.[tid]:null, p=I?.p, nota=favNota(n=>ape.length>2&&n.tit.includes(ape));
+  const extra=[posB?`<div><small>Bota de Oro ${hoyEsc(D.bota.temp||"")}</small><b>${posB}º</b> con ${goNum(b[3])} puntos (${b[4]} goles de liga × ${goNum(b[10])})</div>`:"",
     (D.sel_plantel||[]).some(s=>s.id===id)?`<div><small>Selección</small>Convocado en la última fecha FIFA</div>`:"",
-    p?`<button data-hk="${p[2]}" data-hid="${p[0]}"><small>Próximo partido de ${hoyEsc(club)}</small><b>${p[5]?"vs":"visita a"} ${hoyEsc(esTeam(p[4]))}</b> · ${favCuando(p[1])}</button>`:"",
-    favNota(n=>ape.length>2&&n.tit.includes(ape))?`<div><small>Lo último</small>${favNota(n=>ape.length>2&&n.tit.includes(ape))}</div>`:""].filter(Boolean).join("");
-  $("#gbody").innerHTML=`<div class="jfi"><h2>${hoyEsc(x.n)}</h2><p class="sub">${logo}${hoyEsc([club,liga,f?POS[f.pos]:""].filter(Boolean).join(" · "))}</p>
-    ${st?`<div class="jfg">${st}</div>`:`<p class="note">Todavía no tenemos sus estadísticas de esta temporada.</p>`}
-    ${extra?`<div class="jfx">${extra}</div>`:""}<p class="note">Estadísticas de liga de la temporada actual.</p></div>`;
+    p?`<button data-hk="${p[2]}" data-hid="${p[0]}"><small>Próximo partido de ${hoyEsc(nomClub)}</small><b>${p[5]?"vs":"visita a"} ${hoyEsc(esTeam(p[4]))}</b> · ${favCuando(p[1])}</button>`:"",
+    nota?`<div><small>Lo último</small>${nota}</div>`:""].filter(Boolean).join("");
+  const posTxt=POS[filas.find(r=>r.pos)?.pos]||POS[f?.pos]||"";
+  $("#gbody").innerHTML=`<div class="jfi"><h2>${hoyEsc(x.n)}</h2><p class="sub">${hoyEsc([nomClub,posTxt,P?.player?.age?`${P.player.age} años`:""].filter(Boolean).join(" · "))}</p>
+    ${st?`<h4 class="stat-cat">${filas.length?"Esta temporada · todas las competiciones":"Esta temporada · liga"}</h4><div class="jfg">${st}</div>`:`<p class="note">Todavía no tenemos sus estadísticas de esta temporada.</p>`}
+    ${desglose}${extra?`<div class="jfx" style="margin-top:14px">${extra}</div>`:""}</div>`;
 }
 $("#gbody").addEventListener("click",ev=>{ const p=ev.target.closest(".jfi [data-hid]"); if(p){ hoyAbrir(p.dataset.hk,p.dataset.hid); } });
 function hoyFavHTML(){
