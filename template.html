@@ -642,6 +642,23 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .hchips button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .hoyside .hh h3 small{display:block;margin:4px 0 0}
 .hmas2{display:block;width:100%;border:0;border-top:1px dashed var(--line);background:none;color:var(--mark);font:600 14px var(--body);padding:10px;cursor:pointer}
+/* "Lo último" (7 oct 2026): titulares de la semana */
+.hult>.hh{flex-wrap:wrap}.hult .hh h3 small{display:block;font:400 13px/1.3 var(--body);color:var(--muted);margin-top:4px}
+.ulist{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.uit{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:13px 14px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;cursor:pointer}
+.uit:first-child{border-top:0}div.uit{cursor:default}
+.uit .ub{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:5px}
+.uit .um{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.utag{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px 0 7px;border-radius:12px;font:700 14px var(--display);letter-spacing:.4px;text-transform:uppercase}
+.utag svg{flex:none}
+.u-lesion{color:#FFB27A;background:rgba(255,178,122,.14)}.u-suspension{color:#FF8A7E;background:rgba(255,138,126,.14)}
+.u-racha{color:#F2D466;background:rgba(242,212,102,.14)}.u-goles{color:#8FD6A6;background:rgba(143,214,166,.14)}
+.u-fichaje{color:#9CC7E6;background:rgba(156,199,230,.14)}.u-tecnico{color:#C9B3F2;background:rgba(201,179,242,.14)}
+.uit b{font:700 20px/1.15 var(--display)}.uit .ud{font-size:14px;line-height:1.35;color:var(--muted)}
+.uit>.uch{flex:none;margin-top:30px;color:#6F8A80}
+.umsg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0;color:var(--muted);font-size:14px;line-height:1.4}
+.umsg b{display:block;color:var(--ink);font:700 19px var(--display);margin-bottom:4px}
+.hult .hmas2{border:1px solid var(--line);border-radius:22px;margin-top:10px;min-height:44px}
 .hmsg{color:var(--muted);font-size:14px;margin:0}
 /* NFL de la semana */
 .hnflw{display:flex;flex-direction:column;gap:10px}
@@ -921,6 +938,9 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   .hstrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));overflow:visible;margin-right:0;padding-right:0}.hv{flex:none}
   .hoygrid{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
   .hoymain{flex:999 1 560px;min-width:0}.hoyside{flex:1 1 300px;min-width:0}
+  .ulist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;background:none;border:0;border-radius:0;overflow:visible}
+  .uit,.uit:first-child{border:1px solid var(--line);border-radius:14px;background:var(--surface)}.uit>.uch{display:none}
+  .hult .hmas2{width:auto;margin:12px auto 0;padding:10px 22px}
   .hh h3{font-size:26px}
   .hsem .hseg{display:none}
   .hsemg{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:stretch}
@@ -1041,7 +1061,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div></div>
   <div id="hoyVivo"></div>
   <div class="hoygrid">
-    <div class="hoymain"><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyNfl"></div></div>
+    <div class="hoymain"><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyUlt"></div><div id="hoyNfl"></div></div>
     <aside class="hoyside"><div id="hoyLpz"></div></aside>
   </div>
 </section>
@@ -5354,6 +5374,29 @@ function hoyMarcHTML(){
     <div class="mcab"><b>${hoyEsc(L.k==="nfl"?"NFL":LEAGUES[L.k].label)}${L.et?` · ${hoyEsc(L.et)}`:""}</b>${ver}</div>
     <div class="hlist dos">${filas.join("")}${L.n>MARC_MAX?`<button class="hmas2" data-hact="mas" data-hk="m${d.k}${L.k}">${ab?"Ver menos":`Ver los ${L.n} partidos`}</button>`:""}</div></section>`;
 }
+// ---- Lo último (7 oct 2026): titulares de la semana que arma build_site.py (noticias.py) ----
+const ULT_TIPO={lesion:["Lesión",'<circle cx="8" cy="8" r="6.5"/><path d="M8 5v6M5 8h6"/>'],suspension:["Suspendido",'<rect x="4" y="2" width="8" height="12" rx="1.5"/>'],
+  racha:["Racha",'<path d="M2 12l4-4 3 3 5-6"/><path d="M10 5h4v4"/>'],goles:["Goles",'<circle cx="8" cy="8" r="6.5"/><path d="M8 4.5l3 2.2-1.2 3.6H6.2L5 6.7z"/>'],
+  fichaje:["Fichaje",'<path d="M2 5h10l-3-3M14 11H4l3 3"/>'],tecnico:["Técnico",'<rect x="3" y="2.5" width="10" height="12" rx="1.5"/><path d="M6 6h4M6 9h4M6 12h2"/>']};
+const ULT_LIGA={mx:"Liga MX",eng:"Premier",esp:"LaLiga",ita:"Serie A",ger:"Bundesliga",fra:"Ligue 1",ucl:"Champions",nfl:"NFL"};
+function hoyUltHTML(){
+  let N=(D.noticias||[]).filter(n=>HOY.f==="nfl"?n.liga==="nfl":HOY.f==="fut"?n.liga!=="nfl":true);
+  if(!N.length) return "";
+  const grupo=n=>n.liga==="nfl"?"nfl":n.liga==="mx"?"mx":"eur";
+  const ops=(HOY.f==="nfl"?[]:HOY.f==="fut"?["todo","mx","eur"]:["todo","mx","eur","nfl"]);
+  const f=ops.includes(HOY.uf)?HOY.uf:"todo", lab={todo:"Todo",mx:"Liga MX",eur:"Europa",nfl:"NFL"};
+  const L=N.filter(n=>f==="todo"||grupo(n)===f), max=matchMedia("(min-width:721px)").matches?8:6, ab=HOY.abiertos.has("ult");
+  const chips=ops.length?`<div class="hseg" role="group" aria-label="Filtrar notas">${ops.map(k=>`<button data-uf="${k}" aria-pressed="${k===f}">${lab[k]}</button>`).join("")}</div>`:"";
+  const fila=n=>{const [tl,ic]=ULT_TIPO[n.tipo]||["Nota",""], liga=ULT_LIGA[n.liga]||"";
+    const abre=n.nid?` data-nid="${hoyEsc(n.nid)}"`:(n.fx&&LEAGUES[n.liga]&&comercial(LEAGUES[n.liga]))?` data-hk="${n.liga}" data-hid="${hoyEsc(String(n.fx))}"`:"";
+    const tag=abre?"button":"div";
+    return `<${tag} class="uit"${abre}><span class="ub"><span class="um"><span class="utag u-${n.tipo}"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ic}</svg>${tl}</span>${hoyEsc(liga)}</span>
+      <b>${hoyEsc(n.tit)}</b><span class="ud">${hoyEsc(n.det)}</span></span>${abre?`<svg class="uch" width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>`:""}</${tag}>`;};
+  const vacio=f==="mx"?`<p class="umsg"><b>Sin notas de la Liga MX esta semana</b>Aquí salen rachas, goleadores, expulsados y fichajes en cuanto haya partidos.</p>`
+    :`<p class="umsg"><b>Sin notas por ahora</b>Vuelve más tarde: las notas se actualizan solas cada mañana.</p>`;
+  return `<section class="hsec hult"><div class="hh"><h3>Lo último<small>Notas de esta semana · se actualizan solas</small></h3>${chips}</div>
+    ${L.length?`<div class="ulist">${(ab?L:L.slice(0,max)).map(fila).join("")}</div>${L.length>max?`<button class="hmas2" data-hact="mas" data-hk="ult">${ab?"Ver menos":`Ver las ${L.length} notas`}</button>`:""}`:vacio}</section>`;
+}
 // ---- NFL de la semana ----
 function hoyLpzUlt(){   // última semana con picks de La Pizarra ya calificados: {w, txt}
   const ws=Object.keys(LPZ).map(Number).sort((a,b)=>b-a);
@@ -5480,7 +5523,7 @@ function hoyPaint(){
   $("#hoyFecha").textContent=cap(fDay(new Date())); $("#hoyFiltro").innerHTML=hoyFiltroHTML();
   const st=$("#hoyVivo .hstrip"), x=st?st.scrollLeft:0;
   $("#hoyVivo").innerHTML=hoyVivoHTML(); const st2=$("#hoyVivo .hstrip"); if(st2) st2.scrollLeft=x;
-  $("#hoySem").innerHTML=hoySemHTML(); $("#hoyMarc").innerHTML=hoyMarcHTML();
+  $("#hoySem").innerHTML=hoySemHTML(); $("#hoyMarc").innerHTML=hoyMarcHTML(); $("#hoyUlt").innerHTML=hoyUltHTML();
   $("#hoyNfl").innerHTML=hoyNflHTML(); $("#hoyLpz").innerHTML=hoyLpzHTML();
   if(typeof votosPinta==="function") votosPinta();
 }
@@ -5506,6 +5549,7 @@ async function hoyAbrir(k,id){
 $("#hoy").addEventListener("click",ev=>{
   if(ev.target.closest(".hvoto")) return;   // la votación tiene su propio manejo (no abre el partido)
   const f=ev.target.closest("[data-hf]"); if(f){ HOY.f=f.dataset.hf; try{localStorage.setItem("pz_hoyf",HOY.f);}catch(e){} pzTrack("hoy_filtro",{f:HOY.f}); return hoyPaint(); }
+  const uf=ev.target.closest("[data-uf]"); if(uf){ HOY.uf=uf.dataset.uf; HOY.abiertos.delete("ult"); pzTrack("hoy_ult_filtro",{f:HOY.uf}); return ($("#hoyUlt").innerHTML=hoyUltHTML()); }
   const tg=ev.target.closest("[data-tg]"); if(tg){ HOY_TABS[tg.dataset.tg]=tg.dataset.tk; return hoyPaint(); }
   const md=ev.target.closest("[data-md]"); if(md){ HOY.mdia=md.dataset.md; return ($("#hoyMarc").innerHTML=hoyMarcHTML()); }
   const ml=ev.target.closest("[data-ml]"); if(ml){ const dk=$("#hoyMarc [data-md][aria-pressed=true]")?.dataset.md||"hoy"; HOY.mliga=HOY.mliga||{}; HOY.mliga[dk]=ml.dataset.ml; pzTrack("hoy_liga",{k:ml.dataset.ml}); return ($("#hoyMarc").innerHTML=hoyMarcHTML()); }

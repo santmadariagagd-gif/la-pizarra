@@ -1635,10 +1635,23 @@ if AFK:
         print("Hoy: "+", ".join(f"{d} {len(v)} partidos" for d,v in out['hoy'].items()))
     except Exception as ex:
         print("Hoy: no se pudieron obtener los partidos de los próximos días:",ex)
+    # "Lo último" (7 oct 2026): titulares cortos de la semana armados con nuestros datos (noticias.py):
+    # lesiones y suspensiones de Europa, rachas, goleadas, tripletes, expulsados, fichajes de la Liga MX y lesiones de la NFL.
+    try:
+        from noticias import generar as _noticias
+        _prop={x['n']:x.get('own') or 0 for x in out.get('fantasy',[])}
+        out['noticias']=_noticias(af,_prop,sched=out.get('sched'))
+        print(f"Lo último: {len(out['noticias'])} notas ("+", ".join(f"{t} {sum(1 for n in out['noticias'] if n['tipo']==t)}" for t in ("lesion","suspension","racha","goles","fichaje","tecnico"))+")")
+    except Exception as ex:
+        out['noticias']=[]; print("Lo último: no se pudieron armar las notas:",ex)
     print("Goleadores (portada): "+", ".join(f"{k} {v['n']} {v['g']}" for k,v in out['goleo'].items()))
     print(f"API-Football: {AF_USADOS[0]} pedidos en esta corrida (el plan Pro deja 7,500 al día)")
 else:
     out['hoy']={}
+    try:   # sin API-Football: "Lo último" solo con la NFL
+        from noticias import generar as _noticias
+        out['noticias']=_noticias(None,{x['n']:x.get('own') or 0 for x in out.get('fantasy',[])},sched=out.get('sched'))
+    except Exception as ex: out['noticias']=[]
     print("API-Football: falta el secret API_FOOTBALL_KEY; Liga MX sigue con Sportmonks para las estadísticas de jugadores")
 # ---------- Postemporada NFL, si la temporada terminara hoy ----------
 # Sigue el orden oficial de desempate de la NFL (nfl.com/standings/tie-breaking-procedures):
