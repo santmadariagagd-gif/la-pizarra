@@ -2629,7 +2629,7 @@ async function geocode(city){
   return geoCache[q];
 }
 
-// ---------- API-Football (vía el mismo intermediario: datos.lapizarramx.workers.dev/af/) ----------
+// ---------- API-Football (vía el mismo intermediario: datos.lapizarra.mx/af/, respaldo *.workers.dev) ----------
 // Reemplazo de Sportmonks (plan Pro, licencia comercial). Las ligas con "af" en LEAGUES salen de aquí; el traductor
 // entrega lo MISMO que el de Sportmonks (eventos tipo ESPN, summary, tabla, temporadas), así el resto de la página no cambia.
 // Para comparar con Sportmonks mientras exista: abrir la página con ?fuente=sm (ej. lapizarra.mx/?fuente=sm).
@@ -2647,14 +2647,27 @@ async function geocode(city){
 // - standings: response[0].league.standings = lista de grupos; Liga MX trae "Liga MX: Apertura" (y Clausura en temporadas pasadas).
 // - Nombres sin acentos y abreviaturas repetidas (CLU): se usan los nombres y abreviaturas de siempre (AF_EQ) para que
 //   ranking.json y la página no cambien.
-const AF_PROXY="https://datos.lapizarramx.workers.dev/af/";
+// Worker "datos" (7 oct 2026): dirección propia datos.lapizarra.mx (ahí sí funcionan las copias compartidas de Cloudflare).
+// Si un día falla (no contesta o Cloudflare da error 52x), se usa la dirección vieja *.workers.dev y se queda en ésa.
+var WK_BASES=["https://datos.lapizarra.mx","https://datos.lapizarramx.workers.dev"], WK_I=0;
+async function wkFetch(ruta,opt){
+  for(let i=WK_I;;i++){
+    const ult=i>=WK_BASES.length-1;
+    try{
+      const r=await fetch(WK_BASES[i]+ruta,opt);
+      if(r.status>=520&&r.status<530&&!ult) throw new Error("Cloudflare "+r.status);
+      if(i!==WK_I) WK_I=i;
+      return r;
+    }catch(e){ if(ult) throw e; }
+  }
+}
 const AF_TZ="timezone="+encodeURIComponent(TZ);
 // (funciones normales y no "const": así existen desde que arranca la página, aunque se usen antes de esta línea)
 function usaAF(lg){return !!(lg&&lg.af&&!/[?&]fuente=sm\b/.test(location.search));}
 function comercial(lg){return !!(lg&&(lg.sm||usaAF(lg)));}
 async function afGet(ruta,q){
   for(let i=0;;i++){
-    const j=await fetch(AF_PROXY+ruta+(q?"?"+q:"")).then(r=>r.json());
+    const j=await wkFetch("/af/"+ruta+(q?"?"+q:"")).then(r=>r.json());
     const e=j?.errors, err=e&&(Array.isArray(e)?e.length:Object.keys(e).length);
     if(!err) return j;
     if(i<1&&/rateLimit/i.test(JSON.stringify(e))){ await new Promise(r=>setTimeout(r,1500)); continue; }
@@ -2895,7 +2908,7 @@ async function afLive(lg,G){
   return n;
 }
 
-// ---------- Sportmonks (vía el intermediario de Cloudflare: datos.lapizarramx.workers.dev) ----------
+// ---------- Sportmonks (vía el intermediario de Cloudflare: datos.lapizarra.mx/sm/) ----------
 // Las ligas con "sm" en LEAGUES salen de Sportmonks (licencia comercial) en lugar de ESPN. Un "traductor"
 // convierte cada respuesta al mismo formato que daba ESPN, así Partidos, detalle, Tabla, Power Ranking,
 // Liguilla y En vivo siguen usando el mismo código. La clave de Sportmonks vive en Cloudflare, nunca aquí.
@@ -2909,10 +2922,9 @@ async function afLive(lg,G){
 // - lineups: type_id 11 titular / 12 banca, formation_field "fila:columna" (fila 1 = portero), details[] con
 //   type.developer_name (MINUTES_PLAYED, RATING, SHOTS_TOTAL, SHOTS_ON_TARGET, FOULS, FOULS_DRAWN, SAVES…).
 // - standings: details[] por type_id (129 PJ, 130 G, 131 E, 132 P, 133 GF, 134 GC, 179 DG, 187 Pts).
-const SM_PROXY="https://datos.lapizarramx.workers.dev/sm/";
 // Interruptor de escudos oficiales (decisión legal pendiente: apagarlo antes de poner anuncios o cobrar).
 const SM_ESCUDOS=true;
-const smGet=(ruta,q)=>fetch(SM_PROXY+ruta+(q?"?"+q:"")).then(r=>{if(!r.ok) throw new Error("Sportmonks "+r.status); return r.json();});
+const smGet=(ruta,q)=>wkFetch("/sm/"+ruta+(q?"?"+q:"")).then(r=>{if(!r.ok) throw new Error("Sportmonks "+r.status); return r.json();});
 async function smAll(ruta,q,max=15){
   let out=[];
   for(let page=1;page<=max;page++){
@@ -5519,7 +5531,6 @@ $("#hoy").addEventListener("keydown",ev=>{ if((ev.key==="Enter"||ev.key===" ")&&
 // En las tarjetas de los partidos de la semana. Sin cuenta: un voto por dispositivo (identificador aleatorio en
 // localStorage "pz_disp"), se puede cambiar hasta que empieza el partido. Los votos viven en Cloudflare D1 a través
 // del Worker (GET /votos?p=…, POST /voto). Tu voto también queda en localStorage "pz_votos" para marcarlo.
-const VOTO_URL="https://datos.lapizarramx.workers.dev";
 const VOTO={c:{},cambiar:new Set(),t:0,msg:{},
   mio:(()=>{try{return JSON.parse(localStorage.getItem("pz_votos")||"{}")||{};}catch(e){return {};}})()};
 function votoDisp(){
@@ -5533,7 +5544,7 @@ function votosCarga(forzar){
   const ids=[...new Set([...document.querySelectorAll("#hoy .hvoto[data-voto], #gbody .hvoto[data-voto]")].map(x=>x.dataset.voto))];
   if(!ids.length||(!forzar&&Date.now()-VOTO.t<50e3)) return;
   VOTO.t=Date.now();
-  fetch(`${VOTO_URL}/votos?p=${encodeURIComponent(ids.join(","))}`).then(r=>r.ok?r.json():null)
+  wkFetch(`/votos?p=${encodeURIComponent(ids.join(","))}`).then(r=>r.ok?r.json():null)
     .then(j=>{ if(j){ Object.assign(VOTO.c,j); votosPinta(); } }).catch(()=>{});
 }
 function votosPinta(){
@@ -5562,7 +5573,7 @@ async function votar(id,r){
   if(ant!=null&&C[ant]>0) C[ant]--; C[r]++; votosPinta();   // se ve al instante; abajo se confirma con el Worker
   pzTrack("voto",{p:id});
   try{
-    const resp=await fetch(`${VOTO_URL}/voto`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({p:id,d:votoDisp(),r})});
+    const resp=await wkFetch(`/voto`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({p:id,d:votoDisp(),r})});
     const j=await resp.json().catch(()=>({}));
     if(resp.ok&&j.conteo){ VOTO.c[id]=j.conteo; }
     else { if(ant==null) delete VOTO.mio[id]; else VOTO.mio[id]=ant; votoGuarda(); VOTO.msg[id]=j.error||"No se pudo guardar tu voto. Intenta de nuevo."; VOTO.t=0; votosCarga(true); }
