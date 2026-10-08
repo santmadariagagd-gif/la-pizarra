@@ -1712,6 +1712,49 @@ if AFK:
     # "Mis equipos" (8 oct 2026): equipos de cada liga para elegir favoritos: {liga: [[id, nombre]]}
     out['fav_eq']={k:AF_EQUIPOS[lid] for k,(lid,_n,_l) in AF_LIGAS.items() if k in ("mx","eng","esp","ita","ger","fra","por","arg","sau") and AF_EQUIPOS.get(lid)}
     print("Mis equipos: "+", ".join(f"{k} {len(v)}" for k,v in out['fav_eq'].items()))
+    # "Mis equipos" parte 2: para cada equipo elegible, su próximo partido (en cualquier competencia del sitio), sus
+    # últimos 5 resultados y su lugar en la tabla. out['eq_info'] = {id: {"p":[fixture, timestamp, liga, id rival, rival,
+    # local 1/0] | null, "f":"GGEPG" (viejo → nuevo), "pos":lugar, "pts":puntos, "lg":liga}}. México (16) aparte.
+    try:
+        _vivo={"NS","TBD","1H","HT","2H","ET","BT","P","LIVE","INT"}
+        _fin2=lambda f:((f.get("fixture") or {}).get("status") or {}).get("short") in ("FT","AET","PEN")
+        _nom=lambda t,k:(AF_EQ.get(t.get("id"),(None,))[0] if k=="mx" else None) or AF_NOMBRE.get(t.get("name"),t.get("name") or "")
+        _ids={i for v in out['fav_eq'].values() for i,_n in v}
+        _lg_de={i:k for k,v in out['fav_eq'].items() for i,_n in v}
+        _ahora_ts=time.time(); _prox={}; _res={}
+        def _mira(k,f):
+            fx=f["fixture"]; st=(fx.get("status") or {}).get("short"); ts=fx.get("timestamp") or 0
+            for lado,otro in (("home","away"),("away","home")):
+                tid=f["teams"][lado]["id"]
+                if tid not in _ids: continue
+                if st in _vivo and ts>_ahora_ts-4*3600:
+                    if tid not in _prox or ts<_prox[tid][1]:
+                        _prox[tid]=[fx["id"],ts,k,f["teams"][otro]["id"],_nom(f["teams"][otro],k),1 if lado=="home" else 0]
+                elif _fin2(f):
+                    g,go=f["goals"][lado],f["goals"][otro]
+                    if g is not None and go is not None: _res.setdefault(tid,{})[fx["id"]]=(ts,"G" if g>go else "E" if g==go else "P")
+        for k,(F,_t) in AF_FX.items():
+            for f in F: _mira(k,f)
+        _ids.add(16); _lg_de[16]="sel"
+        try:
+            for f in af("fixtures",team=16,next=2,timezone="America/Mexico_City")+af("fixtures",team=16,last=5,timezone="America/Mexico_City"): _mira("sel",f)
+        except Exception as ex: print("Mis equipos: no se pudieron leer los partidos de México:",ex)
+        _tab={}
+        for k in out['fav_eq']:
+            F,t=AF_FX.get(k,([],None)); T={}
+            for f in F:
+                if not _fin2(f) or not af_regular(f) or (t and af_torneo(f)!=t): continue
+                for s_,o_ in (("home","away"),("away","home")):
+                    x=T.setdefault(f["teams"][s_]["id"],[0,0,0]); g=f["goals"][s_]; go=f["goals"][o_]
+                    x[0]+=3 if g>go else 1 if g==go else 0; x[1]+=g-go; x[2]+=g
+            for n,i in enumerate(sorted(T,key=lambda i:(-T[i][0],-T[i][1],-T[i][2]))): _tab[i]=(n+1,T[i][0])
+        out['eq_info']={}
+        for i in _ids:
+            r=[v[1] for v in sorted((_res.get(i) or {}).values())][-5:]
+            out['eq_info'][i]=dict(p=_prox.get(i),f="".join(r),pos=(_tab.get(i) or (None,None))[0],pts=(_tab.get(i) or (None,None))[1],lg=_lg_de.get(i))
+        print(f"Mis equipos: datos de {len(out['eq_info'])} equipos ({sum(1 for v in out['eq_info'].values() if v['p'])} con próximo partido)")
+    except Exception as ex:
+        out['eq_info']={}; print("Mis equipos: no se pudieron armar los datos de los equipos:",ex)
     # Bota de Oro (8 oct 2026): goleadores de las ~55 primeras divisiones de Europa con su factor (bota.py)
     try:
         from bota import bota as _bota

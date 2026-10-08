@@ -387,6 +387,18 @@ dialog#fdlg::backdrop{background:rgba(0,0,0,.55)}
 .fpie{position:sticky;bottom:0;display:flex;justify-content:flex-end;padding:12px 0 0;background:var(--bg)}
 .hfav .hh{flex-wrap:wrap}.hfcta{background:var(--surface);border:1px dashed var(--mark);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
 .hfcta b{font:700 21px var(--display)}.hfcta span{color:var(--muted);font-size:15px;line-height:1.4}
+.hfstrip{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin-right:-20px;padding:0 20px 4px 0;scrollbar-width:none}.hfstrip::-webkit-scrollbar{display:none}
+.hfc{flex:0 0 250px;scroll-snap-align:start;display:flex;flex-direction:column;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;color:var(--ink);text-align:left;font:inherit}
+button.hfc{cursor:pointer}
+.hfc .t{display:flex;align-items:center;gap:10px}.hfc .t i{width:38px;height:38px;flex:none;border-radius:19px;background:var(--bg);border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font:700 12px var(--display);font-style:normal;overflow:hidden}
+.hfc .t i img{width:28px;height:28px;object-fit:contain}.hfc .t span{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.hfc .t b{font:700 19px/1.1 var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hfc .t small{font-size:12px;color:var(--muted)}.hfc .t em{font:700 26px/1 var(--display);font-style:normal;color:var(--mark)}
+.hfc .fo{display:flex;gap:3px}.hfc .fo s{width:18px;height:20px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font:700 10px var(--body);text-decoration:none;color:#1d2a26}
+.hfc .fo .G{background:var(--good)}.hfc .fo .E{background:var(--muted)}.hfc .fo .P{background:var(--bad)}
+.hfc .px{background:var(--bg);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}.hfc .px b{color:var(--ink);font:700 16px/1.15 var(--display)}
+.hfc .nt{display:flex;align-items:flex-start;gap:6px;font-size:13px;line-height:1.3}.hfc .nt .utag{height:20px;font-size:12px;flex:none}
+.favst{color:var(--mark);margin-right:3px}
+@media (min-width:721px){.hfstrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));overflow:visible;margin-right:0;padding-right:0}}
 .hfchips{display:flex;gap:6px;flex-wrap:wrap}.hfchips span{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 13px 0 6px;border-radius:19px;border:1px solid var(--line);background:var(--surface);font:600 16px var(--display)}
 .hfchips span i{width:26px;height:26px;border-radius:13px;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:10px;overflow:hidden}.hfchips img{width:20px;height:20px;object-fit:contain}
 #adlg h2{margin:4px 0 6px}
@@ -5401,15 +5413,17 @@ function hoyFila(e){
   const t=e._susp?`<span class="t lv">${e._susp}</span>`:st==="in"?`<span class="t lv">${hoyEsc(c.status)}</span>`:st==="post"?`<span class="t fin">${e._pen?"Penales":"Final"}</span>`:`<span class="t">${c.tbd?"Por definir":hoyHora(c.when)}</span>`;
   const P=st==="pre"&&c.probs?c.probs.map(p=>Math.round(p.p*100)):null;
   const fav=P?(P[0]>=P[2]?[esTeam(H.n),P[0]]:[esTeam(A.n),P[2]]):null;
-  const eq=tm=>`<span class="${tm.win?"w":""}">${hoyLogo(tm.logo)}<em>${hoyEsc(esTeam(tm.n))}</em>${st!=="pre"?`<b>${tm.score??"–"}</b>`:""}</span>`;
-  return `<button class="hf" data-hk="${e._k}" data-hid="${e.id}">${t}<span class="eqs">${eq(H)}${eq(A)}</span><span class="pr">${P?`<span>${hoyEsc(fav[0])} ${fav[1]}%</span>${hoyTri(P)}`:""}</span></button>`;
+  const cs=e.competitions?.[0]?.competitors||[], idH=(cs.find(x=>x.homeAway==="home")||cs[0])?.team?.id, idA=(cs.find(x=>x.homeAway==="away")||cs[1])?.team?.id;
+  const st_=id=>id&&FAV.eq["f"+id]?`<span class="favst" aria-label="Tu equipo">★</span>`:"";
+  const eq=(tm,id)=>`<span class="${tm.win?"w":""}">${hoyLogo(tm.logo)}<em>${st_(id)}${hoyEsc(esTeam(tm.n))}</em>${st!=="pre"?`<b>${tm.score??"–"}</b>`:""}</span>`;
+  return `<button class="hf" data-hk="${e._k}" data-hid="${e.id}">${t}<span class="eqs">${eq(H,idH)}${eq(A,idA)}</span><span class="pr">${P?`<span>${hoyEsc(fav[0])} ${fav[1]}%</span>${hoyTri(P)}`:""}</span></button>`;
 }
 function hoyNflFila(x,res){
   const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, L=NLIVE[x.id], sa=x.hs!=null?x.as_:L?.as, sh=x.hs!=null?x.hs:L?.hs, when=x.ko?new Date(x.ko):null;
-  const eq=(t,s,w)=>`<span class="${w?"w":""}">${hoyLogo(t.logo)}<em>${hoyEsc(t.n)}</em>${res?`<b>${s}</b>`:""}</span>`;
+  const eq=(t,s,w,ab)=>`<span class="${w?"w":""}">${hoyLogo(t.logo)}<em>${FAV.eq["n"+ab]?`<span class="favst" aria-label="Tu equipo">★</span>`:""}${hoyEsc(t.n)}</em>${res?`<b>${s}</b>`:""}</span>`;
   const lin=x.sp==null?"":x.sp>0?`${x.h} −${Math.abs(x.sp)}`:x.sp<0?`${x.a} −${Math.abs(x.sp)}`:"Pick";
   const t=L?.live?`<span class="t lv">${hoyEsc(String(L.st).replace(" cuarto",""))}</span>`:res?`<span class="t fin">Final</span>`:`<span class="t">${when?`${cap(fWeekday(when)).slice(0,3)} · ${hoyHora(when)}`:"Por definir"}</span>`;
-  return `<button class="hf" data-nid="${x.id}">${t}<span class="eqs">${eq(A,sa,res&&sa>sh)}${eq(H,sh,res&&sh>sa)}</span><span class="pr">${!res&&lin?`<span class="chip">${lin}</span>`:""}</span></button>`;
+  return `<button class="hf" data-nid="${x.id}">${t}<span class="eqs">${eq(A,sa,res&&sa>sh,x.a)}${eq(H,sh,res&&sh>sa,x.h)}</span><span class="pr">${!res&&lin?`<span class="chip">${lin}</span>`:""}</span></button>`;
 }
 // Si quedan en dos columnas y el número es impar, el último renglón ocupa todo el ancho (no queda un hueco)
 const hoyUlt=F=>F.length%2?F.map((h,i)=>i===F.length-1?h.replace('class="hf"','class="hf ult"'):h):F;
@@ -5553,12 +5567,57 @@ fdlg.addEventListener("click",ev=>{
   }
 });
 fdlg.addEventListener("input",ev=>{ if(ev.target.id!=="fQ") return; FAV_UI.q=ev.target.value; $("#fLista").innerHTML=favListaHTML(); });
-// Portada (parte 1): invitación o la lista de lo que sigues; las tarjetas con próximo partido llegan en la parte 2
+// Portada (parte 2): una tarjeta por equipo y por jugador. En celular van en una sola fila que se desliza (no ocupa
+// espacio); en computadora en cuadrícula. Equipo: lugar, forma, próximo partido (D.eq_info, lo arma build_site.py) y
+// la nota de "Lo último" de ese equipo (n.tid). NFL: D.sched + D.pr_nfl. Jugador: goles y asistencias de su liga
+// (docs/datos/jugadores_<liga>.json, solo de las ligas de tus jugadores) o de la Bota de Oro, y el próximo partido de su club.
+const FAV_JF={}, FAV_JFP={};
+function favJugLiga(lg){
+  if(FAV_JF[lg]!==undefined||FAV_JFP[lg]) return;
+  FAV_JFP[lg]=fetch(`datos/jugadores_${lg}.json`).then(r=>r.ok?r.json():null).catch(()=>null).then(j=>{ FAV_JF[lg]=j; favRepinta(); });
+}
+const favCuando=ts=>{ const d=new Date(ts*1000); return `${cap(new Intl.DateTimeFormat("es-MX",{weekday:"short",timeZone:TZ}).format(d).replace(".",""))} · ${hoyHora(d)}`; };
+const favForma=f=>f?`<span class="fo">${[...f].map(r=>`<s class="${r}">${r}</s>`).join("")}</span>`:"";
+function favNota(fn){ const n=(D.noticias||[]).find(fn); if(!n) return "";
+  const [tl]=ULT_TIPO[n.tipo]||["Nota"]; return `<span class="nt"><span class="utag u-${n.tipo}">${tl}</span><span>${hoyEsc(n.tit)}</span></span>`; }
+function favTarjetaEq(k,x){
+  const logo=`<i>${x.logo&&SM_ESCUDOS?`<img src="${x.logo}" alt="" loading="lazy" onerror="this.remove()">`:favIni(x.n)}</i>`;
+  if(k[0]==="n"){   // NFL
+    const ab=k.slice(1), pr=(D.pr_nfl||[]).find(t=>t.t===ab), now=Date.now();
+    const g=(D.sched||[]).filter(s=>(s.h===ab||s.a===ab)&&s.hs==null&&(!s.ko||+new Date(s.ko)>now-4*36e5)).sort((a,b)=>(a.ko||"").localeCompare(b.ko||""))[0];
+    const riv=g?(g.h===ab?`vs ${NT[g.a]?.n||g.a}`:`@ ${NT[g.h]?.n||g.h}`):"", lin=g&&g.sp!=null?(g.sp>0?` · ${g.h} −${Math.abs(g.sp)}`:g.sp<0?` · ${g.a} −${Math.abs(g.sp)}`:" · Pick"):"";
+    const sub=["NFL",pr?`${pr.w}-${pr.l}`:"",pr?`${pr.r}º en el Power Ranking`:""].filter(Boolean).join(" · ");
+    const px=g?`<span class="px"><b>${hoyEsc(riv)}</b>${g.ko?`${favCuando(+new Date(g.ko)/1000)}`:"Por definir"}${lin}</span>`:"";
+    return `<${g?"button":"div"} class="hfc"${g?` data-nid="${g.id}"`:""}><span class="t">${logo}<span><b>${hoyEsc(NT[ab]?.n||x.n)}</b><small>${hoyEsc(sub)}</small></span></span>${px}${favNota(n=>n.liga==="nfl"&&n.tid===ab)}</${g?"button":"div"}>`;
+  }
+  const id=k.slice(1), I=D.eq_info?.[id]||{}, p=I.p, lgNom=I.lg==="sel"?"Selección":FAV_LIGA[I.lg]||LEAGUES[I.lg]?.label||"";
+  const sub=[lgNom,I.pos?`${I.pos}º · ${I.pts} pts`:""].filter(Boolean).join(" · ");
+  const px=p?`<span class="px"><b>${p[5]?"vs":"visita a"} ${hoyEsc(esTeam(p[4]))}</b>${favCuando(p[1])}${p[2]!==I.lg&&LEAGUES[p[2]]?` · ${hoyEsc(LEAGUES[p[2]].label)}`:""}</span>`:`<span class="px">Sin partido próximo</span>`;
+  const abre=p&&LEAGUES[p[2]]?` data-hk="${p[2]}" data-hid="${p[0]}"`:"";
+  return `<${abre?"button":"div"} class="hfc"${abre}><span class="t">${logo}<span><b>${hoyEsc(x.n)}</b><small>${hoyEsc(sub)}</small></span></span>${favForma(I.f)}${px}${favNota(n=>String(n.tid)===id)}</${abre?"button":"div"}>`;
+}
+function favTarjetaJug(k,x){
+  const id=+k.slice(1), ape=(x.n||"").split(" ").slice(-1)[0];
+  let g=null,a=null,club=x.club||"",tid=null;
+  if(["mx","eng","esp","ita","ger","fra","por"].includes(x.lg)){
+    favJugLiga(x.lg); const J=FAV_JF[x.lg], f=J?.filas?.find(r=>r.id===id);
+    if(f){ g=f.g; a=f.as; const eq=J.equipos?.[f.t]; if(eq){ club=eq[0]; tid=(eq[1]||"").match(/teams\/(\d+)/)?.[1]; } }
+  }
+  const b=[...(D.bota?.ls||[]),...(D.bota?.mex||[])].find(r=>r[0]===id);
+  if(g==null&&b){ g=b[4]; a=b[6]; }
+  const pos=b&&D.bota?.ls?.indexOf(b)>=0?D.bota.ls.indexOf(b)+1:null;
+  const I=tid?D.eq_info?.[tid]:null, p=I?.p;
+  const datos=[a!=null?`${a} ${a===1?"asistencia":"asistencias"}`:"",pos?`${pos}º en la Bota de Oro`:"",(D.sel_plantel||[]).some(s=>s.id===id)?"Convocado con México":""].filter(Boolean).join(" · ");
+  const px=p?`<span class="px"><b>${p[5]?"vs":"visita a"} ${hoyEsc(esTeam(p[4]))}</b>${favCuando(p[1])}</span>`:"";
+  const abre=p&&LEAGUES[p[2]]?` data-hk="${p[2]}" data-hid="${p[0]}"`:"";
+  return `<${abre?"button":"div"} class="hfc"${abre}><span class="t"><i>${favIni(x.n)}</i><span><b>${hoyEsc(x.n)}</b><small>${hoyEsc(club)}</small></span>${g!=null?`<em>${g}</em>`:""}</span>
+    ${datos?`<span class="px">${hoyEsc(datos)}</span>`:""}${px}${favNota(n=>ape.length>2&&n.tit.includes(ape))}</${abre?"button":"div"}>`;
+}
 function hoyFavHTML(){
   const E=Object.entries(FAV.eq), J=Object.entries(FAV.jug);
   if(!E.length&&!J.length) return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3></div><div class="hfcta"><b>Sigue a tus equipos y jugadores</b><span>Elige tus equipos de la Liga MX, Europa o la NFL, y a tus jugadores, para verlos primero aquí.</span><button class="btn" data-hact="fav">Elegir equipos</button></div></section>`;
-  const chip=([k,x])=>`<span><i>${x.logo&&SM_ESCUDOS?`<img src="${x.logo}" alt="" loading="lazy" onerror="this.remove()">`:favIni(x.n)}</i>${hoyEsc(x.n)}</span>`;
-  return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3><button class="hlink" data-hact="fav">Editar</button></div><div class="hfchips">${E.concat(J).map(chip).join("")}</div></section>`;
+  return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3><button class="hlink" data-hact="fav">Editar</button></div>
+    <div class="hfstrip">${E.map(([k,x])=>favTarjetaEq(k,x)).join("")}${J.map(([k,x])=>favTarjetaJug(k,x)).join("")}</div></section>`;
 }
 
 // ---------- Goleo y Bota de Oro (8 oct 2026) ----------

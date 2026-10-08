@@ -5,7 +5,8 @@ Solo noticias de la semana: lo que pasó en los últimos 7 días, rachas de equi
 y avisos de lesión o suspensión para los partidos de los próximos 7 días.
 
 Cada nota: {tipo, liga, eq, t (fecha ISO), tit (titular), det (renglón de detalle), peso (importancia),
-            fx (id del partido de API-Football, para abrirlo) o nid (id del partido de la NFL)}
+            fx (id del partido de API-Football, para abrirlo) o nid (id del partido de la NFL),
+            tid (id del equipo en API-Football, o abreviatura en la NFL; para "Mis equipos")}
 Tipos: lesion · suspension · racha · goles · fichaje · tecnico
 
 Uso:
@@ -143,10 +144,10 @@ def futbol(af, hoy, log=print):
             if llega:
                 rival = eq_nombre(sig[0]["teams"][sig[1]], lg)
                 notas.append(nota("racha", lg, nom, sig[0]["fixture"]["date"], f"{nom} llega con {que}",
-                                  f"{dia(sig_d, hoy).capitalize()} contra {rival}", peso - 1 + fama(team), fx=sig[0]["fixture"]["id"]))
+                                  f"{dia(sig_d, hoy).capitalize()} contra {rival}", peso - 1 + fama(team), fx=sig[0]["fixture"]["id"], tid=tid))
             else:
                 notas.append(nota("racha", lg, nom, ult_f["fixture"]["date"], f"{nom} suma {que}",
-                                  f"Último partido: {dia(fecha_mx(ult_f['fixture']['date']), hoy)}", peso + fama(team), fx=ult_f["fixture"]["id"]))
+                                  f"Último partido: {dia(fecha_mx(ult_f['fixture']['date']), hoy)}", peso + fama(team), fx=ult_f["fixture"]["id"], tid=tid))
 
         # --- Goleadas de la semana
         for f in semana:
@@ -156,7 +157,7 @@ def futbol(af, hoy, log=print):
             d = fecha_mx(f["fixture"]["date"])
             notas.append(nota("goles", lg, eq_nombre(f["teams"][gana], lg), f["fixture"]["date"],
                               f"{eq_nombre(f['teams'][gana], lg)} goleó {max(gh, ga)}-{min(gh, ga)} a {eq_nombre(f['teams'][pierde], lg)}",
-                              f"{dia(d, hoy).capitalize()}", 5 + abs(gh - ga) + fama(f["teams"][gana]) + fama(f["teams"][pierde]), fx=f["fixture"]["id"]))
+                              f"{dia(d, hoy).capitalize()}", 5 + abs(gh - ga) + fama(f["teams"][gana]) + fama(f["teams"][pierde]), fx=f["fixture"]["id"], tid=f["teams"][gana]["id"]))
 
         # --- Líder(es) de goleo (antes de los eventos, para no repetir "triplete" y "líder" del mismo jugador)
         try: top = af("players/topscorers", league=lid, season=TEMP)
@@ -185,14 +186,14 @@ def futbol(af, hoy, log=print):
                     como = "doble amarilla" if ev.get("detail") == "Second Yellow card" else "roja directa"
                     det_txt = f"{eq_nombre(t, lg)} · {como}" + (f" · próximo: contra {eq_nombre(sig[0]['teams'][sig[1]], lg)}" if sig else "")
                     notas.append(nota("suspension", lg, eq_nombre(t, lg), f["fixture"]["date"],
-                                      f"{corto(pl.get('name'))}, expulsado ante {eq_nombre(rival, lg)}", det_txt, 4 + fama(t), fx=f["fixture"]["id"]))
+                                      f"{corto(pl.get('name'))}, expulsado ante {eq_nombre(rival, lg)}", det_txt, 4 + fama(t), fx=f["fixture"]["id"], tid=t.get("id")))
             for (pid, pn, tid), n in por_jug.items():
                 if n >= 3 and pid not in lideres:
                     local = f["teams"]["home"]["id"] == tid
                     tm, rival = (f["teams"]["home"], f["teams"]["away"]) if local else (f["teams"]["away"], f["teams"]["home"])
                     notas.append(nota("goles", lg, eq_nombre(tm, lg), f["fixture"]["date"],
                                       f"{'Triplete' if n == 3 else f'{n} goles'} de {corto(pn)} ante {eq_nombre(rival, lg)}",
-                                      f"{eq_nombre(tm, lg)} · {dia(d, hoy)}", 9 + fama(tm), fx=f["fixture"]["id"]))
+                                      f"{eq_nombre(tm, lg)} · {dia(d, hoy)}", 9 + fama(tm), fx=f["fixture"]["id"], tid=tm.get("id")))
 
         # --- Líder de goleo que anotó esta semana
         for x in top:
@@ -204,7 +205,7 @@ def futbol(af, hoy, log=print):
                 lider = "comparte el liderato de goleo" if len(lideres) > 1 else "líder de goleo"
                 hizo = "triplete" if goles_sem[pid] == 3 else f"{goles_sem[pid]} goles" if goles_sem[pid] > 1 else "gol"
                 notas.append(nota("goles", lg, eq_nombre(tm, lg), hoy.isoformat(), f"{corto(x['player']['name'])} llega a {gt} goles",
-                                  f"{eq_nombre(tm, lg)} · {hizo} esta semana · {lider}", 8 + fama(tm)))
+                                  f"{eq_nombre(tm, lg)} · {hizo} esta semana · {lider}", 8 + fama(tm), tid=tm.get("id")))
 
         # --- Lesiones y suspensiones que avisa API-Football para los próximos 7 días
         if con_lesiones:
@@ -235,7 +236,7 @@ def futbol(af, hoy, log=print):
                 else:
                     tipo, tit, det_txt = "lesion", f"{quien}, baja{ante}", f"{nom} · {lesion_es(pl.get('reason'))} · {dia(d, hoy)}"
                 peso = (6 if pl.get("id") in imp else 0) + 2 * fama(t)
-                if peso >= 4: cand.append(nota(tipo, lg, nom, fxi.get("date"), tit, det_txt, peso, fx=fxi.get("id")))
+                if peso >= 4: cand.append(nota(tipo, lg, nom, fxi.get("date"), tit, det_txt, peso, fx=fxi.get("id"), tid=t.get("id")))
             cand.sort(key=lambda n: -n["peso"])
             por_eq, n_liga = defaultdict(int), 0
             for n in cand:
@@ -270,7 +271,7 @@ def liga_mx_mercado(af, hoy, log=print):
                     tit, det_txt = f"{nom} ficha a {pj.get('name')}", f"Llega de {EQ_MX.get(tout.get('id'), tout.get('name'))}" + (f" {modo}" if modo else "")
                 else:
                     tit, det_txt = f"{pj.get('name')} deja {nom}", f"Se va a {EQ_MX.get(tin.get('id'), tin.get('name'))}" + (f" {modo}" if modo else "")
-                notas.append(nota("fichaje", "mx", nom, d, tit, det_txt, 5 + fama({"name": nom})))
+                notas.append(nota("fichaje", "mx", nom, d, tit, det_txt, 5 + fama({"name": nom}), tid=tid))
         try: C = af("coachs", team=tid)
         except Exception as e: log(f"  ! técnico {nom}: {e}"); C = []
         for c in C:
@@ -279,7 +280,7 @@ def liga_mx_mercado(af, hoy, log=print):
                 try: d = datetime.fromisoformat(k.get("start")).date()
                 except Exception: continue
                 if ini <= d <= hoy.date():
-                    notas.append(nota("tecnico", "mx", nom, d, f"{c.get('name')}, nuevo técnico de {nom}", "Liga MX", 12))
+                    notas.append(nota("tecnico", "mx", nom, d, f"{c.get('name')}, nuevo técnico de {nom}", "Liga MX", 12, tid=tid))
     return notas
 
 
@@ -326,7 +327,7 @@ def nfl(hoy, propiedad=None, csv_texto=None, sched=None, log=print):
         elif est == "Questionable": tit, peso = f"{nom}, en duda para la semana {sem}", 6
         elif not est and prac.startswith("Did Not"): tit, peso = f"{nom} no entrenó", 7
         else: continue
-        extra = {"nid": g["id"]} if g else {}
+        extra = {"nid": g["id"], "tid": tm} if g else {"tid": tm}
         notas.append(nota("lesion", "nfl", eq, hoy.isoformat(), tit, f"{eq} · {les}{cuando}", peso + own / 20, **extra))
     return notas
 
