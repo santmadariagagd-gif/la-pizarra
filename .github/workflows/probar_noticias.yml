@@ -11,14 +11,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python probar_noticias.py
+      - run: python noticias.py
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
       - name: Guardar reporte
         run: |
           git config user.name "La Pizarra bot"
           git config user.email "actions@github.com"
-          git add prueba_noticias.txt
-          git diff --cached --quiet || git commit -m "Reporte de prueba de noticias"
+          git add prueba_noticias.txt noticias_muestra.json
+          git diff --cached --quiet || git commit -m "Muestra de noticias"
           git pull --rebase
           git push
