@@ -1,0 +1,259 @@
+=== PRUEBA BOTA DE ORO (API-Football) ===
+
+-- England: 39=Premier League (2026, goleo) | 40=Championship (2026, goleo) | 43=National League (2026) | 41=League One (2026, goleo) | 42=League Two (2026, goleo) | 44=FA WSL (2026, goleo) | 49=National League - Play-offs (2018, goleo) | 50=National League - North (2026)
+   ELEGIDA 39 Premier League · temporada 2026 (2026-08-21 a 2027-05-30) · goleadores: 20
+     E. Haaland (Manchester City): 5 goles, 450 min, 0 asist, penales 0, nacionalidad Norway
+     A. Isak (Liverpool): 4 goles, 415 min, 0 asist, penales 0, nacionalidad Sweden
+     João Pedro (Chelsea): 3 goles, 360 min, 3 asist, penales 0, nacionalidad Brazil
+
+-- Spain: 140=La Liga (2026, goleo) | 141=Segunda División (2026, goleo) | 142=Primera División Femenina (2026) | 435=Primera División RFEF - Group 1 (2026) | 436=Primera División RFEF - Group 2 (2026) | 437=Primera División RFEF - Group 3 (2020, goleo) | 438=Primera División RFEF - Group 4 (2020, goleo) | 439=Tercera División RFEF - Group 1 (2026)
+   ELEGIDA 140 La Liga · temporada 2026 (2026-08-15 a 2027-05-30) · goleadores: 20
+     Raphinha (Barcelona): 12 goles, 555 min, 3 asist, penales 3, nacionalidad Brazil
+     Sergio Camello (Rayo Vallecano): 7 goles, 470 min, 1 asist, penales 0, nacionalidad Spain
+     Lamine Yamal (Barcelona): 7 goles, 581 min, 4 asist, penales 1, nacionalidad Spain
+
+-- Italy: 135=Serie A (2026, goleo) | 136=Serie B (2026, goleo) | 138=Serie C - Girone A (2026) | 139=Serie A Women (2026) | 942=Serie C - Girone B (2026) | 943=Serie C - Girone C (2026) | 426=Serie D - Girone A (2026) | 427=Serie D - Girone B (2026)
+   ELEGIDA 135 Serie A · temporada 2026 (2026-08-22 a 2027-05-30) · goleadores: 20
+     D. Malen (AS Roma): 6 goles, 348 min, 0 asist, penales 0, nacionalidad Netherlands
+     A. Raimondo (Frosinone): 4 goles, 425 min, 0 asist, penales 0, nacionalidad Italy
+     Lautaro Martínez (Inter): 4 goles, 324 min, 0 asist, penales 0, nacionalidad Argentina
+
+-- Germany: 78=Bundesliga (2026, goleo) | 79=2. Bundesliga (2026, goleo) | 80=3. Liga (2026, goleo) | 82=Frauen Bundesliga (2026, goleo) | 488=U19 Bundesliga (2026) | 83=Regionalliga - Bayern (2026) | 84=Regionalliga - Nord (2026) | 85=Regionalliga - Nordost (2026)
+   ELEGIDA 78 Bundesliga · temporada 2026 (2026-08-28 a 2027-05-22) · goleadores: 20
+     P. Schick (Bayer Leverkusen): 4 goles, 261 min, 1 asist, penales 0, nacionalidad Czechia
+     Y. Ebnoutalib (Eintracht Frankfurt): 4 goles, 281 min, 1 asist, penales 0, nacionalidad Germany
+     M. Olise (Bayern München): 4 goles, 303 min, 1 asist, penales 0, nacionalidad France
+
+-- France: 61=Ligue 1 (2026, goleo) | 62=Ligue 2 (2026, goleo) | 63=Ligue 3 (2026) | 67=National 2 - Group A (2026) | 68=National 2 - Group B (2026) | 69=National 2 - Group C (2026) | 70=National 2 - Group D (2023, goleo) | 64=Feminine Division 1 (2026, goleo)
+   ELEGIDA 61 Ligue 1 · temporada 2026 (2026-08-21 a 2027-05-29) · goleadores: 20
+     Ferran Torres (Paris Saint Germain): 4 goles, 252 min, 0 asist, penales 0, nacionalidad Spain
+     Paris Josua  Brunner (Monaco): 4 goles, 390 min, 0 asist, penales 0, nacionalidad Germany
+     K. Doumbia (Stade Brestois 29): 4 goles, 407 min, 1 asist, penales 1, nacionalidad Mali
+
+-- Portugal: 94=Primeira Liga (2026, goleo) | 95=Segunda Liga (2026, goleo) | 457=Campeonato de Portugal Prio - Group A (2026) | 458=Campeonato de Portugal Prio - Group B (2026) | 459=Campeonato de Portugal Prio - Group C (2026) | 460=Campeonato de Portugal Prio - Group D (2026) | 681=Campeonato de Portugal Prio - Group E (2021, goleo) | 682=Campeonato de Portugal Prio - Group F (2021, goleo)
+   ELEGIDA 94 Primeira Liga · temporada 2026 (2026-08-07 a 2027-05-16) · goleadores: 20
+     V. Pavlidis (Benfica): 8 goles, 557 min, 2 asist, penales 2, nacionalidad Greece
+     L. Suárez (Sporting CP): 6 goles, 457 min, 1 asist, penales 2, nacionalidad Colombia
+     G. Prestianni (Benfica): 5 goles, 572 min, 3 asist, penales 0, nacionalidad Argentina
+
+-- Netherlands: 88=Eredivisie (2026, goleo) | 89=Eerste Divisie (2026, goleo) | 91=Eredivisie Women (2026) | 492=Tweede Divisie (2026) | 92=Derde Divisie (2026) | 93=Derde Divisie - Sunday (2025) | 675=U21 Divisie 1 (2026) | 724=U18 Divisie 1 (2023)
+   ELEGIDA 88 Eredivisie · temporada 2026 (2026-08-07 a 2027-05-23) · goleadores: 20
+     G. Zechiël (Feyenoord): 5 goles, 597 min, 4 asist, penales 0, nacionalidad Netherlands
+     S. Tengstedt (GO Ahead Eagles): 5 goles, 591 min, 2 asist, penales 0, nacionalidad Denmark
+     A. Hadj-Moussa (Feyenoord): 5 goles, 526 min, 1 asist, penales 0, nacionalidad Algeria
+
+-- Belgium: 144=Jupiler Pro League (2026, goleo) | 145=Challenger Pro League (2026, goleo) | 146=Super League Women (2026) | 149=Second Amateur Division - VFV A (2026) | 150=Second Amateur Division - VFV B (2026) | 151=Third Amateur Division - VFV A (2024, goleo) | 152=Third Amateur Division - VFV B (2024, goleo) | 148=Second Amateur Division - ACFF (2026)
+   ELEGIDA 144 Jupiler Pro League · temporada 2026 (2026-08-07 a 2027-05-22) · goleadores: 20
+     M. Ubandoma (RAAL La Louvière): 5 goles, 561 min, 0 asist, penales 0, nacionalidad Nigeria
+     R. Durosinmi (Genk): 5 goles, 518 min, 0 asist, penales 2, nacionalidad Nigeria
+     R. Florucz (Union St. Gilloise): 4 goles, 246 min, 0 asist, penales 0, nacionalidad Austria
+
+-- Turkey: 203=Süper Lig (2026, goleo) | 204=1. Lig (2026, goleo) | 205=2. Lig (2026) | 552=3. Lig - Group 1 (2026) | 553=3. Lig - Group 2 (2026) | 554=3. Lig - Group 3 (2026) | 1007=3. Lig - Play-offs (2025, goleo) | 1027=3. Lig - Group 4 (2025, goleo)
+   ELEGIDA 203 Süper Lig · temporada 2026 (2026-08-14 a 2027-05-23) · goleadores: 20
+     G. Orban (Amed): 7 goles, 419 min, 2 asist, penales 0, nacionalidad Nigeria
+     Mohamed Salah (Trabzonspor): 7 goles, 481 min, 2 asist, penales 1, nacionalidad Egypt
+     V. Muriqi (Fenerbahçe): 6 goles, 325 min, 1 asist, penales 0, nacionalidad Kosovo
+
+-- Czech-Republic: 345=Czech Liga (2026, goleo) | 346=FNL (2026) | 348=3. liga - CFL A (2026) | 349=3. liga - MSFL (2026) | 350=4. liga - Divizie A (2026) | 351=4. liga - Divizie B (2026) | 352=4. liga - Divizie C (2026) | 353=4. liga - Divizie D (2026)
+   ELEGIDA 345 Czech Liga · temporada 2026 (2026-07-25 a 2027-04-24) · goleadores: 20
+     M. Šubert (Mlada Boleslav): 6 goles, 508 min, 1 asist, penales 0, nacionalidad Czechia
+     W. Nowak (Slavia Praha): 5 goles, 640 min, 1 asist, penales 0, nacionalidad Poland
+     J. Mercado (Sparta Praha): 4 goles, 710 min, 1 asist, penales 0, nacionalidad Ecuador
+
+-- Greece: 198=Football League (2020, goleo) | 197=Super League 1 (2026, goleo) | 577=Gamma Ethniki - Group 2 (2026) | 578=Gamma Ethniki - Group 3 (2026) | 579=Gamma Ethniki - Group 4 (2026) | 580=Gamma Ethniki - Group 5 (2026) | 581=Gamma Ethniki - Group 6 (2026) | 582=Gamma Ethniki - Group 7 (2026)
+   ELEGIDA 197 Super League 1 · temporada 2026 (2026-08-22 a 2027-03-20) · goleadores: 20
+     B. Varga (AEK Athens FC): 4 goles, 272 min, 0 asist, penales 0, nacionalidad Hungary
+     L. Jović (AEK Athens FC): 4 goles, 400 min, 0 asist, penales 1, nacionalidad Serbia
+     A. Tetteh (Panathinaikos): 3 goles, 303 min, 0 asist, penales 0, nacionalidad Ghana
+
+-- Poland: 106=Ekstraklasa (2026, goleo) | 107=I Liga (2026) | 109=II Liga - East (2026) | 676=Central Youth League (2026) | 780=III Liga - Group 1 (2026, goleo) | 781=III Liga - Group 2 (2026, goleo) | 782=III Liga - Group 3 (2026, goleo) | 783=III Liga - Group 4 (2026, goleo)
+   ELEGIDA 106 Ekstraklasa · temporada 2026 (2026-07-24 a 2027-05-22) · goleadores: 20
+     Jordi Sánchez (Pogon Szczecin): 8 goles, 761 min, 1 asist, penales 0, nacionalidad Spain
+     I. Shkurin (GKS Katowice): 6 goles, 682 min, 1 asist, penales 0, nacionalidad Belarus
+     M. Stępiński (Korona Kielce): 6 goles, 710 min, 0 asist, penales 2, nacionalidad Poland
+
+-- Denmark: 119=Superliga (2026, goleo) | 120=1. Division (2026) | 124=Denmark Series - Group 1 (2025) | 125=Denmark Series - Group 2 (2025) | 126=Denmark Series - Group 3 (2025) | 122=2. Division (2026) | 123=2nd Division - Group 2 (2020, goleo) | 127=Denmark Series - Group 4 (2025)
+   ELEGIDA 119 Superliga · temporada 2026 (2026-07-24 a 2027-03-21) · goleadores: 20
+     M. Elyounoussi (FC Copenhagen): 6 goles, 703 min, 2 asist, penales 0, nacionalidad Norway
+     F. Etim (FC Midtjylland): 4 goles, 521 min, 2 asist, penales 0, nacionalidad Nigeria
+     B. Meling (FC Copenhagen): 4 goles, 406 min, 1 asist, penales 0, nacionalidad Norway
+
+-- Norway: 103=Eliteserien (2026, goleo) | 104=1. Division (2026, goleo) | 473=2. Division - Group 1 (2026) | 474=2. Division - Group 2 (2026) | 774=3. Division - Girone 1 (2026, goleo) | 775=3. Division - Girone 2 (2026, goleo) | 776=3. Division - Girone 3 (2026, goleo) | 777=3. Division - Girone 4 (2026, goleo)
+   ELEGIDA 103 Eliteserien · temporada 2026 (2026-03-14 a 2026-12-13) · goleadores: 20
+     Amin Chiakha (Rosenborg): 13 goles, 1769 min, 3 asist, penales 2, nacionalidad Denmark
+     A. Helmersen (Bodo/Glimt): 11 goles, 871 min, 1 asist, penales 0, nacionalidad Norway
+     P. Christiansen (Viking): 11 goles, 1726 min, 6 asist, penales 1, nacionalidad Denmark
+
+-- Cyprus: 318=1. Division (2026) | 319=2. Division (2026) | 320=3. Division (2025)
+   ELEGIDA 318 1. Division · temporada 2026 (2026-08-28 a 2027-03-06) · goleadores: 0
+
+-- Switzerland: 207=Super League (2026, goleo) | 208=Challenge League (2026) | 510=1. Liga Promotion (2026) | 599=1. Liga Classic - Group 1 (2026) | 600=1. Liga Classic - Group 2 (2026) | 601=1. Liga Classic - Group 3 (2026) | 739=AXA Women’s Super League (2026) | 796=2. Liga Interregional - Group 1 (2024, goleo)
+   ELEGIDA 207 Super League · temporada 2026 (2026-07-25 a 2027-02-07) · goleadores: 20
+     S. Essende (BSC Young Boys): 10 goles, 793 min, 3 asist, penales 2, nacionalidad France
+     Winsley Boteli Mokango (FC Sion): 6 goles, 581 min, 4 asist, penales 1, nacionalidad Switzerland
+     Ž. Celar (FC Basel 1893): 6 goles, 790 min, 1 asist, penales 3, nacionalidad Slovenia
+
+-- Austria: 219=2. Liga (2026, goleo) | 218=Bundesliga (2026, goleo) | 222=Regionalliga - Mitte (2025, goleo) | 221=Regionalliga - Ost (2026) | 223=Regionalliga - West (2026) | 224=Landesliga - Burgenland (2025) | 225=Landesliga - Karnten (2025) | 226=Landesliga - Niederosterreich (2025)
+   ELEGIDA 218 Bundesliga · temporada 2026 (2026-07-31 a 2027-02-27) · goleadores: 20
+     C. Lang (Lask Linz): 5 goles, 486 min, 0 asist, penales 0, nacionalidad Austria
+     T. Adamsen (Rapid Vienna): 4 goles, 518 min, 2 asist, penales 0, nacionalidad Denmark
+     D. Weixelbraun (Austria Lustenau): 4 goles, 567 min, 1 asist, penales 0, nacionalidad Austria
+
+-- Scotland: 179=Premiership (2026, goleo) | 180=Championship (2026) | 183=League One (2026) | 184=League Two (2026) | 730=Football League - Highland League (2026, goleo) | 731=Football League - Lowland League (2026, goleo) | 992=Football League - Championship (2024, goleo)
+   ELEGIDA 179 Premiership · temporada 2026 (2026-07-31 a 2027-04-10) · goleadores: 20
+     J. Fowler (ST Johnstone): 4 goles, 479 min, 1 asist, penales 1, nacionalidad None
+     C. Durán (Celtic): 3 goles, 458 min, 3 asist, penales 0, nacionalidad Colombia
+     B. Nygren (Celtic): 3 goles, 486 min, 3 asist, penales 0, nacionalidad Sweden
+
+-- Sweden: 113=Allsvenskan (2026, goleo) | 114=Superettan (2026, goleo) | 563=Ettan - Norra (2026, goleo) | 564=Ettan - Södra (2026, goleo) | 592=Division 2 - Norra Götaland (2026) | 593=Division 2 - Norra Svealand (2026) | 594=Division 2 - Norrland (2026) | 595=Division 2 - Södra Svealand (2026)
+   ELEGIDA 113 Allsvenskan · temporada 2026 (2026-04-04 a 2026-11-29) · goleadores: 20
+     K. Lien (Djurgardens IF): 15 goles, 1826 min, 5 asist, penales 0, nacionalidad Norway
+     R. Ure (Sirius): 15 goles, 1344 min, 2 asist, penales 0, nacionalidad Scotland
+     P. Abraham (Hammarby FF): 14 goles, 1718 min, 3 asist, penales 0, nacionalidad Sweden
+
+-- Croatia: 210=HNL (2026, goleo) | 211=First NL (2026) | 213=Third NL - Istok (2025) | 214=Third NL - Jug (2025) | 215=Third NL - Sjever (2025) | 216=Third NL - Sredite (2025) | 217=Third NL - Zapad (2025) | 946=Second NL (2026)
+   ELEGIDA 210 HNL · temporada 2026 (2026-08-01 a 2027-05-22) · goleadores: 20
+     D. Beljo (Dinamo Zagreb): 9 goles, 512 min, 3 asist, penales 1, nacionalidad Croatia
+     E. Frederiksen (Istra 1961): 7 goles, 682 min, 2 asist, penales 1, nacionalidad Denmark
+     A. León (NK Osijek): 5 goles, 646 min, 1 asist, penales 0, nacionalidad Mexico
+
+-- Israel: 382=Liga Leumit (2026) | 383=Ligat Ha'al (2026, goleo) | 496=Liga Alef (2026)
+   ELEGIDA 383 Ligat Ha'al · temporada 2026 (2026-08-22 a 2027-03-06) · goleadores: 20
+     Dor Peretz (Maccabi Tel Aviv): 5 goles, 344 min, 1 asist, penales 2, nacionalidad Israel
+     A. Idoko (Hapoel Katamon): 4 goles, 347 min, 1 asist, penales 0, nacionalidad Nigeria
+     N. Vrasana (Hapoel Katamon): 4 goles, 110 min, 0 asist, penales 0, nacionalidad Israel
+
+-- Hungary: 271=NB I (2026, goleo) | 272=NB II (2026) | 633=NB III - Northeast (2026) | 634=NB III - Southwest (2026) | 635=NB III - Northwest (2026) | 1023=NB III - Southeast (2026) | 1111=NB III - Promotion Play-offs (2025, goleo)
+   ELEGIDA 271 NB I · temporada 2026 (2026-07-24 a 2027-05-22) · goleadores: 20
+     J. Szalai (Paks): 6 goles, 663 min, 1 asist, penales 1, nacionalidad Hungary
+     A. Matko (Ujpest): 5 goles, 554 min, 3 asist, penales 1, nacionalidad Slovenia
+     G. Jurek (MTK Budapest): 5 goles, 567 min, 1 asist, penales 1, nacionalidad Hungary
+
+-- Romania: 283=Liga I (2026, goleo) | 284=Liga II (2026) | 728=Liga 1 Feminin (2026) | 784=Liga III - Serie 1 (2026) | 785=Liga III - Serie 2 (2026) | 786=Liga III - Serie 3 (2026) | 787=Liga III - Serie 4 (2026) | 788=Liga III - Serie 5 (2026)
+   ELEGIDA 283 Liga I · temporada 2026 (2026-07-17 a 2027-03-13) · goleadores: 20
+     A. Dumiter (FC Botosani): 6 goles, 796 min, 0 asist, penales 0, nacionalidad Romania
+     A. Aliev (Universitatea Cluj): 6 goles, 399 min, 2 asist, penales 3, nacionalidad Sweden
+     E. Rădăslăvescu (Farul Constanta): 5 goles, 713 min, 2 asist, penales 0, nacionalidad Romania
+
+-- Ukraine: 333=Premier League (2026, goleo) | 334=Persha Liga (2026) | 336=Druha Liga (2026) | 337=Druha Liga - Group B (2021, goleo) | 679=U21 League (2020) | 1065=U19 League (2026)
+   ELEGIDA 333 Premier League · temporada 2026 (2026-07-31 a 2027-06-04) · goleadores: 20
+     D. Svityukha (Kudrivka): 1 goles, 59 min, 0 asist, penales 0, nacionalidad Ukraine
+     Fabrício Yan (Veres Rivne): 1 goles, 88 min, 0 asist, penales 0, nacionalidad Brazil
+     André Gonçalves (Veres Rivne): 1 goles, 90 min, 0 asist, penales 0, nacionalidad Portugal
+
+-- Azerbaidjan: 
+   ! el id 419 no está entre las ligas de Azerbaidjan
+
+-- Slovenia: 373=1. SNL (2026) | 374=2. SNL (2026) | 794=3. SNL - East (2026) | 795=3. SNL - West (2026)
+   ELEGIDA 373 1. SNL · temporada 2026 (2026-07-18 a 2027-05-22) · goleadores: 0
+
+-- Slovakia: 506=2. liga (2026) | 332=Super Liga (2026) | 643=3. liga - Bratislava (2021) | 644=3. liga - West (2026) | 645=3. liga - East (2026) | 646=3. liga - Center (2026) | 733=I Liga - Women (2026) | 1185=3. liga - Play-offs (2025)
+   ELEGIDA 332 Super Liga · temporada 2026 (2026-07-25 a 2027-02-27) · goleadores: 0
+
+-- Bulgaria: 173=Second League (2026, goleo) | 172=First League (2026) | 175=Third League - Northeast (2026) | 176=Third League - Northwest (2026) | 177=Third League - Southeast (2026) | 178=Third League - Southwest (2026)
+   ELEGIDA 172 First League · temporada 2026 (2026-07-17 a 2027-04-17) · goleadores: 0
+
+-- Serbia: 286=Super Liga (2026, goleo) | 287=Prva Liga (2026) | 572=Srpska Liga - Belgrade (2025) | 573=Srpska Liga - Vojvodina (2025) | 574=Srpska Liga - East (2025) | 575=Srpska Liga - West (2025) | 1241=U19 league (2026)
+   ELEGIDA 286 Super Liga · temporada 2026 (2026-07-17 a 2027-04-03) · goleadores: 20
+     Y. Silue (OFK Beograd): 6 goles, 808 min, 0 asist, penales 0, nacionalidad Côte d'Ivoire
+     D. Zukić (Vojvodina): 5 goles, 650 min, 0 asist, penales 0, nacionalidad Serbia
+     V. Bogdanović (Radnik Surdulica): 5 goles, 708 min, 0 asist, penales 2, nacionalidad Serbia
+
+-- Russia: 235=Premier League (2026, goleo) | 236=First League (2026) | 238=Youth Championship (2026, goleo) | 649=Supreme Division Women (2026) | 650=Second League - Group 3 (2026, goleo) | 651=Second League - Group 1 (2026, goleo) | 652=Second League - Group 2 (2026, goleo) | 653=Second League - Group 4 (2026, goleo)
+   ELEGIDA 235 Premier League · temporada 2026 (2026-07-25 a 2027-05-29) · goleadores: 20
+     A. Sobolev (Zenit): 7 goles, 675 min, 2 asist, penales 2, nacionalidad Russia
+     M. Glushenkov (Zenit): 6 goles, 640 min, 2 asist, penales 0, nacionalidad Russia
+     G. Agalarov (Dinamo Makhachkala): 5 goles, 460 min, 0 asist, penales 0, nacionalidad Russia
+
+-- Iceland: 164=Úrvalsdeild (2026) | 165=1. Deild (2026) | 166=2. Deild (2026) | 671=Úrvalsdeild Women (2025, goleo)
+   ELEGIDA 164 Úrvalsdeild · temporada 2026 (2026-04-10 a 2026-10-24) · goleadores: 0
+
+-- Ireland: 357=Premier Division (2026, goleo) | 358=First Division (2026)
+   ELEGIDA 357 Premier Division · temporada 2026 (2026-02-06 a 2026-10-30) · goleadores: 20
+     T. Lonergan (Waterford): 14 goles, 2232 min, 4 asist, penales 6, nacionalidad Republic of Ireland
+     C. Whelan (Bohemians): 13 goles, 2006 min, 6 asist, penales 7, nacionalidad Republic of Ireland
+     D. Horgan (Dundalk): 11 goles, 2687 min, 10 asist, penales 5, nacionalidad Republic of Ireland
+
+-- Armenia: 343=First League (2026) | 342=Premier League (2026)
+   ELEGIDA 342 Premier League · temporada 2026 (2026-07-31 a 2027-05-28) · goleadores: 0
+
+-- Kosovo: 664=Superliga (2026) | 1195=Liga E Pare (2026)
+   ELEGIDA 664 Superliga · temporada 2026 (2026-08-14 a 2026-10-15) · goleadores: 0
+
+-- Bosnia: 315=Premijer Liga (2026) | 317=1st League - RS (2026) | 316=1st League - FBiH (2026)
+   ELEGIDA 315 Premijer Liga · temporada 2026 (2026-08-07 a 2027-05-30) · goleadores: 0
+
+-- Finland: 249=Kakkonen - Lohko C (2025, goleo) | 248=Kakkonen - Lohko B (2026, goleo) | 247=Kakkonen - Lohko A (2026, goleo) | 245=Ykkönen (2026) | 244=Veikkausliiga (2026, goleo) | 640=Kansallinen Liiga (2026) | 1052=Kakkonen - Play-offs (2025, goleo) | 1087=Ykkösliiga (2026, goleo)
+   ELEGIDA 244 Veikkausliiga · temporada 2026 (2026-04-04 a 2026-11-08) · goleadores: 20
+     T. Hytönen (Ilves): 7 goles, 927 min, 0 asist, penales 2, nacionalidad Finland
+     H. Sjögrell (Inter Turku): 6 goles, 942 min, 1 asist, penales 2, nacionalidad Sweden
+     J. Moreno (KuPS): 5 goles, 718 min, 0 asist, penales 1, nacionalidad Nicaragua
+
+-- Latvia: 364=1. Liga (2026, goleo) | 365=Virsliga (2026, goleo)
+   ELEGIDA 365 Virsliga · temporada 2026 (2026-03-06 a 2026-11-08) · goleadores: 1
+     Paulo (Riga): 3 goles, None min, 1 asist, penales None, nacionalidad Brazil
+
+-- Lithuania: 361=1 Lyga (2026, goleo) | 362=A Lyga (2026)
+   ELEGIDA 362 A Lyga · temporada 2026 (2026-02-21 a 2026-11-07) · goleadores: 0
+
+-- Estonia: 329=Meistriliiga (2026, goleo) | 328=Esiliiga A (2026, goleo) | 1126=Esiliiga B (2026)
+   ELEGIDA 329 Meistriliiga · temporada 2026 (2026-03-06 a 2026-11-07) · goleadores: 1
+     Daniel Cabral (Paide): 5 goles, None min, 0 asist, penales None, nacionalidad Brazil
+
+-- Belarus: 118=2. Division (2024, goleo) | 117=1. Division (2026, goleo) | 116=Premier League (2026) | 562=Reserve League (2024)
+   ELEGIDA 116 Premier League · temporada 2026 (2026-03-21 a 2026-11-28) · goleadores: 0
+
+-- Kazakhstan: 388=1. Division (2026, goleo) | 389=Premier League (2026, goleo)
+   ELEGIDA 389 Premier League · temporada 2026 (2026-03-07 a 2026-11-01) · goleadores: 16
+     Marc Gual (Kairat Almaty): 4 goles, None min, 2 asist, penales None, nacionalidad Spain
+     N. Jambor (Altay): 3 goles, None min, 0 asist, penales None, nacionalidad Croatia
+     Léo Natel (Ordabasy): 3 goles, None min, 0 asist, penales None, nacionalidad Brazil
+
+-- Georgia: 326=Erovnuli Liga 2 (2026, goleo) | 327=Erovnuli Liga (2026, goleo) | 1104=Liga 3 (2026)
+   ELEGIDA 327 Erovnuli Liga · temporada 2026 (2026-02-28 a 2026-12-05) · goleadores: 7
+     K. Andrić (Torpedo Kutaisi): 8 goles, None min, 2 asist, penales None, nacionalidad Serbia
+     G. Arabidze (Torpedo Kutaisi): 5 goles, None min, 8 asist, penales None, nacionalidad Georgia
+     Felipe Pires (Torpedo Kutaisi): 3 goles, None min, 0 asist, penales None, nacionalidad Brazil
+
+-- Moldova: 394=Super Liga (2026) | 395=Liga 1 (2026)
+   ELEGIDA 394 Super Liga · temporada 2026 (2026-06-27 a 2026-12-05) · goleadores: 0
+
+-- Macedonia: 371=First League (2026, goleo) | 372=Second League (2026)
+   ELEGIDA 371 First League · temporada 2026 (2026-07-24 a 2026-12-12) · goleadores: 1
+     Adeshina Lukman Oluvadamilare (Tikveš): 0 goles, None min, 0 asist, penales None, nacionalidad Nigeria
+
+-- Albania: 513=2nd Division - Group B (2024, goleo) | 311=1st Division (2026) | 310=Superliga (2026, goleo) | 512=2nd Division - Group A (2024, goleo) | 978=2nd Division - Play-offs (2024, goleo)
+   ELEGIDA 310 Superliga · temporada 2026 (2026-08-22 a 2026-12-23) · goleadores: 1
+     Hidalgo Fresneda Hugo (Tirana): 0 goles, None min, 0 asist, penales None, nacionalidad Spain
+
+-- Montenegro: 355=First League (2026) | 356=Second League (2026)
+   ELEGIDA 355 First League · temporada 2026 (2026-08-02 a 2026-12-09) · goleadores: 0
+
+-- Luxembourg: 261=National Division (2026)
+   ELEGIDA 261 National Division · temporada 2026 (2026-08-01 a 2027-05-23) · goleadores: 0
+
+-- Malta: 392=Challenge League (2026) | 393=Premier League (2026)
+   ELEGIDA 393 Premier League · temporada 2026 (2026-08-14 a 2026-10-31) · goleadores: 0
+
+-- Wales: 110=Premier League (2026) | 111=FAW Championship (2026)
+   ELEGIDA 110 Premier League · temporada 2026 (2026-07-31 a 2027-03-26) · goleadores: 0
+
+-- Northern-Ireland: 561=Premier Intermediate League (2025) | 407=Championship (2026) | 408=Premiership (2026) | 1103=Premiership Women (2026)
+   ELEGIDA 408 Premiership · temporada 2026 (2026-08-07 a 2027-03-27) · goleadores: 0
+
+-- Faroe-Islands: 366=1. Deild (2026, goleo) | 367=Meistaradeildin (2026)
+   ELEGIDA 367 Meistaradeildin · temporada 2026 (2026-03-06 a 2026-10-31) · goleadores: 0
+
+-- Andorra: 312=1a Divisió (2026, goleo) | 313=2a Divisió (2024, goleo)
+   ELEGIDA 312 1a Divisió · temporada 2026 (2026-09-05 a 2027-05-16) · goleadores: 2
+     Arnau Serrano (FC Santa Coloma): 0 goles, None min, 0 asist, penales None, nacionalidad Spain
+     Antony Dias (Carroi): 0 goles, None min, 0 asist, penales None, nacionalidad France
+
+-- San-Marino: 404=Campionato (2026, goleo)
+   ELEGIDA 404 Campionato · temporada 2026 (2026-08-28 a 2026-11-08) · goleadores: 1
+     Claudio Cuzzilla (Tre Fiori): 0 goles, None min, 1 asist, penales None, nacionalidad Italy
+
+-- Gibraltar: 758=Premier Division (2026)
+   ELEGIDA 758 Premier Division · temporada 2026 (2026-08-21 a 2027-03-14) · goleadores: 0
+
+Pedidos usados: 107
