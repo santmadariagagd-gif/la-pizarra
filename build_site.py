@@ -1635,6 +1635,36 @@ if AFK:
         print("Hoy: "+", ".join(f"{d} {len(v)} partidos" for d,v in out['hoy'].items()))
     except Exception as ex:
         print("Hoy: no se pudieron obtener los partidos de los próximos días:",ex)
+    # Plantel de la Selección (8 oct 2026): API-Football en lugar de ESPN. players/squads?team=16 = la última
+    # convocatoria; el club de cada jugador sale de sus estadísticas de la temporada (players?id=&season=), el equipo
+    # donde más partidos jugó sin contar selecciones ni torneos de selecciones. ~1 pedido por jugador.
+    # Formato: [{id, n, pos (G/D/M/F), num, edad, club:{id, n, logo, liga}}]
+    out['sel_plantel']=[]
+    try:
+        import re as _re
+        _inter=_re.compile(r"friendl|world cup|nations league|gold cup|copa am|qualif|olymp|confederations|u-?2\d|u-?1\d",_re.I)
+        _sq=af("players/squads",team=16)
+        _ano=datetime.now(ZoneInfo("America/Mexico_City")).year
+        _pos={"Goalkeeper":"G","Defender":"D","Midfielder":"M","Attacker":"F"}
+        for p in ((_sq[0].get("players") if _sq else None) or []):
+            club=None
+            for _t in (_ano,_ano-1):
+                try: R=af("players",id=p.get("id"),season=_t)
+                except Exception: R=[]
+                mejor=None
+                for st in ((R[0].get("statistics") if R else None) or []):
+                    t=st.get("team") or {}; lg=st.get("league") or {}
+                    if t.get("id")==16 or lg.get("country")=="World" or _inter.search(f"{lg.get('name') or ''} {t.get('name') or ''}"): continue
+                    ap=(st.get("games") or {}).get("appearences") or 0
+                    if mejor is None or ap>mejor[0]: mejor=(ap,t,lg)
+                if mejor:
+                    t,lg=mejor[1],mejor[2]
+                    club=dict(id=t.get("id"),n=AF_EQ.get(t.get("id"),(t.get("name"),))[0] or t.get("name"),logo=t.get("logo"),liga=lg.get("name") or "")
+                    break
+            out['sel_plantel'].append(dict(id=p.get("id"),n=p.get("name") or "",pos=_pos.get(p.get("position"),"M"),num=p.get("number"),edad=p.get("age"),club=club))
+        print(f"Plantel de la Selección: {len(out['sel_plantel'])} jugadores, {sum(1 for x in out['sel_plantel'] if x['club'])} con club")
+    except Exception as ex:
+        print("Plantel de la Selección: no se pudo obtener (la página usa el de ESPN):",ex)
     # "Lo último" (7 oct 2026): titulares cortos de la semana armados con nuestros datos (noticias.py):
     # lesiones y suspensiones de Europa, rachas, goleadas, tripletes, expulsados, fichajes de la Liga MX y lesiones de la NFL.
     try:
