@@ -1635,34 +1635,61 @@ if AFK:
         print("Hoy: "+", ".join(f"{d} {len(v)} partidos" for d,v in out['hoy'].items()))
     except Exception as ex:
         print("Hoy: no se pudieron obtener los partidos de los próximos días:",ex)
-    # Plantel de la Selección (8 oct 2026): API-Football en lugar de ESPN. players/squads?team=16 = la última
-    # convocatoria; el club de cada jugador sale de sus estadísticas de la temporada (players?id=&season=), el equipo
-    # donde más partidos jugó sin contar selecciones ni torneos de selecciones. ~1 pedido por jugador.
-    # Formato: [{id, n, pos (G/D/M/F), num, edad, club:{id, n, logo, liga}}]
-    out['sel_plantel']=[]
+    # Plantel de la Selección = ÚLTIMA CONVOCATORIA (8 oct 2026). players/squads trae la lista del Mundial, así que se
+    # arma con las alineaciones (titulares + banca) de los partidos de la última fecha FIFA ya jugada: el último partido
+    # terminado de México y los que jugó en los 10 días anteriores. Edad: players?id=&season=. Club actual: último
+    # traspaso (transfers?player=); si no hay, el equipo con más partidos en la temporada (sin selecciones).
+    # Formato: out['sel_plantel']=[{id, n, pos (G/D/M/F), num, edad, club:{id,n,logo}}]
+    #          out['sel_conv']=[{fecha, rival, gm, gr}] (los partidos de esa convocatoria, del más viejo al más nuevo)
+    out['sel_plantel']=[]; out['sel_conv']=[]
     try:
         import re as _re
-        _inter=_re.compile(r"friendl|world cup|nations league|gold cup|copa am|qualif|olymp|confederations|u-?2\d|u-?1\d",_re.I)
-        _sq=af("players/squads",team=16)
-        _ano=datetime.now(ZoneInfo("America/Mexico_City")).year
-        _pos={"Goalkeeper":"G","Defender":"D","Midfielder":"M","Attacker":"F"}
-        for p in ((_sq[0].get("players") if _sq else None) or []):
-            club=None
-            for _t in (_ano,_ano-1):
-                try: R=af("players",id=p.get("id"),season=_t)
-                except Exception: R=[]
+        _inter=_re.compile(r"friendl|world cup|nations league|gold cup|copa am|qualif|olympic|confederations|u-?2\d|u-?1\d",_re.I)
+        _hoyd=datetime.now(ZoneInfo("America/Mexico_City")).date(); _ano=_hoyd.year
+        _fx=[f for f in af("fixtures",team=16,last=6,timezone="America/Mexico_City")
+             if ((f.get("fixture") or {}).get("status") or {}).get("short") in ("FT","AET","PEN")]
+        _fx.sort(key=lambda f:f["fixture"]["date"])
+        if _fx:
+            _ult=datetime.fromisoformat(_fx[-1]["fixture"]["date"]).date()
+            _vent=[f for f in _fx if (_ult-datetime.fromisoformat(f["fixture"]["date"]).date()).days<=10]
+            _J={}
+            for f in af("fixtures",ids="-".join(str(f["fixture"]["id"]) for f in _vent),timezone="America/Mexico_City"):
+                for L in f.get("lineups") or []:
+                    if (L.get("team") or {}).get("id")!=16: continue
+                    for x in (L.get("startXI") or [])+(L.get("substitutes") or []):
+                        pl=x.get("player") or {}
+                        if pl.get("id"): _J.setdefault(pl["id"],dict(id=pl["id"],n=pl.get("name") or "",pos=pl.get("pos") or "M",num=pl.get("number"),edad=None,club=None))
+            for f in _vent:
+                T=f["teams"]; G=f["goals"]; loc=T["home"]["id"]==16
+                out['sel_conv'].append(dict(fecha=f["fixture"]["date"][:10],rival=(T["away"] if loc else T["home"]).get("name") or "",
+                                            gm=G["home"] if loc else G["away"],gr=G["away"] if loc else G["home"]))
+            def _club(pid,R):
+                try:
+                    mov=[]
+                    for j in af("transfers",player=pid):
+                        for m in j.get("transfers") or []:
+                            tin=(m.get("teams") or {}).get("in") or {}
+                            if str(m.get("date") or "")[:10]<=_hoyd.isoformat() and tin.get("id") and tin.get("id")!=16 and not _inter.search(tin.get("name") or ""):
+                                mov.append((str(m.get("date"))[:10],tin))
+                    if mov:
+                        t=max(mov,key=lambda x:x[0])[1]; return dict(id=t.get("id"),n=AF_EQ.get(t.get("id"),(t.get("name"),))[0] or t.get("name"),logo=t.get("logo"))
+                except Exception: pass
                 mejor=None
                 for st in ((R[0].get("statistics") if R else None) or []):
                     t=st.get("team") or {}; lg=st.get("league") or {}
                     if t.get("id")==16 or lg.get("country")=="World" or _inter.search(f"{lg.get('name') or ''} {t.get('name') or ''}"): continue
                     ap=(st.get("games") or {}).get("appearences") or 0
-                    if mejor is None or ap>mejor[0]: mejor=(ap,t,lg)
-                if mejor:
-                    t,lg=mejor[1],mejor[2]
-                    club=dict(id=t.get("id"),n=AF_EQ.get(t.get("id"),(t.get("name"),))[0] or t.get("name"),logo=t.get("logo"),liga=lg.get("name") or "")
-                    break
-            out['sel_plantel'].append(dict(id=p.get("id"),n=p.get("name") or "",pos=_pos.get(p.get("position"),"M"),num=p.get("number"),edad=p.get("age"),club=club))
-        print(f"Plantel de la Selección: {len(out['sel_plantel'])} jugadores, {sum(1 for x in out['sel_plantel'] if x['club'])} con club")
+                    if mejor is None or ap>mejor[0]: mejor=(ap,t)
+                if mejor: t=mejor[1]; return dict(id=t.get("id"),n=AF_EQ.get(t.get("id"),(t.get("name"),))[0] or t.get("name"),logo=t.get("logo"))
+                return None
+            for J in _J.values():
+                try: R=af("players",id=J["id"],season=_ano) or af("players",id=J["id"],season=_ano-1)
+                except Exception: R=[]
+                if R: J["edad"]=(R[0].get("player") or {}).get("age")
+                J["club"]=_club(J["id"],R)
+                out['sel_plantel'].append(J)
+        print(f"Plantel de la Selección (última convocatoria): {len(out['sel_plantel'])} jugadores, partidos: "
+              +", ".join(f"{c['fecha']} vs {c['rival']} {c['gm']}-{c['gr']}" for c in out['sel_conv']))
     except Exception as ex:
         print("Plantel de la Selección: no se pudo obtener (la página usa el de ESPN):",ex)
     # "Lo último" (7 oct 2026): titulares cortos de la semana armados con nuestros datos (noticias.py):

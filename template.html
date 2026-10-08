@@ -3829,6 +3829,13 @@ function clubsOf(slug){
 let selSqLoaded=false;
 // Plantel (8 oct 2026): sale de API-Football (D.sel_plantel, lo arma build_site.py cada mañana: última convocatoria y
 // el club donde más ha jugado cada uno esta temporada). Si viene vacío, se usa el de ESPN de abajo.
+// Partidos de esa convocatoria (D.sel_conv): "Convocados para los partidos contra Chile (13 oct) y …"
+function selConvTxt(){
+  const C=D.sel_conv||[]; if(!C.length) return "Última convocatoria.";
+  const f=d=>new Intl.DateTimeFormat("es-MX",{day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(d+"T12:00:00Z")).replace(".","");
+  const L=C.map(c=>`${hoyEsc(esTeam(c.rival))} (${f(c.fecha)}, ${c.gm}-${c.gr})`);
+  return `Convocados en ${C.length>1?"los partidos":"el partido"} contra ${L.length>1?L.slice(0,-1).join(", ")+" y "+L.at(-1):L[0]}.`;
+}
 function selSquadAF(){
   const A=D.sel_plantel||[]; if(!A.length) return false;
   const G=[["G","Porteros"],["D","Defensas"],["M","Medios"],["F","Delanteros"]];
@@ -3836,7 +3843,7 @@ function selSquadAF(){
     return `<tr><td class="l"><span class="nm">${hoyEsc(a.n)}</span></td><td class="l">${club}</td><td>${a.edad??"–"}</td></tr>`;};
   $("#mxSquad").innerHTML=G.map(([g,t])=>{const L=A.filter(a=>a.pos===g); if(!L.length) return "";
     return `<h4 class="stat-cat">${t} · ${L.length}</h4><div class="tbl"><table data-freeze="1"><thead><tr><th class="l">Jugador</th><th class="l">Club</th><th>Edad</th></tr></thead><tbody>${L.map(row).join("")}</tbody></table></div>`;}).join("")
-    +`<p class="note">Última convocatoria registrada. El club es donde más partidos ha jugado esta temporada.</p>`;
+    +`<p class="note">${selConvTxt()} El club es el actual (último traspaso registrado).</p>`;
   $("#mxSquad").querySelectorAll(".tbl").forEach(freezeTable);
   $("#mxsqMsg").textContent=""; return true;
 }
