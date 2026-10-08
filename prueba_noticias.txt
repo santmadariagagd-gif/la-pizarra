@@ -1,0 +1,135 @@
+=== PRUEBA DE NOTICIAS PROPIAS (API-Football) · 2026-10-07 ===
+
+=========== 1. Lesiones (injuries) por liga · temporada 2026 ===========
+Cobertura = lo que API-Football dice que trae; Registros = cuántas lesiones hay en la temporada;
+Últimos 7 días = registros ligados a partidos de la última semana o la que viene.
+
+-- Liga MX (id 262) · cobertura: False · registros: 0 · últimos 7 días: 0
+   tipos: {}
+   razones más comunes: {}
+
+-- Premier League (id 39) · cobertura: True · registros: 665 · últimos 7 días: 136
+   tipos: {'Missing Fixture': 589, 'Questionable': 76}
+   razones más comunes: {'Knee Injury': 150, 'Injury': 106, 'Muscle Injury': 85, 'Ankle Injury': 59, 'Hamstring Injury': 33, 'Back Injury': 32, 'Calf Injury': 31, 'Thigh Injury': 24}
+   · 2026-10-10 · Manchester United · T. Heaton · Missing Fixture · Abdominal strain
+   · 2026-10-10 · Manchester United · K. Mainoo · Missing Fixture · Injury
+   · 2026-10-10 · Manchester United · M. Rashford · Missing Fixture · Health problems
+   · 2026-10-10 · Manchester United · M. Ugarte · Missing Fixture · Knee Injury
+   · 2026-10-10 · Manchester United · M. de Ligt · Missing Fixture · Back Injury
+   · 2026-10-10 · Manchester United · K. Darlow · Questionable · Injury
+
+-- La Liga (id 140) · cobertura: True · registros: 660 · últimos 7 días: 54
+   tipos: {'Missing Fixture': 638, 'Questionable': 22}
+   razones más comunes: {'Knee Injury': 183, 'Muscle Injury': 133, 'Injury': 69, 'Hamstring Injury': 65, 'Ankle Injury': 31, 'Red Card': 27, "Coach's decision": 22, 'Shoulder Injury': 20}
+   · 2026-10-10 · Barcelona · R. Bardghji · Missing Fixture · Knee Injury
+   · 2026-10-10 · Barcelona · A. Christensen · Missing Fixture · Muscle Injury
+   · 2026-10-10 · Barcelona · F. de Jong · Missing Fixture · Knee Injury
+   · 2026-10-10 · Barcelona · J. Garcia · Questionable · Knee Injury
+   · 2026-10-10 · Barcelona · Raphinha · Questionable · Muscle Injury
+   · 2026-10-10 · Getafe · Juanmi · Missing Fixture · Knee Injury
+
+-- Serie A (id 135) · cobertura: True · registros: 811 · últimos 7 días: 86
+   tipos: {'Missing Fixture': 783, 'Questionable': 28}
+   razones más comunes: {'Jumpers Knee': 204, 'Muscle Injury': 86, 'Knee Injury': 76, 'Muscle Bruise': 53, 'Thigh Injury': 42, 'Inactive': 37, 'Injury': 36, 'Back Injury': 29}
+   · 2027-05-30 · Sassuolo · E. Pieragnolo · Missing Fixture · Jumpers Knee
+   · 2027-05-16 · Torino · P. Pellegri · Missing Fixture · Jumpers Knee
+   · 2027-04-18 · Sassuolo · Fali Candé · Missing Fixture · Jumpers Knee
+   · 2027-03-14 · Sassuolo · D. Boloca · Missing Fixture · Muscle Bruise
+   · 2027-03-14 · Sassuolo · Y. Paz · Missing Fixture · Jumpers Knee
+   · 2027-03-07 · Fiorentina · R. Sottil · Missing Fixture · Back Injury
+
+-- Bundesliga (id 78) · cobertura: True · registros: 598 · últimos 7 días: 130
+   tipos: {'Missing Fixture': 524, 'Questionable': 74}
+   razones más comunes: {'Muscle Injury': 156, 'Knee Injury': 114, 'Injury': 46, 'Thigh Injury': 37, 'Ankle Injury': 29, 'Illness': 26, 'Calf Injury': 24, 'Back Injury': 19}
+   · 2026-10-10 · RB Leipzig · M. Guiu · Missing Fixture · Hamstring Injury
+   · 2026-10-10 · RB Leipzig · A. Ouedraogo · Missing Fixture · Shoulder Injury
+   · 2026-10-10 · RB Leipzig · C. Baumgartner · Questionable · Thigh Injury
+   · 2026-10-10 · RB Leipzig · B. Gruda · Questionable · Muscle Injury
+   · 2026-10-10 · RB Leipzig · R. Reitz · Questionable · Muscle Injury
+   · 2026-10-10 · Eintracht Frankfurt · J. Maluze · Questionable · Thigh Injury
+
+-- Ligue 1 (id 61) · cobertura: True · registros: 536 · últimos 7 días: 66
+   tipos: {'Missing Fixture': 498, 'Questionable': 38}
+   razones más comunes: {'Injury': 136, 'Knee Injury': 79, 'Muscle Injury': 61, 'Inactive': 60, 'Thigh Injury': 27, 'Calf Injury': 25, "Coach's decision": 20, 'Red Card': 15}
+   · 2026-10-10 · Stade Brestois 29 · B. Chardonnet · Missing Fixture · Calf Injury
+   · 2026-10-10 · Stade Brestois 29 · R. Le Guen · Missing Fixture · Injury
+   · 2026-10-10 · Stade Brestois 29 · R. Cagnon · Questionable · Shoulder Injury
+   · 2026-10-10 · Stade Brestois 29 · M. Diambou · Questionable · Ankle Injury
+   · 2026-10-10 · Stade Brestois 29 · G. Versini · Questionable · Leg Injury
+   · 2026-10-10 · Lorient · B. Fadiga · Questionable · Injury
+
+-- Champions League (id 2) · cobertura: True · registros: 398 · últimos 7 días: 0
+   tipos: {'Missing Fixture': 398}
+   razones más comunes: {'Off the roster': 74, 'Knee Injury': 69, 'Muscle Injury': 54, 'Injury': 43, 'Red Card': 25, 'Inactive': 22, 'Thigh Injury': 18, 'Achilles Tendon Injury': 12}
+   · 2026-09-10 · Bayern München · T. Buchmann · Missing Fixture · Knee Injury
+   · 2026-09-10 · Bayern München · S. Gnabry · Missing Fixture · Muscle Injury
+   · 2026-09-10 · Bodo/Glimt · H. Evjen · Missing Fixture · Knee Injury
+   · 2026-09-10 · Bodo/Glimt · J. Gundersen · Missing Fixture · Thigh Injury
+   · 2026-09-10 · Bodo/Glimt · A. Mikkelsen · Missing Fixture · Groin Injury
+   · 2026-09-10 · Bodo/Glimt · M. Riisnaes · Missing Fixture · Knee Injury
+
+-- Liga Portugal (id 94) · cobertura: False · registros: 0 · últimos 7 días: 0
+   tipos: {}
+   razones más comunes: {}
+
+-- Liga Argentina (id 128) · cobertura: False · registros: 0 · últimos 7 días: 0
+   tipos: {}
+   razones más comunes: {}
+
+=========== 2. Lesiones de partidos de hoy (todas las ligas del mundo) ===========
+Registros: 140 · de nuestras ligas: 0
+
+=========== 3. Fichajes (transfers) · 5 equipos de la Liga MX ===========
+
+-- Guadalajara Chivas (id 2278) · movimientos en los últimos 150 días: 21
+   · 2026-09-01 · A. Mozo · Guadalajara Chivas → Cruz Azul · Loan
+   · 2026-08-31 · A. Mozo · CF Pachuca → Guadalajara Chivas · Return from loan
+   · 2026-08-21 · A. González · Guadalajara Chivas → Olympiakos Piraeus · Transfer
+   · 2026-07-29 · L. Sepúlveda · Guadalajara Chivas → Leones Negros UDG · Transfer
+   · 2026-07-18 · E. García · Guadalajara Chivas → Tapatío · Free agent
+   · 2026-07-13 · G. Sepúlveda · Guadalajara Chivas → FC Juarez · Loan
+
+-- Tigres UANL (id 2279) · movimientos en los últimos 150 días: 13
+   · 2026-09-08 · G. Martínez · U.N.A.M. - Pumas → Tigres UANL · Transfer
+   · 2026-09-08 · E. Gómez · Puebla → Tigres UANL · Transfer
+   · 2026-08-26 · R. Monreal · Necaxa → Tigres UANL · Transfer
+   · 2026-07-28 · J. Purata · Tigres UANL → Atlas · Loan
+   · 2026-07-23 · Á. Correa · Tigres UANL → River Plate · Transfer
+   · 2026-07-23 · M. Laínez · Mazatlán → Tigres UANL · Free agent
+
+-- Club Tijuana (id 2280) · movimientos en los últimos 150 días: 17
+   · 2026-08-31 · A. Loba · Club Tijuana → East Bengal II · Free agent
+   · 2026-08-12 · Josef Martínez · Club Tijuana → Columbus Crew · Free agent
+   · 2026-08-06 · F. González · O'Higgins → Club Tijuana · Transfer
+   · 2026-08-03 · Elias Manoel · Botafogo → Club Tijuana · Transfer
+   · 2026-07-31 · J. Corona · Club Tijuana → Club Tijuana · -
+   · 2026-07-20 · N. Díaz · Club Tijuana → Alianza Lima · Loan
+
+-- Toluca (id 2281) · movimientos en los últimos 150 días: 18
+   · 2026-09-19 · E. Segura · Toluca → Toluca · Transfer
+   · 2026-07-29 · F. Viñas · Leon → Toluca · Transfer
+   · 2026-07-29 · F. Viñas · Club Leon → Toluca · Transfer
+   · 2026-07-28 · F. Rossi · Toluca → Chapecoense-sc · Loan
+   · 2026-07-19 · A. Álvarez · Toluca → Cancún · Free agent
+   · 2026-07-11 · J. Estrada · Toluca → Necaxa U21 · -
+
+-- Monterrey (id 2282) · movimientos en los últimos 150 días: 23
+   · 2026-09-11 · Santiago Perez · Monterrey → Venados FC · Free agent
+   · 2026-08-11 · A. De Nigris · Monterrey U21 → Monterrey · Raise
+   · 2026-08-07 · M. Rodríguez · Monterrey → Monarcas · -
+   · 2026-07-31 · S. Lomelin · Monterrey → Monterrey · Transfer
+   · 2026-07-27 · S. Mele · Monterrey → Independiente · Loan
+   · 2026-07-22 · H. Cuypers · Chicago Fire → Monterrey · Transfer
+
+=========== Resumen ===========
+Liga MX            cobertura False ·    0 lesiones en la temporada ·   0 en la última semana
+Premier League     cobertura True  ·  665 lesiones en la temporada · 136 en la última semana
+La Liga            cobertura True  ·  660 lesiones en la temporada ·  54 en la última semana
+Serie A            cobertura True  ·  811 lesiones en la temporada ·  86 en la última semana
+Bundesliga         cobertura True  ·  598 lesiones en la temporada · 130 en la última semana
+Ligue 1            cobertura True  ·  536 lesiones en la temporada ·  66 en la última semana
+Champions League   cobertura True  ·  398 lesiones en la temporada ·   0 en la última semana
+Liga Portugal      cobertura False ·    0 lesiones en la temporada ·   0 en la última semana
+Liga Argentina     cobertura False ·    0 lesiones en la temporada ·   0 en la última semana
+
+Pedidos usados en esta prueba: 25
