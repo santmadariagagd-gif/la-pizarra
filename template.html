@@ -9,6 +9,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#1F332D">
+<!-- App instalable (8 oct 2026): manifest, íconos y service worker en docs/ (raíz del sitio) -->
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/iconos/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="La Pizarra">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{
   /* Un solo tema: el verde pizarrón (decisión del 1 oct 2026; el tema claro se quitó porque varias cosas no se veían bien) */
@@ -930,6 +937,13 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .back:hover{border-color:var(--mark);color:var(--mark)}
 .back[hidden]{display:none}
 .bnav{display:none}
+.pzinst{position:fixed;left:12px;right:12px;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;align-items:center;gap:12px;background:#16201d;border:1px solid var(--mark);border-radius:16px;padding:12px 12px 12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.pzinst[hidden]{display:none}
+.pzinst img{width:40px;height:40px;border-radius:10px;flex:none}
+.pzinst .t{flex:1;min-width:0;font-size:14px;line-height:1.3;color:var(--muted)}.pzinst .t b{display:block;color:var(--ink);font:700 17px/1.2 var(--display)}
+.pzinst .si{min-height:40px;padding:0 14px;border-radius:20px;border:0;background:var(--mark);color:#1d2a26;font:700 15px var(--display);cursor:pointer}
+.pzinst .no{width:36px;height:40px;border:0;background:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer}
+@media (min-width:721px){.pzinst{left:auto;right:24px;bottom:24px;max-width:380px}}
 @media (max-width:720px){
   .hsem .hx:not(.on){display:none}
 }
@@ -1274,6 +1288,11 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <nav class="bnav" aria-label="Secciones">
   <button aria-selected="true" data-sport="hoy">Hoy</button><button aria-selected="false" data-sport="mx">Fútbol</button><button aria-selected="false" data-sport="nfl">NFL</button><button aria-selected="false" data-sport="ff">Fantasy</button><button aria-selected="false" data-sport="qn">Quiniela</button>
 </nav>
+<div class="pzinst" id="pzInst" hidden role="dialog" aria-label="Instalar La Pizarra">
+  <img src="/iconos/icono-192.png" alt="">
+  <span class="t"><b>Instala La Pizarra</b><span id="pzInstTxt">Ábrela desde tu pantalla de inicio, como una app.</span></span>
+  <button class="si" id="pzInstSi">Instalar</button><button class="no" id="pzInstNo" aria-label="Ahora no">×</button>
+</div>
 <footer>La Pizarra · <a href="/privacidad.html">Aviso de privacidad</a> · <a href="/terminos.html">Términos y condiciones</a> · <a href="mailto:santmadariagagd@gmail.com">Contacto</a></footer>
 </div>
 
@@ -5688,6 +5707,31 @@ $("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport
   if(!GR.join){ const {tab,liga}=navDeHash(); if(SECTIONS.includes(tab)&&tab!=="hoy") navIr(tab,liga); else showSport("hoy"); }
   history.replaceState({tab:NAV.cur,liga:NAV.liga,n:0},"",NAV.cur==="hoy"?location.pathname+location.search:navHash(NAV.cur));
   NAV.listo=true; navBtn();
+})();
+// ---------- App instalable (8 oct 2026) ----------
+// El service worker (docs/sw.js) deja instalar la página y abrirla sin internet con la última copia; siempre pide
+// primero lo nuevo a internet. La invitación sale en el celular a partir de la 2ª visita, se puede cerrar
+// (vuelve a los 30 días) y no sale si ya se abrió como app. Android: botón Instalar del navegador;
+// iPhone (Safari): explica Compartir → Agregar a inicio.
+(()=>{
+  const app=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  try{ const q=new URLSearchParams(location.search); if(q.get("app")==="1"){ q.delete("app"); history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash); } }catch(e){}
+  if(app) pzTrack("abre_app",{});
+  if("serviceWorker" in navigator&&/(^|\.)lapizarra\.mx$/.test(location.hostname)) addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));
+  if(app) return;
+  const caja=$("#pzInst"), ios=/iP(hone|ad|od)/.test(navigator.userAgent)&&!/CriOS|FxiOS|EdgiOS/.test(navigator.userAgent);
+  let aviso=null, visitas=0, cerrado=0;
+  try{ visitas=+(localStorage.getItem("pz_visitas")||0)+1; localStorage.setItem("pz_visitas",visitas); cerrado=+(localStorage.getItem("pz_inst_no")||0); }catch(e){}
+  const puede=()=>visitas>=2&&Date.now()-cerrado>30*864e5&&matchMedia("(max-width:720px)").matches;
+  const muestra=()=>{ if(!puede()) return; caja.hidden=false; pzTrack("instalar_invita",{ios}); };
+  addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); aviso=e; setTimeout(muestra,4000); });
+  if(ios) setTimeout(muestra,4000);
+  $("#pzInstSi").onclick=async()=>{
+    if(aviso){ aviso.prompt(); const r=await aviso.userChoice.catch(()=>null); pzTrack("instalar",{r:r?.outcome||"?"}); aviso=null; caja.hidden=true; return; }
+    if(ios){ $("#pzInstTxt").innerHTML='Toca <b style="display:inline;font:inherit;color:var(--mark)">Compartir</b> (el cuadro con la flecha, abajo en Safari) y luego <b style="display:inline;font:inherit;color:var(--mark)">Agregar a inicio</b>.'; $("#pzInstSi").hidden=true; pzTrack("instalar",{r:"ios"}); }
+  };
+  $("#pzInstNo").onclick=()=>{ caja.hidden=true; try{ localStorage.setItem("pz_inst_no",Date.now()); }catch(e){} pzTrack("instalar_no",{}); };
+  addEventListener("appinstalled",()=>{ caja.hidden=true; pzTrack("instalada",{}); });
 })();
 </script>
 </body>
