@@ -734,6 +734,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .hrec{display:flex;align-items:center;gap:14px;width:100%;background:var(--bg);border:1px dashed var(--mark);border-radius:14px;padding:12px 14px;color:var(--ink);text-align:left;font:inherit;cursor:pointer}
 .hrec>b{font:700 28px/1 var(--display);color:var(--mark);white-space:nowrap}
 .hrec em{font-style:normal;font-weight:600;color:var(--mark)}
+.hrec .hrect{display:block;margin:3px 0 2px;font-weight:700;color:var(--ink)}
 /* Lo de La Pizarra */
 .hlpz{display:flex;flex-direction:column;gap:12px}
 .hbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;color:var(--ink);text-align:left;font:inherit}
@@ -5772,7 +5773,9 @@ function hoyNflHTML(){
   let G=(D.sched||[]).filter(x=>x.w===w&&pend(x)).sort(orden).slice(0,5);
   if(G.length<4) G=G.concat((D.sched||[]).filter(x=>x.w===w+1&&pend(x)).sort(orden).slice(0,5-G.length));
   const U=hoyLpzUlt();
-  const rec=U?`<button class="hrec" data-hact="lpz"><b>${U.txt}</b><span><span>contra el spread: los picks de La Pizarra ${U.va?"van así":""} en la semana ${U.w}.</span> <em>Ver los de esta semana</em></span></button>`:"";
+  const T=U?lpzRecord("ats"):null, tj=T?T.w+T.l:0;   // récord de la temporada (para que una mala semana no parezca desastre)
+  const tem=T&&(T.w+T.l+T.p)>(U.R.w+U.R.l+U.R.p)?`<span class="hrect">${T.w}-${T.l}${T.p?`-${T.p}`:""} en la temporada${tj?` (${Math.round(T.w/tj*100)}%)`:""}</span>`:"";
+  const rec=U?`<button class="hrec" data-hact="lpz"><b>${U.txt}</b><span><span>contra el spread: los picks de La Pizarra ${U.va?"van así":""} en la semana ${U.w}.</span>${tem} <em>Ver los de esta semana</em></span></button>`:"";
   return `<section class="hsec"><div class="hh"><h3>NFL · Semana ${w}</h3><button class="hlink" data-hact="nfl" data-w="${w}">Ver semana</button></div>
     <div class="hnflw">${rec}<div class="hlist dos">${hoyUlt(G.map(x=>hoyNflFila(x,false))).join("")}</div></div></section>`;
 }
