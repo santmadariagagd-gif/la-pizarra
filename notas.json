@@ -1,47 +1,53 @@
 {
-  "instrucciones": "Edita esta lista cada semana. Escribe el nombre del jugador igual que aparece en la página para que salga su % de ligas con dueño.",
-  "notas": [
-    {
-      "jugador": "Emanuel Wilson",
-      "posicion": "RB",
-      "equipo": "SEA",
-      "texto": "Jadarian Price se fue a la lista de lesionados (pecho) y Wilson se quedó con el trabajo principal: 21 acarreos, 81 yardas, 2 TD y 27 puntos PPR contra los Chargers, jugando el 60% de los snaps. Seattle firmó a Joe Mixon y Zach Charbonnet está cerca de regresar, así que no es para siempre, pero estas semanas debería tener 15+ toques. Es la prioridad de la semana."
-    },
-    {
-      "jugador": "Will Shipley",
-      "posicion": "RB",
-      "equipo": "PHI",
-      "texto": "Saquon Barkley salió en el segundo cuarto por el isquiotibial y Tank Bigsby necesita cirugía y se va a la lista de lesionados al menos un mes. Shipley jugó el 48% de los snaps. Si Barkley no juega en Jacksonville, Shipley sería el corredor principal. Su estado se aclara esta semana: agrégalo ya, que está libre casi en todas las ligas."
-    },
-    {
-      "jugador": "Keon Coleman",
-      "posicion": "WR",
-      "equipo": "BUF",
-      "texto": "DJ Moore se volvió a lastimar el hombro y podría perderse varias semanas. Coleman ya lo aprovechó: 6 recepciones de 7 blancos, 116 yardas y un TD contra New England, y fue el receptor de Buffalo con más snaps (78%). Con Josh Allen lanzando, vale la pena."
-    },
-    {
-      "jugador": "Tre' Harris",
-      "posicion": "WR",
-      "equipo": "LAC",
-      "texto": "Ladd McConkey salió con una lesión en el pie y Jim Harbaugh dijo que va semana a semana. Harris jugó el 93% de los snaps, más que cualquier receptor de los Chargers. Si McConkey no juega, Harris debería recibir muchos más blancos."
-    },
-    {
-      "jugador": "Mike Gesicki",
-      "posicion": "TE",
-      "equipo": "CIN",
-      "texto": "Lleva un TD en cada uno de sus tres partidos (11 recepciones, 155 yardas) y en la semana 4 jugó su mayor porcentaje de snaps del año (62%). Ja'Marr Chase tiene una conmoción y Tee Higgins una lesión en el aductor, así que puede haber más pases para él. Buena opción si buscas tight end para esta semana."
-    },
-    {
-      "jugador": "Tyler Higbee",
-      "posicion": "TE",
-      "equipo": "LAR",
-      "texto": "Terrance Ferguson se fue a la lista de lesionados por el tobillo y Higbee queda como el tight end principal de los Rams. Recibió 17 blancos en las últimas dos semanas (13 recepciones, 129 yardas y un TD)."
-    },
-    {
-      "jugador": "Kirk Cousins",
-      "posicion": "QB",
-      "equipo": "LV",
-      "texto": "Ha lanzado al menos 2 TD en los cuatro partidos (11 en total) y contra Kansas City sumó 365 yardas. Si tu quarterback descansa o está lastimado, es la mejor opción disponible en muchas ligas."
-    }
-  ]
+ "instrucciones": "Edita esta lista cada semana. Escribe el nombre del jugador igual que aparece en la página para que salga su % de ligas con dueño.",
+ "notas": [
+  {
+   "jugador": "Woody Marks",
+   "posicion": "RB",
+   "equipo": "HOU",
+   "texto": "David Montgomery se lastimó la ingle contra Tennessee y va semana a semana. Marks se quedó con el trabajo: 15 acarreos para 62 yardas y 4 recepciones para 23, jugando el 85% de los snaps. Visita a Jacksonville, que no es fácil, pero con ese volumen es titular mientras Montgomery no regrese. Es la prioridad de la semana si está libre en tu liga."
+  },
+  {
+   "jugador": "Dameon Pierce",
+   "posicion": "RB",
+   "equipo": "PHI",
+   "texto": "Los Eagles se quedaron sin corredores: Saquon Barkley no practicó el miércoles (isquiotibial), Will Shipley tiene un desgarro en la planta del pie y estará fuera un rato, y Tank Bigsby está en la lista de lesionados. Pierce jugó 48 snaps en su debut con Philadelphia, aunque solo sacó 14 yardas en 11 acarreos. Recibe a Carolina. Si Barkley no juega, es el corredor principal; si juega, Pierce casi no vale."
+  },
+  {
+   "jugador": "Germie Bernard",
+   "posicion": "WR",
+   "equipo": "PIT",
+   "texto": "Michael Pittman se fue a la lista de lesionados (fascitis plantar) y Roman Wilson se lastimó la muñeca. Bernard, novato, aprovechó: 6 recepciones de 9 blancos para 80 yardas y jugó el 92% de los snaps (la semana anterior, 40%). Con Aaron Rodgers lanzando, debería tener un rol de tiempo completo."
+  },
+  {
+   "jugador": "Kendrick Bourne",
+   "posicion": "WR",
+   "equipo": "ARI",
+   "texto": "Arizona cambió a Marvin Harrison Jr. a Houston y Bourne queda como el segundo receptor detrás de Michael Wilson. En la semana 5 lideró a los Cardinals con 5 recepciones y 70 yardas en 8 blancos. Está libre casi en todas las ligas. El duelo contra los Rams es complicado, así que es más para ligas profundas."
+  },
+  {
+   "jugador": "Jameis Winston",
+   "posicion": "QB",
+   "equipo": "NYG",
+   "texto": "Cuatro equipos descansan esta semana (Cincinnati, Detroit, Miami y Minnesota), así que muchos necesitan quarterback. Winston sumó 18 puntos en la semana 4 y 25.7 en la 5, y recibe a New Orleans. Lanza muchas intercepciones, pero también muchos pases: es el mejor quarterback libre de la semana."
+  },
+  {
+   "jugador": "Pat Freiermuth",
+   "posicion": "TE",
+   "equipo": "PIT",
+   "texto": "Lleva cuatro touchdowns en cinco partidos y en la semana 5 hizo 21.5 puntos (5 recepciones de 7 blancos, 44 yardas y un TD). Con Pittman y Roman Wilson fuera, Pittsburgh necesita a quién lanzarle. Visita a Tampa Bay. Buena opción si tu tight end descansa esta semana."
+  },
+  {
+   "jugador": "Brenton Strange",
+   "posicion": "TE",
+   "equipo": "JAC",
+   "texto": "Recibió 8 blancos en cada uno de los últimos dos partidos y atrapó 7 en ambos (163 yardas en total). Pocos tight ends tienen ese volumen. Esta semana recibe a Houston, que defiende bien, así que es más para tenerlo el resto del año que para ponerlo ya."
+  },
+  {
+   "jugador": "Kendre Miller",
+   "posicion": "RB",
+   "equipo": "NO",
+   "texto": "Tuvo 10 acarreos, 30 yardas y un touchdown en la semana 5, más trabajo que Alvin Kamara. Travis Etienne está en la lista de lesionados, así que Miller puede seguir creciendo. Visita a los Giants. Es para ligas profundas o para tenerlo en la banca."
+  }
+ ]
 }
