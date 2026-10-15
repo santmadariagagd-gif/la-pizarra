@@ -1412,6 +1412,9 @@ const LEAGUES={
   // Champions: fase de liga de 36 + eliminación directa. Desde el 2 oct 2026 sale de API-Football (af: 2); sin las rondas
   // clasificatorias de julio y agosto (sinPrevias). Con ?fuente=sm vuelve a ESPN (tipo y pestañas de antes).
   ucl:{slug:"uefa.champions",label:"Champions League",liguilla:false,players:true,pr:false,photos:false,rk:null,cup:true,af:2,sinPrevias:true,tipo:"liga",pais:"EU",cid:null,region:"Europa",cids:["826","724","380","276","250","620"]},
+  // Europa League y Conference League (15 oct 2026): mismo formato que la Champions (fase de liga de 36 + eliminación directa)
+  uel:{slug:"uefa.europa",label:"Europa League",liguilla:false,players:true,pr:false,photos:false,rk:null,cup:true,af:3,sinPrevias:true,tipo:"liga",pais:"EU",cid:null,region:"Europa",cids:["826","724","380","276","250","620"]},
+  uecl:{slug:"uefa.europa.conf",label:"Conference League",liguilla:false,players:true,pr:false,photos:false,rk:null,cup:true,af:848,sinPrevias:true,tipo:"liga",pais:"EU",cid:null,region:"Europa",cids:["826","724","380","276","250","620"]},
   arg:{slug:"",label:"Liga Profesional Argentina",liguilla:true,players:true,pr:false,photos:false,rk:null,sm:636,af:128,anual:true,zonas:true,tipo:"torneo",pais:"AR",cid:"032",region:"Sudamérica"},
   // cids: países del mapa donde también aparece el torneo (internacionales)
   lib:{slug:"",label:"Copa Libertadores",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1122,af:13,tipo:"torneo",pais:"SUD",cid:null,region:"Sudamérica",cids:["032","076","170","152","858","600","218","604","068","862"]},
@@ -1449,7 +1452,7 @@ function loadMxHonors(){
   $("#mxHonorsWrap").style.display=nat?"none":""; $("#mxhonorsNote").style.display=nat?"none":""; $("#selHonors").style.display=nat?"":"none";
   if(nat) return loadSelHonors();
   $("#mxhonorsTitle").textContent=`Palmarés · ${flLabel()}`;
-  $("#mxhonorsNote").textContent=LEAGUES[FLIG].cup?"Copas de Europa / Champions League ganadas por club, de mayor a menor.":"Campeonatos de liga ganados por equipo, de mayor a menor. No incluye copas ni torneos internacionales.";
+  $("#mxhonorsNote").textContent=FLIG==="uel"?"Copas UEFA / Europa League ganadas por club (desde 1972), de mayor a menor.":FLIG==="uecl"?"Conference League ganadas por club (desde 2022).":LEAGUES[FLIG].cup?"Copas de Europa / Champions League ganadas por club, de mayor a menor.":"Campeonatos de liga ganados por equipo, de mayor a menor. No incluye copas ni torneos internacionales.";
   renderHonors("mxHonorsTable",D.palmares?.[FLIG]||[]);
 }
 function loadNflPlayoffs(){
@@ -5283,7 +5286,7 @@ function svBind(g){
 // Orden: filtro Todo/Fútbol/NFL → En vivo → Partidos de la semana (Liga MX, Del mundo, NFL; D.semana lo escoge
 // build_site.py y se congela toda la semana) → partidos de hoy, resultados de ayer y mañana (renglones) → NFL de la
 // semana → "Lo de La Pizarra": el dato del día (automático), Power Ranking con mini-gráfica, Quiniela y Survivor.
-const HOY_ORDEN=["mx","sel","ucl","eng","esp","ita","ger","fra","lib","ccc","lgc","arg","por","sau","fac","efl","cdr","sup","cit","dfb","cdf"];
+const HOY_ORDEN=["mx","sel","ucl","uel","uecl","eng","esp","ita","ger","fra","lib","ccc","lgc","arg","por","sau","fac","efl","cdr","sup","cit","dfb","cdf"];
 const HOY_FILAS=6;   // renglones por competencia antes de "Ver los N"
 const HOY={ev:new Map(),dia:null,extra:new Map(),otros:new Map(),abiertos:new Set(),pedido:{},init:false,busy:false,tab:null,mx:null,prh:null,
   f:(()=>{try{return localStorage.getItem("pz_hoyf")||"todo";}catch(e){return "todo";}})()};
@@ -5453,7 +5456,7 @@ function hoyGrupos(ev,clave,ver){
 }
 // ---- Marcador: una sola caja con pestañas Ayer · Hoy · Mañana y botones por liga (mide lo mismo con 4 o 50 partidos) ----
 const MARC_MAX=8;
-const MARC_CORTO={mx:"Liga MX",sel:"Selección",ucl:"Champions",eng:"Premier",esp:"LaLiga",ita:"Serie A",ger:"Bundesliga",fra:"Ligue 1",lib:"Libertadores",
+const MARC_CORTO={mx:"Liga MX",sel:"Selección",ucl:"Champions",uel:"Europa League",uecl:"Conference",eng:"Premier",esp:"LaLiga",ita:"Serie A",ger:"Bundesliga",fra:"Ligue 1",lib:"Libertadores",
   ccc:"Concachampions",lgc:"Leagues Cup",arg:"Argentina",por:"Portugal",sau:"Arabia",fac:"FA Cup",efl:"Carabao Cup",cdr:"Copa del Rey",sup:"Supercopa",cit:"Coppa Italia",dfb:"DFB-Pokal",cdf:"Coupe de France"};   // renglones antes de "Ver los N"
 function marcDias(){
   const hoy=hoyYmd(), ayer=hoyYmd(Date.now()-864e5), man=hoyYmd(Date.now()+864e5);
@@ -5723,7 +5726,7 @@ function goRender(){
       ${M.length?`<div class="golist">${M.map(r=>goFila(r,pos.get(r[0]),lider)).join("")}</div>`:`<p class="umsg"><b>Sin datos todavía</b>Se actualizan cada mañana.</p>`}
       <p class="gonota">Incluye a los convocados de la Selección que juegan en ligas de Europa y a cualquier mexicano entre los 20 mejores goleadores de su liga.</p>`;
   } else {
-    const G=D.goleo||{}, orden=["mx","esp","eng","ita","ger","fra","por","ucl","arg","sau","lib","ccc"].filter(k=>G[k]?.top?.length);
+    const G=D.goleo||{}, orden=["mx","esp","eng","ita","ger","fra","por","ucl","uel","uecl","arg","sau","lib","ccc"].filter(k=>G[k]?.top?.length);
     $("#goBody").innerHTML=`<div class="gohead"><div><h3>Goleo por liga</h3><small>Los 5 primeros de cada torneo</small></div></div><div class="golig">${orden.map(k=>{const x=G[k], t=x.top, d=t.length>1?t[0][1]-t[1][1]:0;
       const emp=t.filter(y=>y[1]===t[0][1]).length;
       const dif=emp>1?(emp>=t.length?`Empate en la cima con ${t[0][1]}`:`${emp} empatados con ${t[0][1]}`):d>0?`${hoyEsc(t[0][0].split(" ").slice(-1)[0])} le saca ${d}`:"";
@@ -5740,7 +5743,7 @@ $("#mxgoleo").addEventListener("input",ev=>{ if(ev.target.id!=="goQ") return; GO
 const ULT_TIPO={lesion:["Lesión",'<circle cx="8" cy="8" r="6.5"/><path d="M8 5v6M5 8h6"/>'],suspension:["Suspendido",'<rect x="4" y="2" width="8" height="12" rx="1.5"/>'],
   racha:["Racha",'<path d="M2 12l4-4 3 3 5-6"/><path d="M10 5h4v4"/>'],goles:["Goles",'<circle cx="8" cy="8" r="6.5"/><path d="M8 4.5l3 2.2-1.2 3.6H6.2L5 6.7z"/>'],
   fichaje:["Fichaje",'<path d="M2 5h10l-3-3M14 11H4l3 3"/>'],tecnico:["Técnico",'<rect x="3" y="2.5" width="10" height="12" rx="1.5"/><path d="M6 6h4M6 9h4M6 12h2"/>']};
-const ULT_LIGA={mx:"Liga MX",eng:"Premier",esp:"LaLiga",ita:"Serie A",ger:"Bundesliga",fra:"Ligue 1",ucl:"Champions",nfl:"NFL"};
+const ULT_LIGA={mx:"Liga MX",eng:"Premier",esp:"LaLiga",ita:"Serie A",ger:"Bundesliga",fra:"Ligue 1",ucl:"Champions",uel:"Europa League",uecl:"Conference",nfl:"NFL"};
 function hoyUltHTML(){
   let N=(D.noticias||[]).filter(n=>HOY.f==="nfl"?n.liga==="nfl":HOY.f==="fut"?n.liga!=="nfl":true);
   if(!N.length) return "";

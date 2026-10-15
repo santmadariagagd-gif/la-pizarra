@@ -107,6 +107,13 @@ PALMARES['ucl']=[("Real Madrid",15),("Milan",7),("Bayern Munich",6),("Liverpool"
     ("Inter",3),("Manchester United",3),("Juventus",2),("Benfica",2),("Chelsea",2),("Paris Saint-Germain",2),
     ("Nottingham Forest",2),("Porto",2),("Borussia Dortmund",1),("Celtic",1),("Hamburgo",1),("Steaua București",1),
     ("Olympique de Marsella",1),("Manchester City",1),("Feyenoord",1),("Aston Villa",1),("PSV Eindhoven",1),("Estrella Roja",1)]
+# Europa League (Copa UEFA desde 1971-72 + Europa League) y Conference League: títulos por club (con las finales de 2026:
+# Aston Villa 3-0 Freiburg en Estambul; Crystal Palace 1-0 Rayo Vallecano en Leipzig).
+PALMARES['uel']=[("Sevilla",7),("Inter",3),("Liverpool",3),("Juventus",3),("Atlético de Madrid",3),("Tottenham",3),
+    ("Feyenoord",2),("Borussia Mönchengladbach",2),("Eintracht Frankfurt",2),("IFK Göteborg",2),("Real Madrid",2),("Parma",2),("Porto",2),("Chelsea",2),
+    ("PSV Eindhoven",1),("Ipswich Town",1),("Anderlecht",1),("Bayer Leverkusen",1),("Napoli",1),("Ajax",1),("Bayern Munich",1),("Schalke 04",1),
+    ("Galatasaray",1),("Valencia",1),("CSKA Moscú",1),("Zenit",1),("Shakhtar Donetsk",1),("Manchester United",1),("Villarreal",1),("Atalanta",1),("Aston Villa",1)]
+PALMARES['uecl']=[("Roma",1),("West Ham",1),("Olympiacos",1),("Chelsea",1),("Crystal Palace",1)]
 out['palmares']=PALMARES
 
 # Historia de la Liga MX (era profesional, desde 1943-44). Una fila por temporada o torneo:
@@ -1446,12 +1453,12 @@ def af_player_stats(lid,nombre,F,torneo=None,cods=None,sin_previas=False,sin_cla
     return res
 # Ligas que ya salen de API-Football: clave en la página → (id en API-Football, nombre, ¿tiene Liguilla?)
 AF_LIGAS={"mx":(262,"Liga MX",True),"eng":(39,"Premier League",False),"esp":(140,"La Liga",False),"ita":(135,"Serie A",False),
-          "ger":(78,"Bundesliga",False),"fra":(61,"Ligue 1",False),"ucl":(2,"Champions League",False),
+          "ger":(78,"Bundesliga",False),"fra":(61,"Ligue 1",False),"ucl":(2,"Champions League",False),"uel":(3,"Europa League",False),"uecl":(848,"Conference League",False),
           "por":(94,"Liga Portugal",False),"sau":(307,"Liga Saudí",False),"arg":(128,"Liga Argentina",True),"lib":(13,"Copa Libertadores",False),
           "lgc":(772,"Leagues Cup",False),"ccc":(16,"Concachampions",False),"fac":(45,"FA Cup",False),"efl":(48,"Carabao Cup",False),
           "cdr":(143,"Copa del Rey",False),"sup":(556,"Supercopa de España",False),"cit":(137,"Coppa Italia",False),"dfb":(81,"DFB-Pokal",False),
           "cdf":(66,"Coupe de France",False)}
-AF_SIN_PREVIAS={"ucl"}   # sin rondas clasificatorias (todo lo de antes de la fase de liga)
+AF_SIN_PREVIAS={"ucl","uel","uecl"}   # sin rondas clasificatorias (todo lo de antes de la fase de liga)
 AF_SIN_CLASIF={"fac","efl","cdr","sup","cit","dfb","cdf","ccc"}   # copas: sin rondas "Qualifying"/"Preliminary"
 AF_ANUAL={"arg"}   # Apertura y Clausura en el mismo año (Liga MX: Clausura = año + 1)
 # Las estadísticas de jugadores van en archivos aparte (docs/datos/jugadores_<liga>.json) que la página
@@ -1578,11 +1585,11 @@ if AFK:
                     H["id"],H["name"],A["id"],A["name"],G.get("home"),G.get("away"),P.get("home"),P.get("away")]
         cand={"mx":[],"mundo":[]}
         for k,(F,torneo) in AF_FX.items():
-            tab={} if k in ("ucl","lib","ccc","lgc","fac","efl","cdr","sup","cit","dfb","cdf") else _tabla(F,torneo)   # copas: sin tabla
+            tab={} if k in ("ucl","uel","uecl","lib","ccc","lgc","fac","efl","cdr","sup","cit","dfb","cdf") else _tabla(F,torneo)   # copas: sin tabla
             for f in F:
                 ts=f["fixture"]["timestamp"]; rd=str(f["league"].get("round") or "")
                 if not (_t0<=ts<_t1) or re.search(r"qualif|prelim",rd,re.I) or (f["fixture"].get("status") or {}).get("short") in ("PST","CANC","ABD"): continue
-                if k=="ucl" and re.fullmatch(r"play-?offs?",rd.strip(),re.I): continue
+                if k in AF_SIN_PREVIAS and re.fullmatch(r"play-?offs?",rd.strip(),re.I): continue
                 h=f["teams"]["home"]; a=f["teams"]["away"]; nh=_nrm(h["name"]); na=_nrm(a["name"])
                 sc=SEM_FAMA.get(nh,0)+SEM_FAMA.get(na,0); cl=CLAS.get(frozenset((nh,na)),"")
                 if cl: sc+=4
@@ -1590,7 +1597,7 @@ if AFK:
                 if ph and pa:
                     sc+=1-min(abs(ph[1]-pa[1]),12)/12
                     if ph[0]<=4 and pa[0]<=4: sc+=1
-                if k in ("ucl","lib"): sc+=1 if re.search(r"league|group|fase",rd,re.I) else 2
+                if k in ("ucl","uel","uecl","lib"): sc+=1 if re.search(r"league|group|fase",rd,re.I) else 2
                 cand["mx" if k=="mx" else "mundo"].append((sc,ts,f,k,cl,ph,pa))
         prev={}
         _sem=os.path.join(carpeta,'semana.json')
@@ -1629,7 +1636,7 @@ if AFK:
                 if not k: continue
                 rd=str(lg.get("round") or "").strip()
                 if _re.search(r"qualif|prelim",rd,_re.I): continue                         # rondas previas (como en la página)
-                if k=="ucl" and _re.fullmatch(r"play-?offs?",rd,_re.I): continue          # play-off previo de agosto
+                if k in AF_SIN_PREVIAS and _re.fullmatch(r"play-?offs?",rd,_re.I): continue          # play-off previo de agosto
                 fx=f.get("fixture") or {}; st=fx.get("status") or {}; v=fx.get("venue") or {}; G=f.get("goals") or {}; P=(f.get("score") or {}).get("penalty") or {}
                 _f.append([fx.get("id"),fx.get("timestamp"),st.get("short") or "",st.get("elapsed"),v.get("name") or "",v.get("city") or "",
                            k,rd,H.get("id"),H.get("name") or "",A.get("id"),A.get("name") or "",G.get("home"),G.get("away"),P.get("home"),P.get("away")])
