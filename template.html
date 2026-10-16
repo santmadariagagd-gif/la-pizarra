@@ -4865,9 +4865,10 @@ function nbaJuegoHTML(e){
   const H=C.find(x=>x.homeAway==="home")||C[1]||{}, A=C.find(x=>x.homeAway==="away")||C[0]||{};
   const fin=st.completed, vivo=st.state==="in", pre=st.state==="pre";
   const tv=(c.broadcasts||[]).flatMap(b=>b.names||[]).slice(0,2).join(" · ");
-  const est=vivo?`<b>EN VIVO · ${st.shortDetail||""}</b>`:fin?"Final":(st.name==="STATUS_POSTPONED"?"Pospuesto":nbaHora(e.date));
+  const pret=(e.season?.type??2)==1;
+  const est=(pret?"Pretemporada · ":"")+(vivo?`<b>EN VIVO · ${st.shortDetail||""}</b>`:fin?"Final":(st.name==="STATUS_POSTPONED"?"Pospuesto":nbaHora(e.date)));
   const fila=x=>{ const k=nbaAb(x.team?.abbreviation||""), rec=(x.records||[]).find(r=>r.type==="total"||r.name==="overall")?.summary, gana=fin&&x.winner, pierde=fin&&!x.winner;
-    const sub=[rec&&rec!=="0-0"?rec:"",NBA_LINEA[k]!=null?`línea ${NBA_LINEA[k]}`:""].filter(Boolean).join(" · ");
+    const sub=[rec&&rec!=="0-0"&&!pret?rec:"",NBA_LINEA[k]!=null?`línea ${NBA_LINEA[k]}`:""].filter(Boolean).join(" · ");
     const mia=(Q5.lee().eq||[]).includes(k)?`<svg class="fav" viewBox="0 0 24 24" fill="#F2D466" aria-label="En tu quinteta"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>`:"";
     return `<div class="eq${pierde?" pierde":""}">${x.team?.logo?`<img src="${x.team.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:""}<span class="n">${hoyEsc(x.team?.shortDisplayName||NBA_N[k]||k)} ${mia}<small>${hoyEsc(sub)}</small></span>${pre?"":`<span class="p">${x.score??""}</span>`}</div>`; };
   return `<div class="nbag"><div class="st"><span>${est}</span><span>${hoyEsc(tv)}</span></div>${fila(A)}${fila(H)}</div>`;
@@ -4895,11 +4896,11 @@ $("#nbaNext").onclick=()=>{NBA.dia=nbaMas(NBA.dia,1); nbaPartidos();};
 document.addEventListener("click",ev=>{ if(ev.target.closest?.("[data-nbaq5]")){ showSport("nba","nbaq5"); window.scrollTo(0,0); } });
 // Tabla por conferencia
 function nbaTablaDatos(){
-  if(!NBA.stP||Date.now()-NBA.st?.t>5*60e3) NBA.stP=fetch(`${ESPN}/v2/sports/basketball/nba/standings?season=${NBA_TEMP}`).then(r=>r.json()).then(j=>{
-    const R={t:Date.now()};
+  if(!NBA.stP||Date.now()-NBA.st?.t>5*60e3) NBA.stP=fetch(`${ESPN}/v2/sports/basketball/nba/standings?season=${NBA_TEMP}&seasontype=2`).then(r=>r.json()).then(j=>{
+    const R={t:Date.now()}, antes=nbaHoy()<NBA_INICIO;   // antes del 20 oct todo va en 0 (ESPN puede traer la pretemporada)
     for(const c of j.children||[]){ const k=/east/i.test(c.name||c.abbreviation)?"East":"West";
       R[k]=(c.standings?.entries||[]).map(e=>{ const g=n=>e.stats?.find(s=>s.name===n), t=e.team||{}, ab=nbaAb(t.abbreviation);
-        return {ab,n:t.shortDisplayName||NBA_N[ab]||t.name,logo:t.logos?.[0]?.href,w:g("wins")?.value||0,l:g("losses")?.value||0,pct:g("winPercent")?.displayValue||"",
+        return {ab,n:t.shortDisplayName||NBA_N[ab]||t.name,logo:t.logos?.[0]?.href,w:antes?0:g("wins")?.value||0,l:antes?0:g("losses")?.value||0,pct:g("winPercent")?.displayValue||"",
           gb:g("gamesBehind")?.displayValue||"-",racha:g("streak")?.displayValue||"",seed:g("playoffSeed")?.value||99,dif:g("differential")?.displayValue||""}; })
         .sort((a,b)=>(b.w-b.l)-(a.w-a.l)||a.seed-b.seed||(NBA_LINEA[b.ab]||0)-(NBA_LINEA[a.ab]||0)); }
     NBA.st=R; return R; }).catch(e=>{ NBA.stP=null; throw e; });
@@ -4981,9 +4982,10 @@ $("#q5Body").addEventListener("click",ev=>{
 function nbaHorario(k){   // partidos de un equipo en la temporada (ESPN), para contar victorias desde una fecha
   const id=NBA.eq?.[k]?.id||NBA_ID[k]; if(!id) return Promise.resolve([]);
   const c=NBA.sched[k]; if(c&&Date.now()-c.t<10*60e3) return c.p;
-  const p=fetch(`${NBA_API}/teams/${id}/schedule?season=${NBA_TEMP}`).then(r=>r.json()).then(j=>(j.events||[]).map(e=>{
+  // seasontype=2 = temporada regular (sin esto ESPN manda la pretemporada); además se descarta todo lo de antes del arranque
+  const p=fetch(`${NBA_API}/teams/${id}/schedule?season=${NBA_TEMP}&seasontype=2`).then(r=>r.json()).then(j=>(j.events||[]).filter(e=>(e.seasonType?.type??e.season?.type??2)==2).map(e=>{
     const C=e.competitions?.[0]||{}, yo=(C.competitors||[]).find(x=>String(x.id||x.team?.id)===String(id)), fin=C.status?.type?.completed??e.status?.type?.completed;
-    return {f:nbaFecha(e.date),fin:!!fin,gano:!!(fin&&yo?.winner)}; })).catch(()=>{ delete NBA.sched[k]; return null; });
+    return {f:nbaFecha(e.date),fin:!!fin,gano:!!(fin&&yo?.winner)}; }).filter(x=>x.f>=NBA_INICIO)).catch(()=>{ delete NBA.sched[k]; return null; });
   NBA.sched[k]={t:Date.now(),p}; return p;
 }
 async function q5Mia(q,cerrado,lock){
@@ -5031,10 +5033,10 @@ async function q5Tabla(){
   if(!$("#q5Tabla")) return;
   const E=Object.entries(J?.e||{});
   if(!J||!E.length){ box.innerHTML=`<p class="note" style="max-width:640px">${J?"Todavía no hay quintetas en la tabla. Las nuevas aparecen a la mañana siguiente de guardarse (con tu cuenta).":"No pudimos cargar la tabla. Intenta en un momento."}</p>`; return; }
-  const W={}; for(const c of ["East","West"]) for(const r of St?.[c]||[]) W[r.ab]=r.w;
-  const tarde=new Set(E.filter(([,e])=>e.d>NBA_INICIO).flatMap(([,e])=>e.eq));
+  const W={};
+  const tarde=new Set(E.flatMap(([,e])=>e.eq));
   const H={}; await Promise.all([...tarde].map(async k=>{ H[k]=await nbaHorario(k)||[]; }));
-  const pts=e=>e.eq.reduce((s,k)=>s+(e.d>NBA_INICIO?(H[k]||[]).filter(x=>x.fin&&x.gano&&x.f>=e.d).length:(W[k]||0)),0);
+  const pts=e=>e.eq.reduce((s,k)=>s+(H[k]||[]).filter(x=>x.fin&&x.gano&&x.f>=e.d).length,0);
   const yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null, G=await q5Grupos();
   if(!$("#q5Tabla")) return;
   if(Q5.tab&&Q5.tab!=="gen"&&!G.some(g=>g.id===Q5.tab)) Q5.tab="gen";
