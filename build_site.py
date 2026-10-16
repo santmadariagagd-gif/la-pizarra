@@ -2055,6 +2055,52 @@ try:
 except Exception as ex:
     print("Grupos: no se pudieron subir los partidos a Firebase:",ex)
 
+# ----- La Quinteta (NBA): tabla general (15 oct 2026) -----
+# GitHub es el árbitro: lee la quinteta de cada cuenta (usuarios/{uid}.q5["2027"] = {eq, d, a}) con la llave de administrador
+# y publica docs/datos/q5.json = {temp, cerrado, al, e: {hash: {a: nombre en la tabla, eq: [5], d: desde cuándo cuentan, g: gasto}}}.
+# hash = primeros 12 caracteres del sha256 del uid (la página lo calcula igual para encontrarte a ti y a tus grupos;
+# en el archivo, que es público, no van ni uid ni correo). Antes del primer partido se toma lo que haya en la cuenta.
+# La primera corrida después del cierre acepta lo guardado (cerrado pasa a true); de ahí en adelante las quintetas
+# quedan congeladas (los cambios mensuales llegan en diciembre) y las nuevas cuentan desde el día en que GitHub las ve.
+Q5_PRECIO={"OKC":61,"SAS":60,"NYK":53,"BOS":52,"PHI":51,"DEN":50,"DET":50,"CLE":49,"HOU":49,"MIN":49,"LAL":47,"MIA":47,"TOR":46,"IND":45,
+           "ATL":44,"ORL":44,"POR":44,"PHX":41,"CHA":40,"GSW":40,"UTA":36,"WAS":36,"DAL":35,"CHI":30,"MEM":29,"NOP":28,"LAC":28,"MIL":27,"BKN":25,"SAC":21}
+Q5_TEMP, Q5_INICIO, Q5_PRESUP = "2027", "2026-10-20", 210
+Q5_CIERRE = datetime(2026,10,20,19,0,tzinfo=ZoneInfo("UTC"))   # primer partido según ESPN (1:00 pm CDMX); si se mueve, igual cierra antes
+def _q5():
+    import hashlib, re as _re
+    ruta=os.path.join(aqui,'docs','datos','q5.json')
+    try: prev=json.load(open(ruta,encoding='utf-8'))
+    except Exception: prev={}
+    if str(prev.get('temp'))!=Q5_TEMP: prev={}
+    sa=os.environ.get('FIREBASE_SA','').strip()
+    if not sa: print("La Quinteta: no hay secreto FIREBASE_SA; no se actualiza la tabla"); return
+    import firebase_admin
+    from firebase_admin import credentials, firestore
+    if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
+    db=firestore.client(); ahora=datetime.now(ZoneInfo("UTC")); hoy=datetime.now(ZoneInfo("America/Mexico_City")).date().isoformat()
+    abierto=ahora<Q5_CIERRE; primera=not abierto and not prev.get('cerrado'); E_prev=prev.get('e') or {}; E={}
+    for doc in db.collection('usuarios').stream():
+        x=((doc.to_dict() or {}).get('q5') or {}).get(Q5_TEMP) or {}
+        h=hashlib.sha256(doc.id.encode()).hexdigest()[:12]
+        congelada=not abierto and not primera and h in E_prev           # ya en la tabla: se queda igual aunque cambie la cuenta
+        eq=[k for k in (x.get('eq') or []) if k in Q5_PRECIO]
+        if not congelada and (len(eq)!=5 or len(set(eq))!=5 or sum(Q5_PRECIO[k] for k in eq)>Q5_PRESUP): continue
+        alias=_re.sub(r"[<>\"&]","",str(x.get('a') or "")).strip()[:24] or (E_prev.get(h) or {}).get('a') or "Jugador"
+        d=str(x.get('d') or hoy)[:10]
+        if abierto: e=dict(eq=eq,d=Q5_INICIO)
+        elif primera: e=dict(eq=eq,d=max(d,Q5_INICIO))
+        elif congelada: e=dict(eq=E_prev[h]['eq'],d=E_prev[h]['d'])
+        else: e=dict(eq=eq,d=max(d,hoy))                                      # nueva: desde hoy
+        e['a']=alias; e['g']=sum(Q5_PRECIO[k] for k in e['eq']); E[h]=e
+    T={"temp":Q5_TEMP,"cerrado":not abierto,"al":ahora.strftime("%Y-%m-%dT%H:%MZ"),"e":E}
+    os.makedirs(os.path.dirname(ruta),exist_ok=True)
+    json.dump(T,open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+    print(f"La Quinteta: {len(E)} quinteta{'' if len(E)==1 else 's'} en la tabla"+(" (abierta hasta el primer partido)" if abierto else " (cerrada)"))
+try:
+    _q5()
+except Exception as ex:
+    print("La Quinteta: no se pudo actualizar la tabla:",ex)
+
 # Recuperación de una sola vez (bug del 5 oct 2026): hasta ese día ningún pick llegaba a los grupos (la hoja de la
 # semana nunca se creaba). Los picks sí estaban en la cuenta de cada quien (usuarios/{uid}.picks), así que GitHub los
 # copia a los grupos con su llave de administrador: solo las semanas de RECUPERAR, solo partidos que ya empezaron

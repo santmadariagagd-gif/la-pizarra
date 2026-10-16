@@ -1091,6 +1091,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .q5mis p b{font:700 18px var(--display)}.q5mis p b small{font:500 15px var(--display);color:var(--muted)}
 .q5mis p span{display:block;font-size:13px;color:var(--muted)}.q5mis p span.arr{color:#9FD3A8}.q5mis p span.abj{color:#E8A48E}
 .q5mis>div>strong{font:700 24px var(--display)}
+.q5alias{display:flex;flex-direction:column;gap:6px;margin:14px 0 0;font-size:14px;color:var(--muted);max-width:320px}.q5alias input{min-height:42px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 16px var(--body)}
 .q5link{background:none;border:0;color:var(--mark);font:600 15px var(--body);cursor:pointer;padding:6px 0;text-decoration:underline}
 </style>
 <script>
@@ -4827,6 +4828,10 @@ const NBA_N={OKC:"Thunder",SAS:"Spurs",NYK:"Knicks",BOS:"Celtics",PHI:"76ers",DE
 const NBA_PRECIO=Object.fromEntries(Object.entries(NBA_LINEA).map(([k,v])=>[k,Math.ceil(v)]));
 const NBA_AB={NY:"NYK",SA:"SAS",GS:"GSW",NO:"NOP",UTAH:"UTA",WSH:"WAS",PHO:"PHX",BRK:"BKN",CHO:"CHA"};
 const nbaAb=a=>NBA_AB[a]||a;
+// Respaldo si el directorio de equipos de ESPN no contesta: ids de ESPN y logos de su CDN
+const NBA_ID={ATL:1,BOS:2,NOP:3,CHI:4,CLE:5,DAL:6,DEN:7,DET:8,GSW:9,HOU:10,IND:11,LAC:12,LAL:13,MIA:14,MIL:15,MIN:16,BKN:17,NYK:18,ORL:19,PHI:20,PHX:21,POR:22,SAC:23,SAS:24,OKC:25,UTA:26,WAS:27,TOR:28,MEM:29,CHA:30};
+const NBA_ESPN=Object.fromEntries(Object.entries(NBA_AB).filter(([e,k])=>!["PHO","BRK","CHO"].includes(e)).map(([e,k])=>[k,e]));
+const nbaLogoUrl=k=>NBA.eq?.[k]?.logo||`https://a.espncdn.com/i/teamlogos/nba/500/${(NBA_ESPN[k]||k).toLowerCase()}.png`;
 const nbaHoy=()=>new Intl.DateTimeFormat("en-CA",{timeZone:NBA_TZ}).format(new Date());          // AAAA-MM-DD en CDMX
 const nbaFecha=iso=>new Intl.DateTimeFormat("en-CA",{timeZone:NBA_TZ}).format(new Date(iso));
 const nbaMas=(f,n)=>{const d=new Date(f+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10);};
@@ -4839,7 +4844,7 @@ function nbaEquipos(){   // ESPN: id, nombre y logo de los 30 (para el horario d
     NBA.eq=E; return E; }).catch(()=>{ NBA.eqP=null; return {}; });
   return NBA.eqP;
 }
-const nbaLogo=k=>NBA.eq?.[k]?.logo?`<img src="${NBA.eq[k].logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
+const nbaLogo=k=>`<img src="${nbaLogoUrl(k)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`;
 async function nbaDia(f){
   if(NBA.cache[f]&&Date.now()-NBA.cache[f].t<(NBA.cache[f].vivo?25e3:5*60e3)) return NBA.cache[f].ev;
   const j=await fetch(`${NBA_API}/scoreboard?dates=${f.replace(/-/g,"")}`).then(r=>r.json());
@@ -4933,7 +4938,16 @@ async function q5Render(){
     <div class="q5eqs">${T.map(k=>{ const on=sel.includes(k), cabe=on||(!lleno&&NBA_PRECIO[k]<=resta);
       return `<button data-q5="${k}" aria-pressed="${on}"${cabe?"":' class="no"'} aria-label="${hoyEsc(nombre(k))}, precio ${NBA_PRECIO[k]}">${nbaLogo(k)}<span>${hoyEsc(nombre(k))}</span><b>${NBA_PRECIO[k]}</b></button>`; }).join("")}</div>
     <div class="q5acc"><button class="q5save" id="q5Save"${ok?"":" disabled"}>${ok?"Guardar mi quinteta":`Escoge ${Math.max(0,5-sel.length)} más`}</button>${q.eq?.length===5?`<button class="q5link" id="q5Cancel">Cancelar</button>`:""}</div>
-    ${q5Cuenta()}`;
+    ${acctOk&&acctOk()?`<label class="q5alias">Tu nombre en la tabla <input id="q5Alias" maxlength="24" value="${hoyEsc(q.a||q5AliasDef())}"></label>`:""}
+    ${q5Cuenta()}
+    ${cerrado?`<h3 style="margin:22px 0 6px">Tabla</h3><div id="q5Tabla"></div>`:""}`;
+  if(cerrado) q5Tabla();
+}
+function q5AliasDef(){   // nombre corto para la tabla: "Santiago M." (de la cuenta de Google) o lo que va antes de la @
+  const u=typeof ACCT!=="undefined"&&ACCT.user; if(!u) return "";
+  const p=(u.displayName||"").trim().split(/\s+/).filter(Boolean);
+  if(p.length) return (p[0]+(p[1]?` ${p[1][0].toUpperCase()}.`:"")).slice(0,24);
+  return (u.email||"").split("@")[0].slice(0,14);
 }
 function q5Cuenta(){
   if(!D.fb) return "";
@@ -4951,13 +4965,17 @@ $("#q5Body").addEventListener("click",ev=>{
     nbaLock().then(lock=>{ const sel=(Q5.sel||[]).slice(); if(sel.length!==5||q5Gasto(sel)>NBA_PRESUP) return;
       const antes=Q5.lee(), cerrado=Date.now()>=lock;
       const d=!cerrado?NBA_INICIO:(antes.eq?.length===5&&JSON.stringify(antes.eq.slice().sort())===JSON.stringify(sel.slice().sort())?antes.d:nbaMas(nbaHoy(),1));
-      Q5.guarda({eq:sel,d,t:Date.now()}); Q5.edit=false; Q5.sel=null; pzTrack("q5_guardar",{tarde:cerrado?1:0}); q5Render(); window.scrollTo(0,0); });
+      const a=($("#q5Alias")?.value||antes.a||q5AliasDef()).replace(/[<>"&]/g,"").trim().slice(0,24);
+      Q5.guarda({eq:sel,d,t:Date.now(),...(a?{a}:{})}); Q5.edit=false; Q5.sel=null; pzTrack("q5_guardar",{tarde:cerrado?1:0}); q5Render(); window.scrollTo(0,0); });
     return; }
   if(ev.target.closest("#q5Cancel")){ Q5.edit=false; Q5.sel=null; q5Render(); return; }
+  if(ev.target.closest("#q5NomBtn")){ const q=Q5.lee(); $("#q5Nom").innerHTML=`<label class="q5alias">Tu nombre en la tabla <input id="q5Alias2" maxlength="24" value="${hoyEsc(q.a||q5AliasDef())}"></label> <button class="q5link" id="q5NomOk">Guardar</button>`; $("#q5Alias2").focus(); return; }
+  if(ev.target.closest("#q5NomOk")){ const q=Q5.lee(), a=($("#q5Alias2").value||"").replace(/[<>"&]/g,"").trim().slice(0,24); if(a) Q5.guarda({...q,a}); q5Render(); return; }
+  if(ev.target.closest("[data-q5t]")){ Q5.tab=ev.target.closest("[data-q5t]").dataset.q5t; q5Tabla(); return; }
   if(ev.target.closest("#q5Edit")){ Q5.edit=true; Q5.sel=(Q5.lee().eq||[]).slice(); q5Render(); return; }
 });
 function nbaHorario(k){   // partidos de un equipo en la temporada (ESPN), para contar victorias desde una fecha
-  const id=NBA.eq?.[k]?.id; if(!id) return Promise.resolve([]);
+  const id=NBA.eq?.[k]?.id||NBA_ID[k]; if(!id) return Promise.resolve([]);
   const c=NBA.sched[k]; if(c&&Date.now()-c.t<10*60e3) return c.p;
   const p=fetch(`${NBA_API}/teams/${id}/schedule?season=${NBA_TEMP}`).then(r=>r.json()).then(j=>(j.events||[]).map(e=>{
     const C=e.competitions?.[0]||{}, yo=(C.competitors||[]).find(x=>String(x.id||x.team?.id)===String(id)), fin=C.status?.type?.completed??e.status?.type?.completed;
@@ -4981,8 +4999,48 @@ async function q5Mia(q,cerrado,lock){
     <div class="q5mis">${filas}</div>
     ${!cerrado?`<p><button class="q5link" id="q5Edit">Cambiar mi quinteta</button></p>`:""}
     ${hayDatos?"":`<p class="note">ESPN no respondió para algún equipo; los puntos se completan al recargar.</p>`}
-    <h3 style="margin:22px 0 6px">Tabla</h3><p class="note" style="max-width:640px">La tabla general y la de tus grupos ${cerrado?"llegan en los próximos días":"aparecen cuando empiece la temporada"}. Para salir en ellas necesitas entrar con tu cuenta.</p>
+    ${acctOk&&acctOk()?`<p class="note" id="q5Nom">Apareces en la tabla como <b>${hoyEsc(q.a||q5AliasDef()||"Jugador")}</b> · <button class="q5link" id="q5NomBtn">Cambiar nombre</button></p>`:""}
+    <h3 style="margin:22px 0 6px">Tabla</h3><div id="q5Tabla"></div>
     ${q5Cuenta()}`;
+  q5Tabla();
+}
+// Tabla general y de grupos: quién juega lo publica GitHub (datos/q5.json, se actualiza cada mañana); los puntos se
+// calculan aquí con ESPN: victorias de la temporada (tabla de posiciones) o, si la quinteta empezó tarde, desde su fecha.
+async function q5Hash(uid){ const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(uid)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("").slice(0,12); }
+function q5Datos(){
+  if(!Q5.tP||Date.now()-Q5.tT>10*60e3){ Q5.tT=Date.now(); Q5.tP=fetch(`datos/q5.json?v=${Math.floor(Date.now()/6e5)}`).then(r=>r.ok?r.json():{e:{}}).catch(()=>{ Q5.tP=null; return null; }); }
+  return Q5.tP;
+}
+async function q5Grupos(){   // tus grupos de la quiniela: {id, nombre, hashes de sus miembros}
+  if(!(typeof acctOk==="function"&&acctOk())) return [];
+  if(Q5.grp&&Date.now()-Q5.grp.t<10*60e3) return Q5.grp.L;
+  try{ if(!GR.loaded) await grLoadIds();
+    const L=[]; for(const id of GR.ids){ const I=await grInfo(id); if(!I) continue;
+      const ms=await ACCT.db.collection(`grupos/${id}/miembros`).get(); L.push({id,nombre:I.nombre,h:new Set(await Promise.all(ms.docs.map(d=>q5Hash(d.id))))}); }
+    Q5.grp={t:Date.now(),L}; return L; }catch(e){ return []; }
+}
+async function q5Tabla(){
+  const box=$("#q5Tabla"); if(!box) return;
+  if(!box.innerHTML) box.innerHTML=`<p class="note">Cargando tabla…</p>`;
+  const [J,St]=await Promise.all([q5Datos(),nbaTablaDatos().catch(()=>null)]);
+  if(!$("#q5Tabla")) return;
+  const E=Object.entries(J?.e||{});
+  if(!J||!E.length){ box.innerHTML=`<p class="note" style="max-width:640px">${J?"Todavía no hay quintetas en la tabla. Las nuevas aparecen a la mañana siguiente de guardarse (con tu cuenta).":"No pudimos cargar la tabla. Intenta en un momento."}</p>`; return; }
+  const W={}; for(const c of ["East","West"]) for(const r of St?.[c]||[]) W[r.ab]=r.w;
+  const tarde=new Set(E.filter(([,e])=>e.d>NBA_INICIO).flatMap(([,e])=>e.eq));
+  const H={}; await Promise.all([...tarde].map(async k=>{ H[k]=await nbaHorario(k)||[]; }));
+  const pts=e=>e.eq.reduce((s,k)=>s+(e.d>NBA_INICIO?(H[k]||[]).filter(x=>x.fin&&x.gano&&x.f>=e.d).length:(W[k]||0)),0);
+  const yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null, G=await q5Grupos();
+  if(!$("#q5Tabla")) return;
+  if(Q5.tab&&Q5.tab!=="gen"&&!G.some(g=>g.id===Q5.tab)) Q5.tab="gen";
+  const tab=Q5.tab||"gen", gr=G.find(g=>g.id===tab);
+  let F=E.filter(([h])=>!gr||gr.h.has(h)).map(([h,e])=>({h,...e,p:pts(e)})).sort((a,b)=>b.p-a.p||a.g-b.g||a.a.localeCompare(b.a));
+  F.forEach((f,i)=>{ f.r=i&&F[i-1].p===f.p&&F[i-1].g===f.g?F[i-1].r:i+1; });
+  const mia=F.findIndex(f=>f.h===yo), ver=F.slice(0,50); if(mia>=50) ver.push(F[mia]);
+  const empezo=Object.values(W).some(v=>v>0)||Object.values(H).some(P=>P.some(x=>x.fin));
+  box.innerHTML=`${G.length?`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px">${[["gen","General"],...G.map(g=>[g.id,g.nombre])].map(([k,n])=>`<button data-q5t="${hoyEsc(k)}" aria-pressed="${k===tab}">${hoyEsc(n)}</button>`).join("")}</div>`:""}
+    <div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th></tr></thead><tbody>${ver.map(f=>`<tr${f.h===yo?' style="background:#2F4A41"':""}><td>${f.r}</td><td class="l"><b>${hoyEsc(f.h===yo?`${f.a} (tú)`:f.a)}</b><br><small style="color:var(--muted)">${f.eq.join(" · ")}${f.d>NBA_INICIO?` · desde ${f.d.slice(8)}/${f.d.slice(5,7)}`:""}</small></td><td><b>${f.p}</b></td></tr>`).join("")}</tbody></table></div>
+    <p class="note" style="max-width:640px">${F.length} ${F.length===1?"quinteta":"quintetas"}${gr?" en este grupo":""}.${empezo?"":" Todos empiezan en 0: los puntos cuentan desde el primer partido."} Empate: gana quien gastó menos. Las quintetas nuevas aparecen a la mañana siguiente; los puntos se actualizan en vivo.${yo&&mia<0?" Tu quinteta aparece mañana.":""}</p>`;
 }
 function q5Repinta(){ if(!$("#nbaq5").classList.contains("hidden")){ Q5.sel=null; Q5.edit=false; q5Render(); } if(!$("#nbagames").classList.contains("hidden")) $("#nbaInv").innerHTML=nbaInvHTML(); }
 
