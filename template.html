@@ -1046,13 +1046,52 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 }
 @media (max-width:720px){
   header.top nav.tabs{display:none}
-  .bnav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:50;background:#16201d;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .bnav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:50;background:#16201d;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
   .bnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:58px;background:none;border:0;color:var(--muted);font:600 12px/1 var(--body);cursor:pointer;padding:0}
   .bnav button::before{content:"";width:22px;height:3px;border-radius:2px;background:transparent}
   .bnav button[aria-selected="true"]{color:var(--mark)}
   .bnav button[aria-selected="true"]::before{background:var(--mark)}
   body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
 }
+/* ---------- NBA (15 oct 2026) ---------- */
+.nbaday{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px}
+.nbaday button{width:44px;height:44px;border:1px solid var(--line);border-radius:22px;background:var(--surface);color:var(--ink);cursor:pointer;font:700 20px var(--display)}
+.nbaday div{text-align:center}.nbaday b{display:block;font:700 22px/1.1 var(--display)}.nbaday small{color:var(--muted);font-size:13px}
+.nbagl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.nbag{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.nbag .st{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.nbag .st b{color:#E8826A}
+.nbag .eq{display:flex;align-items:center;gap:10px}.nbag .eq img{width:32px;height:32px;object-fit:contain}
+.nbag .eq .n{flex:1;min-width:0;font:600 19px/1.1 var(--display)}.nbag .eq .n small{display:block;font:400 12px var(--body);color:var(--muted)}
+.nbag .eq .p{font:700 24px var(--display)}.nbag .eq.pierde .p,.nbag .eq.pierde .n{color:var(--muted)}
+.nbag .eq .fav{width:18px;height:18px}
+.nbainv{display:flex;gap:12px;align-items:center;margin:0 0 16px;padding:14px;border-radius:14px;border:1px dashed var(--mark)}
+.nbainv div{flex:1}.nbainv b{display:block;font:700 20px/1.15 var(--display)}.nbainv span{color:var(--muted);font-size:14px}
+.nbainv button{flex:none;min-height:40px;padding:0 16px;border-radius:20px;border:0;background:var(--mark);color:#1d2a26;font:700 16px var(--display);cursor:pointer}
+#nbatable .tbl td,#nbatable .tbl th{white-space:nowrap}
+.q5res{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 14px;display:flex;flex-direction:column;gap:10px;max-width:640px}
+.q5slots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.q5slots div{height:60px;border-radius:12px;border:1px dashed #6F8A80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.q5slots div.on{border:1px solid var(--mark);background:#2F4A41}.q5slots b{font:700 18px var(--display)}.q5slots span{font-size:12px;color:var(--muted)}
+.q5bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}.q5bar i{display:block;height:8px;background:var(--mark)}
+.q5row{display:flex;justify-content:space-between;font-size:14px}.q5res .note{margin:0}
+.q5eqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;max-width:820px}
+.q5eqs button{display:flex;align-items:center;gap:8px;min-height:48px;padding:0 10px 0 8px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;cursor:pointer}
+.q5eqs button img{width:28px;height:28px;object-fit:contain;flex:none}
+.q5eqs button span{flex:1;min-width:0;font:600 17px/1.05 var(--display)}.q5eqs button b{font:700 18px var(--display)}
+.q5eqs button[aria-pressed="true"]{border-color:var(--mark);background:#2F4A41}.q5eqs button[aria-pressed="true"] b{color:var(--mark)}
+.q5eqs button.no{opacity:.4}
+.q5acc{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0 0}
+.q5save{min-height:44px;padding:0 20px;border-radius:22px;border:0;background:var(--mark);color:#1d2a26;font:700 17px var(--display);cursor:pointer}
+.q5save:disabled{background:var(--surface);color:var(--muted);cursor:default}
+.q5top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--mark);margin:0 0 12px;max-width:640px}
+.q5top b{display:block;font:700 34px/1 var(--display)}.q5top b.y{color:var(--mark)}.q5top span{font-size:12px;color:var(--muted)}
+.q5mis{display:flex;flex-direction:column;gap:8px;max-width:640px}
+.q5mis div{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.q5mis img{width:32px;height:32px;object-fit:contain;flex:none}.q5mis p{flex:1;min-width:0;margin:0}
+.q5mis p b{font:700 18px var(--display)}.q5mis p b small{font:500 15px var(--display);color:var(--muted)}
+.q5mis p span{display:block;font-size:13px;color:var(--muted)}.q5mis p span.arr{color:#9FD3A8}.q5mis p span.abj{color:#E8A48E}
+.q5mis>div>strong{font:700 24px var(--display)}
+.q5link{background:none;border:0;color:var(--mark);font:600 15px var(--body);cursor:pointer;padding:6px 0;text-decoration:underline}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -1089,6 +1128,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
     <button aria-selected="true" data-sport="hoy">Hoy</button>
     <button aria-selected="false" data-sport="mx">Fútbol</button>
     <button aria-selected="false" data-sport="nfl">NFL</button>
+    <button aria-selected="false" data-sport="nba">NBA</button>
     <button aria-selected="false" data-sport="ff">Fantasy</button>
     <button aria-selected="false" data-sport="qn">Quiniela</button>
   </nav>
@@ -1096,6 +1136,9 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL" hidden>
   <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="nflq">Quiniela</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
+</nav>
+<nav class="subnav" data-for="nba" aria-label="Secciones NBA" hidden>
+  <button aria-current="page" data-tab="nbagames">Partidos</button><button data-tab="nbatable">Tabla</button><button data-tab="nbaq5">La Quinteta</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
   <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fmatch">Matchup</button><button data-tab="froster">Roster</button><button data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
@@ -1247,6 +1290,22 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <p class="note">Super Bowls ganados por franquicia, de mayor a menor.</p>
   <div class="tbl"><table id="nflHonorsTable"></table></div>
 </section>
+<section class="panel hidden" id="nbagames">
+  <h2>Partidos</h2>
+  <div id="nbaInv"></div>
+  <div class="nbaday"><button id="nbaPrev" aria-label="Día anterior">‹</button><div><b id="nbaDiaTxt"></b><small id="nbaDiaSub"></small></div><button id="nbaNext" aria-label="Día siguiente">›</button></div>
+  <div id="nbaGames"></div>
+  <p class="note">Horarios del centro de México. Línea = victorias que esperan las casas de apuestas para toda la temporada. Datos: ESPN.</p>
+</section>
+<section class="panel hidden" id="nbatable">
+  <h2>Tabla</h2>
+  <div class="hseg" id="nbaConf" role="group" aria-label="Conferencia" style="display:inline-flex;margin:0 0 12px"><button data-conf="East" aria-pressed="true">Este</button><button data-conf="West" aria-pressed="false">Oeste</button></div>
+  <div id="nbaTabla"></div>
+</section>
+<section class="panel hidden" id="nbaq5">
+  <h2>La Quinteta</h2>
+  <div id="q5Body"></div>
+</section>
 <section class="panel hidden" id="mxgoleo">
   <h2>Goleo</h2>
   <div class="hseg gotabs" role="group" aria-label="Goleo"><button data-go="bota" aria-pressed="true">Bota de Oro</button><button data-go="ligas" aria-pressed="false">Por liga</button><button data-go="mex" aria-pressed="false">Mexicanos</button></div>
@@ -1356,7 +1415,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </section>
 
 <nav class="bnav" aria-label="Secciones">
-  <button aria-selected="true" data-sport="hoy">Hoy</button><button aria-selected="false" data-sport="mx">Fútbol</button><button aria-selected="false" data-sport="nfl">NFL</button><button aria-selected="false" data-sport="ff">Fantasy</button><button aria-selected="false" data-sport="qn">Quiniela</button>
+  <button aria-selected="true" data-sport="hoy">Hoy</button><button aria-selected="false" data-sport="mx">Fútbol</button><button aria-selected="false" data-sport="nfl">NFL</button><button aria-selected="false" data-sport="nba">NBA</button><button aria-selected="false" data-sport="ff">Fantasy</button><button aria-selected="false" data-sport="qn">Quiniela</button>
 </nav>
 <div class="pzinst" id="pzInst" hidden role="dialog" aria-label="Instalar La Pizarra">
   <img src="/iconos/icono-192.png" alt="">
@@ -1440,7 +1499,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist"];
+const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -1469,7 +1528,7 @@ function loadNflPlayoffs(){
 }
 // Qué botón de deporte se marca (arriba en computadora y en la barra de abajo en el celular) según la sección
 const FF_TABS=["fmatch","froster","fliga","fwaivers","ftrade"];
-const sportOf=id=>id==="hoy"?"hoy":id==="nflq"?"qn":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
+const sportOf=id=>id==="hoy"?"hoy":id==="nflq"?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
 // Abre una sección que necesita un paquete: "Cargando…" mientras llega y, si falla, un aviso para recargar
 function paqCarga(n,fn,donde){
   if(PAQ_OK[n]) return fn();
@@ -1485,18 +1544,19 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
+  if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbaq5") q5Render();
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
   if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",fantasyInit,id==="fwaivers"?"#notes":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp,tab){
   if(sp==="qn") return showSport("nfl","nflq");   // Quiniela (por ahora solo NFL) tiene su propio botón
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
   if(sp==="hoy") return showTab("hoy");
-  $(".nflart").toggleAttribute("hidden",sp==="mx"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
-  $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:sp==="mx"?flLabel():`Fantasy Football · Semana ${D.gweek}`;
-  setLogo(sp==="mx"?(LEAGUES[FLIG].nat?pickLogo(SEL_LOGOS):comercial(LEAGUES[FLIG])?null:pickLogo(MX_LOGOS)):D.nfl_logo);
-  $("#heroSub").textContent= sp==="mx"?"":`Datos actualizados hasta la semana ${D.week}.`;
+  $(".nflart").toggleAttribute("hidden",sp==="mx"||sp==="nba"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
+  $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:sp==="mx"?flLabel():sp==="nba"?"NBA · Temporada 2026-27":`Fantasy Football · Semana ${D.gweek}`;
+  setLogo(sp==="mx"?(LEAGUES[FLIG].nat?pickLogo(SEL_LOGOS):comercial(LEAGUES[FLIG])?null:pickLogo(MX_LOGOS)):sp==="nba"?null:D.nfl_logo);
+  $("#heroSub").textContent= sp==="mx"||sp==="nba"?"":`Datos actualizados hasta la semana ${D.week}.`;
   $("#tempWrap").hidden=sp!=="mx"; if(sp==="mx") pintaTemporadas();
-  showTab(tab||(sp==="nfl"?"nflgames":sp==="mx"?"mxexplore":"fmatch"));
+  showTab(tab||(sp==="nfl"?"nflgames":sp==="mx"?"mxexplore":sp==="nba"?"nbagames":"fmatch"));
 }
 document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.onclick=()=>{showSport(b.dataset.sport); window.scrollTo(0,0);});
 document.querySelectorAll(".subnav button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -4750,7 +4810,183 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden) fmLiveTic
 // - Las contraseñas nunca pasan por aquí más que en el formulario: las guarda Firebase (con hash), no nosotros.
 // Sin firebase_config.txt en el repositorio (D.fb vacío) no aparece nada de esto y todo queda como antes.
 var ACCT={ready:false,user:null,auth:null,db:null,last:0,pushT:null,mode:"in",busy:false};
-const ACCT_V="12.19.0", ACCT_KEYS=["pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
+// ---------- NBA (15 oct 2026): Partidos, Tabla y el juego "La Quinteta" ----------
+// Datos de ESPN directo desde el navegador (gratis, no oficial; cuando se resuelva lo legal se cambia la fuente aquí).
+//   scoreboard?dates=AAAAMMDD · standings (apis/v2, season=2027 = temporada 2026-27) · teams · teams/<id>/schedule?season=2027
+// La Quinteta: escoges 5 equipos sin pasarte de NBA_PRESUP; precio = victorias esperadas (líneas del 15 oct 2026, Fanatics),
+// redondeadas hacia arriba. Cada victoria de tus equipos = 1 punto. Si la armas antes del primer partido cuentan todas las
+// victorias de la temporada; si la armas después, desde el día siguiente (fecha de CDMX). Se guarda en el navegador
+// (pz_q5 = {"2027":{eq:[...5], d:"AAAA-MM-DD", t:ms}}) y en la cuenta (campo q5 del documento usuarios/{uid}).
+// La tabla general y de grupos llega en la parte 2 (la arma GitHub con las quintetas guardadas).
+const NBA_API=`${ESPN}/site/v2/sports/basketball/nba`, NBA_TEMP=2027, NBA_INICIO="2026-10-20", NBA_PRESUP=210, NBA_TZ="America/Mexico_City";
+const NBA_LINEA={OKC:60.5,SAS:59.5,NYK:52.5,BOS:51.5,PHI:50.5,DEN:49.5,DET:49.5,CLE:48.5,HOU:48.5,MIN:48.5,LAL:46.5,MIA:46.5,TOR:45.5,IND:44.5,
+  ATL:43.5,ORL:43.5,POR:43.5,PHX:40.5,CHA:39.5,GSW:39.5,UTA:35.5,WAS:35.5,DAL:34.5,CHI:29.5,MEM:28.5,NOP:27.5,LAC:27.5,MIL:26.5,BKN:24.5,SAC:20.5};
+const NBA_N={OKC:"Thunder",SAS:"Spurs",NYK:"Knicks",BOS:"Celtics",PHI:"76ers",DEN:"Nuggets",DET:"Pistons",CLE:"Cavaliers",HOU:"Rockets",MIN:"Timberwolves",
+  LAL:"Lakers",MIA:"Heat",TOR:"Raptors",IND:"Pacers",ATL:"Hawks",ORL:"Magic",POR:"Trail Blazers",PHX:"Suns",CHA:"Hornets",GSW:"Warriors",UTA:"Jazz",
+  WAS:"Wizards",DAL:"Mavericks",CHI:"Bulls",MEM:"Grizzlies",NOP:"Pelicans",LAC:"Clippers",MIL:"Bucks",BKN:"Nets",SAC:"Kings"};
+const NBA_PRECIO=Object.fromEntries(Object.entries(NBA_LINEA).map(([k,v])=>[k,Math.ceil(v)]));
+const NBA_AB={NY:"NYK",SA:"SAS",GS:"GSW",NO:"NOP",UTAH:"UTA",WSH:"WAS",PHO:"PHX",BRK:"BKN",CHO:"CHA"};
+const nbaAb=a=>NBA_AB[a]||a;
+const nbaHoy=()=>new Intl.DateTimeFormat("en-CA",{timeZone:NBA_TZ}).format(new Date());          // AAAA-MM-DD en CDMX
+const nbaFecha=iso=>new Intl.DateTimeFormat("en-CA",{timeZone:NBA_TZ}).format(new Date(iso));
+const nbaMas=(f,n)=>{const d=new Date(f+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10);};
+const nbaHora=iso=>new Intl.DateTimeFormat("es-MX",{timeZone:NBA_TZ,hour:"numeric",minute:"2-digit"}).format(new Date(iso)).replace(/\s?([ap])\.?\s?m\.?/i,(m,x)=>` ${x.toLowerCase()}m`);
+const nbaDiaTxt=f=>{const s=new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",weekday:"long",day:"numeric",month:"long"}).format(new Date(f+"T12:00:00Z")); return s[0].toUpperCase()+s.slice(1);};
+const NBA={dia:null,cache:{},eq:null,eqP:null,conf:"East",st:null,stP:null,vivo:null,lock:null,sched:{}};
+function nbaEquipos(){   // ESPN: id, nombre y logo de los 30 (para el horario de cada equipo y los logos del juego)
+  if(!NBA.eqP) NBA.eqP=fetch(`${NBA_API}/teams`).then(r=>r.json()).then(j=>{ const E={};
+    for(const x of j.sports?.[0]?.leagues?.[0]?.teams||[]){ const t=x.team||{}, k=nbaAb(t.abbreviation); E[k]={id:t.id,n:t.shortDisplayName||NBA_N[k]||t.name,logo:t.logos?.[0]?.href||""}; }
+    NBA.eq=E; return E; }).catch(()=>{ NBA.eqP=null; return {}; });
+  return NBA.eqP;
+}
+const nbaLogo=k=>NBA.eq?.[k]?.logo?`<img src="${NBA.eq[k].logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:"";
+async function nbaDia(f){
+  if(NBA.cache[f]&&Date.now()-NBA.cache[f].t<(NBA.cache[f].vivo?25e3:5*60e3)) return NBA.cache[f].ev;
+  const j=await fetch(`${NBA_API}/scoreboard?dates=${f.replace(/-/g,"")}`).then(r=>r.json());
+  NBA.cache[f]={t:Date.now(),ev:j.events||[],vivo:(j.events||[]).some(e=>e.status?.type?.state==="in")};
+  return NBA.cache[f].ev;
+}
+// Cierre de La Quinteta = hora del primer partido de la temporada (de ESPN; si no responde, 20 oct 5:00 pm CDMX)
+function nbaLock(){
+  if(!NBA.lock) NBA.lock=fetch(`${NBA_API}/scoreboard?dates=${NBA_INICIO.replace(/-/g,"")}`).then(r=>r.json())
+    .then(j=>{const t=(j.events||[]).map(e=>+new Date(e.date)).filter(Boolean); return t.length?Math.min(...t):+new Date("2026-10-20T23:00:00Z");})
+    .catch(()=>+new Date("2026-10-20T23:00:00Z"));
+  return NBA.lock;
+}
+function nbaJuegoHTML(e){
+  const c=e.competitions?.[0]||{}, S=c.status||e.status||{}, st=S.type||{}, C=c.competitors||[];
+  const H=C.find(x=>x.homeAway==="home")||C[1]||{}, A=C.find(x=>x.homeAway==="away")||C[0]||{};
+  const fin=st.completed, vivo=st.state==="in", pre=st.state==="pre";
+  const tv=(c.broadcasts||[]).flatMap(b=>b.names||[]).slice(0,2).join(" · ");
+  const est=vivo?`<b>EN VIVO · ${st.shortDetail||""}</b>`:fin?"Final":(st.name==="STATUS_POSTPONED"?"Pospuesto":nbaHora(e.date));
+  const fila=x=>{ const k=nbaAb(x.team?.abbreviation||""), rec=(x.records||[]).find(r=>r.type==="total"||r.name==="overall")?.summary, gana=fin&&x.winner, pierde=fin&&!x.winner;
+    const sub=[rec&&rec!=="0-0"?rec:"",NBA_LINEA[k]!=null?`línea ${NBA_LINEA[k]}`:""].filter(Boolean).join(" · ");
+    const mia=(Q5.lee().eq||[]).includes(k)?`<svg class="fav" viewBox="0 0 24 24" fill="#F2D466" aria-label="En tu quinteta"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>`:"";
+    return `<div class="eq${pierde?" pierde":""}">${x.team?.logo?`<img src="${x.team.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:""}<span class="n">${hoyEsc(x.team?.shortDisplayName||NBA_N[k]||k)} ${mia}<small>${hoyEsc(sub)}</small></span>${pre?"":`<span class="p">${x.score??""}</span>`}</div>`; };
+  return `<div class="nbag"><div class="st"><span>${est}</span><span>${hoyEsc(tv)}</span></div>${fila(A)}${fila(H)}</div>`;
+}
+async function nbaPartidos(){
+  if(!NBA.dia){ const h=nbaHoy(); NBA.dia=h<NBA_INICIO?NBA_INICIO:h; }
+  const f=NBA.dia, box=$("#nbaGames");
+  $("#nbaDiaTxt").textContent=nbaDiaTxt(f); $("#nbaDiaSub").textContent=f===NBA_INICIO?"Noche inaugural":f===nbaHoy()?"Hoy":"";
+  $("#nbaInv").innerHTML=nbaInvHTML();
+  if(!NBA.cache[f]) box.innerHTML=`<p class="note">Cargando partidos…</p>`;
+  nbaEquipos();
+  let ev; try{ ev=await nbaDia(f); }catch(err){ if(NBA.dia===f) box.innerHTML=`<p class="note">ESPN no respondió. Intenta en un momento.</p>`; return; }
+  if(NBA.dia!==f) return;
+  $("#nbaDiaSub").textContent=[f===NBA_INICIO?"Noche inaugural":f===nbaHoy()?"Hoy":"",ev.length?`${ev.length} partido${ev.length>1?"s":""}`:""].filter(Boolean).join(" · ");
+  box.innerHTML=ev.length?`<div class="nbagl">${ev.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(nbaJuegoHTML).join("")}</div>`:`<p class="note">No hay partidos este día.</p>`;
+  clearTimeout(NBA.vivo);
+  if(ev.some(e=>e.status?.type?.state==="in")) NBA.vivo=setTimeout(()=>{ if(!$("#nbagames").classList.contains("hidden")&&!document.hidden) nbaPartidos(); },30e3);
+}
+function nbaInvHTML(){
+  const q=Q5.lee(); if(q.eq?.length===5) return "";
+  return `<div class="nbainv"><div><b>Arma tu quinteta${Date.now()<+new Date(NBA_INICIO+"T23:00:00Z")?" antes del arranque":""}</b><span>Escoge 5 equipos con ${NBA_PRESUP} de presupuesto. Cada victoria es un punto, toda la temporada.</span></div><button data-nbaq5>Jugar</button></div>`;
+}
+$("#nbaPrev").onclick=()=>{NBA.dia=nbaMas(NBA.dia,-1); nbaPartidos();};
+$("#nbaNext").onclick=()=>{NBA.dia=nbaMas(NBA.dia,1); nbaPartidos();};
+document.addEventListener("click",ev=>{ if(ev.target.closest?.("[data-nbaq5]")){ showSport("nba","nbaq5"); window.scrollTo(0,0); } });
+// Tabla por conferencia
+function nbaTablaDatos(){
+  if(!NBA.stP||Date.now()-NBA.st?.t>5*60e3) NBA.stP=fetch(`${ESPN}/v2/sports/basketball/nba/standings?season=${NBA_TEMP}`).then(r=>r.json()).then(j=>{
+    const R={t:Date.now()};
+    for(const c of j.children||[]){ const k=/east/i.test(c.name||c.abbreviation)?"East":"West";
+      R[k]=(c.standings?.entries||[]).map(e=>{ const g=n=>e.stats?.find(s=>s.name===n), t=e.team||{}, ab=nbaAb(t.abbreviation);
+        return {ab,n:t.shortDisplayName||NBA_N[ab]||t.name,logo:t.logos?.[0]?.href,w:g("wins")?.value||0,l:g("losses")?.value||0,pct:g("winPercent")?.displayValue||"",
+          gb:g("gamesBehind")?.displayValue||"-",racha:g("streak")?.displayValue||"",seed:g("playoffSeed")?.value||99,dif:g("differential")?.displayValue||""}; })
+        .sort((a,b)=>(b.w-b.l)-(a.w-a.l)||a.seed-b.seed||(NBA_LINEA[b.ab]||0)-(NBA_LINEA[a.ab]||0)); }
+    NBA.st=R; return R; }).catch(e=>{ NBA.stP=null; throw e; });
+  return NBA.stP;
+}
+async function nbaTabla(){
+  const box=$("#nbaTabla"); if(!NBA.st) box.innerHTML=`<p class="note">Cargando tabla…</p>`;
+  document.querySelectorAll("#nbaConf button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.conf===NBA.conf));
+  let R; try{ R=await nbaTablaDatos(); }catch(err){ box.innerHTML=`<p class="note">ESPN no respondió. Intenta en un momento.</p>`; return; }
+  const L=R[NBA.conf]||[], empezo=L.some(r=>r.w+r.l>0);
+  box.innerHTML=`<div class="tbl"><table><thead><tr><th>#</th><th class="l">Equipo</th><th>G</th><th>P</th><th>%</th><th>JD</th><th>Racha</th><th title="Victorias que esperan las casas de apuestas">Línea</th></tr></thead><tbody>${
+    L.map((r,i)=>`<tr${i===5||i===9?' style="border-bottom:2px solid var(--line)"':""}><td>${i+1}</td><td class="l">${logoImg(r.logo,"tlogo")}<span class="nm">${hoyEsc(r.n)}</span></td><td><b>${r.w}</b></td><td>${r.l}</td><td>${empezo?r.pct:"-"}</td><td>${empezo?r.gb:"-"}</td><td>${empezo?hoyEsc(r.racha):"-"}</td><td>${NBA_LINEA[r.ab]??""}</td></tr>`).join("")}</tbody></table></div>
+    <p class="note">Del 1 al 6 van directo a playoffs; del 7 al 10, al Play-In.${empezo?"":" Antes del arranque se ordena por la línea de victorias."} Línea = victorias que esperan las casas de apuestas para toda la temporada.</p>`;
+}
+document.querySelectorAll("#nbaConf button").forEach(b=>b.onclick=()=>{NBA.conf=b.dataset.conf; nbaTabla();});
+
+// ----- La Quinteta -----
+const Q5={K:"pz_q5",
+  todo(){ try{return JSON.parse(localStorage.getItem(this.K)||"{}")||{};}catch(e){return {};} },
+  lee(){ return this.todo()[NBA_TEMP]||{}; },
+  guarda(x){ const T=this.todo(); if(x) T[NBA_TEMP]=x; else delete T[NBA_TEMP]; try{localStorage.setItem(this.K,JSON.stringify(T));}catch(e){} if(typeof acctPush==="function") acctPush(); },
+  sel:null, edit:false};
+const q5Gasto=L=>L.reduce((s,k)=>s+(NBA_PRECIO[k]||0),0);
+async function q5Render(){
+  const box=$("#q5Body"); await Promise.race([nbaEquipos(),new Promise(r=>setTimeout(r,2500))]);
+  const lock=await Promise.race([nbaLock(),new Promise(r=>setTimeout(()=>r(+new Date("2026-10-20T23:00:00Z")),2500))]);
+  const q=Q5.lee(), cerrado=Date.now()>=lock;
+  if(q.eq?.length===5&&!Q5.edit) return q5Mia(q,cerrado,lock);
+  if(!Q5.sel) Q5.sel=(q.eq||[]).slice();
+  const sel=Q5.sel, gasto=q5Gasto(sel), resta=NBA_PRESUP-gasto, lleno=sel.length>=5, ok=sel.length===5&&gasto<=NBA_PRESUP;
+  const T=Object.keys(NBA_PRECIO).sort((a,b)=>NBA_PRECIO[b]-NBA_PRECIO[a]||NBA_N[a].localeCompare(NBA_N[b]));
+  const nombre=k=>NBA.eq?.[k]?.n||NBA_N[k];
+  box.innerHTML=`<p class="note" style="max-width:640px">Escoge 5 equipos sin pasarte de ${NBA_PRESUP}. Cada victoria de tus equipos es un punto, toda la temporada. El precio de cada equipo son las victorias que esperan las casas de apuestas: gana quien encuentre a los que van a superar lo esperado.${cerrado?` <b>La temporada ya empezó:</b> tus equipos cuentan las victorias desde mañana.`:""}</p>
+    <div class="q5res"><div class="q5slots">${[0,1,2,3,4].map(i=>sel[i]?`<div class="on"><b>${sel[i]}</b><span>${NBA_PRECIO[sel[i]]}</span></div>`:`<div><b>+</b><span>libre</span></div>`).join("")}</div>
+      <div class="q5row"><span>Presupuesto usado</span><b style="color:var(--mark)">${gasto} de ${NBA_PRESUP}</b></div>
+      <div class="q5bar"><i style="width:${Math.min(100,gasto/NBA_PRESUP*100)}%"></i></div>
+      <p class="note">${sel.length<5?`Te faltan ${5-sel.length} equipo${5-sel.length>1?"s":""} · te quedan ${resta}`:`Lista · te sobran ${resta}`}</p></div>
+    <div class="q5eqs">${T.map(k=>{ const on=sel.includes(k), cabe=on||(!lleno&&NBA_PRECIO[k]<=resta);
+      return `<button data-q5="${k}" aria-pressed="${on}"${cabe?"":' class="no"'} aria-label="${hoyEsc(nombre(k))}, precio ${NBA_PRECIO[k]}">${nbaLogo(k)}<span>${hoyEsc(nombre(k))}</span><b>${NBA_PRECIO[k]}</b></button>`; }).join("")}</div>
+    <div class="q5acc"><button class="q5save" id="q5Save"${ok?"":" disabled"}>${ok?"Guardar mi quinteta":`Escoge ${Math.max(0,5-sel.length)} más`}</button>${q.eq?.length===5?`<button class="q5link" id="q5Cancel">Cancelar</button>`:""}</div>
+    ${q5Cuenta()}`;
+}
+function q5Cuenta(){
+  if(!D.fb) return "";
+  if(typeof acctOk==="function"&&acctOk()) return `<p class="note">Se guarda en tu cuenta.</p>`;
+  return `<div class="qgate" style="margin-top:14px;max-width:640px"><b>Entra con tu cuenta para aparecer en la tabla</b><span>Puedes armarla sin cuenta, pero solo se guarda en este navegador y no cuenta en la tabla general ni en tus grupos.</span><button class="btn" data-acct>Entrar</button></div>`;
+}
+$("#q5Body").addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-q5]");
+  if(b){ const k=b.dataset.q5, sel=Q5.sel||[];
+    if(sel.includes(k)) Q5.sel=sel.filter(x=>x!==k);
+    else if(sel.length<5&&q5Gasto(sel)+NBA_PRECIO[k]<=NBA_PRESUP) Q5.sel=[...sel,k];
+    else return;
+    const y=window.scrollY; q5Render().then(()=>window.scrollTo(0,y)); return; }
+  if(ev.target.closest("#q5Save")){
+    nbaLock().then(lock=>{ const sel=(Q5.sel||[]).slice(); if(sel.length!==5||q5Gasto(sel)>NBA_PRESUP) return;
+      const antes=Q5.lee(), cerrado=Date.now()>=lock;
+      const d=!cerrado?NBA_INICIO:(antes.eq?.length===5&&JSON.stringify(antes.eq.slice().sort())===JSON.stringify(sel.slice().sort())?antes.d:nbaMas(nbaHoy(),1));
+      Q5.guarda({eq:sel,d,t:Date.now()}); Q5.edit=false; Q5.sel=null; pzTrack("q5_guardar",{tarde:cerrado?1:0}); q5Render(); window.scrollTo(0,0); });
+    return; }
+  if(ev.target.closest("#q5Cancel")){ Q5.edit=false; Q5.sel=null; q5Render(); return; }
+  if(ev.target.closest("#q5Edit")){ Q5.edit=true; Q5.sel=(Q5.lee().eq||[]).slice(); q5Render(); return; }
+});
+function nbaHorario(k){   // partidos de un equipo en la temporada (ESPN), para contar victorias desde una fecha
+  const id=NBA.eq?.[k]?.id; if(!id) return Promise.resolve([]);
+  const c=NBA.sched[k]; if(c&&Date.now()-c.t<10*60e3) return c.p;
+  const p=fetch(`${NBA_API}/teams/${id}/schedule?season=${NBA_TEMP}`).then(r=>r.json()).then(j=>(j.events||[]).map(e=>{
+    const C=e.competitions?.[0]||{}, yo=(C.competitors||[]).find(x=>String(x.id||x.team?.id)===String(id)), fin=C.status?.type?.completed??e.status?.type?.completed;
+    return {f:nbaFecha(e.date),fin:!!fin,gano:!!(fin&&yo?.winner)}; })).catch(()=>{ delete NBA.sched[k]; return null; });
+  NBA.sched[k]={t:Date.now(),p}; return p;
+}
+async function q5Mia(q,cerrado,lock){
+  const box=$("#q5Body"), nombre=k=>NBA.eq?.[k]?.n||NBA_N[k];
+  const pend=!cerrado?`Puedes cambiarla hasta el primer partido (${nbaDiaTxt(NBA_INICIO).toLowerCase()}, ${nbaHora(new Date(lock).toISOString())}).`:
+    `Cuentan las victorias desde el ${nbaDiaTxt(q.d).toLowerCase()}. Los cambios (1 por mes) llegan el 1 de diciembre.`;
+  box.innerHTML=`<p class="note">Cargando tus equipos…</p>`;
+  const H=await Promise.all(q.eq.map(k=>nbaHorario(k)));
+  let pts=0, esperado=0, hayDatos=H.every(Boolean);
+  const filas=q.eq.map((k,i)=>{ const P=H[i]||[], jug=P.filter(x=>x.fin), w=jug.filter(x=>x.gano).length, l=jug.length-w, cuenta=P.filter(x=>x.fin&&x.gano&&x.f>=q.d).length;
+    pts+=cuenta; const ritmo=jug.length?Math.round(w/jug.length*82):null, lin=NBA_LINEA[k]; if(ritmo!=null) esperado+=ritmo-lin;
+    const txt=ritmo==null?`Línea ${lin} victorias`:`Va para ${ritmo} victorias · línea ${lin}`, cls=ritmo==null?"":ritmo>lin?"arr":"abj";
+    return `<div>${nbaLogo(k)}<p><b>${hoyEsc(nombre(k))} <small>${jug.length?`${w}-${l}`:""}</small></b><span class="${cls}">${txt}</span></p><strong>${cuenta}</strong></div>`; }).join("");
+  const algun=H.some(P=>(P||[]).some(x=>x.fin));
+  box.innerHTML=`<div class="q5top"><div><b class="y">${hayDatos?pts:"–"}</b><span>Puntos</span></div><div><b>${q5Gasto(q.eq)}</b><span>Presupuesto usado</span></div><div><b>${algun?(esperado>=0?"+":"")+Math.round(esperado):"–"}</b><span>Ritmo vs lo esperado</span></div></div>
+    <p class="note" style="max-width:640px">${pend}</p>
+    <div class="q5mis">${filas}</div>
+    ${!cerrado?`<p><button class="q5link" id="q5Edit">Cambiar mi quinteta</button></p>`:""}
+    ${hayDatos?"":`<p class="note">ESPN no respondió para algún equipo; los puntos se completan al recargar.</p>`}
+    <h3 style="margin:22px 0 6px">Tabla</h3><p class="note" style="max-width:640px">La tabla general y la de tus grupos ${cerrado?"llegan en los próximos días":"aparecen cuando empiece la temporada"}. Para salir en ellas necesitas entrar con tu cuenta.</p>
+    ${q5Cuenta()}`;
+}
+function q5Repinta(){ if(!$("#nbaq5").classList.contains("hidden")){ Q5.sel=null; Q5.edit=false; q5Render(); } if(!$("#nbagames").classList.contains("hidden")) $("#nbaInv").innerHTML=nbaInvHTML(); }
+
+const ACCT_V="12.19.0", ACCT_KEYS=["pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
 const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
 const acctLsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
 const acctLsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
@@ -4774,7 +5010,7 @@ function acctLoadJS(f){return new Promise((ok,no)=>{
   const go=i=>{if(i>=urls.length) return no(new Error("No cargó "+f)); const s=document.createElement("script"); s.src=urls[i]; s.async=true;
     s.onload=ok; s.onerror=()=>{s.remove(); go(i+1);}; document.head.appendChild(s);};
   go(0);});}
-const acctLocal=()=>({fav:favLee(),picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
+const acctLocal=()=>({q5:Q5.todo(),fav:favLee(),picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
 function acctMerge(nube,local){   // {temporada:{semana:{"VIS@LOC":{ats,su}}}}: gana la nube; lo local llena lo que falte
   const R=JSON.parse(JSON.stringify(nube||{}));
   for(const [s,S] of Object.entries(local||{})) for(const [w,W] of Object.entries(S||{})) for(const [k,G] of Object.entries(W||{})) for(const [m,p] of Object.entries(G||{})){
@@ -4804,14 +5040,15 @@ async function acctPull(){
   catch(e){console.warn("Cuentas: no se pudo leer la cuenta",e?.code||e); return;}
   if(ACCT.user!==u) return;
   const L=acctLocal(), linked=acctLsGet("pz_cuenta")===u.uid, dirty=acctLsGet("pz_cuenta_sucio")==="1";
-  const cloud={fav:{eq:C.fav?.eq||{},jug:C.fav?.jug||{}},picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
+  const cloud={q5:C.q5||{},fav:{eq:C.fav?.eq||{},jug:C.fav?.jug||{}},picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
   let N;
   if(linked&&exists&&!dirty) N=cloud;                         // navegador ya ligado: manda la nube
   else if(linked) N=L;                                         // cambios locales sin subir (o cuenta nueva): manda lo local
-  else N={fav:{eq:{...L.fav.eq,...cloud.fav.eq},jug:{...L.fav.jug,...cloud.fav.jug}},picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
+  else N={q5:{...L.q5,...cloud.q5},fav:{eq:{...L.fav.eq,...cloud.fav.eq},jug:{...L.fav.jug,...cloud.fav.jug}},picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
   acctLsSet("pz_cuenta",u.uid);
   const pc=JSON.stringify(N.picks)!==JSON.stringify(L.picks)||JSON.stringify(N.surv||{})!==JSON.stringify(L.surv||{}), sc=N.sleeper!==L.sleeper||N.liga!==L.liga||N.espn!==L.espn||N.fsrc!==L.fsrc;
   acctLsSet(QN_PK,JSON.stringify(N.picks)); acctLsSet(SV_PK,JSON.stringify(N.surv||{}));
+  if(JSON.stringify(N.q5||{})!==JSON.stringify(L.q5||{})){ acctLsSet(Q5.K,JSON.stringify(N.q5||{})); q5Repinta(); }
   if(JSON.stringify(N.fav)!==JSON.stringify(L.fav)){ acctLsSet(FAV_K,JSON.stringify(N.fav)); FAV=favLee(); favRepinta(); }
   if(N.sleeper) acctLsSet("pizarra_sleeper",N.sleeper); else acctLsDel("pizarra_sleeper");
   if(N.liga) acctLsSet("pizarra_league",N.liga); else acctLsDel("pizarra_league");
@@ -4907,7 +5144,7 @@ const acctForgot=()=>acctRun(async()=>{
   await ACCT.auth.sendPasswordResetEmail(m); acctMsg("Listo: si ese correo tiene cuenta, te llegará un link para cambiar tu contraseña (revisa también spam).",true);
 });
 async function acctForget(){   // quita de este navegador lo que pertenece a la cuenta
-  ACCT_KEYS.forEach(acctLsDel); acctSlClear(); if(acctOnQ()) loadQuiniela(); FAV=favLee(); favRepinta();
+  ACCT_KEYS.forEach(acctLsDel); q5Repinta(); acctSlClear(); if(acctOnQ()) loadQuiniela(); FAV=favLee(); favRepinta();
 }
 const acctOut=()=>acctRun(async()=>{
   if(acctLsGet("pz_cuenta_sucio")==="1"){clearTimeout(ACCT.pushT); await acctSend();}
@@ -6017,7 +6254,7 @@ async function precarga(){ if(PRE_CORRE) return; PRE_CORRE=true;
 // el botón ‹ de la página, el de atrás de Safari y el gesto de deslizar en el iPhone. Abrir un partido o "Tu cuenta"
 // también cuenta como un paso: atrás cierra la ventana en lugar de salirse del sitio.
 var NAV={cur:null,liga:"",restaurando:false,listo:false};   // var: showTab puede llamarse antes de esta línea
-const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo"};
+const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5"};
 const NAV_NOMBRE=Object.fromEntries(Object.entries(NAV_ALIAS).map(([a,t])=>[t,a]));
 const navLiga=id=>id.startsWith("mx")?FLIG:"";
 const navHash=id=>"#"+(NAV_NOMBRE[id]||id)+(id.startsWith("mx")&&id!=="mxexplore"&&id!=="mxgoleo"?"-"+FLIG:"");
