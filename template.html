@@ -1092,6 +1092,8 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .q5mis p span{display:block;font-size:13px;color:var(--muted)}.q5mis p span.arr{color:#9FD3A8}.q5mis p span.abj{color:#E8A48E}
 .q5mis>div>strong{font:700 24px var(--display)}
 .q5alias{display:flex;flex-direction:column;gap:6px;margin:14px 0 0;font-size:14px;color:var(--muted);max-width:320px}.q5alias input{min-height:42px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 16px var(--body)}
+.q5gr{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);margin:0 0 8px;max-width:640px}.q5gr b{font:700 18px var(--display)}.q5gr span{font-size:14px}.q5gr .q5link{padding:2px 0;font-size:14px}
+.q5new{display:flex;gap:8px;flex-wrap:wrap;max-width:640px;margin:6px 0 0}.q5new input{flex:1 1 220px;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 16px var(--body)}
 .q5link{background:none;border:0;color:var(--mark);font:600 15px var(--body);cursor:pointer;padding:6px 0;text-decoration:underline}
 </style>
 <script>
@@ -4919,10 +4921,12 @@ const Q5={K:"pz_q5",
   todo(){ try{return JSON.parse(localStorage.getItem(this.K)||"{}")||{};}catch(e){return {};} },
   lee(){ return this.todo()[NBA_TEMP]||{}; },
   guarda(x){ const T=this.todo(); if(x) T[NBA_TEMP]=x; else delete T[NBA_TEMP]; try{localStorage.setItem(this.K,JSON.stringify(T));}catch(e){} if(typeof acctPush==="function") acctPush(); },
-  sel:null, edit:false};
+  sel:null, edit:false, join:null,
+  ids(){ return (this.todo().g||[]).filter(x=>typeof x==="string"); },
+  setIds(L){ const T=this.todo(); T.g=[...new Set(L)]; try{localStorage.setItem(this.K,JSON.stringify(T));}catch(e){} if(typeof acctPush==="function") acctPush(); }};
 const q5Gasto=L=>L.reduce((s,k)=>s+(NBA_PRECIO[k]||0),0);
 async function q5Render(){
-  const box=$("#q5Body"); await Promise.race([nbaEquipos(),new Promise(r=>setTimeout(r,2500))]);
+  const box=$("#q5Body"); q5JoinRender(); await Promise.race([nbaEquipos(),new Promise(r=>setTimeout(r,2500))]);
   const lock=await Promise.race([nbaLock(),new Promise(r=>setTimeout(()=>r(+new Date("2026-10-20T23:00:00Z")),2500))]);
   const q=Q5.lee(), cerrado=Date.now()>=lock;
   if(q.eq?.length===5&&!Q5.edit) return q5Mia(q,cerrado,lock);
@@ -5001,8 +5005,9 @@ async function q5Mia(q,cerrado,lock){
     ${hayDatos?"":`<p class="note">ESPN no respondió para algún equipo; los puntos se completan al recargar.</p>`}
     ${acctOk&&acctOk()?`<p class="note" id="q5Nom">Apareces en la tabla como <b>${hoyEsc(q.a||q5AliasDef()||"Jugador")}</b> · <button class="q5link" id="q5NomBtn">Cambiar nombre</button></p>`:""}
     <h3 style="margin:22px 0 6px">Tabla</h3><div id="q5Tabla"></div>
+    <h3 style="margin:22px 0 6px">Grupos de La Quinteta</h3><div id="q5Grp"></div>
     ${q5Cuenta()}`;
-  q5Tabla();
+  q5Tabla(); q5GrRender();
 }
 // Tabla general y de grupos: quién juega lo publica GitHub (datos/q5.json, se actualiza cada mañana); los puntos se
 // calculan aquí con ESPN: victorias de la temporada (tabla de posiciones) o, si la quinteta empezó tarde, desde su fecha.
@@ -5014,8 +5019,8 @@ function q5Datos(){
 async function q5Grupos(){   // tus grupos de la quiniela: {id, nombre, hashes de sus miembros}
   if(!(typeof acctOk==="function"&&acctOk())) return [];
   if(Q5.grp&&Date.now()-Q5.grp.t<10*60e3) return Q5.grp.L;
-  try{ if(!GR.loaded) await grLoadIds();
-    const L=[]; for(const id of GR.ids){ const I=await grInfo(id); if(!I) continue;
+  try{
+    const L=[]; for(const id of Q5.ids()){ const I=await grInfo(id).catch(()=>null); if(!I) continue;
       const ms=await ACCT.db.collection(`grupos/${id}/miembros`).get(); L.push({id,nombre:I.nombre,h:new Set(await Promise.all(ms.docs.map(d=>q5Hash(d.id))))}); }
     Q5.grp={t:Date.now(),L}; return L; }catch(e){ return []; }
 }
@@ -5040,9 +5045,52 @@ async function q5Tabla(){
   const empezo=Object.values(W).some(v=>v>0)||Object.values(H).some(P=>P.some(x=>x.fin));
   box.innerHTML=`${G.length?`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px">${[["gen","General"],...G.map(g=>[g.id,g.nombre])].map(([k,n])=>`<button data-q5t="${hoyEsc(k)}" aria-pressed="${k===tab}">${hoyEsc(n)}</button>`).join("")}</div>`:""}
     <div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th></tr></thead><tbody>${ver.map(f=>`<tr${f.h===yo?' style="background:#2F4A41"':""}><td>${f.r}</td><td class="l"><b>${hoyEsc(f.h===yo?`${f.a} (tú)`:f.a)}</b><br><small style="color:var(--muted)">${f.eq.join(" · ")}${f.d>NBA_INICIO?` · desde ${f.d.slice(8)}/${f.d.slice(5,7)}`:""}</small></td><td><b>${f.p}</b></td></tr>`).join("")}</tbody></table></div>
-    <p class="note" style="max-width:640px">${F.length} ${F.length===1?"quinteta":"quintetas"}${gr?" en este grupo":""}.${empezo?"":" Todos empiezan en 0: los puntos cuentan desde el primer partido."} Empate: gana quien gastó menos. Las quintetas nuevas aparecen a la mañana siguiente; los puntos se actualizan en vivo.${yo&&mia<0?" Tu quinteta aparece mañana.":""}</p>`;
+    <p class="note" style="max-width:640px">${!F.length&&gr?"Todavía nadie de este grupo aparece en la tabla.":`${F.length} ${F.length===1?"quinteta":"quintetas"}${gr?" en este grupo":""}.`}${empezo?"":" Todos empiezan en 0: los puntos cuentan desde el primer partido."} Empate: gana quien gastó menos. Las quintetas nuevas aparecen a la mañana siguiente; los puntos se actualizan en vivo.${yo&&mia<0?" Tu quinteta aparece mañana.":""}</p>`;
 }
-function q5Repinta(){ if(!$("#nbaq5").classList.contains("hidden")){ Q5.sel=null; Q5.edit=false; q5Render(); } if(!$("#nbagames").classList.contains("hidden")) $("#nbaInv").innerHTML=nbaInvHTML(); }
+// ----- Grupos de La Quinteta (separados de los de la quiniela NFL) -----
+// Mismo lugar en Firebase que los de la quiniela (grupos/{g} con modos:["q5"] y grupos/{g}/miembros/{uid}), pero la lista
+// de tus grupos de La Quinteta va en tu cuenta (q5.g), así no aparecen en la quiniela. Invitación: lapizarra.mx/?q5g=ID
+const q5Link=id=>`https://lapizarra.mx/?q5g=${id}`;
+async function q5GrRender(){
+  const box=$("#q5Grp"); if(!box) return;
+  if(!(typeof acctOk==="function"&&acctOk())){ box.innerHTML=`<p class="note">Entra con tu cuenta para crear un grupo con tus amigos o unirte a uno.</p>`; return; }
+  const L=[]; for(const id of Q5.ids()){ const I=await grInfo(id).catch(()=>null); if(I) L.push(I); }
+  if(!$("#q5Grp")) return;
+  box.innerHTML=`${L.map(g=>`<div class="q5gr"><b>${acctEsc(g.nombre)}</b><span><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» de La Quinteta (NBA) en La Pizarra: ${q5Link(g.id)}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-q5copy="${g.id}">Copiar link</button> · <button class="q5link" data-q5salir="${g.id}">Salir</button></span></div>`).join("")||`<p class="note" style="margin:0 0 8px">Todavía no estás en ningún grupo. Son aparte de los de la quiniela de la NFL.</p>`}
+    <div class="q5new"><input id="q5GrNom" maxlength="40" placeholder="Nombre del grupo (ej. Los de la oficina)" aria-label="Nombre del grupo"><button class="q5save" id="q5GrCrear">Crear grupo</button></div><p class="note" id="q5GrMsg"></p>`;
+}
+async function q5JoinRender(){
+  const id=Q5.join; let el=$("#q5Join"); if(!id){ el?.remove(); return; }
+  if(!el){ el=document.createElement("div"); el.id="q5Join"; el.className="qgate"; el.style.maxWidth="640px"; $("#q5Body").before(el); }
+  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de La Quinteta</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
+  if(Q5.ids().includes(id)){ Q5.join=null; el.remove(); return; }
+  const I=await grInfo(id).catch(()=>null);
+  el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo de La Quinteta (NBA). Arma tu quinteta y compite con ellos en su propia tabla.</span><span><button class="btn" id="q5Unir">Unirme</button> <button class="q5link" id="q5NoUnir">Ahora no</button></span>`
+    :`<b>Ese grupo ya no existe</b><span>Pide a quien te invitó un link nuevo.</span><button class="q5link" id="q5NoUnir">Cerrar</button>`;
+}
+document.addEventListener("click",async ev=>{
+  const t=ev.target;
+  if(t.closest?.("#q5GrCrear")){ const n=($("#q5GrNom").value||"").trim().slice(0,40); if(!n){ $("#q5GrNom").focus(); return; }
+    t.disabled=true; $("#q5GrMsg").textContent="Creando…";
+    try{ const uid=ACCT.user.uid, ref=ACCT.db.collection("grupos").doc(), b=ACCT.db.batch();
+      b.set(ref,{nombre:n,dueno:uid,creado:grFV().serverTimestamp(),temporada:D.season,modos:["q5"]});
+      b.set(ref.collection("miembros").doc(uid),{nombre:grName(),unido:grFV().serverTimestamp()});
+      await b.commit(); Q5.setIds([...Q5.ids(),ref.id]); Q5.grp=null; Q5.tab=ref.id; pzTrack("q5_crear_grupo",{});
+      q5GrRender(); q5Tabla();
+    }catch(e){ console.warn("Quinteta: no se pudo crear el grupo",e?.code||e); $("#q5GrMsg").textContent="No se pudo crear el grupo. Intenta de nuevo."; t.disabled=false; }
+    return; }
+  if(t.closest?.("[data-q5copy]")){ const id=t.closest("[data-q5copy]").dataset.q5copy; try{ await navigator.clipboard.writeText(q5Link(id)); t.textContent="¡Copiado!"; setTimeout(()=>{t.textContent="Copiar link";},1500);}catch(e){ prompt("Copia este link:",q5Link(id)); } return; }
+  if(t.closest?.("[data-q5salir]")){ const id=t.closest("[data-q5salir]").dataset.q5salir; if(!confirm("¿Salir de este grupo?")) return;
+    try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).delete(); }catch(e){}
+    Q5.setIds(Q5.ids().filter(x=>x!==id)); Q5.grp=null; if(Q5.tab===id) Q5.tab="gen"; q5GrRender(); q5Tabla(); return; }
+  if(t.closest?.("#q5Unir")){ const id=Q5.join; t.disabled=true;
+    try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).set({nombre:grName(),unido:grFV().serverTimestamp()});
+      Q5.setIds([...Q5.ids(),id]); Q5.join=null; Q5.grp=null; Q5.tab=id; pzTrack("q5_unirse_grupo",{}); q5Render();
+    }catch(e){ console.warn("Quinteta: no se pudo unir",e?.code||e); t.disabled=false; t.textContent="No se pudo, intenta de nuevo"; }
+    return; }
+  if(t.closest?.("#q5NoUnir")){ Q5.join=null; q5JoinRender(); return; }
+});
+function q5Repinta(){ Q5.grp=null; if(!$("#nbaq5").classList.contains("hidden")){ Q5.sel=null; Q5.edit=false; q5Render(); } if(!$("#nbagames").classList.contains("hidden")) $("#nbaInv").innerHTML=nbaInvHTML(); }
 
 const ACCT_V="12.19.0", ACCT_KEYS=["pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
 const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
@@ -6347,6 +6395,8 @@ window.addEventListener("hashchange",()=>{ const {tab,liga}=navDeHash(); if(!SEC
 $("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport("hoy"); window.scrollTo(0,0); };
 // Invitación: lapizarra.mx/?g=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("nfl"); showTab("nflq"); qnSetView("grupos");}}catch(e){}})();
+// Invitación a un grupo de La Quinteta: lapizarra.mx/?q5g=ID
+(()=>{try{const g=new URLSearchParams(location.search).get("q5g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){Q5.join=g; history.replaceState(null,"",location.pathname+"#quinteta");}}catch(e){}})();
 // Primera pantalla: la de la dirección (lapizarra.mx/#quiniela, #mxgames-eng…) o la portada Hoy
 (()=>{
   if(!GR.join){ const {tab,liga}=navDeHash(); if(SECTIONS.includes(tab)&&tab!=="hoy") navIr(tab,liga); else showSport("hoy"); }
