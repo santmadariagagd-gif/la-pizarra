@@ -2698,6 +2698,160 @@
       "BUF@LV": 5.5,
       "DAL@GB": -1.5
      }
+    },
+    {
+     "cuando": "2026-10-18 08:40",
+     "motivo": "diaria",
+     "lineas": {
+      "CHI@ATL": {
+       "draftkings": 1.5,
+       "fanduel": 1.5,
+       "betonlineag": 0.0,
+       "lowvig": 0.0,
+       "betus": 0.0,
+       "betrivers": 1.5,
+       "mybookieag": 1.5,
+       "betmgm": 1.0,
+       "bovada": 1.0
+      },
+      "BAL@CLE": {
+       "draftkings": 3.0,
+       "betus": 3.0,
+       "fanduel": 3.0,
+       "lowvig": 3.0,
+       "betonlineag": 3.0,
+       "betrivers": 3.5,
+       "mybookieag": 3.0,
+       "betmgm": 3.0,
+       "bovada": 3.0
+      },
+      "CAR@PHI": {
+       "draftkings": 3.0,
+       "betus": 3.0,
+       "fanduel": 3.0,
+       "lowvig": 3.0,
+       "betonlineag": 3.0,
+       "betrivers": 3.0,
+       "mybookieag": 3.0,
+       "betmgm": 3.0,
+       "bovada": 3.0
+      },
+      "TEN@IND": {
+       "draftkings": -6.5,
+       "betus": -6.5,
+       "fanduel": -6.5,
+       "betonlineag": -6.5,
+       "lowvig": -6.5,
+       "betrivers": -6.0,
+       "mybookieag": -6.5,
+       "betmgm": -6.5,
+       "bovada": -6.5
+      },
+      "NYJ@NE": {
+       "draftkings": -7.5,
+       "fanduel": -7.5,
+       "lowvig": -7.0,
+       "betonlineag": -7.0,
+       "betus": -7.0,
+       "betrivers": -7.5,
+       "mybookieag": -7.5,
+       "betmgm": -7.0,
+       "bovada": -7.0
+      },
+      "NO@NYG": {
+       "draftkings": 1.5,
+       "betus": 0.0,
+       "fanduel": 1.5,
+       "betonlineag": 0.0,
+       "lowvig": 0.0,
+       "betrivers": 0.5,
+       "mybookieag": -1.0,
+       "betmgm": 1.0,
+       "bovada": 1.0
+      },
+      "PIT@TB": {
+       "draftkings": 2.5,
+       "betus": 2.0,
+       "fanduel": 2.5,
+       "lowvig": 2.0,
+       "betonlineag": 2.5,
+       "betrivers": 2.5,
+       "mybookieag": 2.5,
+       "betmgm": 2.5,
+       "bovada": 2.0
+      },
+      "ARI@LA": {
+       "draftkings": -12.5,
+       "betus": -13.0,
+       "fanduel": -12.5,
+       "lowvig": -12.5,
+       "betonlineag": -12.5,
+       "betrivers": -12.5,
+       "mybookieag": -13.0,
+       "betmgm": -12.5,
+       "bovada": -13.0
+      },
+      "BUF@LV": {
+       "draftkings": 5.5,
+       "fanduel": 5.5,
+       "betus": 4.5,
+       "lowvig": 4.5,
+       "betonlineag": 4.5,
+       "betrivers": 5.0,
+       "mybookieag": 4.5,
+       "betmgm": 5.0,
+       "bovada": 5.0
+      },
+      "LAC@KC": {
+       "draftkings": -7.5,
+       "betus": -8.0,
+       "fanduel": -7.5,
+       "lowvig": -7.5,
+       "betonlineag": -7.5,
+       "betrivers": -7.5,
+       "mybookieag": -7.5,
+       "betmgm": -7.5,
+       "bovada": -7.0
+      },
+      "DAL@GB": {
+       "draftkings": -1.5,
+       "betus": 0.0,
+       "fanduel": -1.5,
+       "lowvig": 0.0,
+       "betonlineag": 0.0,
+       "betrivers": -1.0,
+       "mybookieag": -1.0,
+       "betmgm": -1.0,
+       "bovada": -1.0
+      },
+      "WAS@SF": {
+       "draftkings": -7.5,
+       "betus": -8.0,
+       "fanduel": -7.5,
+       "lowvig": -7.5,
+       "betonlineag": -7.5,
+       "betrivers": -7.5,
+       "mybookieag": -7.5,
+       "betmgm": -7.5,
+       "bovada": -7.5
+      }
+     },
+     "espn": {
+      "NO@NYG": 1.5,
+      "CAR@PHI": -1.5,
+      "PIT@TB": 2.5,
+      "NYJ@NE": -7.5,
+      "WAS@SF": -7.5,
+      "LAC@KC": -8.5,
+      "SEA@DEN": 2.5,
+      "HOU@JAX": -2.5,
+      "CHI@ATL": 2.5,
+      "BAL@CLE": 4.5,
+      "TEN@IND": -6.5,
+      "ARI@LA": -12.5,
+      "BUF@LV": 5.5,
+      "DAL@GB": -1.5
+     }
     }
    ],
    "primera_vez": "2026-10-13T16:35+00:00"
