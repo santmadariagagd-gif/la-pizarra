@@ -3,7 +3,7 @@ build_site.py — genera docs/index.html de La Pizarra con los datos más recien
 Lo corre GitHub automáticamente (ver .github/workflows/actualizar.yml).
 Para correrlo en tu compu: python3 build_site.py
 """
-import nflreadpy as nfl, pandas as pd, numpy as np, json, os
+import nflreadpy as nfl, pandas as pd, numpy as np, json, os, math, statistics
 S=nfl.get_current_season()
 pbp=nfl.load_pbp(S).to_pandas(); pbp=pbp[pbp.season_type=="REG"]
 ps=nfl.load_player_stats(S).to_pandas(); ps=ps[ps.season_type=="REG"]
@@ -941,6 +941,37 @@ def _lq_regla(sp):
     v=-float(sp)                                      # L = ventaja del local (negativo = el local es favorito)
     if v==int(v): v=(v-0.5) if v>0 else (v+0.5) if v<0 else -0.5   # entero: medio punto hacia cero; "pick": local por medio punto
     return v
+# 19 oct 2026: con la bitácora de las semanas 5 y 6 (29 partidos) la línea de DraftKings con la misma regla de medio punto
+# coincidió con ESPN en 26 (FanDuel 22, mediana de casas 21, nflverse 22; nflverse además traía NO@NYG con el favorito al revés).
+# Por eso la línea propia sale de The Odds API (secreto ODDS_API_KEY; 1 crédito por semana): DraftKings → FanDuel →
+# mediana de las casas → nflverse si The Odds API no contesta.
+def _lq_regla_L(v):                                   # v ya en convención L (ventaja del local)
+    v=math.floor(v*2+0.5)/2 if v>=0 else -math.floor(-v*2+0.5)/2
+    if v==int(v): v=(v-0.5) if v>0 else (v+0.5) if v<0 else -0.5
+    return v
+def _lq_casas():
+    clave=os.environ.get("ODDS_API_KEY","").strip()
+    if not clave: print("Línea propia: falta ODDS_API_KEY; se usa nflverse"); return {}
+    try:
+        import urllib.request as _ur
+        import sys as _sys; _sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+        from bitacora_lineas import NOMBRES as _NOM
+        with _ur.urlopen(f"https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds?regions=us&markets=spreads&oddsFormat=american&apiKey={clave}",timeout=25) as r:
+            d=json.loads(r.read().decode("utf-8")); rest=r.headers.get("x-requests-remaining")
+        R={}
+        for ev in d:
+            a=_NOM.get(ev.get("away_team")); h=_NOM.get(ev.get("home_team"))
+            if not a or not h: continue
+            C={}
+            for b in ev.get("bookmakers",[]):
+                for m in b.get("markets",[]):
+                    if m.get("key")!="spreads": continue
+                    pt=next((o.get("point") for o in m.get("outcomes",[]) if o.get("name")==ev.get("home_team")),None)
+                    if pt is not None: C[b.get("key")]=float(pt)
+            if C: R[f"{a}@{h}"]=C
+        print(f"Línea propia: líneas de {len(R)} partidos de The Odds API (quedan {rest} créditos)"); return R
+    except Exception as ex:
+        print("Línea propia: The Odds API no respondió; se usa nflverse:",ex); return {}
 LQ=None
 try:
     from datetime import timedelta
@@ -956,11 +987,16 @@ try:
         _ant_fin=all(g.get('hs') is not None or (g.get('ko') and _ko(g)<_ahora-timedelta(hours=6)) for g in _ant)
         T=_LQ.setdefault(str(S),{}).setdefault(str(W),{})
         if _ant_fin:
-            for g in sched:
-                k=f"{g['a']}@{g['h']}"
-                if g['w']!=W or k in T or g.get('sp') is None or g.get('tbd'): continue
-                if _ko(g) and _ko(g)<=_ahora: continue
-                T[k]=dict(L=_lq_regla(g['sp']),sp=g['sp'],t=_ahora.strftime("%Y-%m-%dT%H:%MZ"))
+            _falta=[g for g in sched if g['w']==W and f"{g['a']}@{g['h']}" not in T and not g.get('tbd') and not (_ko(g) and _ko(g)<=_ahora)]
+            _casas=_lq_casas() if _falta else {}
+            for g in _falta:
+                k=f"{g['a']}@{g['h']}"; C=_casas.get(k) or {}
+                fuente=next((c for c in ("draftkings","fanduel") if C.get(c) is not None),None)
+                if fuente: v=C[fuente]
+                elif C: v=statistics.median(C.values()); fuente="mediana"
+                elif g.get('sp') is not None: v=-float(g['sp']); fuente="nflverse"
+                else: continue
+                T[k]=dict(L=_lq_regla_L(v),sp=g.get('sp'),casa=v,f=fuente,t=_ahora.strftime("%Y-%m-%dT%H:%MZ"))
         os.makedirs(os.path.dirname(_lqf),exist_ok=True)
         json.dump(_LQ,open(_lqf,'w',encoding='utf-8'),ensure_ascii=False,indent=1)
         if W>=LQ_DESDE.get(S,99) and T:
@@ -976,7 +1012,7 @@ except Exception as ex:
 # Semanas pasadas que no estaban guardadas se calculan una sola vez con los datos que había la mañana de cada partido
 # (sin ver el futuro) y con la línea de cierre de nflverse (marcadas "c"). Se guarda en docs/datos/picks_pizarra.json y viaja a la
 # página como D.lpz = {semana: {"VIS@LOC": {t: pick con spread, L: ventaja del local, su: pick sin spread, m: nuestra línea, c: 1 si es de cierre}}}.
-import math
+import math, statistics
 def _hungaro(C):   # asignación de costo mínimo (renglones ≤ columnas): devuelve la columna de cada renglón
     n=len(C); m=len(C[0]); INF=float('inf')
     u=[0.0]*(n+1); v=[0.0]*(m+1); p=[0]*(m+1); way=[0]*(m+1)
