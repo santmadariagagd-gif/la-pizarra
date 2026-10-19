@@ -2137,6 +2137,57 @@ try:
 except Exception as ex:
     print("La Quinteta: no se pudo actualizar la tabla:",ex)
 
+# ----- Quiniela Liga MX (19 oct 2026): estilo Progol, L / E / V por partido, se cierra con el primer partido de la jornada -----
+# D.qmx = {s: "A2026" (torneo), n: "Apertura 2026", J: {"13": {pr: primer kickoff (s), p: [[fixture, kickoff, id local, id visita,
+#          goles L, goles V, estado, [pL, pE, pV] (probabilidades de las casas, % redondeado) o null], …]}}}
+# Firebase: qmx_jornadas/{s}-{j} = {s, j, primero: kickoff del primer partido} para las jornadas que no han empezado
+# (las reglas solo aceptan picks en qmx_picks/{s}-{j}_{uid} antes de "primero"; los picks ajenos se leen después).
+def _qmx():
+    import unicodedata, re as _re
+    if 'AF_FX' not in globals() or 'mx' not in AF_FX: print("Quiniela Liga MX: sin partidos de API-Football"); return
+    F,torneo=AF_FX['mx']
+    if not torneo: return
+    F=[f for f in F if af_torneo(f)==torneo and af_regular(f)]
+    if not F: return
+    año=min(datetime.fromtimestamp(f["fixture"]["timestamp"]).year for f in F)
+    slug=f"{torneo[0]}{año}"
+    nrm=lambda t:_re.sub(r"[^a-z ]","",unicodedata.normalize("NFKD",t or "").encode("ascii","ignore").decode().lower())
+    try: M=[g for g in (json.load(open(os.path.join(aqui,'momios.json'),encoding='utf-8')).get('games') or []) if g.get('k')=='mx']
+    except Exception: M=[]
+    imp=lambda a:100/(a+100) if a>0 else -a/(-a+100)
+    def prob(f):
+        ts=f["fixture"]["timestamp"]; h=set(nrm(f["teams"]["home"]["name"]).split()); a=set(nrm(f["teams"]["away"]["name"]).split())
+        for g in M:
+            try: t=datetime.strptime(g['t'],"%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=ZoneInfo("UTC")).timestamp()
+            except Exception: continue
+            if abs(t-ts)>6*3600: continue
+            if h & set(nrm(g['h']).split()) and a & set(nrm(g['a']).split()) and len(g.get('ml') or [])==3:
+                p=[imp(x) for x in g['ml']]; S=sum(p); return [round(x/S*100) for x in p]
+        return None
+    J={}
+    for f in F:
+        j=str((f["league"].get("round") or "").rsplit("-",1)[-1].strip()); fx=f["fixture"]; G=f.get("goals") or {}
+        J.setdefault(j,{"p":[]})["p"].append([fx["id"],fx["timestamp"],f["teams"]["home"]["id"],f["teams"]["away"]["id"],G.get("home"),G.get("away"),(fx.get("status") or {}).get("short") or "",prob(f)])
+    for j,x in J.items():
+        x["p"].sort(key=lambda r:(r[1],r[0])); vivos=[r[1] for r in x["p"] if r[6] not in ("PST","CANC","ABD")]
+        x["pr"]=min(vivos) if vivos else min(r[1] for r in x["p"])
+    out['qmx']={"s":slug,"n":f"{torneo} {año}","y":(F[0].get("league") or {}).get("season"),"J":J}
+    ahora=time.time(); abiertas=sorted([int(j) for j,x in J.items() if x["pr"]>ahora])
+    print(f"Quiniela Liga MX: {torneo} {año}, {len(J)} jornadas; abiertas: {abiertas[:3]}; con momios: {sum(1 for x in J.values() for r in x['p'] if r[7])}")
+    sa=os.environ.get('FIREBASE_SA','').strip()
+    if not sa: print("Quiniela Liga MX: no hay FIREBASE_SA; no se suben las jornadas"); return
+    import firebase_admin
+    from firebase_admin import credentials, firestore
+    if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
+    db=firestore.client()
+    for j in abiertas[:3]:
+        db.collection('qmx_jornadas').document(f"{slug}-{j}").set(dict(s=slug,j=j,primero=datetime.fromtimestamp(J[str(j)]["pr"],tz=ZoneInfo("UTC"))))
+    if abiertas: print(f"Quiniela Liga MX: jornadas {abiertas[:3]} en Firebase")
+try:
+    _qmx()
+except Exception as ex:
+    print("Quiniela Liga MX: no se pudo preparar:",ex)
+
 # Recuperación de una sola vez (bug del 5 oct 2026): hasta ese día ningún pick llegaba a los grupos (la hoja de la
 # semana nunca se creaba). Los picks sí estaban en la cuenta de cada quien (usuarios/{uid}.picks), así que GitHub los
 # copia a los grupos con su llave de administrador: solo las semanas de RECUPERAR, solo partidos que ya empezaron

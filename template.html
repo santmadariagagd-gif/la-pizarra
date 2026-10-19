@@ -1054,6 +1054,32 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   .bnav button[aria-selected="true"]::before{background:var(--mark)}
   body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
 }
+/* ---------- Quiniela Liga MX (19 oct 2026) ---------- */
+.qliga{display:inline-flex;margin:0 0 12px}
+.qmxj{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--mark);max-width:720px}
+.qmxj>button{width:40px;height:40px;flex:none;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:700 20px var(--display);cursor:pointer}
+.qmxj>button:disabled{opacity:.35;cursor:default}
+.qmxj>div:first-of-type{flex:1;min-width:0}.qmxj b{display:block;font:700 22px/1.1 var(--display)}.qmxj small{color:var(--muted);font-size:13px}
+.qmxc{text-align:right}.qmxc b{color:var(--mark);font-size:24px}.qmxc span{font-size:12px;color:var(--muted)}
+.qmxtools{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:0 0 6px;max-width:720px}.qmxtools .q5link{font-size:13px;padding:0}
+.qmxlist{display:flex;flex-direction:column;gap:8px;max-width:720px}
+.qmxp{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.qmxh{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.qmxh b{color:var(--ink)}.qmxh .vivo{color:#E8826A}
+.qmxr{display:grid;grid-template-columns:minmax(0,1fr) 138px minmax(0,1fr);gap:8px;align-items:center}
+.qmxe{display:flex;align-items:center;gap:6px;font:600 18px/1.05 var(--display);min-width:0}.qmxe.d{justify-content:flex-end;text-align:right}.qmxe b{color:var(--mark)}
+.qmxl{width:24px;height:24px;object-fit:contain;flex:none}
+.qmxb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.qmxb button{min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;cursor:pointer}
+.qmxb button b{font:700 17px/1 var(--display)}.qmxb button span{font-size:11px;opacity:.8}
+.qmxb button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}
+.qmxb button:disabled{cursor:default}.qmxb button.res{border-color:#9FD3A8}
+.qmxb button.ok{background:#9FD3A8;border-color:#9FD3A8;color:#1d2a26}.qmxb button.mal{background:#E8826A;border-color:#E8826A;color:#1d2a26}
+.qmxdes{display:flex;align-items:center;gap:12px;margin:10px 0 0;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);max-width:720px}
+.qmxdes div{flex:1}.qmxdes b{display:block;font:700 18px var(--display)}.qmxdes span{font-size:13px;color:var(--muted)}
+.qmxdes input{width:70px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:700 22px var(--display);text-align:center}
+.qmxllave{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:14px;border:1px dashed var(--mark);max-width:640px}.qmxllave b{font:700 22px var(--display)}.qmxllave span{color:var(--muted)}
+.qmxpk td.ok{background:#9FD3A8;color:#1d2a26;font-weight:700}.qmxpk td.mal{color:#E8826A;text-decoration:line-through}
+@media (max-width:420px){.qmxr{grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr);gap:6px}.qmxe{font-size:15px;gap:4px}.qmxl{width:18px;height:18px}.qmxb button{min-height:44px}.qmxj b{font-size:20px}}
 /* ---------- NBA (15 oct 2026) ---------- */
 .nbaday{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px}
 .nbaday button{width:44px;height:44px;border:1px solid var(--line);border-radius:22px;background:var(--surface);color:var(--ink);cursor:pointer;font:700 20px var(--display)}
@@ -1271,6 +1297,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="tbl"><table id="prNfl" class="prt" data-freeze="3"></table></div>
 </section>
 <section class="panel hidden" id="nflq">
+  <div class="hseg qliga" role="group" aria-label="Liga de la quiniela"><button data-ql="nfl" aria-pressed="true">NFL</button><button data-ql="mx" aria-pressed="false">Liga MX</button></div>
   <div class="headrow"><h2 id="qTitle">Quiniela</h2><div class="seg" id="qSeg"><button aria-pressed="true" data-m="ats">Con spread</button><button aria-pressed="false" data-m="su">Sin spread</button><button aria-pressed="false" data-m="surv">Survivor</button></div></div>
   <p class="qdisc"><b>Aviso:</b> los picks son predicciones basadas en estadísticas, no una recomendación de apuesta. La Pizarra no se hace responsable de los resultados. Juega con responsabilidad.</p>
   <div class="qview" id="qView" role="tablist"><button role="tab" aria-selected="true" data-v="picks">Mis picks</button><button role="tab" aria-selected="false" data-v="lpz">La Pizarra</button><button role="tab" aria-selected="false" data-v="grupos">Grupos</button></div>
@@ -1281,6 +1308,12 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   </div>
   <div id="qLpz" hidden></div>
   <div id="grBody" hidden></div>
+</section>
+<section class="panel hidden" id="qmx">
+  <div class="hseg qliga" role="group" aria-label="Liga de la quiniela"><button data-ql="nfl" aria-pressed="false">NFL</button><button data-ql="mx" aria-pressed="true">Liga MX</button></div>
+  <div class="headrow"><h2>Quiniela Liga MX</h2></div>
+  <div class="qview" id="qmxView" role="tablist"><button role="tab" aria-selected="true" data-qv="picks">Mis picks</button><button role="tab" aria-selected="false" data-qv="grupos">Grupos</button><button role="tab" aria-selected="false" data-qv="llave">Llave de la Liguilla</button></div>
+  <div id="qmxBody"></div>
 </section>
 <section class="panel hidden" id="nflpo">
   <h2>Playoffs</h2>
@@ -1508,7 +1541,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5"];
+const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5","qmx"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -1537,7 +1570,7 @@ function loadNflPlayoffs(){
 }
 // Qué botón de deporte se marca (arriba en computadora y en la barra de abajo en el celular) según la sección
 const FF_TABS=["fmatch","froster","fliga","fwaivers","ftrade"];
-const sportOf=id=>id==="hoy"?"hoy":id==="nflq"?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
+const sportOf=id=>id==="hoy"?"hoy":id==="nflq"||id==="qmx"?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
 // Abre una sección que necesita un paquete: "Cargando…" mientras llega y, si falla, un aviso para recargar
 function paqCarga(n,fn,donde){
   if(PAQ_OK[n]) return fn();
@@ -1546,18 +1579,24 @@ function paqCarga(n,fn,donde){
   paquete(n).then(()=>{ if(puse) txt(""); fn(); })
     .catch(()=>txt("No pudimos cargar esta sección. Revisa tu conexión y recarga la página."));
 }
-function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy")?"none":"";
+function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||id==="qmx")?"none":"";
   const spSel=sportOf(id); document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===spSel));
   if(id==="hoy") hoyRender();
   if(typeof navPush==="function") navPush(id);
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
+  if(id==="qmx") qmxAbre();
   if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbaq5") q5Render();
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
   if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",fantasyInit,id==="fwaivers"?"#notes":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp,tab){
-  if(sp==="qn") return showSport("nfl","nflq");   // Quiniela (por ahora solo NFL) tiene su propio botón
+  if(sp==="qn"){   // Quiniela: NFL o Liga MX (lo último que escogiste)
+    let ql="nfl"; try{ ql=localStorage.getItem("pz_qliga")||"nfl"; }catch(e){}
+    if(ql!=="mx"||!D.qmx) return showSport("nfl",tab==="qmx"&&D.qmx?"qmx":"nflq");
+    document.querySelectorAll(".subnav").forEach(n=>n.hidden=true); $(".nflart").toggleAttribute("hidden",true); $(".mxart").toggleAttribute("hidden",false);
+    $("#tempWrap").hidden=true; return showTab("qmx");
+  }
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
   if(sp==="hoy") return showTab("hoy");
   $(".nflart").toggleAttribute("hidden",sp==="mx"||sp==="nba"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
@@ -5100,7 +5139,178 @@ document.addEventListener("click",async ev=>{
 });
 function q5Repinta(){ Q5.grp=null; if(!$("#nbaq5").classList.contains("hidden")){ Q5.sel=null; Q5.edit=false; q5Render(); } if(!$("#nbagames").classList.contains("hidden")) $("#nbaInv").innerHTML=nbaInvHTML(); }
 
-const ACCT_V="12.19.0", ACCT_KEYS=["pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
+// ---------- Quiniela Liga MX (19 oct 2026): estilo Progol ----------
+// L / E / V por partido; toda la jornada se cierra con su primer partido; 1 punto por acierto; desempate = goles de la jornada.
+// Datos: D.qmx (build_site.py) = {s:"A2026", n:"Apertura 2026", y:2026, J:{"13":{pr, p:[[fixture, kickoff, idL, idV, gL, gV, estado, [pL,pE,pV]|null]]}}}.
+// Marcadores en vivo de la jornada que se está jugando: API-Football por el Worker (fixtures?ids=).
+// Firebase: qmx_picks/{s}-{j}_{uid} = {uid, jid, j, s, p:{fixture:"L|E|V"}, g, t}; las reglas solo aceptan picks antes de
+// qmx_jornadas/{s}-{j}.primero (lo sube GitHub) y dejan leer los ajenos hasta después. Grupos: grupos/{g} con modos ["mx"];
+// tu lista de grupos va en tu cuenta (campo qmxg / pz_qmxg), separada de la NFL y de La Quinteta. Invitación: ?qmxg=ID
+const QMX={K:"pz_qmx",GK:"pz_qmxg",j:null,vista:"picks",vivo:{},tab:null,grp:null,join:null,cache:{}};
+const qmxD=()=>D.qmx||null;
+const qmxJid=j=>`${qmxD().s}-${j}`;
+const qmxLs=()=>{try{return JSON.parse(localStorage.getItem(QMX.K)||"{}")||{};}catch(e){return {};}};
+const qmxLsSet=o=>{try{localStorage.setItem(QMX.K,JSON.stringify(o));}catch(e){}};
+const qmxIds=()=>{try{return (JSON.parse(localStorage.getItem(QMX.GK)||"[]")||[]).filter(x=>typeof x==="string");}catch(e){return [];}};
+const qmxSetIds=L=>{try{localStorage.setItem(QMX.GK,JSON.stringify([...new Set(L)]));}catch(e){} if(typeof acctPush==="function") acctPush();};
+const qmxEq=id=>{const n=AF_EQ[id]?.[0]||String(id); return {n:SM_SHORT[n]||n,ab:AF_EQ[id]?.[1]||"",logo:`https://media.api-sports.io/football/teams/${id}.png`};};
+const qmxRes=(r,V)=>{ const x=V?.[r[0]]||null, gl=x?x.gl:r[4], gv=x?x.gv:r[5], st=x?x.st:r[6];
+  return {gl,gv,st,fin:["FT","AET","PEN","AWD","WO"].includes(st),vivo:["1H","HT","2H","ET","BT","P","LIVE","INT"].includes(st),susp:["PST","CANC","ABD"].includes(st),
+    r:gl==null||gv==null?null:gl>gv?"L":gl<gv?"V":"E"}; };
+const qmxLpz=pr=>pr?["L","E","V"][pr.indexOf(Math.max(...pr))]:null;
+function qmxJornadas(){ const J=qmxD()?.J||{}; return Object.keys(J).map(Number).sort((a,b)=>a-b); }
+function qmxAbierta(){ const J=qmxD().J, L=qmxJornadas(), now=Date.now()/1000; return L.find(j=>J[j].pr>now)??null; }
+function qmxDefault(){ const J=qmxD().J, L=qmxJornadas(), now=Date.now()/1000;
+  const enJuego=L.filter(j=>J[j].pr<=now&&J[j].p.some(r=>!qmxRes(r).fin&&!qmxRes(r).susp&&r[1]>now-3*3600)).pop();
+  return enJuego??qmxAbierta()??L[L.length-1]; }
+// Mis picks: navegador + Firestore (si hay cuenta)
+const qmxMios=j=>qmxLs()[qmxJid(j)]||{p:{},g:null};
+async function qmxNube(j){
+  if(!(typeof acctOk==="function"&&acctOk())) return;
+  const jid=qmxJid(j), k="n"+jid; if(QMX.cache[k]) return; QMX.cache[k]=1;
+  try{ const s=await ACCT.db.doc(`qmx_picks/${jid}_${ACCT.user.uid}`).get(); if(s.exists){ const d=s.data(), L=qmxLs(); L[jid]={p:d.p||{},g:d.g??null}; qmxLsSet(L); if(QMX.j===j) qmxRender(); } }
+  catch(e){ /* sin documento todavía */ }
+}
+function qmxGuarda(j,x){
+  const jid=qmxJid(j), L=qmxLs(); L[jid]=x; qmxLsSet(L);
+  if(!(typeof acctOk==="function"&&acctOk())) return;
+  clearTimeout(QMX.t); QMX.t=setTimeout(async()=>{
+    try{ await ACCT.db.doc(`qmx_picks/${jid}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,jid,j,s:qmxD().s,p:x.p,g:x.g??null,t:grFV().serverTimestamp()}); $("#qmxGuardo")&&($("#qmxGuardo").textContent="Guardado en tu cuenta."); }
+    catch(e){ console.warn("Quiniela MX: no se guardó",e?.code||e); $("#qmxGuardo")&&($("#qmxGuardo").textContent="No se pudo guardar en tu cuenta (¿ya cerró la jornada?)."); }
+  },500);
+}
+// Marcadores en vivo de una jornada empezada y no terminada (cada 60 s mientras se ve)
+async function qmxVivo(j){
+  const P=qmxD().J[j].p, now=Date.now()/1000, pend=P.filter(r=>r[1]<=now+600&&!qmxRes(r,QMX.vivo).fin&&!qmxRes(r).susp);
+  if(!pend.length) return;
+  try{ const R=await afList("fixtures",`ids=${pend.slice(0,20).map(r=>r[0]).join("-")}`);
+    for(const f of R){ QMX.vivo[f.fixture.id]={gl:f.goals?.home,gv:f.goals?.away,st:f.fixture?.status?.short,min:f.fixture?.status?.elapsed}; }
+    if(QMX.j===j&&QMX.vista==="picks"&&!$("#qmx").classList.contains("hidden")) qmxRender(true);
+  }catch(e){}
+  clearTimeout(QMX.vt); QMX.vt=setTimeout(()=>{ if(!document.hidden&&!$("#qmx").classList.contains("hidden")) qmxVivo(j); },60e3);
+}
+const qmxHora=ts=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000)).replace(/\.,?/g,"").replace(/^(\w)/,c=>c.toUpperCase());
+function qmxRender(sinRed){
+  const box=$("#qmxBody"); if(!box) return;
+  document.querySelectorAll("#qmxView button").forEach(b=>b.setAttribute("aria-selected",b.dataset.qv===QMX.vista));
+  if(!qmxD()){ box.innerHTML=`<p class="note">La quiniela de la Liga MX aparece en la próxima actualización.</p>`; return; }
+  if(QMX.vista==="grupos") return qmxGrRender();
+  if(QMX.vista==="llave") { box.innerHTML=`<div class="qmxllave"><b>Llave de la Liguilla</b><span>Se abre al terminar la jornada 17 (domingo 22 de noviembre) y se cierra con el primer partido de cuartos. Escoges quién pasa en cada serie hasta el campeón: cuartos 1 punto, semis 2, finalista 3 y campeón 5.</span></div>`; return; }
+  const L=qmxJornadas(); if(QMX.j==null||!L.includes(QMX.j)) QMX.j=qmxDefault();
+  const j=QMX.j, J=qmxD().J[j], now=Date.now()/1000, cerrada=J.pr<=now, mios=qmxMios(j), V=QMX.vivo;
+  if(!sinRed){ qmxNube(j); if(cerrada) qmxVivo(j); }
+  let ac=0, fin=0, goles=0, todos=true;
+  const filas=J.p.map(r=>{ const [fid,ts,hid,vid,,,,pr]=r, R=qmxRes(r,V), H=qmxEq(hid), A=qmxEq(vid), mi=mios.p[fid], lpz=qmxLpz(pr);
+    if(R.fin){ fin++; goles+=(R.gl||0)+(R.gv||0); if(mi&&mi===R.r) ac++; } else if(!R.susp) todos=false;
+    const est=R.susp?"Suspendido":R.vivo?`<b class="vivo">EN VIVO ${V[fid]?.min?V[fid].min+"'":""}</b>`:R.fin?"Final":qmxHora(ts);
+    const btn=(k,i)=>{ const on=mi===k, ok=R.fin&&on&&R.r===k, mal=R.fin&&on&&R.r!==k, res=R.fin&&R.r===k;
+      return `<button data-qmx="${fid}" data-k="${k}" aria-pressed="${on}"${cerrada?" disabled":""} class="${ok?"ok":mal?"mal":res?"res":""}" aria-label="${k==="L"?`Gana ${H.n}`:k==="V"?`Gana ${A.n}`:"Empate"}"><b>${k}</b><span>${pr?pr[i]+"%":""}</span></button>`; };
+    return `<div class="qmxp"><div class="qmxh"><span>${est}</span>${lpz?`<span>La Pizarra: <b>${lpz}</b></span>`:""}</div>
+      <div class="qmxr"><span class="qmxe">${hoyLogo(H.logo,"qmxl")}${hoyEsc(H.n)}${R.gl!=null&&(R.fin||R.vivo)?` <b>${R.gl}</b>`:""}</span>
+      <div class="qmxb">${["L","E","V"].map(btn).join("")}</div>
+      <span class="qmxe d">${R.gv!=null&&(R.fin||R.vivo)?`<b>${R.gv}</b> `:""}${hoyEsc(A.n)}${hoyLogo(A.logo,"qmxl")}</span></div></div>`; }).join("");
+  const hechos=Object.keys(mios.p).filter(f=>J.p.some(r=>String(r[0])===String(f))).length, abierta=qmxAbierta();
+  const cab=cerrada?(fin?`<b>${ac}/${fin}</b><span>aciertos</span>`:`<b>${hechos}/${J.p.length}</b><span>picks</span>`):`<b>${hechos}/${J.p.length}</b><span>picks</span>`;
+  const cuenta=D.fb&&!(typeof acctOk==="function"&&acctOk())?`<div class="qgate"><b>Entra con tu cuenta para competir en grupos</b><span>Sin cuenta tus picks se quedan en este navegador.</span><button class="btn" data-acct>Entrar</button></div>`:"";
+  box.innerHTML=`<div class="qmxj"><button id="qmxPrev" aria-label="Jornada anterior"${L[0]===j?" disabled":""}>‹</button>
+      <div><b>Jornada ${j}</b><small>${cerrada?(todos&&fin?"Terminada":fin?`En juego · van ${fin} de ${J.p.length}`:"Cerrada · en juego"):`Cierra ${qmxHora(J.pr).toLowerCase()}`}</small></div>
+      <div class="qmxc">${cab}</div><button id="qmxNext" aria-label="Jornada siguiente"${L[L.length-1]===j?" disabled":""}>›</button></div>
+    ${!cerrada?`<div class="qmxtools"><span>L = gana el local · E = empate · V = gana la visita</span><button class="q5link" id="qmxCopia">Copiar a La Pizarra</button></div>`:""}
+    <div class="qmxlist">${filas}</div>
+    <div class="qmxdes"><div><b>Desempate: goles de la jornada</b><span>${cerrada?`Tu pronóstico: ${mios.g??"–"} · van ${goles} goles`:"¿Cuántos goles se meten en los partidos de la jornada?"}</span></div>
+      <input id="qmxG" type="number" inputmode="numeric" min="0" max="60" value="${mios.g??""}"${cerrada?" disabled":""} aria-label="Goles de la jornada"></div>
+    <p class="note" id="qmxGuardo"></p>
+    ${cerrada&&abierta!=null&&abierta!==j?`<p class="note"><button class="q5link" data-qmxj="${abierta}">Ir a la jornada ${abierta}, que está abierta</button></p>`:""}
+    ${cuenta}
+    <p class="note">El % es la probabilidad según las casas de apuestas. 1 punto por acierto. Todos los picks se cierran con el primer partido de la jornada, como en el Progol.</p>`;
+}
+document.addEventListener("click",ev=>{
+  const t=ev.target; if(!t.closest) return;
+  const v=t.closest("#qmxView button"); if(v){ QMX.vista=v.dataset.qv; qmxRender(); return; }
+  if(t.closest("#qmxPrev")){ const L=qmxJornadas(); QMX.j=L[Math.max(0,L.indexOf(QMX.j)-1)]; qmxRender(); return; }
+  if(t.closest("#qmxNext")){ const L=qmxJornadas(); QMX.j=L[Math.min(L.length-1,L.indexOf(QMX.j)+1)]; qmxRender(); return; }
+  const go=t.closest("[data-qmxj]"); if(go){ QMX.j=+go.dataset.qmxj; qmxRender(); return; }
+  const b=t.closest("[data-qmx]"); if(b&&!b.disabled){ const j=QMX.j, x=qmxMios(j), f=b.dataset.qmx;
+    if(qmxD().J[j].pr<=Date.now()/1000){ qmxRender(); return; }
+    x.p={...x.p}; if(x.p[f]===b.dataset.k) delete x.p[f]; else x.p[f]=b.dataset.k; qmxGuarda(j,x); pzTrack("qmx_pick",{}); const y=window.scrollY; qmxRender(true); window.scrollTo(0,y); return; }
+  if(t.closest("#qmxCopia")){ const j=QMX.j, x=qmxMios(j); x.p={...x.p}; for(const r of qmxD().J[j].p){ const l=qmxLpz(r[7]); if(l) x.p[r[0]]=l; } qmxGuarda(j,x); qmxRender(true); return; }
+  const ql=t.closest("[data-ql]"); if(ql){ try{localStorage.setItem("pz_qliga",ql.dataset.ql);}catch(e){} showSport("qn"); window.scrollTo(0,0); return; }
+});
+document.addEventListener("change",ev=>{ if(ev.target.id!=="qmxG") return; const j=QMX.j, x=qmxMios(j), n=parseInt(ev.target.value,10);
+  if(qmxD().J[j].pr<=Date.now()/1000) return; x.g=Number.isFinite(n)&&n>=0&&n<=60?n:null; qmxGuarda(j,x); });
+
+// ----- Grupos de la Quiniela Liga MX -----
+const qmxLink=id=>`https://lapizarra.mx/?qmxg=${id}`;
+async function qmxPicksDe(jid,uid){   // picks de otro (o tuyos) de una jornada ya cerrada; las cerradas y terminadas se guardan en el navegador
+  const ck=`pz_qmxp_${jid}_${uid}`; try{ const c=JSON.parse(localStorage.getItem(ck)||"null"); if(c) return c; }catch(e){}
+  try{ const s=await ACCT.db.doc(`qmx_picks/${jid}_${uid}`).get(); return s.exists?{p:s.data().p||{},g:s.data().g??null}:null; }catch(e){ return null; }
+}
+async function qmxGrRender(){
+  const box=$("#qmxBody");
+  if(!(typeof acctOk==="function"&&acctOk())){ box.innerHTML=`<div class="qgate"><b>Los grupos necesitan cuenta</b><span>Entra para crear un grupo con tus amigos o unirte a uno. Son aparte de los de la NFL.</span><button class="btn" data-acct>Entrar</button></div>`; return; }
+  const G=[]; for(const id of qmxIds()){ const I=await grInfo(id).catch(()=>null); if(I) G.push(I); }
+  if(QMX.tab&&!G.some(g=>g.id===QMX.tab)) QMX.tab=null; if(!QMX.tab&&G.length) QMX.tab=G[0].id;
+  const g=G.find(x=>x.id===QMX.tab);
+  box.innerHTML=`${G.length?`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px">${G.map(x=>`<button data-qmxt="${x.id}" aria-pressed="${x.id===QMX.tab}">${acctEsc(x.nombre)}</button>`).join("")}</div>`:`<p class="note">Todavía no estás en ningún grupo de la Liga MX.</p>`}
+    <div id="qmxTabla">${g?`<p class="note">Cargando tabla…</p>`:""}</div>
+    ${g?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» de la Quiniela Liga MX en La Pizarra: ${qmxLink(g.id)}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-qmxcopy="${g.id}">Copiar link</button> · <button class="q5link" data-qmxsalir="${g.id}">Salir</button></p>`:""}
+    <div class="q5new"><input id="qmxGrNom" maxlength="40" placeholder="Nombre del grupo (ej. La quiniela de la oficina)" aria-label="Nombre del grupo"><button class="q5save" id="qmxGrCrear">Crear grupo</button></div><p class="note" id="qmxGrMsg"></p>`;
+  if(g) qmxTabla(g);
+}
+async function qmxTabla(g){
+  const box=$("#qmxTabla"); const ms=await ACCT.db.collection(`grupos/${g.id}/miembros`).get().catch(()=>null); if(!ms) { box.innerHTML=`<p class="note">No pudimos cargar el grupo.</p>`; return; }
+  const M=ms.docs.map(d=>({uid:d.id,...d.data()})), J=qmxD().J, now=Date.now()/1000;
+  const desde=13, Ls=qmxJornadas().filter(j=>j>=desde&&J[j].pr<=now);
+  const T=Object.fromEntries(M.map(m=>[m.uid,{n:m.nombre||"Jugador",pts:0,gan:0,err:0,ult:null}]));
+  let ultJ=null, ultP={};
+  for(const j of Ls){ const jid=qmxJid(j), P=J[j].p, R=P.map(r=>qmxRes(r,QMX.vivo)), term=R.every(x=>x.fin||x.susp), goles=R.reduce((s,x)=>s+(x.fin?(x.gl||0)+(x.gv||0):0),0);
+    const S={}; for(const m of M){ const pk=await qmxPicksDe(jid,m.uid); if(term&&pk){ try{localStorage.setItem(`pz_qmxp_${jid}_${m.uid}`,JSON.stringify(pk));}catch(e){} }
+      const a=P.reduce((s,r,i)=>s+(R[i].fin&&pk?.p?.[r[0]]===R[i].r?1:0),0); S[m.uid]={a,pk}; T[m.uid].pts+=a; if(j===Ls[Ls.length-1]) T[m.uid].ult=a;
+      if(term) T[m.uid].err+=pk?.g!=null?Math.abs(pk.g-goles):50; }
+    if(term){ const mx=Math.max(...M.map(m=>S[m.uid].a)); const top=M.filter(m=>S[m.uid].a===mx);
+      const best=top.sort((a,b)=>(S[a.uid].pk?.g!=null?Math.abs(S[a.uid].pk.g-goles):99)-(S[b.uid].pk?.g!=null?Math.abs(S[b.uid].pk.g-goles):99))[0]; if(best&&mx>0) T[best.uid].gan++; }
+    ultJ=j; ultP=S; }
+  const F=Object.entries(T).sort((a,b)=>b[1].pts-a[1].pts||b[1].gan-a[1].gan||a[1].err-b[1].err), yo=ACCT.user.uid;
+  const P=ultJ!=null?J[ultJ].p:[];
+  box.innerHTML=Ls.length?`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ultJ}</th><th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map(([u,x],i)=>`<tr${u===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.n)}${u===yo?" (tú)":""}</td><td><b>${x.pts}</b></td><td>${x.ult??"–"}</td><td>${x.gan}</td></tr>`).join("")}</tbody></table></div>
+    <h3 style="margin:18px 0 6px">Picks de la jornada ${ultJ}</h3><div class="tbl qmxpk"><table><thead><tr><th class="l">Partido</th>${M.map(m=>`<th>${acctEsc((m.nombre||"").split(" ")[0])}</th>`).join("")}</tr></thead><tbody>${P.map(r=>{ const R=qmxRes(r,QMX.vivo);
+      return `<tr><td class="l">${hoyEsc(qmxEq(r[2]).ab||qmxEq(r[2]).n)} ${R.gl!=null&&(R.fin||R.vivo)?`${R.gl}-${R.gv}`:"vs"} ${hoyEsc(qmxEq(r[3]).ab||qmxEq(r[3]).n)}</td>${M.map(m=>{ const k=ultP[m.uid]?.pk?.p?.[r[0]]; return `<td class="${R.fin&&k?(k===R.r?"ok":"mal"):""}">${k||"–"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>
+    <p class="note">Desempate de cada jornada: goles más cercanos. En la tabla, empate en puntos: más jornadas ganadas.</p>`
+    :`<p class="note">La tabla arranca cuando cierre la primera jornada (la ${qmxAbierta()??13}). Los picks de los demás se ven en cuanto se cierra.</p>`;
+}
+async function qmxJoinRender(){
+  const id=QMX.join; let el=$("#qmxJoin"); if(!id){ el?.remove(); return; }
+  if(!el){ el=document.createElement("div"); el.id="qmxJoin"; el.className="qgate"; el.style.maxWidth="640px"; $("#qmxBody").before(el); }
+  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de la Quiniela Liga MX</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
+  if(qmxIds().includes(id)){ QMX.join=null; el.remove(); return; }
+  const I=await grInfo(id).catch(()=>null);
+  el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo de la Quiniela Liga MX.</span><span><button class="btn" id="qmxUnir">Unirme</button> <button class="q5link" id="qmxNoUnir">Ahora no</button></span>`:`<b>Ese grupo ya no existe</b><button class="q5link" id="qmxNoUnir">Cerrar</button>`;
+}
+document.addEventListener("click",async ev=>{
+  const t=ev.target; if(!t.closest) return;
+  const tb=t.closest("[data-qmxt]"); if(tb){ QMX.tab=tb.dataset.qmxt; qmxGrRender(); return; }
+  if(t.closest("#qmxGrCrear")){ const n=($("#qmxGrNom").value||"").trim().slice(0,40); if(!n){ $("#qmxGrNom").focus(); return; } t.disabled=true; $("#qmxGrMsg").textContent="Creando…";
+    try{ const uid=ACCT.user.uid, ref=ACCT.db.collection("grupos").doc(), b=ACCT.db.batch();
+      b.set(ref,{nombre:n,dueno:uid,creado:grFV().serverTimestamp(),temporada:D.season,modos:["mx"]});
+      b.set(ref.collection("miembros").doc(uid),{nombre:grName(),unido:grFV().serverTimestamp()});
+      await b.commit(); qmxSetIds([...qmxIds(),ref.id]); QMX.tab=ref.id; pzTrack("qmx_crear_grupo",{}); qmxGrRender();
+    }catch(e){ console.warn("Quiniela MX: no se pudo crear el grupo",e?.code||e); $("#qmxGrMsg").textContent="No se pudo crear el grupo. Intenta de nuevo."; t.disabled=false; }
+    return; }
+  if(t.closest("[data-qmxcopy]")){ const id=t.closest("[data-qmxcopy]").dataset.qmxcopy; try{ await navigator.clipboard.writeText(qmxLink(id)); t.textContent="¡Copiado!"; setTimeout(()=>{t.textContent="Copiar link";},1500);}catch(e){ prompt("Copia este link:",qmxLink(id)); } return; }
+  if(t.closest("[data-qmxsalir]")){ const id=t.closest("[data-qmxsalir]").dataset.qmxsalir; if(!confirm("¿Salir de este grupo?")) return;
+    try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).delete(); }catch(e){}
+    qmxSetIds(qmxIds().filter(x=>x!==id)); QMX.tab=null; qmxGrRender(); return; }
+  if(t.closest("#qmxUnir")){ const id=QMX.join; t.disabled=true;
+    try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).set({nombre:grName(),unido:grFV().serverTimestamp()});
+      qmxSetIds([...qmxIds(),id]); QMX.join=null; QMX.tab=id; QMX.vista="grupos"; pzTrack("qmx_unirse_grupo",{}); qmxJoinRender(); qmxRender();
+    }catch(e){ console.warn("Quiniela MX: no se pudo unir",e?.code||e); t.disabled=false; t.textContent="No se pudo, intenta de nuevo"; }
+    return; }
+  if(t.closest("#qmxNoUnir")){ QMX.join=null; qmxJoinRender(); return; }
+});
+function qmxAbre(){ qmxJoinRender(); qmxRender(); }
+function qmxRepinta(){ QMX.cache={}; if(!$("#qmx").classList.contains("hidden")) qmxAbre(); }
+
+const ACCT_V="12.19.0", ACCT_KEYS=["pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
 const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
 const acctLsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
 const acctLsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
@@ -5124,7 +5334,7 @@ function acctLoadJS(f){return new Promise((ok,no)=>{
   const go=i=>{if(i>=urls.length) return no(new Error("No cargó "+f)); const s=document.createElement("script"); s.src=urls[i]; s.async=true;
     s.onload=ok; s.onerror=()=>{s.remove(); go(i+1);}; document.head.appendChild(s);};
   go(0);});}
-const acctLocal=()=>({q5:Q5.todo(),fav:favLee(),picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
+const acctLocal=()=>({qmxg:qmxIds(),q5:Q5.todo(),fav:favLee(),picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
 function acctMerge(nube,local){   // {temporada:{semana:{"VIS@LOC":{ats,su}}}}: gana la nube; lo local llena lo que falte
   const R=JSON.parse(JSON.stringify(nube||{}));
   for(const [s,S] of Object.entries(local||{})) for(const [w,W] of Object.entries(S||{})) for(const [k,G] of Object.entries(W||{})) for(const [m,p] of Object.entries(G||{})){
@@ -5154,14 +5364,15 @@ async function acctPull(){
   catch(e){console.warn("Cuentas: no se pudo leer la cuenta",e?.code||e); return;}
   if(ACCT.user!==u) return;
   const L=acctLocal(), linked=acctLsGet("pz_cuenta")===u.uid, dirty=acctLsGet("pz_cuenta_sucio")==="1";
-  const cloud={q5:C.q5||{},fav:{eq:C.fav?.eq||{},jug:C.fav?.jug||{}},picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
+  const cloud={qmxg:Array.isArray(C.qmxg)?C.qmxg:[],q5:C.q5||{},fav:{eq:C.fav?.eq||{},jug:C.fav?.jug||{}},picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
   let N;
   if(linked&&exists&&!dirty) N=cloud;                         // navegador ya ligado: manda la nube
   else if(linked) N=L;                                         // cambios locales sin subir (o cuenta nueva): manda lo local
-  else N={q5:{...L.q5,...cloud.q5},fav:{eq:{...L.fav.eq,...cloud.fav.eq},jug:{...L.fav.jug,...cloud.fav.jug}},picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
+  else N={qmxg:[...new Set([...(cloud.qmxg||[]),...(L.qmxg||[])])],q5:{...L.q5,...cloud.q5},fav:{eq:{...L.fav.eq,...cloud.fav.eq},jug:{...L.fav.jug,...cloud.fav.jug}},picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
   acctLsSet("pz_cuenta",u.uid);
   const pc=JSON.stringify(N.picks)!==JSON.stringify(L.picks)||JSON.stringify(N.surv||{})!==JSON.stringify(L.surv||{}), sc=N.sleeper!==L.sleeper||N.liga!==L.liga||N.espn!==L.espn||N.fsrc!==L.fsrc;
   acctLsSet(QN_PK,JSON.stringify(N.picks)); acctLsSet(SV_PK,JSON.stringify(N.surv||{}));
+  if(JSON.stringify(N.qmxg||[])!==JSON.stringify(L.qmxg||[])){ acctLsSet(QMX.GK,JSON.stringify(N.qmxg||[])); qmxRepinta(); }
   if(JSON.stringify(N.q5||{})!==JSON.stringify(L.q5||{})){ acctLsSet(Q5.K,JSON.stringify(N.q5||{})); q5Repinta(); }
   if(JSON.stringify(N.fav)!==JSON.stringify(L.fav)){ acctLsSet(FAV_K,JSON.stringify(N.fav)); FAV=favLee(); favRepinta(); }
   if(N.sleeper) acctLsSet("pizarra_sleeper",N.sleeper); else acctLsDel("pizarra_sleeper");
@@ -5258,7 +5469,7 @@ const acctForgot=()=>acctRun(async()=>{
   await ACCT.auth.sendPasswordResetEmail(m); acctMsg("Listo: si ese correo tiene cuenta, te llegará un link para cambiar tu contraseña (revisa también spam).",true);
 });
 async function acctForget(){   // quita de este navegador lo que pertenece a la cuenta
-  ACCT_KEYS.forEach(acctLsDel); q5Repinta(); acctSlClear(); if(acctOnQ()) loadQuiniela(); FAV=favLee(); favRepinta();
+  ACCT_KEYS.forEach(acctLsDel); q5Repinta(); qmxRepinta(); acctSlClear(); if(acctOnQ()) loadQuiniela(); FAV=favLee(); favRepinta();
 }
 const acctOut=()=>acctRun(async()=>{
   if(acctLsGet("pz_cuenta_sucio")==="1"){clearTimeout(ACCT.pushT); await acctSend();}
@@ -6368,7 +6579,7 @@ async function precarga(){ if(PRE_CORRE) return; PRE_CORRE=true;
 // el botón ‹ de la página, el de atrás de Safari y el gesto de deslizar en el iPhone. Abrir un partido o "Tu cuenta"
 // también cuenta como un paso: atrás cierra la ventana en lugar de salirse del sitio.
 var NAV={cur:null,liga:"",restaurando:false,listo:false};   // var: showTab puede llamarse antes de esta línea
-const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5"};
+const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5",quinielamx:"qmx"};
 const NAV_NOMBRE=Object.fromEntries(Object.entries(NAV_ALIAS).map(([a,t])=>[t,a]));
 const navLiga=id=>id.startsWith("mx")?FLIG:"";
 const navHash=id=>"#"+(NAV_NOMBRE[id]||id)+(id.startsWith("mx")&&id!=="mxexplore"&&id!=="mxgoleo"?"-"+FLIG:"");
@@ -6381,7 +6592,9 @@ function navPush(id){
 }
 function navIr(tab,liga){
   if(liga&&LEAGUES[liga]&&liga!==FLIG) selectLeague(liga,true);
-  const sp=sportOf(tab); if(sp==="hoy") showSport("hoy"); else showSport(sp==="qn"?"nfl":sp,tab);
+  const sp=sportOf(tab); if(sp==="hoy") showSport("hoy");
+  else if(tab==="qmx"||tab==="nflq"){ try{localStorage.setItem("pz_qliga",tab==="qmx"?"mx":"nfl");}catch(e){} showSport("qn"); }
+  else showSport(sp,tab);
 }
 window.addEventListener("popstate",e=>{
   const st=e.state||{tab:"hoy",liga:"",n:0}, abierta=[dlg,adlg,fdlg].find(d=>d.open);
@@ -6403,6 +6616,8 @@ window.addEventListener("hashchange",()=>{ const {tab,liga}=navDeHash(); if(!SEC
 $("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport("hoy"); window.scrollTo(0,0); };
 // Invitación: lapizarra.mx/?g=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("nfl"); showTab("nflq"); qnSetView("grupos");}}catch(e){}})();
+// Invitación a un grupo de la Quiniela Liga MX: lapizarra.mx/?qmxg=ID
+(()=>{try{const g=new URLSearchParams(location.search).get("qmxg"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){QMX.join=g; QMX.vista="grupos"; localStorage.setItem("pz_qliga","mx"); history.replaceState(null,"",location.pathname+"#quinielamx");}}catch(e){}})();
 // Invitación a un grupo de La Quinteta: lapizarra.mx/?q5g=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("q5g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){Q5.join=g; history.replaceState(null,"",location.pathname+"#quinteta");}}catch(e){}})();
 // Primera pantalla: la de la dirección (lapizarra.mx/#quiniela, #mxgames-eng…) o la portada Hoy
