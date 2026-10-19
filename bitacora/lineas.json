@@ -2852,6 +2852,39 @@
       "BUF@LV": 5.5,
       "DAL@GB": -1.5
      }
+    },
+    {
+     "cuando": "2026-10-19 08:49",
+     "motivo": "diaria",
+     "lineas": {
+      "WAS@SF": {
+       "draftkings": -7.5,
+       "betus": -7.5,
+       "fanduel": -7.5,
+       "lowvig": -7.5,
+       "betonlineag": -7.5,
+       "betrivers": -7.5,
+       "mybookieag": -7.5,
+       "betmgm": -7.5,
+       "bovada": -7.5
+      }
+     },
+     "espn": {
+      "NO@NYG": 1.5,
+      "CAR@PHI": -1.5,
+      "PIT@TB": 2.5,
+      "NYJ@NE": -7.5,
+      "WAS@SF": -7.5,
+      "LAC@KC": -8.5,
+      "SEA@DEN": 2.5,
+      "HOU@JAX": -2.5,
+      "CHI@ATL": 2.5,
+      "BAL@CLE": 4.5,
+      "TEN@IND": -6.5,
+      "ARI@LA": -12.5,
+      "BUF@LV": 5.5,
+      "DAL@GB": -1.5
+     }
     }
    ],
    "primera_vez": "2026-10-13T16:35+00:00"
