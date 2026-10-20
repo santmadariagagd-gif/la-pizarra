@@ -2888,6 +2888,399 @@
     }
    ],
    "primera_vez": "2026-10-13T16:35+00:00"
+  },
+  "2026-7": {
+   "etiqueta": "Week 7",
+   "espn": {
+    "NYG@HOU": {
+     "L": -9.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "390"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "-520"
+      }
+     ],
+     "fecha": 1792947600000
+    },
+    "DEN@ARI": {
+     "L": 4.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "-238"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "195"
+      }
+     ],
+     "fecha": 1792958700000
+    },
+    "IND@MIN": {
+     "L": -6.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "230"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "-285"
+      }
+     ],
+     "fecha": 1792947600000
+    },
+    "MIA@NYJ": {
+     "L": -4.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "195"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "-238"
+      }
+     ],
+     "fecha": 1792947600000
+    },
+    "LA@LV": {
+     "L": 4.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "-225"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "185"
+      }
+     ],
+     "fecha": 1792959900000
+    },
+    "KC@SEA": {
+     "L": -2.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "120"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "-142"
+      }
+     ],
+     "fecha": 1792974000000
+    },
+    "NE@CHI": {
+     "L": -2.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "124"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "-148"
+      }
+     ],
+     "fecha": 1792714500000
+    },
+    "PIT@NO": {
+     "L": 3.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "-185"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "154"
+      }
+     ],
+     "fecha": 1792935000000
+    },
+    "SF@ATL": {
+     "L": 3.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "-175"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "145"
+      }
+     ],
+     "fecha": 1792947600000
+    },
+    "CIN@BAL": {
+     "L": -2.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "124"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "-148"
+      }
+     ],
+     "fecha": 1792947600000
+    },
+    "GB@DET": {
+     "L": -2.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "136"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "-162"
+      }
+     ],
+     "fecha": 1792959900000
+    },
+    "CLE@TEN": {
+     "L": 1.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "-130"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "110"
+      }
+     ],
+     "fecha": 1792947600000
+    },
+    "TB@CAR": {
+     "L": -3.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "154"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "-185"
+      }
+     ],
+     "fecha": 1792947600000
+    },
+    "DAL@PHI": {
+     "L": 4.5,
+     "visto": "2026-10-20T16:44+00:00",
+     "mappings": [
+      {
+       "type": "BETTING_LINE",
+       "value": "-218"
+      },
+      {
+       "type": "BETTING_LINE",
+       "value": "180"
+      }
+     ],
+     "fecha": 1793060100000
+    }
+   },
+   "casas": [
+    {
+     "cuando": "2026-10-20 10:44",
+     "motivo": "nueva",
+     "lineas": {
+      "NE@CHI": {
+       "draftkings": -3.0,
+       "fanduel": -3.0,
+       "betus": -3.0,
+       "lowvig": -3.0,
+       "betonlineag": -3.0,
+       "betrivers": -3.0,
+       "mybookieag": -3.0,
+       "betmgm": -3.0,
+       "bovada": -3.0
+      },
+      "PIT@NO": {
+       "draftkings": 3.5,
+       "fanduel": 3.0,
+       "betmgm": 3.5,
+       "betus": 3.5,
+       "mybookieag": 3.0,
+       "betonlineag": 3.5,
+       "lowvig": 3.0,
+       "betrivers": 3.5,
+       "bovada": 3.0
+      },
+      "SF@ATL": {
+       "draftkings": 3.0,
+       "betus": 3.0,
+       "fanduel": 3.5,
+       "lowvig": 3.0,
+       "betonlineag": 3.0,
+       "betrivers": 3.5,
+       "betmgm": 3.5,
+       "mybookieag": 3.5
+      },
+      "CIN@BAL": {
+       "draftkings": -3.0,
+       "betus": -3.0,
+       "fanduel": -2.5,
+       "betonlineag": -2.5,
+       "lowvig": -2.5,
+       "betrivers": -3.0,
+       "betmgm": -3.0,
+       "mybookieag": -2.5,
+       "bovada": -2.5
+      },
+      "TB@CAR": {
+       "draftkings": -3.5,
+       "betus": -3.0,
+       "fanduel": -3.5,
+       "betonlineag": -3.0,
+       "lowvig": -3.0,
+       "betrivers": -3.5,
+       "betmgm": -3.0,
+       "mybookieag": -3.0,
+       "bovada": -3.0
+      },
+      "CLE@TEN": {
+       "draftkings": 1.5,
+       "fanduel": 1.5,
+       "betus": 1.0,
+       "lowvig": 1.5,
+       "betonlineag": 1.5,
+       "betrivers": 2.5,
+       "mybookieag": 2.0,
+       "betmgm": 2.0,
+       "bovada": 1.5
+      },
+      "NYG@HOU": {
+       "draftkings": -10.0,
+       "betus": -10.0,
+       "fanduel": -9.5,
+       "lowvig": -9.5,
+       "betonlineag": -10.0,
+       "betrivers": -9.5,
+       "betmgm": -9.5,
+       "mybookieag": -10.0,
+       "bovada": -10.0
+      },
+      "IND@MIN": {
+       "draftkings": -6.5,
+       "betus": -6.5,
+       "fanduel": -6.5,
+       "betonlineag": -6.0,
+       "lowvig": -6.0,
+       "betrivers": -6.5,
+       "betmgm": -6.5,
+       "mybookieag": -6.5,
+       "bovada": -6.0
+      },
+      "MIA@NYJ": {
+       "draftkings": -4.5,
+       "fanduel": -4.5,
+       "betus": -5.0,
+       "betonlineag": -5.0,
+       "lowvig": -5.0,
+       "betrivers": -5.0,
+       "betmgm": -5.0,
+       "mybookieag": -5.0,
+       "bovada": -4.5
+      },
+      "DEN@ARI": {
+       "draftkings": 4.5,
+       "betus": 4.0,
+       "fanduel": 4.5,
+       "betonlineag": 4.0,
+       "lowvig": 4.0,
+       "betrivers": 4.5,
+       "betmgm": 4.0,
+       "bovada": 4.5,
+       "mybookieag": 4.0
+      },
+      "GB@DET": {
+       "draftkings": -3.0,
+       "fanduel": -3.0,
+       "betus": -3.0,
+       "betonlineag": -3.0,
+       "lowvig": -3.0,
+       "betrivers": -3.0,
+       "betmgm": -3.0,
+       "mybookieag": -3.0,
+       "bovada": -3.0
+      },
+      "LA@LV": {
+       "draftkings": 4.5,
+       "betus": 4.0,
+       "fanduel": 4.5,
+       "lowvig": 4.0,
+       "betonlineag": 4.0,
+       "betrivers": 4.5,
+       "betmgm": 4.5,
+       "bovada": 4.0,
+       "mybookieag": 4.5
+      },
+      "KC@SEA": {
+       "draftkings": -2.5,
+       "betus": -2.0,
+       "fanduel": -2.5,
+       "betonlineag": -2.5,
+       "lowvig": -2.5,
+       "betrivers": -2.5,
+       "betmgm": -2.5,
+       "bovada": -2.5,
+       "mybookieag": -2.5
+      },
+      "DAL@PHI": {
+       "draftkings": 4.5,
+       "betus": 4.5,
+       "fanduel": 4.5,
+       "betonlineag": 4.5,
+       "lowvig": 4.5,
+       "betrivers": 5.0,
+       "betmgm": 4.5,
+       "mybookieag": 4.5,
+       "bovada": 4.5
+      }
+     },
+     "espn": {
+      "NYG@HOU": -9.5,
+      "DEN@ARI": 4.5,
+      "IND@MIN": -6.5,
+      "MIA@NYJ": -4.5,
+      "LA@LV": 4.5,
+      "KC@SEA": -2.5,
+      "NE@CHI": -2.5,
+      "PIT@NO": 3.5,
+      "SF@ATL": 3.5,
+      "CIN@BAL": -2.5,
+      "GB@DET": -2.5,
+      "CLE@TEN": 1.5,
+      "TB@CAR": -3.5,
+      "DAL@PHI": 4.5
+     }
+    }
+   ],
+   "primera_vez": "2026-10-20T16:44+00:00"
   }
  }
 }
