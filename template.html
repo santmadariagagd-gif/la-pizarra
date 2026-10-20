@@ -204,6 +204,7 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 
 .subnav button{font:600 18px/1 var(--display);letter-spacing:.02em;border:0;background:none;color:var(--muted);padding:8px 0;cursor:pointer;border-bottom:3px solid transparent}
 .subnav button[aria-current="page"]{color:var(--ink);border-bottom-color:var(--mark)}
+.subnav[data-for=qn]{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.subnav[data-for=qn]::-webkit-scrollbar{display:none}.subnav[data-for=qn] button{white-space:nowrap;flex:none}
 .subnav .league{font:700 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--bg);background:var(--ink);padding:5px 8px;border-radius:5px}
 .games{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
 .game{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
@@ -1104,7 +1105,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .q5eqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;max-width:820px}
 .q5eqs button{display:flex;align-items:center;gap:8px;min-height:48px;padding:0 10px 0 8px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;cursor:pointer}
 .q5eqs button img{width:28px;height:28px;object-fit:contain;flex:none}
-.q5eqs button span{flex:1;min-width:0;font:600 17px/1.05 var(--display)}.q5eqs button b{font:700 18px var(--display)}
+.q5eqs button span{flex:1;min-width:0;font:600 17px/1.05 var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.q5eqs button b{font:700 18px var(--display)}
 .q5eqs button[aria-pressed="true"]{border-color:var(--mark);background:#2F4A41}.q5eqs button[aria-pressed="true"] b{color:var(--mark)}
 .q5eqs button.no{opacity:.4}
 .q5acc{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0 0}
@@ -1165,15 +1166,18 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
     <button aria-selected="false" data-sport="nfl">NFL</button>
     <button aria-selected="false" data-sport="nba">NBA</button>
     <button aria-selected="false" data-sport="ff">Fantasy</button>
-    <button aria-selected="false" data-sport="qn">Quiniela</button>
+    <button aria-selected="false" data-sport="qn">Retas</button>
   </nav>
   <button class="acct" id="acctBtn" aria-label="Tu cuenta" hidden>Entrar</button>
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL" hidden>
-  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="nflq">Quiniela</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
+  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
+</nav>
+<nav class="subnav" data-for="qn" aria-label="Retas" hidden>
+  <button aria-current="page" data-tab="nflq">Quiniela NFL</button><button data-tab="qmx">Liga MX</button><button data-tab="nbaq5">Quinteta</button>
 </nav>
 <nav class="subnav" data-for="nba" aria-label="Secciones NBA" hidden>
-  <button aria-current="page" data-tab="nbagames">Partidos</button><button data-tab="nbatable">Tabla</button><button data-tab="nbaq5">La Quinteta</button>
+  <button aria-current="page" data-tab="nbagames">Partidos</button><button data-tab="nbatable">Tabla</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
   <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fmatch">Matchup</button><button data-tab="froster">Roster</button><button data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
@@ -1297,7 +1301,6 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="tbl"><table id="prNfl" class="prt" data-freeze="3"></table></div>
 </section>
 <section class="panel hidden" id="nflq">
-  <div class="hseg qliga" role="group" aria-label="Liga de la quiniela"><button data-ql="nfl" aria-pressed="true">NFL</button><button data-ql="mx" aria-pressed="false">Liga MX</button></div>
   <div class="headrow"><h2 id="qTitle">Quiniela</h2><div class="seg" id="qSeg"><button aria-pressed="true" data-m="ats">Con spread</button><button aria-pressed="false" data-m="su">Sin spread</button><button aria-pressed="false" data-m="surv">Survivor</button></div></div>
   <p class="qdisc"><b>Aviso:</b> los picks son predicciones basadas en estadísticas, no una recomendación de apuesta. La Pizarra no se hace responsable de los resultados. Juega con responsabilidad.</p>
   <div class="qview" id="qView" role="tablist"><button role="tab" aria-selected="true" data-v="picks">Mis picks</button><button role="tab" aria-selected="false" data-v="lpz">La Pizarra</button><button role="tab" aria-selected="false" data-v="grupos">Grupos</button></div>
@@ -1310,7 +1313,6 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div id="grBody" hidden></div>
 </section>
 <section class="panel hidden" id="qmx">
-  <div class="hseg qliga" role="group" aria-label="Liga de la quiniela"><button data-ql="nfl" aria-pressed="false">NFL</button><button data-ql="mx" aria-pressed="true">Liga MX</button></div>
   <div class="headrow"><h2>Quiniela Liga MX</h2></div>
   <div class="qview" id="qmxView" role="tablist"><button role="tab" aria-selected="true" data-qv="picks">Mis picks</button><button role="tab" aria-selected="false" data-qv="grupos">Grupos</button><button role="tab" aria-selected="false" data-qv="llave">Llave de la Liguilla</button></div>
   <div id="qmxBody"></div>
@@ -1345,7 +1347,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div id="nbaTabla"></div>
 </section>
 <section class="panel hidden" id="nbaq5">
-  <h2>La Quinteta</h2>
+  <h2>La Quinteta · NBA</h2>
   <div id="q5Body"></div>
 </section>
 <section class="panel hidden" id="mxgoleo">
@@ -1457,7 +1459,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </section>
 
 <nav class="bnav" aria-label="Secciones">
-  <button aria-selected="true" data-sport="hoy">Hoy</button><button aria-selected="false" data-sport="mx">Fútbol</button><button aria-selected="false" data-sport="nfl">NFL</button><button aria-selected="false" data-sport="nba">NBA</button><button aria-selected="false" data-sport="ff">Fantasy</button><button aria-selected="false" data-sport="qn">Quiniela</button>
+  <button aria-selected="true" data-sport="hoy">Hoy</button><button aria-selected="false" data-sport="mx">Fútbol</button><button aria-selected="false" data-sport="nfl">NFL</button><button aria-selected="false" data-sport="nba">NBA</button><button aria-selected="false" data-sport="ff">Fantasy</button><button aria-selected="false" data-sport="qn">Retas</button>
 </nav>
 <div class="pzinst" id="pzInst" hidden role="dialog" aria-label="Instalar La Pizarra">
   <img src="/iconos/icono-192.png" alt="">
@@ -1570,7 +1572,8 @@ function loadNflPlayoffs(){
 }
 // Qué botón de deporte se marca (arriba en computadora y en la barra de abajo en el celular) según la sección
 const FF_TABS=["fmatch","froster","fliga","fwaivers","ftrade"];
-const sportOf=id=>id==="hoy"?"hoy":id==="nflq"||id==="qmx"?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
+const RETAS=["nflq","qmx","nbaq5"];
+const sportOf=id=>id==="hoy"?"hoy":RETAS.includes(id)?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
 // Abre una sección que necesita un paquete: "Cargando…" mientras llega y, si falla, un aviso para recargar
 function paqCarga(n,fn,donde){
   if(PAQ_OK[n]) return fn();
@@ -1579,7 +1582,7 @@ function paqCarga(n,fn,donde){
   paquete(n).then(()=>{ if(puse) txt(""); fn(); })
     .catch(()=>txt("No pudimos cargar esta sección. Revisa tu conexión y recarga la página."));
 }
-function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||id==="qmx")?"none":"";
+function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||RETAS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
   const spSel=sportOf(id); document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===spSel));
   if(id==="hoy") hoyRender();
   if(typeof navPush==="function") navPush(id);
@@ -1591,11 +1594,11 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
   if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",fantasyInit,id==="fwaivers"?"#notes":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp,tab){
-  if(sp==="qn"){   // Quiniela: NFL o Liga MX (lo último que escogiste)
-    let ql="nfl"; try{ ql=localStorage.getItem("pz_qliga")||"nfl"; }catch(e){}
-    if(ql!=="mx"||!D.qmx) return showSport("nfl",tab==="qmx"&&D.qmx?"qmx":"nflq");
-    document.querySelectorAll(".subnav").forEach(n=>n.hidden=true); $(".nflart").toggleAttribute("hidden",true); $(".mxart").toggleAttribute("hidden",false);
-    $("#tempWrap").hidden=true; return showTab("qmx");
+  if(sp==="qn"){   // Retas (19 oct 2026): Quiniela NFL, Quiniela Liga MX y La Quinteta en un solo lugar; abre la última que usaste
+    let t=tab; if(!RETAS.includes(t)){ try{ t=localStorage.getItem("pz_reta"); }catch(e){} }
+    if(!RETAS.includes(t)||(t==="qmx"&&!D.qmx)) t="nflq";
+    document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!=="qn"); $(".nflart").toggleAttribute("hidden",true); $(".mxart").toggleAttribute("hidden",true);
+    $("#tempWrap").hidden=true; return showTab(t);
   }
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
   if(sp==="hoy") return showTab("hoy");
@@ -2797,7 +2800,7 @@ $("#gbody").addEventListener("click",ev=>{
   const t=ev.target.closest("[data-ntab]"); if(t){ NDET.tab=t.dataset.ntab; const c=$("#gbody .ndet"); if(c) c.dataset.tab=NDET.tab; $("#gbody").querySelectorAll("[data-ntab]").forEach(bb=>bb.setAttribute("aria-pressed",bb===t)); return; }
   const d=ev.target.closest("[data-drv]"); if(d){ NDET.ab[d.dataset.drv]=!NDET.ab[d.dataset.drv]; return nflRepinta(); }
   const e=ev.target.closest("[data-neq]"); if(e){ NDET.eq=e.dataset.neq; return nflRepinta(); }
-  if(ev.target.closest("[data-nqn]")){ dlg.close(); setTimeout(()=>{ showSport("qn"); window.scrollTo(0,0); },50); return; }
+  if(ev.target.closest("[data-nqn]")){ dlg.close(); setTimeout(()=>{ showSport("qn","nflq"); window.scrollTo(0,0); },50); return; }
   const v=ev.target.closest("[data-vp]"); if(v) return votar(v.dataset.vp,+v.dataset.vr);
   const vc=ev.target.closest("[data-vcambio]"); if(vc){ VOTO.cambiar.add(vc.dataset.vcambio); votosPinta(); }
 });
@@ -4938,7 +4941,7 @@ function nbaInvHTML(){
 }
 $("#nbaPrev").onclick=()=>{NBA.dia=nbaMas(NBA.dia,-1); nbaPartidos();};
 $("#nbaNext").onclick=()=>{NBA.dia=nbaMas(NBA.dia,1); nbaPartidos();};
-document.addEventListener("click",ev=>{ if(ev.target.closest?.("[data-nbaq5]")){ showSport("nba","nbaq5"); window.scrollTo(0,0); } });
+document.addEventListener("click",ev=>{ if(ev.target.closest?.("[data-nbaq5]")){ showSport("qn","nbaq5"); window.scrollTo(0,0); } });
 // Tabla por conferencia
 function nbaTablaDatos(){
   if(!NBA.stP||Date.now()-NBA.st?.t>5*60e3) NBA.stP=fetch(`${ESPN}/v2/sports/basketball/nba/standings?season=${NBA_TEMP}&seasontype=2`).then(r=>r.json()).then(j=>{
@@ -5111,7 +5114,8 @@ async function q5JoinRender(){
   if(!el){ el=document.createElement("div"); el.id="q5Join"; el.className="qgate"; el.style.maxWidth="640px"; $("#q5Body").before(el); }
   if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de La Quinteta</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
   if(Q5.ids().includes(id)){ Q5.join=null; el.remove(); return; }
-  const I=await grInfo(id).catch(()=>null);
+  let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); console.warn("Quinteta: invitación",errQ); return null; });
+  if(!I&&errQ){ el.innerHTML=`<b>No pudimos abrir la invitación</b><span>Intenta de nuevo en un momento. Si sigue igual, avísale a quien te invitó (código: ${acctEsc(errQ)}).</span><button class="q5link" id="q5NoUnir">Cerrar</button>`; return; }
   el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo de La Quinteta (NBA). Arma tu quinteta y compite con ellos en su propia tabla.</span><span><button class="btn" id="q5Unir">Unirme</button> <button class="q5link" id="q5NoUnir">Ahora no</button></span>`
     :`<b>Ese grupo ya no existe</b><span>Pide a quien te invitó un link nuevo.</span><button class="q5link" id="q5NoUnir">Cerrar</button>`;
 }
@@ -5283,7 +5287,8 @@ async function qmxJoinRender(){
   if(!el){ el=document.createElement("div"); el.id="qmxJoin"; el.className="qgate"; el.style.maxWidth="640px"; $("#qmxBody").before(el); }
   if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de la Quiniela Liga MX</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
   if(qmxIds().includes(id)){ QMX.join=null; el.remove(); return; }
-  const I=await grInfo(id).catch(()=>null);
+  let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); console.warn("Quiniela MX: invitación",errQ); return null; });
+  if(!I&&errQ){ el.innerHTML=`<b>No pudimos abrir la invitación</b><span>Intenta de nuevo en un momento. Si sigue igual, avísale a quien te invitó (código: ${acctEsc(errQ)}).</span><button class="q5link" id="qmxNoUnir">Cerrar</button>`; return; }
   el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo de la Quiniela Liga MX.</span><span><button class="btn" id="qmxUnir">Unirme</button> <button class="q5link" id="qmxNoUnir">Ahora no</button></span>`:`<b>Ese grupo ya no existe</b><button class="q5link" id="qmxNoUnir">Cerrar</button>`;
 }
 document.addEventListener("click",async ev=>{
@@ -6429,7 +6434,7 @@ function hoyLpzHTML(){
   const w=D.semana?.nfl?.w||weeks.find(w=>(D.sched||[]).some(x=>x.w===w&&x.hs==null)), sp=w!=null?LPZS[w]:null;
   const sv=sp?.t?`<span class="sp"><span>La Pizarra va con</span><b>${hoyEsc(NT[sp.t]?.n||sp.t)}</b>${sp.p!=null?`<em>${Math.round(sp.p*100)}%</em>`:""}</span>`:"";
   return `<section class="hsec"><div class="hh"><h3>Lo de La Pizarra</h3></div><div class="hlpz">${hoyDatoHTML()}${hoyPrHTML()}${hoyTablaHTML()}${hoyPrNflHTML()}${hoyEpaHTML()}
-    <button class="hqn" data-hact="qn"><span><b>La Quiniela</b><span>Pronostica la jornada y compite con tus amigos</span></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d2a26" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <button class="hqn" data-hact="qn"><span><b>Retas</b><span>Quinielas de la NFL y la Liga MX y La Quinteta de la NBA, contra tus amigos</span></span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d2a26" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     <button class="hbox hsv" data-hact="sv"><span class="hh" style="margin:0"><span class="k">El Survivor</span><span class="e">Entrar</span></span><span class="x">Un equipo por semana, sin repetir. Si pierde, quedas fuera.</span>${sv}</button>
   </div></section>`;
 }
@@ -6493,8 +6498,9 @@ $("#hoy").addEventListener("click",ev=>{
     else if(act==="tabla") hoyIrLiga("mx","mxtable");
     else if(act==="nflpr"){ showSport("nfl","nflpr"); window.scrollTo(0,0); }
     else if(act==="nfl"){ curW=+a.dataset.w; renderNflWeek(); showSport("nfl"); window.scrollTo(0,0); }
-    else if(act==="qn"||act==="lpz"){ showSport("qn"); window.scrollTo(0,0); }
-    else if(act==="sv"){ qnMode="surv"; try{localStorage.setItem("pz_qmode","surv");}catch(e){} showSport("qn"); qnSetView("picks"); window.scrollTo(0,0); }
+    else if(act==="qn"){ showSport("qn"); window.scrollTo(0,0); }
+    else if(act==="lpz"){ showSport("qn","nflq"); window.scrollTo(0,0); }
+    else if(act==="sv"){ qnMode="surv"; try{localStorage.setItem("pz_qmode","surv");}catch(e){} showSport("qn","nflq"); qnSetView("picks"); window.scrollTo(0,0); }
     return; }
   const jf=ev.target.closest("[data-jf]"); if(jf) return favFicha(jf.dataset.jf);
   const p=ev.target.closest("[data-hid]"); if(p) return hoyAbrir(p.dataset.hk,p.dataset.hid);
@@ -6579,7 +6585,7 @@ async function precarga(){ if(PRE_CORRE) return; PRE_CORRE=true;
 // el botón ‹ de la página, el de atrás de Safari y el gesto de deslizar en el iPhone. Abrir un partido o "Tu cuenta"
 // también cuenta como un paso: atrás cierra la ventana en lugar de salirse del sitio.
 var NAV={cur:null,liga:"",restaurando:false,listo:false};   // var: showTab puede llamarse antes de esta línea
-const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5",quinielamx:"qmx"};
+const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5",quinielamx:"qmx",retas:"nflq"};
 const NAV_NOMBRE=Object.fromEntries(Object.entries(NAV_ALIAS).map(([a,t])=>[t,a]));
 const navLiga=id=>id.startsWith("mx")?FLIG:"";
 const navHash=id=>"#"+(NAV_NOMBRE[id]||id)+(id.startsWith("mx")&&id!=="mxexplore"&&id!=="mxgoleo"?"-"+FLIG:"");
@@ -6593,7 +6599,7 @@ function navPush(id){
 function navIr(tab,liga){
   if(liga&&LEAGUES[liga]&&liga!==FLIG) selectLeague(liga,true);
   const sp=sportOf(tab); if(sp==="hoy") showSport("hoy");
-  else if(tab==="qmx"||tab==="nflq"){ try{localStorage.setItem("pz_qliga",tab==="qmx"?"mx":"nfl");}catch(e){} showSport("qn"); }
+  else if(RETAS.includes(tab)) showSport("qn",tab);
   else showSport(sp,tab);
 }
 window.addEventListener("popstate",e=>{
@@ -6615,7 +6621,7 @@ window.addEventListener("hashchange",()=>{ const {tab,liga}=navDeHash(); if(!SEC
   if(tab!==NAV.cur||(tab.startsWith("mx")&&liga&&liga!==FLIG)) navIr(tab,liga); });
 $("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport("hoy"); window.scrollTo(0,0); };
 // Invitación: lapizarra.mx/?g=ID
-(()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("nfl"); showTab("nflq"); qnSetView("grupos");}}catch(e){}})();
+(()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("qn","nflq"); qnSetView("grupos");}}catch(e){}})();
 // Invitación a un grupo de la Quiniela Liga MX: lapizarra.mx/?qmxg=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("qmxg"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){QMX.join=g; QMX.vista="grupos"; localStorage.setItem("pz_qliga","mx"); history.replaceState(null,"",location.pathname+"#quinielamx");}}catch(e){}})();
 // Invitación a un grupo de La Quinteta: lapizarra.mx/?q5g=ID
