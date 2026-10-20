@@ -1111,6 +1111,31 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .q5acc{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0 0}
 .q5save{min-height:44px;padding:0 20px;border-radius:22px;border:0;background:var(--mark);color:#1d2a26;font:700 17px var(--display);cursor:pointer}
 .q5save:disabled{background:var(--surface);color:var(--muted);cursor:default}
+.fanres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:640px;margin:0 0 10px}
+.fanres>div{padding:10px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}.fanres b{display:block;font:700 24px/1.1 var(--display)}.fanres b.y{color:var(--mark)}.fanres span{font-size:12px;color:var(--muted)}
+.fancancha{max-width:640px;padding:14px 4px;border-radius:16px;background:#24493A;border:1px solid #3A6A55;display:flex;flex-direction:column;gap:14px}
+.fanfila{display:flex;justify-content:center;gap:4px;flex-wrap:nowrap}
+.fanj{width:80px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;color:var(--ink);padding:0;cursor:pointer;font:inherit}
+.fanf{position:relative;width:40px;height:40px;border-radius:20px;background:#ECEFE7;border:2px solid #ECEFE7;display:inline-flex;align-items:center;justify-content:center;font:700 12px var(--display);color:#1d2a26;flex:none}
+.fanf img{width:28px;height:28px;object-fit:contain}
+.fanj.cap .fanf{border-color:var(--mark);box-shadow:0 0 0 2px var(--mark)}
+.fanf i{position:absolute;top:-6px;right:-8px;width:20px;height:20px;border-radius:10px;background:var(--mark);color:#1d2a26;font:700 12px/20px var(--display);font-style:normal;text-align:center}
+.fanj b{max-width:78px;padding:2px 5px;border-radius:6px;background:#1F332D;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fanj small{font-size:11px;color:#C9D6CF}
+.fanj.vac .fanf{background:transparent;border:2px dashed #9FC3B2;color:#ECEFE7;font-size:20px}.fanj.vac b{background:transparent;color:#C9D6CF}
+.fanmenu{max-width:640px;margin:10px 0 0;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--mark);display:flex;flex-direction:column;gap:4px}
+.fanmenu span{font-size:13px;color:var(--muted)}.fanmenu div{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.fanpick{max-width:640px;margin:10px 0 0;padding:12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.fanpickh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.fanpick input{width:100%;box-sizing:border-box;min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:400 16px var(--body,inherit)}
+.fanlist{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto}
+.fanlist button{display:grid;grid-template-columns:34px minmax(0,1fr) 40px 34px;gap:8px;align-items:center;min-height:52px;padding:4px 10px 4px 6px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.fanlist button.no{opacity:.4;cursor:default}.fanlist .fanf{width:30px;height:30px}.fanlist .fanf img{width:22px;height:22px}
+.fanlist span{min-width:0;display:flex;flex-direction:column}.fanlist span b{font:600 16px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fanlist small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fanlist>button>b{font:700 17px var(--display);text-align:right}.fanlist>button>b.y{color:var(--mark)}
+.fanreglas{max-width:640px;margin-top:14px;padding:10px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.5}.fanreglas summary{cursor:pointer;color:var(--ink);font:700 16px var(--display)}
+.fanvs{max-width:640px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)}.fanvs span:last-child{text-align:right}.fanvs b{font:700 18px var(--display);color:var(--mark)}
+@media (max-width:400px){.fanj{width:70px}.fanj b{max-width:68px;font-size:11px}}
 .q5top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--mark);margin:0 0 12px;max-width:640px}
 .q5top b{display:block;font:700 34px/1 var(--display)}.q5top b.y{color:var(--mark)}.q5top span{font-size:12px;color:var(--muted)}
 .q5mis{display:flex;flex-direction:column;gap:8px;max-width:640px}
@@ -1174,7 +1199,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
 </nav>
 <nav class="subnav" data-for="qn" aria-label="Retas" hidden>
-  <button aria-current="page" data-tab="nflq">Quiniela NFL</button><button data-tab="qmx">Liga MX</button><button data-tab="nbaq5">Quinteta</button>
+  <button aria-current="page" data-tab="nflq">Quiniela NFL</button><button data-tab="qmx">Liga MX</button><button data-tab="nbaq5">Quinteta</button><button data-tab="fan">Champions</button>
 </nav>
 <nav class="subnav" data-for="nba" aria-label="Secciones NBA" hidden>
   <button aria-current="page" data-tab="nbagames">Partidos</button><button data-tab="nbatable">Tabla</button>
@@ -1316,6 +1341,11 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="headrow"><h2>Quiniela Liga MX</h2></div>
   <div class="qview" id="qmxView" role="tablist"><button role="tab" aria-selected="true" data-qv="picks">Mis picks</button><button role="tab" aria-selected="false" data-qv="grupos">Grupos</button><button role="tab" aria-selected="false" data-qv="llave">Llave de la Liguilla</button></div>
   <div id="qmxBody"></div>
+</section>
+<section class="panel hidden" id="fan">
+  <div class="headrow"><h2>Fantasy Champions</h2></div>
+  <div class="qview" id="fanView" role="tablist"><button role="tab" aria-selected="true" data-fv="once">Mi once</button><button role="tab" aria-selected="false" data-fv="puntos">Puntos</button><button role="tab" aria-selected="false" data-fv="grupos">Grupos</button><button role="tab" aria-selected="false" data-fv="general">General</button></div>
+  <div id="fanBody"></div>
 </section>
 <section class="panel hidden" id="nflpo">
   <h2>Playoffs</h2>
@@ -1543,7 +1573,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5","qmx"];
+const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5","qmx","fan"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -1572,7 +1602,7 @@ function loadNflPlayoffs(){
 }
 // Qué botón de deporte se marca (arriba en computadora y en la barra de abajo en el celular) según la sección
 const FF_TABS=["fmatch","froster","fliga","fwaivers","ftrade"];
-const RETAS=["nflq","qmx","nbaq5"];
+const RETAS=["nflq","qmx","nbaq5","fan"];
 const sportOf=id=>id==="hoy"?"hoy":RETAS.includes(id)?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
 // Abre una sección que necesita un paquete: "Cargando…" mientras llega y, si falla, un aviso para recargar
 function paqCarga(n,fn,donde){
@@ -1589,7 +1619,7 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="qmx") qmxAbre();
+  if(id==="qmx") qmxAbre(); if(id==="fan") fanRender();
   if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbaq5") q5Render();
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
   if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",fantasyInit,id==="fwaivers"?"#notes":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
@@ -5316,7 +5346,223 @@ document.addEventListener("click",async ev=>{
 function qmxAbre(){ qmxJoinRender(); qmxRender(); }
 function qmxRepinta(){ QMX.cache={}; if(!$("#qmx").classList.contains("hidden")) qmxAbre(); }
 
-const ACCT_V="12.19.0", ACCT_KEYS=["pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
+// ---------- Fantasy Champions (19 oct 2026) ----------
+// 11 jugadores (1 POR, 4 DEF, 4 MED, 2 DEL), presupuesto 80, máx. 3 por equipo, capitán x2, 2 cambios gratis por jornada (extra −4),
+// cierre con el primer partido de la jornada. Datos: datos/fan_ucl.json (lo arma GitHub: jugadores, precios, puntos por jornada
+// y tabla general con hash del uid). Tu once: fan_ucl/{s}-{jornada}_{uid} en Firebase (+ pz_fan en el navegador); si no guardas
+// once para una jornada, cuenta el último que guardaste. Grupos: grupos/{g} con modos ["fan"], lista en tu cuenta (fang / pz_fang).
+const FAN={D:null,P:null,t:0,vista:"once",sel:null,pos:"F",q:"",eq:null,c:null,j:null,tab:null,join:null,K:"pz_fan",GK:"pz_fang",hash:null};
+const FAN_FORM={F:2,M:4,D:4,G:1}, FAN_PRESUP=80, FAN_POSN={G:"POR",D:"DEF",M:"MED",F:"DEL"}, FAN_POSL={G:"Portero",D:"Defensa",M:"Medio",F:"Delantero"};
+const fanLs=()=>{try{return JSON.parse(localStorage.getItem(FAN.K)||"{}")||{};}catch(e){return {};}};
+const fanLsSet=o=>{try{localStorage.setItem(FAN.K,JSON.stringify(o));}catch(e){}};
+const fanIds=()=>{try{return (JSON.parse(localStorage.getItem(FAN.GK)||"[]")||[]).filter(x=>typeof x==="string");}catch(e){return [];}};
+const fanSetIds=L=>{try{localStorage.setItem(FAN.GK,JSON.stringify([...new Set(L)]));}catch(e){} if(typeof acctPush==="function") acctPush();};
+const fanSlug=()=>`UCL${FAN.D.s}`, fanJid=k=>`${fanSlug()}-${k}`;
+const fanJ=()=>Object.entries(FAN.D.j).sort((a,b)=>a[1].pr-b[1].pr).map(([k])=>k).filter((k,i,L)=>i>=L.indexOf(FAN.D.desde));
+const fanAbierta=()=>fanJ().find(k=>FAN.D.j[k].pr>Date.now()/1000)||null;
+const fanCerradas=()=>fanJ().filter(k=>FAN.D.j[k].pr<=Date.now()/1000);
+const fanJug=id=>FAN.D?.jm?.[id];
+const fanEq=tid=>FAN.D.eq[tid]||["","",""];
+const fanCuando=ts=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"long",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000));
+async function fanCarga(){
+  if(FAN.D&&Date.now()-FAN.t<10*60e3) return FAN.D;
+  const [D,P]=await Promise.all([fetch(`datos/fan_ucl.json?v=${Math.floor(Date.now()/6e5)}`).then(r=>r.ok?r.json():null).catch(()=>null),
+    FAN.P?Promise.resolve(FAN.P):fetch("datos/jugadores_ucl.json").then(r=>r.ok?r.json():null).catch(()=>null)]);
+  if(!D) return null;
+  D.jm=Object.fromEntries(D.jug.map(r=>[String(r[0]),{id:String(r[0]),n:r[1],tid:String(r[2]),pos:r[3],p:r[4]}]));
+  FAN.D=D; FAN.P=P; FAN.t=Date.now();
+  FAN.est=Object.fromEntries((P?.filas||[]).map(r=>[String(r.id),r]));
+  // puntos que lleva cada jugador en la Champions con las reglas del fantasy (aprox. con sus números de la temporada)
+  const PG={G:6,D:6,M:5,F:4}, CS={G:4,D:4,M:1,F:0};
+  FAN.tot={}; for(const J of Object.values(D.jm)){ const s=FAN.est[J.id]; if(!s) continue;
+    FAN.tot[J.id]=(s.tit||0)*2+Math.max(0,(s.ap||0)-(s.tit||0))+(s.g||0)*PG[J.pos]+(s.as||0)*3+(s.cs||0)*CS[J.pos]+Math.floor((s.sv||0)/3)-(s.yc||0)-3*(s.rc||0); }
+  return D;
+}
+// Mis onces: navegador + Firebase
+function fanMio(k){ const L=fanLs(), ks=fanJ(); const i=ks.indexOf(k); for(let x=i;x>=0;x--){ const d=L[fanJid(ks[x])]; if(d?.eq?.length) return {...d,de:ks[x]}; } return null; }
+async function fanNube(){
+  if(!(typeof acctOk==="function"&&acctOk())||FAN.nube) return; FAN.nube=1;
+  try{ const q=await ACCT.db.collection("fan_ucl").where("uid","==",ACCT.user.uid).get(); const L=fanLs(); let cambio=false;
+    q.docs.forEach(d=>{ const x=d.data(); if(x.s!==fanSlug()) return; L[x.jid]={eq:(x.eq||[]).map(String),c:String(x.c||""),a:x.a}; cambio=true; });
+    if(cambio){ fanLsSet(L); FAN.eq=null; if(!$("#fan").classList.contains("hidden")) fanRender(); } }catch(e){ console.warn("Fantasy: no se leyeron tus onces",e?.code||e); }
+}
+function fanBorrador(){   // once en edición para la jornada abierta
+  const k=fanAbierta(); if(!k) return null;
+  if(FAN.eq===null||FAN.j!==k){ const m=fanMio(k); FAN.eq=m?[...m.eq]:[]; FAN.c=m?.c||null; FAN.j=k; }
+  return k;
+}
+const fanGasto=E=>E.reduce((s,id)=>s+(fanJug(id)?.p||0),0);
+function fanBase(k){ const ks=fanJ(), i=ks.indexOf(k); const L=fanLs(); for(let x=i-1;x>=0;x--){ const d=L[fanJid(ks[x])]; if(d?.eq?.length) return d; } return null; }
+function fanCambios(k){ const b=fanBase(k); if(!b) return {n:0,extra:0,primera:true}; const n=FAN.eq.filter(id=>!b.eq.includes(id)).length; return {n,extra:Math.max(0,n-2)}; }
+function fanValida(E){ const cnt={}; for(const id of E){ const t=fanJug(id)?.tid; cnt[t]=(cnt[t]||0)+1; }
+  const porPos=p=>E.filter(id=>fanJug(id)?.pos===p).length;
+  if(E.length!==11) return `Te faltan ${11-E.length} jugadores`;
+  for(const p of "GDMF") if(porPos(p)!==FAN_FORM[p]) return "Revisa la formación (1-4-4-2)";
+  if(fanGasto(E)>FAN_PRESUP+1e-9) return `Te pasas del presupuesto por ${(fanGasto(E)-FAN_PRESUP).toFixed(1)}`;
+  if(Object.values(cnt).some(n=>n>3)) return "Máximo 3 jugadores del mismo equipo";
+  return "";
+}
+const fanEsc=s=>hoyEsc(s);
+function fanChip(id,{cap=false,pts=null}={}){ const J=fanJug(id); if(!J) return "";
+  const E=fanEq(J.tid);
+  return `<button class="fanj${cap?" cap":""}" data-fanj="${id}"><span class="fanf">${E[2]?`<img src="${E[2]}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:fanEsc(E[1])}${cap?`<i>C</i>`:""}</span><b>${fanEsc(J.n.split(" ").slice(-1)[0])}</b><small>${pts!=null?`${pts} pts`:J.p.toFixed(1)}</small></button>`; }
+function fanCancha(E,opts={}){
+  const filas=["F","M","D","G"].map(p=>{ const ids=E.filter(id=>fanJug(id)?.pos===p), huecos=FAN_FORM[p]-ids.length;
+    return `<div class="fanfila">${ids.map(id=>fanChip(id,{cap:opts.c===id,pts:opts.pts?opts.pts(id):null})).join("")}${opts.edit?Array.from({length:Math.max(0,huecos)},()=>`<button class="fanj vac" data-fanv="${p}"><span class="fanf">+</span><b>${FAN_POSN[p]}</b><small>libre</small></button>`).join(""):""}</div>`; }).join("");
+  return `<div class="fancancha">${filas}</div>`;
+}
+async function fanRender(){
+  const box=$("#fanBody"); if(!box) return;
+  document.querySelectorAll("#fanView button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.fv===FAN.vista)));
+  if(!FAN.D) box.innerHTML=`<p class="note">Cargando…</p>`;
+  const D=await fanCarga(); if(!D){ box.innerHTML=`<p class="note">El Fantasy de la Champions aparece en la próxima actualización.</p>`; return; }
+  fanNube(); fanJoinRender();
+  if(typeof acctOk==="function"&&acctOk()&&!FAN.hash) FAN.hash=await q5Hash(ACCT.user.uid);
+  if(FAN.vista==="once") return fanOnce();
+  if(FAN.vista==="puntos") return fanPuntos();
+  if(FAN.vista==="grupos") return fanGrupos();
+  return fanGeneral();
+}
+function fanOnce(){
+  const box=$("#fanBody"), k=fanBorrador();
+  if(!k){ box.innerHTML=`<p class="note">No hay jornada abierta por ahora. Revisa la pestaña Puntos.</p>`; return; }
+  const J=FAN.D.j[k], E=FAN.eq, gasto=fanGasto(E), err=fanValida(E), cam=fanCambios(k), guardado=fanLs()[fanJid(k)];
+  const sel=FAN.sel&&E.includes(FAN.sel)?FAN.sel:null;
+  const menu=sel?`<div class="fanmenu"><b>${fanEsc(fanJug(sel).n)}</b><span>${FAN_POSL[fanJug(sel).pos]} · ${fanEsc(fanEq(fanJug(sel).tid)[0])} · ${fanJug(sel).p.toFixed(1)}</span>
+      <div><button class="q5save" data-fanact="cap"${FAN.c===sel?" disabled":""}>${FAN.c===sel?"Es tu capitán":"Hacer capitán"}</button><button class="q5link" data-fanact="cambiar">Cambiar</button><button class="q5link" data-fanact="quitar">Quitar</button></div></div>`:"";
+  box.innerHTML=`<p class="note"><b>${fanEsc(J.n)}</b> · cierra el ${fanCuando(J.pr)}</p>
+    <div class="fanres"><div><b class="y">${gasto.toFixed(1)}</b><span>de ${FAN_PRESUP} usados</span></div><div><b>${cam.primera?"∞":Math.max(0,2-cam.n)}</b><span>${cam.primera?"cambios (primer once)":"cambios gratis"}</span></div><div><b>${E.length}/11</b><span>jugadores</span></div></div>
+    ${cam.extra?`<p class="note" style="color:#E8A48E">Llevas ${cam.n} cambios: ${cam.extra} extra = −${cam.extra*4} puntos esta jornada.</p>`:""}
+    ${fanCancha(E,{edit:true,c:FAN.c})}${menu}
+    ${FAN.pick?fanLista():""}
+    <p class="note">${E.length===11&&!FAN.c?"Toca a un jugador para hacerlo capitán (suma doble).":err||(FAN.c?"Listo para guardar.":"")}</p>
+    <div class="q5acc"><button class="q5save" id="fanSave"${err||!FAN.c?" disabled":""}>Guardar mi once</button>${guardado?`<span class="note" style="margin:0">Guardado para ${fanEsc(J.n.toLowerCase())}.</span>`:""}</div>
+    <p class="note" id="fanMsg"></p>
+    ${D_fb_gate()}
+    <details class="fanreglas"><summary>Cómo se puntúa</summary><p>Jugar 60' o más +2 (menos +1) · Gol: portero y defensa +6, medio +5, delantero +4 · Asistencia +3 · Portería en cero (60'+): portero y defensa +4, medio +1 · Cada 3 atajadas +1 · Amarilla −1 · Roja −3 · Penal fallado −2 · Autogol −2 · Capitán x2. Si no guardas once en una jornada, cuenta el último. Los puntos se actualizan cada mañana. Los precios no cambian en la fase de liga.</p></details>`;
+}
+function D_fb_gate(){ if(typeof acctOk==="function"&&acctOk()) return ""; return `<div class="qgate" style="margin-top:12px;max-width:640px"><b>Entra con tu cuenta para competir</b><span>Sin cuenta tu once se queda en este navegador y no sale en la tabla ni en tus grupos.</span><button class="btn" data-acct>Entrar</button></div>`; }
+function fanLista(){
+  const p=FAN.pick, E=FAN.eq, fuera=FAN.cambiar||null, resto=FAN_PRESUP-fanGasto(E.filter(id=>id!==fuera)), q=goNorm(FAN.q||"");
+  const cnt={}; for(const id of E) if(id!==fuera){ const t=fanJug(id)?.tid; cnt[t]=(cnt[t]||0)+1; }
+  const L=FAN.D.jug.filter(r=>r[3]===p&&String(r[0])!==fuera).map(r=>fanJug(String(r[0]))).filter(J=>!q||goNorm(J.n+" "+fanEq(J.tid)[0]).includes(q))
+    .sort((a,b)=>(FAN.tot[b.id]||0)-(FAN.tot[a.id]||0)||b.p-a.p).slice(0,120);
+  return `<div class="fanpick"><div class="fanpickh"><b>${fuera?`Cambiar a ${fanEsc(fanJug(fuera).n)}`:`Escoge ${FAN_POSL[p].toLowerCase()}`}</b><button class="q5link" data-fanact="cerrar">Cerrar</button></div>
+    <input id="fanQ" type="search" placeholder="Busca jugador o equipo" value="${fanEsc(FAN.q||"")}" aria-label="Buscar jugador">
+    <p class="note" style="margin:6px 0">Te quedan ${resto.toFixed(1)} · ordenados por los puntos que llevan en la Champions</p>
+    <div class="fanlist">${L.map(J=>{ const ya=E.includes(J.id), no=ya||J.p>resto+1e-9||(cnt[J.tid]||0)>=3, s=FAN.est[J.id];
+      const det=s?[s.g?`${s.g} gol${s.g>1?"es":""}`:"",s.as?`${s.as} asist.`:"",s.cs&&"GD".includes(J.pos)?`${s.cs} en cero`:"",s.min?`${s.min}'`:""].filter(Boolean).join(" · "):"Sin minutos en la Champions";
+      return `<button data-fanadd="${J.id}"${no?' class="no" disabled':""}><span class="fanf">${fanEq(J.tid)[2]?`<img src="${fanEq(J.tid)[2]}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:""}</span><span><b>${fanEsc(J.n)}</b><small>${fanEsc(fanEq(J.tid)[1])} · ${fanEsc(det)}</small></span><b>${J.p.toFixed(1)}</b><b class="y">${FAN.tot[J.id]||0}</b></button>`; }).join("")||`<p class="note">Nadie con ese nombre.</p>`}</div></div>`;
+}
+function fanPuntos(){
+  const box=$("#fanBody"), C=fanCerradas().filter(k=>FAN.D.pts?.[k]);
+  if(!C.length){ const a=fanAbierta(); box.innerHTML=`<p class="note">Todavía no hay puntos. La primera jornada de este fantasy es la ${a?fanEsc(FAN.D.j[a].n.toLowerCase()):"siguiente"}; los puntos salen la mañana después de cada partido.</p>`; return; }
+  if(!FAN.vj||!C.includes(FAN.vj)) FAN.vj=C[C.length-1];
+  const k=FAN.vj, T=FAN.D.pts[k]||{}, m=fanMio(k), yo=FAN.hash&&FAN.D.tabla?.[FAN.hash];
+  const pts=id=>{ const v=T[id]; return v?v[0]*(m?.c===id?2:1):0; };
+  const total=m?m.eq.reduce((s,id)=>s+pts(id),0):null, oficial=yo?.j?.[k];
+  box.innerHTML=`<div class="qmxj"><button id="fanPrev" aria-label="Jornada anterior"${C[0]===k?" disabled":""}>‹</button><div><b>${fanEsc(FAN.D.j[k].n)}</b><small>${FAN.D.j[k].ok?"Terminada":"En juego · se actualiza cada mañana"}</small></div>
+      <div class="qmxc"><b>${oficial??total??"–"}</b><span>puntos</span></div><button id="fanNext" aria-label="Jornada siguiente"${C[C.length-1]===k?" disabled":""}>›</button></div>
+    ${m?fanCancha(m.eq,{c:m.c,pts})+`<div class="tbl" style="max-width:640px;margin-top:10px"><table><thead><tr><th class="l">Jugador</th><th>Min</th><th>G</th><th>A</th><th>Pts</th></tr></thead><tbody>${m.eq.map(id=>{ const v=T[id]||[0,0,0,0], J=fanJug(id);
+      return `<tr><td class="l">${fanEsc(J?.n||id)}${m.c===id?" <b>(C)</b>":""}<br><small style="color:var(--muted)">${FAN_POSN[J?.pos]||""} · ${fanEsc(fanEq(J?.tid)[1])}</small></td><td>${v[1]||"–"}</td><td>${v[2]||""}</td><td>${v[3]||""}</td><td><b>${pts(id)}</b></td></tr>`; }).join("")}</tbody></table></div>
+      ${oficial!=null&&total!=null&&oficial!==total?`<p class="note">Incluye −${total-oficial} por cambios extra.</p>`:""}`
+      :`<p class="note">No tenías once en esta jornada.</p>`}`;
+}
+// Mano a mano: emparejamientos por jornada con el método del círculo (sobre los hashes ordenados)
+function fanParejas(H,idx){ const L=[...H].sort(); if(L.length%2) L.push(null); const n=L.length; if(n<2) return [];
+  const fijo=L[0], rot=L.slice(1), r=idx%(n-1), R=[...rot.slice(r),...rot.slice(0,r)], A=[fijo,...R], P=[];
+  for(let i=0;i<n/2;i++) P.push([A[i],A[n-1-i]]); return P; }
+function fanTablaGrupo(H){
+  const T=FAN.D.tabla||{}, C=fanCerradas().filter(k=>FAN.D.j[k].ok), S={};
+  for(const h of H) S[h]={a:T[h]?.a||"Jugador",t:T[h]?.t||0,G:0,E:0,P:0,pts:0};
+  C.forEach((k,i)=>{ for(const [a,b] of fanParejas(H,i)){ if(!a||!b) continue; const pa=T[a]?.j?.[k]??0, pb=T[b]?.j?.[k]??0;
+    if(pa>pb){S[a].G++;S[b].P++;S[a].pts+=3;} else if(pa<pb){S[b].G++;S[a].P++;S[b].pts+=3;} else {S[a].E++;S[b].E++;S[a].pts++;S[b].pts++;} } });
+  return Object.entries(S).sort((x,y)=>y[1].pts-x[1].pts||y[1].t-x[1].t);
+}
+async function fanGrupos(){
+  const box=$("#fanBody");
+  if(!(typeof acctOk==="function"&&acctOk())){ box.innerHTML=`<div class="qgate"><b>Los grupos necesitan cuenta</b><span>Entra para crear un grupo con tus amigos o unirte a uno. Son aparte de los de las quinielas.</span><button class="btn" data-acct>Entrar</button></div>`; return; }
+  const G=[]; for(const id of fanIds()){ const I=await grInfo(id).catch(()=>null); if(I) G.push(I); }
+  if(FAN.tab&&!G.some(g=>g.id===FAN.tab)) FAN.tab=null; if(!FAN.tab&&G.length) FAN.tab=G[0].id;
+  const g=G.find(x=>x.id===FAN.tab);
+  box.innerHTML=`${G.length?`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px">${G.map(x=>`<button data-fant="${x.id}" aria-pressed="${x.id===FAN.tab}">${acctEsc(x.nombre)}</button>`).join("")}</div>`:`<p class="note">Todavía no estás en ningún grupo de Fantasy.</p>`}
+    <div id="fanGrTabla">${g?`<p class="note">Cargando…</p>`:""}</div>
+    ${g?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» del Fantasy Champions en La Pizarra: https://lapizarra.mx/?fang=${g.id}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-fancopy="${g.id}">Copiar link</button> · <button class="q5link" data-fansalir="${g.id}">Salir</button></p>`:""}
+    <div class="q5new"><input id="fanGrNom" maxlength="40" placeholder="Nombre del grupo" aria-label="Nombre del grupo"><button class="q5save" id="fanGrCrear">Crear grupo</button></div><p class="note" id="fanGrMsg"></p>`;
+  if(!g) return;
+  const ms=await ACCT.db.collection(`grupos/${g.id}/miembros`).get().catch(()=>null);
+  const el=$("#fanGrTabla"); if(!ms||!el){ if(el) el.innerHTML=`<p class="note">No pudimos cargar el grupo.</p>`; return; }
+  const H=await Promise.all(ms.docs.map(d=>q5Hash(d.id))), F=fanTablaGrupo(H), C=fanCerradas().filter(k=>FAN.D.j[k].ok), T=FAN.D.tabla||{};
+  const ult=C[C.length-1], pr=ult?fanParejas(H,C.length-1):[], prox=fanAbierta(), prp=prox?fanParejas(H,C.length):[];
+  const nom=h=>h?(h===FAN.hash?"Tú":acctEsc(T[h]?.a||"Jugador")):"Descansa";
+  el.innerHTML=`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>G-E-P</th><th>Pts</th><th>Total</th></tr></thead><tbody>${F.map(([h,x],i)=>`<tr${h===FAN.hash?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${h===FAN.hash?" (tú)":""}</td><td>${x.G}-${x.E}-${x.P}</td><td><b>${x.pts}</b></td><td>${x.t}</td></tr>`).join("")}</tbody></table></div>
+    <p class="note">Mano a mano: ganar 3 puntos, empatar 1. Desempata el total de puntos del fantasy. Quien todavía no guarda once aparece con 0.</p>
+    ${ult?`<h3 style="margin:16px 0 6px">Última: ${fanEsc(FAN.D.j[ult].n)}</h3>${pr.map(([a,b])=>`<div class="fanvs"><span>${nom(a)}</span><b>${a&&b?`${T[a]?.j?.[ult]??0} – ${T[b]?.j?.[ult]??0}`:(T[a||b]?.j?.[ult]??0)}</b><span>${nom(b)}</span></div>`).join("")}`:""}
+    ${prox&&prp.length?`<h3 style="margin:16px 0 6px">Próxima: ${fanEsc(FAN.D.j[prox].n)}</h3>${prp.map(([a,b])=>`<div class="fanvs"><span>${nom(a)}</span><b>vs</b><span>${nom(b)}</span></div>`).join("")}`:""}`;
+}
+function fanGeneral(){
+  const box=$("#fanBody"), T=Object.entries(FAN.D.tabla||{}).sort((a,b)=>b[1].t-a[1].t);
+  const mia=T.findIndex(([h])=>h===FAN.hash), ver=T.slice(0,50); if(mia>=50) ver.push(T[mia]);
+  box.innerHTML=T.length?`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th></tr></thead><tbody>${ver.map(([h,x])=>`<tr${h===FAN.hash?' style="background:#2F4A41"':""}><td>${T.indexOf(T.find(y=>y[0]===h))+1}</td><td class="l">${acctEsc(x.a)}${h===FAN.hash?" (tú)":""}</td><td><b>${x.t}</b></td></tr>`).join("")}</tbody></table></div>
+    <p class="note">${T.length} equipos. La tabla se actualiza cada mañana; los equipos nuevos aparecen al día siguiente de guardarse.</p>`:`<p class="note">Todavía no hay equipos en la tabla. Aparecen a la mañana siguiente de guardar tu once (con tu cuenta).</p>`;
+}
+async function fanGuarda(){
+  const k=fanAbierta(); if(!k||fanValida(FAN.eq)||!FAN.c) return;
+  const jid=fanJid(k), a=(Q5.lee().a||q5AliasDef()||"Jugador").slice(0,24), x={eq:[...FAN.eq],c:FAN.c,a};
+  const L=fanLs(); L[jid]=x; fanLsSet(L); pzTrack("fan_guardar",{});
+  if(!(typeof acctOk==="function"&&acctOk())){ fanOnce(); return; }
+  try{ await ACCT.db.doc(`fan_ucl/${jid}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,jid,j:k,s:fanSlug(),eq:x.eq.map(Number),c:Number(x.c),a,t:grFV().serverTimestamp()});
+    fanOnce(); $("#fanMsg").textContent="Guardado en tu cuenta."; }
+  catch(e){ console.warn("Fantasy: no se guardó",e?.code||e); fanOnce(); $("#fanMsg").textContent="No se pudo guardar en tu cuenta (¿ya cerró la jornada?)."; }
+}
+document.addEventListener("click",async ev=>{
+  const t=ev.target; if(!t.closest||!t.closest("#fan")) return;
+  const v=t.closest("#fanView button"); if(v){ FAN.vista=v.dataset.fv; FAN.pick=null; FAN.sel=null; fanRender(); return; }
+  const vac=t.closest("[data-fanv]"); if(vac){ FAN.pick=vac.dataset.fanv; FAN.cambiar=null; FAN.sel=null; FAN.q=""; fanOnce(); $("#fanQ")?.focus(); return; }
+  const j=t.closest("[data-fanj]"); if(j&&FAN.vista==="once"){ FAN.sel=FAN.sel===j.dataset.fanj?null:j.dataset.fanj; FAN.pick=null; fanOnce(); return; }
+  const act=t.closest("[data-fanact]");
+  if(act){ const a=act.dataset.fanact, s=FAN.sel;
+    if(a==="cap"&&s){ FAN.c=s; FAN.sel=null; }
+    if(a==="quitar"&&s){ FAN.eq=FAN.eq.filter(x=>x!==s); if(FAN.c===s) FAN.c=null; FAN.sel=null; }
+    if(a==="cambiar"&&s){ FAN.pick=fanJug(s).pos; FAN.cambiar=s; FAN.q=""; FAN.sel=null; }
+    if(a==="cerrar"){ FAN.pick=null; FAN.cambiar=null; }
+    fanOnce(); return; }
+  const add=t.closest("[data-fanadd]"); if(add&&!add.disabled){ const id=add.dataset.fanadd;
+    if(FAN.cambiar){ FAN.eq=FAN.eq.map(x=>x===FAN.cambiar?id:x); if(FAN.c===FAN.cambiar) FAN.c=id; } else FAN.eq=[...FAN.eq,id];
+    FAN.pick=null; FAN.cambiar=null; fanOnce(); return; }
+  if(t.closest("#fanSave")){ fanGuarda(); return; }
+  if(t.closest("#fanPrev")||t.closest("#fanNext")){ const C=fanCerradas().filter(k=>FAN.D.pts?.[k]); const i=C.indexOf(FAN.vj)+(t.closest("#fanPrev")?-1:1); FAN.vj=C[Math.max(0,Math.min(C.length-1,i))]; fanPuntos(); return; }
+  const tb=t.closest("[data-fant]"); if(tb){ FAN.tab=tb.dataset.fant; fanGrupos(); return; }
+  if(t.closest("#fanGrCrear")){ const n=($("#fanGrNom").value||"").trim().slice(0,40); if(!n){ $("#fanGrNom").focus(); return; } t.disabled=true; $("#fanGrMsg").textContent="Creando…";
+    try{ const uid=ACCT.user.uid, ref=ACCT.db.collection("grupos").doc(), b=ACCT.db.batch();
+      b.set(ref,{nombre:n,dueno:uid,creado:grFV().serverTimestamp(),temporada:D.season,modos:["fan"]});
+      b.set(ref.collection("miembros").doc(uid),{nombre:grName(),unido:grFV().serverTimestamp()});
+      await b.commit(); fanSetIds([...fanIds(),ref.id]); FAN.tab=ref.id; pzTrack("fan_crear_grupo",{}); fanGrupos();
+    }catch(e){ console.warn("Fantasy: no se pudo crear el grupo",e?.code||e); $("#fanGrMsg").textContent="No se pudo crear el grupo. Intenta de nuevo."; t.disabled=false; }
+    return; }
+  if(t.closest("[data-fancopy]")){ const id=t.closest("[data-fancopy]").dataset.fancopy, u=`https://lapizarra.mx/?fang=${id}`; try{ await navigator.clipboard.writeText(u); t.textContent="¡Copiado!"; setTimeout(()=>{t.textContent="Copiar link";},1500);}catch(e){ prompt("Copia este link:",u); } return; }
+  if(t.closest("[data-fansalir]")){ const id=t.closest("[data-fansalir]").dataset.fansalir; if(!confirm("¿Salir de este grupo?")) return;
+    try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).delete(); }catch(e){} fanSetIds(fanIds().filter(x=>x!==id)); FAN.tab=null; fanGrupos(); return; }
+  if(t.closest("#fanUnir")){ const id=FAN.join; t.disabled=true;
+    try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).set({nombre:grName(),unido:grFV().serverTimestamp()});
+      fanSetIds([...fanIds(),id]); FAN.join=null; FAN.tab=id; FAN.vista="grupos"; pzTrack("fan_unirse_grupo",{}); fanRender();
+    }catch(e){ console.warn("Fantasy: no se pudo unir",e?.code||e); t.disabled=false; t.textContent="No se pudo, intenta de nuevo"; } return; }
+  if(t.closest("#fanNoUnir")){ FAN.join=null; fanJoinRender(); return; }
+});
+document.addEventListener("input",ev=>{ if(ev.target.id!=="fanQ") return; FAN.q=ev.target.value; const y=ev.target.selectionStart; const L=$(".fanpick"); if(!L) return;
+  const tmp=document.createElement("div"); tmp.innerHTML=fanLista(); L.querySelector(".fanlist").replaceWith(tmp.querySelector(".fanlist")); });
+async function fanJoinRender(){
+  const id=FAN.join; let el=$("#fanJoin"); if(!id){ el?.remove(); return; }
+  if(!el){ el=document.createElement("div"); el.id="fanJoin"; el.className="qgate"; el.style.maxWidth="640px"; $("#fanBody").before(el); }
+  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo del Fantasy Champions</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
+  if(fanIds().includes(id)){ FAN.join=null; el.remove(); return; }
+  let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); return null; });
+  el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo del Fantasy Champions: tabla y mano a mano cada jornada.</span><span><button class="btn" id="fanUnir">Unirme</button> <button class="q5link" id="fanNoUnir">Ahora no</button></span>`
+    :`<b>No pudimos abrir la invitación</b><span>${errQ?`Código: ${acctEsc(errQ)}. `:""}Pide a quien te invitó un link nuevo.</span><button class="q5link" id="fanNoUnir">Cerrar</button>`;
+}
+function fanRepinta(){ FAN.nube=0; FAN.eq=null; FAN.hash=null; if(!$("#fan").classList.contains("hidden")) fanRender(); }
+
+const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
 const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
 const acctLsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
 const acctLsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
@@ -5340,7 +5586,7 @@ function acctLoadJS(f){return new Promise((ok,no)=>{
   const go=i=>{if(i>=urls.length) return no(new Error("No cargó "+f)); const s=document.createElement("script"); s.src=urls[i]; s.async=true;
     s.onload=ok; s.onerror=()=>{s.remove(); go(i+1);}; document.head.appendChild(s);};
   go(0);});}
-const acctLocal=()=>({qmxg:qmxIds(),q5:Q5.todo(),fav:favLee(),picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
+const acctLocal=()=>({fang:fanIds(),qmxg:qmxIds(),q5:Q5.todo(),fav:favLee(),picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
 function acctMerge(nube,local){   // {temporada:{semana:{"VIS@LOC":{ats,su}}}}: gana la nube; lo local llena lo que falte
   const R=JSON.parse(JSON.stringify(nube||{}));
   for(const [s,S] of Object.entries(local||{})) for(const [w,W] of Object.entries(S||{})) for(const [k,G] of Object.entries(W||{})) for(const [m,p] of Object.entries(G||{})){
@@ -5370,14 +5616,15 @@ async function acctPull(){
   catch(e){console.warn("Cuentas: no se pudo leer la cuenta",e?.code||e); return;}
   if(ACCT.user!==u) return;
   const L=acctLocal(), linked=acctLsGet("pz_cuenta")===u.uid, dirty=acctLsGet("pz_cuenta_sucio")==="1";
-  const cloud={qmxg:Array.isArray(C.qmxg)?C.qmxg:[],q5:C.q5||{},fav:{eq:C.fav?.eq||{},jug:C.fav?.jug||{}},picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
+  const cloud={fang:Array.isArray(C.fang)?C.fang:[],qmxg:Array.isArray(C.qmxg)?C.qmxg:[],q5:C.q5||{},fav:{eq:C.fav?.eq||{},jug:C.fav?.jug||{}},picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
   let N;
   if(linked&&exists&&!dirty) N=cloud;                         // navegador ya ligado: manda la nube
   else if(linked) N=L;                                         // cambios locales sin subir (o cuenta nueva): manda lo local
-  else N={qmxg:[...new Set([...(cloud.qmxg||[]),...(L.qmxg||[])])],q5:{...L.q5,...cloud.q5},fav:{eq:{...L.fav.eq,...cloud.fav.eq},jug:{...L.fav.jug,...cloud.fav.jug}},picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
+  else N={fang:[...new Set([...(cloud.fang||[]),...(L.fang||[])])],qmxg:[...new Set([...(cloud.qmxg||[]),...(L.qmxg||[])])],q5:{...L.q5,...cloud.q5},fav:{eq:{...L.fav.eq,...cloud.fav.eq},jug:{...L.fav.jug,...cloud.fav.jug}},picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
   acctLsSet("pz_cuenta",u.uid);
   const pc=JSON.stringify(N.picks)!==JSON.stringify(L.picks)||JSON.stringify(N.surv||{})!==JSON.stringify(L.surv||{}), sc=N.sleeper!==L.sleeper||N.liga!==L.liga||N.espn!==L.espn||N.fsrc!==L.fsrc;
   acctLsSet(QN_PK,JSON.stringify(N.picks)); acctLsSet(SV_PK,JSON.stringify(N.surv||{}));
+  if(JSON.stringify(N.fang||[])!==JSON.stringify(L.fang||[])){ acctLsSet(FAN.GK,JSON.stringify(N.fang||[])); fanRepinta(); }
   if(JSON.stringify(N.qmxg||[])!==JSON.stringify(L.qmxg||[])){ acctLsSet(QMX.GK,JSON.stringify(N.qmxg||[])); qmxRepinta(); }
   if(JSON.stringify(N.q5||{})!==JSON.stringify(L.q5||{})){ acctLsSet(Q5.K,JSON.stringify(N.q5||{})); q5Repinta(); }
   if(JSON.stringify(N.fav)!==JSON.stringify(L.fav)){ acctLsSet(FAV_K,JSON.stringify(N.fav)); FAV=favLee(); favRepinta(); }
@@ -5475,7 +5722,7 @@ const acctForgot=()=>acctRun(async()=>{
   await ACCT.auth.sendPasswordResetEmail(m); acctMsg("Listo: si ese correo tiene cuenta, te llegará un link para cambiar tu contraseña (revisa también spam).",true);
 });
 async function acctForget(){   // quita de este navegador lo que pertenece a la cuenta
-  ACCT_KEYS.forEach(acctLsDel); q5Repinta(); qmxRepinta(); acctSlClear(); if(acctOnQ()) loadQuiniela(); FAV=favLee(); favRepinta();
+  ACCT_KEYS.forEach(acctLsDel); q5Repinta(); qmxRepinta(); fanRepinta(); acctSlClear(); if(acctOnQ()) loadQuiniela(); FAV=favLee(); favRepinta();
 }
 const acctOut=()=>acctRun(async()=>{
   if(acctLsGet("pz_cuenta_sucio")==="1"){clearTimeout(ACCT.pushT); await acctSend();}
@@ -5518,6 +5765,7 @@ async function acctInit(){
     if(u&&acctOk()) grLoadIds().then(()=>{ grReconcile(true).catch(()=>{}); if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
     if(acctOnQ()) loadQuiniela();
     if(acctOnQ()&&qnView==="grupos") grRender();
+    if(!was!==!u||was&&u&&was.uid!==u.uid) fanRepinta();
   });
   document.addEventListener("visibilitychange",()=>{ if(document.hidden||!ACCT.user) return;
     if(!acctOk()) acctCheck(); else if(Date.now()-ACCT.last>60e3) acctPull(); });   // al volver del correo se revisa solo
@@ -6586,7 +6834,7 @@ async function precarga(){ if(PRE_CORRE) return; PRE_CORRE=true;
 // el botón ‹ de la página, el de atrás de Safari y el gesto de deslizar en el iPhone. Abrir un partido o "Tu cuenta"
 // también cuenta como un paso: atrás cierra la ventana en lugar de salirse del sitio.
 var NAV={cur:null,liga:"",restaurando:false,listo:false};   // var: showTab puede llamarse antes de esta línea
-const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5",quinielamx:"qmx",retas:"nflq"};
+const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5",quinielamx:"qmx",retas:"nflq",fantasychampions:"fan",champions:"fan"};
 const NAV_NOMBRE=Object.fromEntries(Object.entries(NAV_ALIAS).map(([a,t])=>[t,a]));
 const navLiga=id=>id.startsWith("mx")?FLIG:"";
 const navHash=id=>"#"+(NAV_NOMBRE[id]||id)+(id.startsWith("mx")&&id!=="mxexplore"&&id!=="mxgoleo"?"-"+FLIG:"");
@@ -6625,6 +6873,8 @@ $("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport
 (()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("qn","nflq"); qnSetView("grupos");}}catch(e){}})();
 // Invitación a un grupo de la Quiniela Liga MX: lapizarra.mx/?qmxg=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("qmxg"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){QMX.join=g; QMX.vista="grupos"; localStorage.setItem("pz_qliga","mx"); history.replaceState(null,"",location.pathname+"#quinielamx");}}catch(e){}})();
+// Invitación a un grupo del Fantasy Champions: lapizarra.mx/?fang=ID
+(()=>{try{const g=new URLSearchParams(location.search).get("fang"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){FAN.join=g; FAN.vista="grupos"; localStorage.setItem("pz_reta","fan"); history.replaceState(null,"",location.pathname+"#champions");}}catch(e){}})();
 // Invitación a un grupo de La Quinteta: lapizarra.mx/?q5g=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("q5g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){Q5.join=g; history.replaceState(null,"",location.pathname+"#quinteta");}}catch(e){}})();
 // Primera pantalla: la de la dirección (lapizarra.mx/#quiniela, #mxgames-eng…) o la portada Hoy

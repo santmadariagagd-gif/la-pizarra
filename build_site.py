@@ -2059,6 +2059,187 @@ try:
 except Exception as ex:
     print("Quiniela Liga MX: no se pudo preparar:",ex)
 
+# ----- Fantasy Champions (19 oct 2026) -----
+# Versión simple: 11 jugadores (1 POR, 4 DEF, 4 MED, 2 DEL), presupuesto 80, máximo 3 por equipo, capitán x2,
+# 2 cambios gratis por jornada (cada extra −4), cierre con el primer partido de la jornada. Arranca en la jornada 4.
+# docs/datos/fan_ucl.json = {s, desde, al, j:{clave:{n, pr, fin, ok}}, eq:{tid:[nombre, abreviatura, logo]},
+#   jug:[[id, nombre, tid, pos, precio]], pts:{clave:{id:[pts, min, g, a, cs, yc, rc, sv]}}, tabla:{hash:{a, t, j:{clave:pts}, eq, c, cam}}}
+# Precios: con lo que cada jugador hizo en la Champions esta temporada y la anterior, su posición y el nivel de su equipo.
+# Fijos en la fase de liga; se recalculan una vez al empezar las eliminatorias.
+# Firebase: fan_jornadas/{s}-{clave} = {primero}; los onces en fan_ucl/{s}-{clave}_{uid} = {uid, jid, j, s, eq:[11 ids], c, a, t}.
+import re
+FAN_DESDE="L4"
+FAN_PG={"G":6,"D":6,"M":5,"F":4}; FAN_CS={"G":4,"D":4,"M":1,"F":0}
+FAN_TIER={"A":["Real Madrid","Manchester City","Bayern München","Bayern Munich","Paris Saint Germain","Paris Saint-Germain","Barcelona","Liverpool","Arsenal","Inter"],
+          "B":["Atletico Madrid","Atlético Madrid","Borussia Dortmund","Napoli","Manchester United","Aston Villa","RB Leipzig","FC Porto","Sporting CP","AS Roma",
+               "Villarreal","Real Betis","VfB Stuttgart","PSV Eindhoven","Feyenoord","Galatasaray","Fenerbahçe","Lille","Lens","Como"]}
+def _fan_pos(p):
+    p=(p or "").lower()
+    return "G" if p.startswith("goal") else "D" if p.startswith("def") else "F" if p.startswith("att") or p.startswith("for") else "M"
+def _fan_jkey(f):
+    rd=str((f.get("league") or {}).get("round") or "")
+    m=re.match(r"league stage\s*-\s*(\d+)",rd,re.I)
+    if m: return "L"+m.group(1)
+    base={"knockout round play-offs":"PO","round of 16":"OF","quarter-finals":"CF","semi-finals":"SF","final":"FI"}.get(rd.lower().strip())
+    return base
+FAN_NOM={"PO":"Play-off","OF":"Octavos","CF":"Cuartos","SF":"Semifinales","FI":"Final"}
+def _fan_pts(pos,s,cs_eq,og=0):
+    g=s.get("games") or {}; mins=g.get("minutes") or 0
+    if mins<=0: return None
+    gl=s.get("goals") or {}; ca=s.get("cards") or {}; pe=s.get("penalty") or {}
+    G=gl.get("total") or 0; A=gl.get("assists") or 0; SV=gl.get("saves") or 0; YC=ca.get("yellow") or 0; RC=ca.get("red") or 0
+    cs=1 if (cs_eq and mins>=60) else 0
+    p=(2 if mins>=60 else 1)+G*FAN_PG[pos]+A*3+cs*FAN_CS[pos]+(SV//3 if pos=="G" else 0)-YC-3*RC-2*(pe.get("missed") or 0)-2*og
+    return [p,mins,G,A,cs,YC,RC,SV]
+def _fan_ucl():
+    import hashlib
+    if 'AF_FX' not in globals() or 'ucl' not in AF_FX: print("Fantasy Champions: sin partidos"); return
+    F=[f for f in AF_FX['ucl'][0] if _fan_jkey(f)]
+    if not F: return
+    s=(F[0].get("league") or {}).get("season")
+    ruta=os.path.join(aqui,'docs','datos','fan_ucl.json')
+    try: P=json.load(open(ruta,encoding='utf-8'))
+    except Exception: P={}
+    if P.get("s")!=s: P={}
+    # jornadas: fase de liga por número; eliminatorias por ronda y semana (ida / vuelta)
+    G={}
+    for f in F:
+        k=_fan_jkey(f)
+        if not k.startswith("L"):
+            sem=datetime.fromtimestamp(f["fixture"]["timestamp"],tz=ZoneInfo("UTC")).isocalendar()
+            k=f"{k}-{sem[0]}{sem[1]:02d}"
+        G.setdefault(k,[]).append(f)
+    ko={}
+    for k in sorted([k for k in G if not k.startswith("L")],key=lambda k:min(f["fixture"]["timestamp"] for f in G[k])):
+        b=k.split("-")[0]; ko[b]=ko.get(b,0)+1; ko[k]=(b,ko[b])
+    J={}
+    for k,L in G.items():
+        vivos=[f for f in L if (f["fixture"].get("status") or {}).get("short") not in ("PST","CANC","ABD")]
+        pr=min(f["fixture"]["timestamp"] for f in (vivos or L)); fin=all((f["fixture"].get("status") or {}).get("short") in AF_FIN|{"PST","CANC","ABD"} for f in L)
+        n=f"Jornada {k[1:]}" if k.startswith("L") else (FAN_NOM[ko[k][0]] if ko[k][0]=="FI" else f"{FAN_NOM[ko[k][0]]} · {'ida' if ko[k][1]==1 else 'vuelta'}")
+        J[k]=dict(n=n,pr=pr,fin=fin,f=[f["fixture"]["id"] for f in L])
+    orden=sorted(J,key=lambda k:J[k]["pr"])
+    desde=orden.index(FAN_DESDE) if FAN_DESDE in orden else 0
+    # plantillas de los equipos (una vez por semana)
+    tids=sorted({f["teams"][x]["id"] for f in F if _fan_jkey(f).startswith("L") for x in ("home","away")})
+    eq=P.get("eq") or {}; jug={str(r[0]):r for r in (P.get("jug") or [])}
+    viejo=(time.time()-(P.get("sq_t") or 0))>6*86400
+    if viejo or not jug:
+        try: cods=af_codigos(2,s)
+        except Exception: cods={}
+        nuevos={}
+        for tid in tids:
+            try: R=af("players/squads",team=tid)
+            except Exception as ex: print("Fantasy Champions: plantilla",tid,ex); continue
+            for x in R:
+                t=x.get("team") or {}; eq[str(tid)]=[AF_NOMBRE.get(t.get("name"),t.get("name") or ""),cods.get(tid) or (t.get("name") or "XXX")[:3].upper(),t.get("logo") or ""]
+                for p in x.get("players") or []:
+                    nuevos[str(p["id"])]=[p["id"],(p.get("name") or "").strip(),tid,_fan_pos(p.get("position")),None]
+        if nuevos:
+            for k,v in nuevos.items(): v[4]=(jug.get(k) or [None]*5)[4]   # se conserva el precio
+            jug=nuevos; P["sq_t"]=time.time()
+    # precios
+    ahora=time.time(); actual=next((k for k in orden if J[k]["pr"]>ahora),orden[-1])
+    repreciar=(not actual.startswith("L")) and not P.get("rep_ko")
+    def hist(nombre):
+        try: return {r["id"]:r for r in json.load(open(os.path.join(aqui,'docs','datos',nombre),encoding='utf-8')).get("filas",[])}
+        except Exception: return {}
+    H1=hist('jugadores_ucl.json'); H0=hist(f'jugadores_ucl_{s-1}.json')
+    def est(r,pos):
+        if not r or not r.get("ap"): return None,0
+        ap=r["ap"]; mins=r.get("min") or 0
+        p=sum([(2 if mins/ap>=60 else 1)*ap,(r.get("g") or 0)*FAN_PG[pos],(r.get("as") or 0)*3,(r.get("cs") or 0)*FAN_CS[pos] if pos in "GD" else 0,
+               (r.get("sv") or 0)//3 if pos=="G" else 0,-(r.get("yc") or 0),-3*(r.get("rc") or 0)])
+        return p/ap,ap
+    nombre_eq=lambda tid:(eq.get(str(tid)) or [""])[0]
+    def calidad(pid,tid,pos):   # puntos esperados por partido, mezclados con un previo según el nivel del equipo
+        tier="A" if nombre_eq(tid) in FAN_TIER["A"] else "B" if nombre_eq(tid) in FAN_TIER["B"] else "C"
+        prior={"A":3.0,"B":2.5,"C":2.0}[tier]
+        a,n1=est(H1.get(pid),pos); b,n0=est(H0.get(pid),pos)
+        num=prior*3; den=3
+        if a is not None: num+=a*n1*1.0; den+=n1
+        if b is not None: num+=b*n0*0.7; den+=n0*0.7
+        return num/den
+    # precio por percentil dentro de su posición (curva cóncava: pocos jugadores caros)
+    RANGO={"G":(4.0,6.0),"D":(4.0,7.0),"M":(4.5,11.0),"F":(4.5,12.5)}
+    Q={k:calidad(r[0],r[2],r[3]) for k,r in jug.items()}
+    for pos,(lo,hi) in RANGO.items():
+        ks=sorted([k for k,r in jug.items() if r[3]==pos],key=lambda k:Q[k])
+        n=max(1,len(ks)-1)
+        for i,k in enumerate(ks):
+            if jug[k][4] is None or repreciar:
+                jug[k][4]=round((lo+(hi-lo)*(i/n)**2.4)*2)/2
+    if repreciar: P["rep_ko"]=1
+    # puntos por jornada (las terminadas se guardan y ya no se piden)
+    pts=P.get("pts") or {}
+    for k in orden[desde:]:
+        x=J[k]
+        if k in pts and P.get("j",{}).get(k,{}).get("ok"): x["ok"]=1; continue
+        fin=[f for f in G[k] if (f["fixture"].get("status") or {}).get("short") in AF_FIN]
+        if not fin: continue
+        D=[]
+        for i in range(0,len(fin),20): D+=af("fixtures",ids="-".join(str(f["fixture"]["id"]) for f in fin[i:i+20]))
+        T={}
+        for f in D:
+            gl=f.get("goals") or {}; h=f["teams"]["home"]["id"]; a=f["teams"]["away"]["id"]
+            rec={h:gl.get("away") or 0,a:gl.get("home") or 0}
+            og={}
+            for e in f.get("events") or []:
+                if e.get("type")=="Goal" and e.get("detail")=="Own Goal" and (e.get("player") or {}).get("id"): og[e["player"]["id"]]=og.get(e["player"]["id"],0)+1
+            for Tm in f.get("players") or []:
+                tid=Tm["team"]["id"]
+                for pl in Tm.get("players") or []:
+                    pid=pl["player"]["id"]; r=jug.get(str(pid)); pos=r[3] if r else ((pl.get("statistics") or [{}])[0].get("games") or {}).get("position","M")[:1]
+                    if pos not in FAN_PG: pos="M"
+                    v=_fan_pts(pos,(pl.get("statistics") or [{}])[0],rec.get(tid,1)==0,og.get(pid,0))
+                    if v: T[str(pid)]=v
+        pts[k]=T
+        if x["fin"]: x["ok"]=1
+    P.update(s=s,desde=FAN_DESDE,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j={k:J[k] for k in orden},eq=eq,
+             jug=sorted(jug.values(),key=lambda r:(-r[4],r[1])),pts=pts)
+    # tabla general (con la llave de administrador) y jornadas abiertas en Firebase
+    sa=os.environ.get('FIREBASE_SA','').strip()
+    if sa:
+        try:
+            import firebase_admin
+            from firebase_admin import credentials, firestore
+            if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
+            db=firestore.client(); slug=f"UCL{s}"
+            for k in [k for k in orden[desde:] if J[k]["pr"]>ahora][:2]:
+                db.collection('fan_jornadas').document(f"{slug}-{k}").set(dict(s=slug,j=k,primero=datetime.fromtimestamp(J[k]["pr"],tz=ZoneInfo("UTC"))))
+            U={}
+            for d in db.collection('fan_ucl').where('s','==',slug).stream():
+                x=d.to_dict() or {}; U.setdefault(x.get("uid"),{})[x.get("j")]=x
+            cerradas=[k for k in orden[desde:] if J[k]["pr"]<=ahora]
+            tabla={}
+            for uid,M in U.items():
+                if not uid: continue
+                h=hashlib.sha256(uid.encode()).hexdigest()[:12]; prev=None; tot=0; jj={}; alias="Jugador"; ult=None; cam=0
+                for k in cerradas:
+                    doc=M.get(k)
+                    if doc: alias=str(doc.get("a") or alias)[:24]
+                    lin=doc or prev
+                    if not lin: continue
+                    E=[str(i) for i in (lin.get("eq") or [])][:11]; c=str(lin.get("c") or "")
+                    p=sum((pts.get(k,{}).get(i) or [0])[0] for i in E)+((pts.get(k,{}).get(c) or [0])[0] if c in E else 0)
+                    cam=len(set(E)-set(str(i) for i in (prev or {}).get("eq") or [])) if prev else 0
+                    p-=4*max(0,cam-2)
+                    jj[k]=p; tot+=p; prev=lin; ult=(E,c)
+                if not jj and not M: continue
+                tabla[h]=dict(a=alias,t=tot,j=jj,eq=ult[0] if ult else None,c=ult[1] if ult else None)
+                if not jj:   # todavía no juega ninguna jornada: aparece con 0
+                    d0=max(M.values(),key=lambda x:x.get("j") or ""); tabla[h].update(a=str(d0.get("a") or "Jugador")[:24])
+            P["tabla"]=tabla
+            print(f"Fantasy Champions: {len(tabla)} equipos en la tabla")
+        except Exception as ex: print("Fantasy Champions: Firebase:",ex)
+    os.makedirs(os.path.dirname(ruta),exist_ok=True)
+    json.dump(P,open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+    print(f"Fantasy Champions: {len(jug)} jugadores, {len(eq)} equipos; próxima: {J[actual]['n']}; jornadas con puntos: {[k for k in pts]}")
+try:
+    _fan_ucl()
+except Exception as ex:
+    print("Fantasy Champions: no se pudo preparar:",ex)
+
 # ---------- Página ligera (5 oct 2026) ----------
 # Lo que solo usan algunas secciones sale de la página principal a docs/datos/paq_<nombre>.json; la página lo baja
 # la primera vez que lo necesita (Estadísticas, detalle de un partido NFL, Quiniela, Fantasy, fotos, Historia).
