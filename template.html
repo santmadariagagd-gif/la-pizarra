@@ -5165,7 +5165,8 @@ const qmxLpz=pr=>pr?["L","E","V"][pr.indexOf(Math.max(...pr))]:null;
 function qmxJornadas(){ const J=qmxD()?.J||{}; return Object.keys(J).map(Number).sort((a,b)=>a-b); }
 function qmxAbierta(){ const J=qmxD().J, L=qmxJornadas(), now=Date.now()/1000; return L.find(j=>J[j].pr>now)??null; }
 function qmxDefault(){ const J=qmxD().J, L=qmxJornadas(), now=Date.now()/1000;
-  const enJuego=L.filter(j=>J[j].pr<=now&&J[j].p.some(r=>!qmxRes(r).fin&&!qmxRes(r).susp&&r[1]>now-3*3600)).pop();
+  // "en juego" = una jornada con un partido que empezó hace menos de 3 horas (los reprogramados de jornadas viejas no cuentan)
+  const enJuego=L.filter(j=>J[j].pr<=now&&J[j].p.some(r=>r[1]<=now&&r[1]>now-3*3600&&!qmxRes(r).fin&&!qmxRes(r).susp)).pop();
   return enJuego??qmxAbierta()??L[L.length-1]; }
 // Mis picks: navegador + Firestore (si hay cuenta)
 const qmxMios=j=>qmxLs()[qmxJid(j)]||{p:{},g:null};
