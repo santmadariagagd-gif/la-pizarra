@@ -5453,7 +5453,8 @@ function fanBorrador(){   // once en edición para la jornada abierta
   return k;
 }
 const fanGasto=E=>E.reduce((s,id)=>s+(fanJug(id)?.p||0),0);
-function fanBase(k){ const ks=fanJ(), i=ks.indexOf(k); const L=fanLs(); for(let x=i-1;x>=0;x--){ const d=L[fanJid(ks[x])]; if(d?.eq?.length) return d; } return null; }
+function fanBase(k){ const ks=fanJ(), i=ks.indexOf(k); const L=fanLs(), Lo=FAN.hash&&FAN.D.tabla?.[FAN.hash]?.L||{};
+  for(let x=i-1;x>=0;x--){ const o=Lo[ks[x]]; if(o) return {eq:o[0].map(String),c:String(o[1])}; const d=L[fanJid(ks[x])]; if(d?.eq?.length) return d; } return null; }
 function fanCambios(k){ const b=fanBase(k); if(!b) return {n:0,extra:0,primera:true}; const n=FAN.eq.filter(id=>!b.eq.includes(id)).length; return {n,extra:Math.max(0,n-2)}; }
 function fanValida(E){ const cnt={}; for(const id of E){ const t=fanJug(id)?.tid; cnt[t]=(cnt[t]||0)+1; }
   const porPos=p=>E.filter(id=>fanJug(id)?.pos===p).length;
@@ -5554,7 +5555,8 @@ async function fanPuntos(sinRed){
   const k=FAN.vj, desdeI=fanTodas().indexOf(FAN.D.desde), practica=fanTodas().indexOf(k)<desdeI, vivo=fanEnJuego(k);
   if(vivo&&!sinRed){ box.innerHTML=`<p class="note">Cargando marcadores…</p>`; await fanVivo(k); if(FAN.vista!=="puntos"||FAN.vj!==k) return; }
   const T=fanPtsDe(k)||{}, abierta=fanAbierta();
-  const m=practica?(fanMio(abierta||k)||(FAN.eq?.length===11?{eq:FAN.eq,c:FAN.c}:null)):fanMio(k), yo=FAN.hash&&FAN.D.tabla?.[FAN.hash];
+  const yo=FAN.hash&&FAN.D.tabla?.[FAN.hash], Lo=yo?.L?.[k];
+  const m=practica?(fanMio(abierta||k)||(FAN.eq?.length===11?{eq:FAN.eq,c:FAN.c}:null)):Lo?{eq:Lo[0].map(String),c:String(Lo[1])}:fanMio(k);
   const pts=id=>{ const v=T[id]; return v?v[0]*(m?.c===id?2:1):0; };
   const total=m?m.eq.reduce((s,id)=>s+pts(id),0):null, oficial=!practica&&!vivo?yo?.j?.[k]:null;
   const est=practica?"De práctica: así le habría ido a tu once actual (no cuenta)":vivo?`<span class="vivo" style="font-weight:700">EN VIVO</span> · se actualiza cada minuto`:FAN.D.j[k].ok?"Terminada":"Puntos oficiales mañana";

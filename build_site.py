@@ -2108,7 +2108,9 @@ except Exception as ex:
 # Fijos en la fase de liga; se recalculan una vez al empezar las eliminatorias.
 # Firebase: fan_jornadas/{s}-{clave} = {primero}; los onces en fan_ucl/{s}-{clave}_{uid} = {uid, jid, j, s, eq:[11 ids], c, a, t}.
 import re
-FAN_DESDE="L4"
+FAN_DESDE="L3"   # 27 oct 2026: cuenta desde la 3 (los primeros onces se guardaron antes de que empezara)
+# Posiciones que cambió API-Football al refrescar plantillas el 26 oct; se regresan a las que tenían cuando se armaron los onces.
+FAN_POS_FIX={"207":"F","247":"F","269":"F","510":"F","753":"M","756":"M","862":"M","909":"M","927":"M","1157":"D","1422":"M","2489":"M","7334":"M","7756":"M","9971":"F","10077":"M","10238":"D","15876":"D","18592":"M","21568":"M","22236":"M","26252":"F","26475":"M","31010":"M","31042":"M","36905":"M","37438":"F","40809":"M","43036":"M","44594":"D","63274":"D","66353":"M","67889":"M","128533":"M","129695":"M","129791":"F","135273":"M","142959":"F","157997":"F","158644":"M","162718":"M","181786":"M","195103":"M","271327":"M","274300":"F","282126":"F","300885":"M","307835":"M","309792":"M","312615":"M","314266":"M","323936":"M","324019":"D","326067":"M","328225":"M","329409":"F","336657":"D","342163":"F","342188":"F","349001":"D","350037":"F","365840":"M","371228":"D","383041":"M","386287":"M","386828":"M","404097":"M","425714":"F","442048":"M","446249":"F","452685":"F","458540":"M","478991":"M","491248":"F","568008":"M"}
 FAN_PG={"G":6,"D":6,"M":5,"F":4}; FAN_CS={"G":4,"D":4,"M":1,"F":0}
 FAN_TIER={"A":["Real Madrid","Manchester City","Bayern München","Bayern Munich","Paris Saint Germain","Paris Saint-Germain","Barcelona","Liverpool","Arsenal","Inter"],
           "B":["Atletico Madrid","Atlético Madrid","Borussia Dortmund","Napoli","Manchester United","Aston Villa","RB Leipzig","FC Porto","Sporting CP","AS Roma",
@@ -2131,6 +2133,9 @@ def _fan_pts(pos,s,cs_eq,og=0):
     cs=1 if (cs_eq and mins>=60) else 0
     p=(2 if mins>=60 else 1)+G*FAN_PG[pos]+A*3+cs*FAN_CS[pos]+(SV//3 if pos=="G" else 0)-YC-3*RC-2*(pe.get("missed") or 0)-2*og
     return [p,mins,G,A,cs,YC,RC,SV]
+def _fan_ts(t):
+    try: return t.timestamp() if hasattr(t,"timestamp") else float(t)/(1000 if float(t)>1e11 else 1)
+    except Exception: return None
 def _fan_ucl():
     import hashlib
     if 'AF_FX' not in globals() or 'ucl' not in AF_FX: print("Fantasy Champions: sin partidos"); return
@@ -2162,7 +2167,9 @@ def _fan_ucl():
     desde=orden.index(FAN_DESDE) if FAN_DESDE in orden else 0
     # plantillas de los equipos (una vez por semana)
     tids=sorted({f["teams"][x]["id"] for f in F if _fan_jkey(f).startswith("L") for x in ("home","away")})
-    eq=P.get("eq") or {}; jug={str(r[0]):r for r in (P.get("jug") or [])}
+    eq=P.get("eq") or {}; jug={str(r[0]):r for r in (P.get("jug") or [])}; tab0=P.get("tabla") or {}
+    for k,v in FAN_POS_FIX.items():
+        if k in jug: jug[k][3]=v
     viejo=(time.time()-(P.get("sq_t") or 0))>6*86400
     if viejo or not jug:
         try: cods=af_codigos(2,s)
@@ -2176,7 +2183,8 @@ def _fan_ucl():
                 for p in x.get("players") or []:
                     nuevos[str(p["id"])]=[p["id"],(p.get("name") or "").strip(),tid,_fan_pos(p.get("position")),None]
         if nuevos:
-            for k,v in nuevos.items(): v[4]=(jug.get(k) or [None]*5)[4]   # se conserva el precio
+            for k,v in nuevos.items():   # se conservan el precio y la posición (para no romper onces ya guardados)
+                if k in jug: v[3]=jug[k][3]; v[4]=jug[k][4]
             jug=nuevos; P["sq_t"]=time.time()
     # precios
     ahora=time.time(); actual=next((k for k in orden if J[k]["pr"]>ahora),orden[-1])
@@ -2254,19 +2262,25 @@ def _fan_ucl():
             tabla={}
             for uid,M in U.items():
                 if not uid: continue
-                h=hashlib.sha256(uid.encode()).hexdigest()[:12]; prev=None; tot=0; jj={}; alias="Jugador"; ult=None; cam=0
+                h=hashlib.sha256(uid.encode()).hexdigest()[:12]; prev=None; tot=0; jj={}; alias="Jugador"; ult=None; cam=0; LL={}
+                fr=(tab0.get(h) or {}).get("L") or {}
                 for k in cerradas:
                     doc=M.get(k)
                     if doc: alias=str(doc.get("a") or alias)[:24]
-                    lin=doc or prev
+                    if fr.get(k): lin={"eq":fr[k][0],"c":fr[k][1]}   # ya contada: no cambia aunque después vuelva a guardar
+                    else:
+                        lin=doc or prev
+                        if not lin:   # once guardado para una jornada posterior, pero ANTES de que empezara esta
+                            cand=[x for x in M.values() if _fan_ts(x.get("t")) and _fan_ts(x.get("t"))<J[k]["pr"]]
+                            if cand: lin=max(cand,key=lambda x:_fan_ts(x.get("t")))
                     if not lin: continue
                     E=[str(i) for i in (lin.get("eq") or [])][:11]; c=str(lin.get("c") or "")
                     p=sum((pts.get(k,{}).get(i) or [0])[0] for i in E)+((pts.get(k,{}).get(c) or [0])[0] if c in E else 0)
                     cam=len(set(E)-set(str(i) for i in (prev or {}).get("eq") or [])) if prev else 0
                     p-=4*max(0,cam-2)
-                    jj[k]=p; tot+=p; prev=lin; ult=(E,c)
+                    jj[k]=p; tot+=p; prev=lin; ult=(E,c); LL[k]=[E,c]
                 if not jj and not M: continue
-                tabla[h]=dict(a=alias,t=tot,j=jj,eq=ult[0] if ult else None,c=ult[1] if ult else None)
+                tabla[h]=dict(a=alias,t=tot,j=jj,eq=ult[0] if ult else None,c=ult[1] if ult else None,L=LL)
                 if not jj:   # todavía no juega ninguna jornada: aparece con 0
                     d0=max(M.values(),key=lambda x:x.get("j") or ""); tabla[h].update(a=str(d0.get("a") or "Jugador")[:24])
             P["tabla"]=tabla
