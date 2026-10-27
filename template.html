@@ -1048,7 +1048,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 }
 @media (max-width:720px){
   header.top nav.tabs{display:none}
-  .bnav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:50;background:#16201d;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .bnav{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:50;background:#16201d;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
   .bnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:58px;background:none;border:0;color:var(--muted);font:600 12px/1 var(--body);cursor:pointer;padding:0}
   .bnav button::before{content:"";width:22px;height:3px;border-radius:2px;background:transparent}
   .bnav button[aria-selected="true"]{color:var(--mark)}
@@ -1134,6 +1134,23 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .fanlist span{min-width:0;display:flex;flex-direction:column}.fanlist span b{font:600 16px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fanlist small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fanlist>button>b{font:700 17px var(--display);text-align:right}.fanlist>button>b.y{color:var(--mark)}
 .fanreglas{max-width:640px;margin-top:14px;padding:10px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.5}.fanreglas summary{cursor:pointer;color:var(--ink);font:700 16px var(--display)}
+.masflag{width:18px;height:12px;object-fit:cover;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.mxrow td{background:rgba(242,212,102,.10)}
+.f1ev,.tenev{max-width:720px;margin:0 0 12px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.f1evh{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}.f1evh b{font:700 22px/1.1 var(--display)}.f1evh span{font-size:13px;color:var(--muted)}
+.f1ses{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--line)}.f1ses>div{display:flex;flex-direction:column}.f1ses>div b{font:600 16px var(--display)}.f1ses small{color:var(--muted);font-size:12px}
+.f1ses ol{margin:0;padding-left:22px;font-size:14px;line-height:1.6}.f1ses li.mx{color:var(--mark);font-weight:600}.f1ses.v{border-left:3px solid var(--mark);padding-left:8px}
+.f1cal{max-width:560px;display:flex;flex-direction:column}.f1cal>div{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;padding:8px 4px;border-bottom:1px solid var(--line);align-items:center}.f1cal b{color:var(--muted);font:600 14px var(--display)}.f1cal small{color:var(--muted);font-size:12px}
+.f1cal .pas{opacity:.5}.f1cal .sig{background:var(--surface);border-left:3px solid var(--mark)}
+.tenev h4{margin:10px 0 6px;font:600 15px var(--display);color:var(--muted)}
+.tengrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.tenp{padding:8px 10px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}.tenp.v{border-color:var(--mark)}
+.tenh{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+.tenj{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;line-height:1.7;color:var(--muted)}.tenj.w{color:var(--ink);font-weight:600}.tenj.mx>span:first-child{color:var(--mark)}
+.tenj .sets{display:flex;gap:8px;font:600 15px var(--display)}.tenj .sets b{min-width:10px;text-align:center;font-weight:500}.tenj .sets b.g{font-weight:700;color:var(--ink)}
+@media (max-width:420px){.f1ses{grid-template-columns:110px minmax(0,1fr)}.bnav button{font-size:11px}}
+.fanmarcd{max-width:640px;margin:0 0 10px}.fanmarcd summary{cursor:pointer;color:var(--muted);font-size:13px;margin-bottom:6px}
+.fanmarc{max-width:640px;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.fanmarc span{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font:600 14px var(--display)}.fanmarc span.v{border-color:var(--mark)}.fanmarc small{color:var(--muted);font:400 11px var(--body)}
 .fanvs{max-width:640px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)}.fanvs span:last-child{text-align:right}.fanvs b{font:700 18px var(--display);color:var(--mark)}
 @media (max-width:400px){.fanj{width:70px}.fanj b{max-width:68px;font-size:11px}}
 .q5top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--mark);margin:0 0 12px;max-width:640px}
@@ -1192,6 +1209,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
     <button aria-selected="false" data-sport="nba">NBA</button>
     <button aria-selected="false" data-sport="ff">Fantasy</button>
     <button aria-selected="false" data-sport="qn">Retas</button>
+    <button aria-selected="false" data-sport="mas">F1 y tenis</button>
   </nav>
   <button class="acct" id="acctBtn" aria-label="Tu cuenta" hidden>Entrar</button>
 </header>
@@ -1200,6 +1218,9 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </nav>
 <nav class="subnav" data-for="qn" aria-label="Retas" hidden>
   <button aria-current="page" data-tab="nflq">Quiniela NFL</button><button data-tab="qmx">Liga MX</button><button data-tab="nbaq5">Quinteta</button><button data-tab="fan">Champions</button>
+</nav>
+<nav class="subnav" data-for="mas" aria-label="Más deportes" hidden>
+  <button aria-current="page" data-tab="f1">Fórmula 1</button><button data-tab="tenis">Tenis</button>
 </nav>
 <nav class="subnav" data-for="nba" aria-label="Secciones NBA" hidden>
   <button aria-current="page" data-tab="nbagames">Partidos</button><button data-tab="nbatable">Tabla</button>
@@ -1339,7 +1360,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </section>
 <section class="panel hidden" id="qmx">
   <div class="headrow"><h2>Quiniela Liga MX</h2></div>
-  <div class="qview" id="qmxView" role="tablist"><button role="tab" aria-selected="true" data-qv="picks">Mis picks</button><button role="tab" aria-selected="false" data-qv="grupos">Grupos</button><button role="tab" aria-selected="false" data-qv="llave">Llave de la Liguilla</button></div>
+  <div class="qview" id="qmxView" role="tablist"><button role="tab" aria-selected="true" data-qv="picks">Mis picks</button><button role="tab" aria-selected="false" data-qv="grupos">Grupos</button><button role="tab" aria-selected="false" data-qv="general">General</button><button role="tab" aria-selected="false" data-qv="llave">Llave</button></div>
   <div id="qmxBody"></div>
 </section>
 <section class="panel hidden" id="fan">
@@ -1363,6 +1384,14 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <h2>Palmarés de la NFL</h2>
   <p class="note">Super Bowls ganados por franquicia, de mayor a menor.</p>
   <div class="tbl"><table id="nflHonorsTable"></table></div>
+</section>
+<section class="panel hidden" id="f1">
+  <div class="headrow"><h2>Fórmula 1</h2></div>
+  <div id="f1Body"></div>
+</section>
+<section class="panel hidden" id="tenis">
+  <div class="headrow"><h2>Tenis</h2></div>
+  <div id="tenBody"></div>
 </section>
 <section class="panel hidden" id="nbagames">
   <h2>Partidos</h2>
@@ -1489,7 +1518,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </section>
 
 <nav class="bnav" aria-label="Secciones">
-  <button aria-selected="true" data-sport="hoy">Hoy</button><button aria-selected="false" data-sport="mx">Fútbol</button><button aria-selected="false" data-sport="nfl">NFL</button><button aria-selected="false" data-sport="nba">NBA</button><button aria-selected="false" data-sport="ff">Fantasy</button><button aria-selected="false" data-sport="qn">Retas</button>
+  <button aria-selected="true" data-sport="hoy">Hoy</button><button aria-selected="false" data-sport="mx">Fútbol</button><button aria-selected="false" data-sport="nfl">NFL</button><button aria-selected="false" data-sport="nba">NBA</button><button aria-selected="false" data-sport="ff">Fantasy</button><button aria-selected="false" data-sport="qn">Retas</button><button aria-selected="false" data-sport="mas">Más</button>
 </nav>
 <div class="pzinst" id="pzInst" hidden role="dialog" aria-label="Instalar La Pizarra">
   <img src="/iconos/icono-192.png" alt="">
@@ -1573,7 +1602,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5","qmx","fan"];
+const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5","qmx","fan","f1","tenis"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -1603,7 +1632,8 @@ function loadNflPlayoffs(){
 // Qué botón de deporte se marca (arriba en computadora y en la barra de abajo en el celular) según la sección
 const FF_TABS=["fmatch","froster","fliga","fwaivers","ftrade"];
 const RETAS=["nflq","qmx","nbaq5","fan"];
-const sportOf=id=>id==="hoy"?"hoy":RETAS.includes(id)?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
+const MAS_TABS=["f1","tenis"];
+const sportOf=id=>id==="hoy"?"hoy":MAS_TABS.includes(id)?"mas":RETAS.includes(id)?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
 // Abre una sección que necesita un paquete: "Cargando…" mientras llega y, si falla, un aviso para recargar
 function paqCarga(n,fn,donde){
   if(PAQ_OK[n]) return fn();
@@ -1612,14 +1642,14 @@ function paqCarga(n,fn,donde){
   paquete(n).then(()=>{ if(puse) txt(""); fn(); })
     .catch(()=>txt("No pudimos cargar esta sección. Revisa tu conexión y recarga la página."));
 }
-function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||RETAS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
+function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||RETAS.includes(id)||MAS_TABS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
   const spSel=sportOf(id); document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===spSel));
   if(id==="hoy") hoyRender();
   if(typeof navPush==="function") navPush(id);
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="qmx") qmxAbre(); if(id==="fan") fanRender();
+  if(id==="qmx") qmxAbre(); if(id==="fan") fanRender(); if(id==="f1") f1Render(); if(id==="tenis") tenRender();
   if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbaq5") q5Render();
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
   if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",fantasyInit,id==="fwaivers"?"#notes":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
@@ -1632,6 +1662,9 @@ function showSport(sp,tab){
   }
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
   if(sp==="hoy") return showTab("hoy");
+  if(sp==="mas"){ $(".nflart").toggleAttribute("hidden",true); $(".mxart").toggleAttribute("hidden",true); $("#tempWrap").hidden=true;
+    let t=tab; if(!MAS_TABS.includes(t)){ try{ t=localStorage.getItem("pz_mas"); }catch(e){} } if(!MAS_TABS.includes(t)) t="f1";
+    try{ localStorage.setItem("pz_mas",t); }catch(e){} return showTab(t); }
   $(".nflart").toggleAttribute("hidden",sp==="mx"||sp==="nba"); $(".mxart").toggleAttribute("hidden",sp!=="mx");
   $("#heroTitle").textContent= sp==="nfl"?`Temporada ${D.season} · Semana ${D.gweek}`:sp==="mx"?flLabel():sp==="nba"?"NBA · Temporada 2026-27":`Fantasy Football · Semana ${D.gweek}`;
   setLogo(sp==="mx"?(LEAGUES[FLIG].nat?pickLogo(SEL_LOGOS):comercial(LEAGUES[FLIG])?null:pickLogo(MX_LOGOS)):sp==="nba"?null:D.nfl_logo);
@@ -5230,6 +5263,7 @@ function qmxRender(sinRed){
   document.querySelectorAll("#qmxView button").forEach(b=>b.setAttribute("aria-selected",b.dataset.qv===QMX.vista));
   if(!qmxD()){ box.innerHTML=`<p class="note">La quiniela de la Liga MX aparece en la próxima actualización.</p>`; return; }
   if(QMX.vista==="grupos") return qmxGrRender();
+  if(QMX.vista==="general") return qmxGeneral();
   if(QMX.vista==="llave") { box.innerHTML=`<div class="qmxllave"><b>Llave de la Liguilla</b><span>Se abre al terminar la jornada 17 (domingo 22 de noviembre) y se cierra con el primer partido de cuartos. Escoges quién pasa en cada serie hasta el campeón: cuartos 1 punto, semis 2, finalista 3 y campeón 5.</span></div>`; return; }
   const L=qmxJornadas(); if(QMX.j==null||!L.includes(QMX.j)) QMX.j=qmxDefault();
   const j=QMX.j, J=qmxD().J[j], now=Date.now()/1000, cerrada=J.pr<=now, mios=qmxMios(j), V=QMX.vivo;
@@ -5278,7 +5312,30 @@ document.addEventListener("change",ev=>{ if(ev.target.id!=="qmxG") return; const
 const qmxLink=id=>`https://lapizarra.mx/?qmxg=${id}`;
 async function qmxPicksDe(jid,uid){   // picks de otro (o tuyos) de una jornada ya cerrada; las cerradas y terminadas se guardan en el navegador
   const ck=`pz_qmxp_${jid}_${uid}`; try{ const c=JSON.parse(localStorage.getItem(ck)||"null"); if(c) return c; }catch(e){}
-  try{ const s=await ACCT.db.doc(`qmx_picks/${jid}_${uid}`).get(); return s.exists?{p:s.data().p||{},g:s.data().g??null}:null; }catch(e){ return null; }
+  let r=null; try{ const s=await ACCT.db.doc(`qmx_picks/${jid}_${uid}`).get(); if(s.exists) r={p:s.data().p||{},g:s.data().g??null}; }catch(e){ console.warn("Quiniela MX: picks de",jid,e?.code||e); }
+  if(!r&&uid===ACCT.user?.uid){ const L=qmxLs()[jid]; if(L&&Object.keys(L.p||{}).length) r={p:L.p,g:L.g??null}; }
+  return r;
+}
+// Tabla general que arma GitHub cada mañana (todos los que tienen picks): datos/qmx_tabla.json
+async function qmxTablaGen(){ if(QMX.gen&&Date.now()-QMX.genT<5*60e3) return QMX.gen;
+  QMX.gen=await fetch(`datos/qmx_tabla.json?v=${Math.floor(Date.now()/3e5)}`).then(r=>r.ok?r.json():null).catch(()=>null); QMX.genT=Date.now(); return QMX.gen; }
+// Marcadores al momento de los partidos ya empezados que en los datos de la página no aparecen terminados
+async function qmxVivoYa(js){ const now=Date.now()/1000, ids=[];
+  for(const j of js) for(const r of qmxD().J[j].p){ const R=qmxRes(r,QMX.vivo); if(r[1]<=now&&!R.fin&&!R.susp) ids.push(r[0]); }
+  for(let i=0;i<ids.length;i+=20){ try{ const R=await afList("fixtures",`ids=${ids.slice(i,i+20).join("-")}`);
+    for(const f of R) QMX.vivo[f.fixture.id]={gl:f.goals?.home,gv:f.goals?.away,st:f.fixture?.status?.short,min:f.fixture?.status?.elapsed}; }catch(e){} } }
+async function qmxGeneral(){
+  const box=$("#qmxBody"); box.innerHTML=`<p class="note">Cargando…</p>`;
+  const G=await qmxTablaGen(); if(QMX.vista!=="general") return;
+  if(!G||G.s!==qmxD().s||!Object.keys(G.t||{}).length){ box.innerHTML=`<p class="note">La tabla general aparece la mañana después de que cierre la primera jornada con picks guardados en una cuenta.</p>`; return; }
+  const js=Object.keys(G.j).map(Number).sort((a,b)=>a-b), ult=js[js.length-1], yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null;
+  const gan={}; for(const j of js){ if(!G.j[j].fin) continue; const E=Object.entries(G.t).filter(([,x])=>x.j[j]); if(!E.length) continue;
+    const mx=Math.max(...E.map(([,x])=>x.j[j][0])); if(mx<=0) continue; const d=x=>x.j[j][1]==null?99:Math.abs(x.j[j][1]-G.j[j].goles);
+    const b=E.filter(([,x])=>x.j[j][0]===mx).sort((a,b)=>d(a[1])-d(b[1]))[0]; gan[b[0]]=(gan[b[0]]||0)+1; }
+  const F=Object.entries(G.t).map(([h,x])=>({h,a:x.a,pts:js.reduce((s,j)=>s+(x.j[j]?.[0]||0),0),u:x.j[ult]?.[0],g:gan[h]||0})).sort((a,b)=>b.pts-a.pts||b.g-a.g);
+  const al=new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"long",hour:"numeric",minute:"2-digit"}).format(new Date(G.al.replace("Z",":00Z")));
+  box.innerHTML=`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ult}</th><th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map((x,i)=>`<tr${x.h===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${x.h===yo?" (tú)":""}</td><td><b>${x.pts}</b></td><td>${x.u??"–"}</td><td>${x.g}</td></tr>`).join("")}</tbody></table></div>
+    <p class="note">${F.length} jugadores. Cuentan las jornadas desde la ${js[0]}. Se actualiza cada mañana (última vez: ${al}); los puntos de la jornada en juego los ves en tus grupos y en Mis picks.</p>`;
 }
 async function qmxGrRender(){
   const box=$("#qmxBody");
@@ -5297,10 +5354,13 @@ async function qmxTabla(g){
   const M=ms.docs.map(d=>({uid:d.id,...d.data()})), J=qmxD().J, now=Date.now()/1000;
   const desde=13, Ls=qmxJornadas().filter(j=>j>=desde&&J[j].pr<=now);
   const T=Object.fromEntries(M.map(m=>[m.uid,{n:m.nombre||"Jugador",pts:0,gan:0,err:0,ult:null}]));
+  const [Gen,H]=await Promise.all([qmxTablaGen(),Promise.all(M.map(m=>q5Hash(m.uid))),qmxVivoYa(Ls)]); M.forEach((m,i)=>m.h=H[i]);
   let ultJ=null, ultP={};
   for(const j of Ls){ const jid=qmxJid(j), P=J[j].p, R=P.map(r=>qmxRes(r,QMX.vivo)), term=R.every(x=>x.fin||x.susp), goles=R.reduce((s,x)=>s+(x.fin?(x.gl||0)+(x.gv||0):0),0);
-    const S={}; for(const m of M){ const pk=await qmxPicksDe(jid,m.uid); if(term&&pk){ try{localStorage.setItem(`pz_qmxp_${jid}_${m.uid}`,JSON.stringify(pk));}catch(e){} }
-      const a=P.reduce((s,r,i)=>s+(R[i].fin&&pk?.p?.[r[0]]===R[i].r?1:0),0); S[m.uid]={a,pk}; T[m.uid].pts+=a; if(j===Ls[Ls.length-1]) T[m.uid].ult=a;
+    const S={}; for(const m of M){ let pk=await qmxPicksDe(jid,m.uid); if(term&&pk){ try{localStorage.setItem(`pz_qmxp_${jid}_${m.uid}`,JSON.stringify(pk));}catch(e){} }
+      const gx=Gen&&Gen.s===qmxD().s&&Gen.j?.[j]?.fin?Gen.t?.[m.h]?.j?.[j]:null;   // lo que contó GitHub (por si no se pueden leer sus picks)
+      let a=P.reduce((s,r,i)=>s+(R[i].fin&&pk?.p?.[r[0]]===R[i].r?1:0),0);
+      if(gx&&gx[0]>a){ a=gx[0]; if(!pk) pk={p:{},g:gx[1]}; } S[m.uid]={a,pk}; T[m.uid].pts+=a; if(j===Ls[Ls.length-1]) T[m.uid].ult=a;
       if(term) T[m.uid].err+=pk?.g!=null?Math.abs(pk.g-goles):50; }
     if(term){ const mx=Math.max(...M.map(m=>S[m.uid].a)); const top=M.filter(m=>S[m.uid].a===mx);
       const best=top.sort((a,b)=>(S[a.uid].pk?.g!=null?Math.abs(S[a.uid].pk.g-goles):99)-(S[b.uid].pk?.g!=null?Math.abs(S[b.uid].pk.g-goles):99))[0]; if(best&&mx>0) T[best.uid].gan++; }
@@ -5351,7 +5411,7 @@ function qmxRepinta(){ QMX.cache={}; if(!$("#qmx").classList.contains("hidden"))
 // cierre con el primer partido de la jornada. Datos: datos/fan_ucl.json (lo arma GitHub: jugadores, precios, puntos por jornada
 // y tabla general con hash del uid). Tu once: fan_ucl/{s}-{jornada}_{uid} en Firebase (+ pz_fan en el navegador); si no guardas
 // once para una jornada, cuenta el último que guardaste. Grupos: grupos/{g} con modos ["fan"], lista en tu cuenta (fang / pz_fang).
-const FAN={D:null,P:null,t:0,vista:"once",sel:null,pos:"F",q:"",eq:null,c:null,j:null,tab:null,join:null,K:"pz_fan",GK:"pz_fang",hash:null};
+const FAN={vivo:{},D:null,P:null,t:0,vista:"once",sel:null,pos:"F",q:"",eq:null,c:null,j:null,tab:null,join:null,K:"pz_fan",GK:"pz_fang",hash:null};
 const FAN_FORM={F:2,M:4,D:4,G:1}, FAN_PRESUP=80, FAN_POSN={G:"POR",D:"DEF",M:"MED",F:"DEL"}, FAN_POSL={G:"Portero",D:"Defensa",M:"Medio",F:"Delantero"};
 const fanLs=()=>{try{return JSON.parse(localStorage.getItem(FAN.K)||"{}")||{};}catch(e){return {};}};
 const fanLsSet=o=>{try{localStorage.setItem(FAN.K,JSON.stringify(o));}catch(e){}};
@@ -5374,7 +5434,8 @@ async function fanCarga(){
   FAN.est=Object.fromEntries((P?.filas||[]).map(r=>[String(r.id),r]));
   // puntos que lleva cada jugador en la Champions con las reglas del fantasy (aprox. con sus números de la temporada)
   const PG={G:6,D:6,M:5,F:4}, CS={G:4,D:4,M:1,F:0};
-  FAN.tot={}; for(const J of Object.values(D.jm)){ const s=FAN.est[J.id]; if(!s) continue;
+  FAN.tot={}; if(Object.keys(D.pts||{}).length){ for(const T of Object.values(D.pts)) for(const [id,v] of Object.entries(T)) FAN.tot[id]=(FAN.tot[id]||0)+v[0]; }
+  else for(const J of Object.values(D.jm)){ const s=FAN.est[J.id]; if(!s) continue;
     FAN.tot[J.id]=(s.tit||0)*2+Math.max(0,(s.ap||0)-(s.tit||0))+(s.g||0)*PG[J.pos]+(s.as||0)*3+(s.cs||0)*CS[J.pos]+Math.floor((s.sv||0)/3)-(s.yc||0)-3*(s.rc||0); }
   return D;
 }
@@ -5405,7 +5466,7 @@ function fanValida(E){ const cnt={}; for(const id of E){ const t=fanJug(id)?.tid
 const fanEsc=s=>hoyEsc(s);
 function fanChip(id,{cap=false,pts=null}={}){ const J=fanJug(id); if(!J) return "";
   const E=fanEq(J.tid);
-  return `<button class="fanj${cap?" cap":""}" data-fanj="${id}"><span class="fanf">${E[2]?`<img src="${E[2]}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:fanEsc(E[1])}${cap?`<i>C</i>`:""}</span><b>${fanEsc(J.n.split(" ").slice(-1)[0])}</b><small>${pts!=null?`${pts} pts`:J.p.toFixed(1)}</small></button>`; }
+  return `<button class="fanj${cap?" cap":""}" data-fanj="${id}"><span class="fanf">${E[2]?`<img src="${E[2]}" alt="${fanEsc(E[1])}" loading="lazy" onerror="this.replaceWith(this.alt)">`:fanEsc(E[1])}${cap?`<i>C</i>`:""}</span><b>${fanEsc(J.n.split(" ").slice(-1)[0])}</b><small>${pts!=null?`${pts} pts`:J.p.toFixed(1)}</small></button>`; }
 function fanCancha(E,opts={}){
   const filas=["F","M","D","G"].map(p=>{ const ids=E.filter(id=>fanJug(id)?.pos===p), huecos=FAN_FORM[p]-ids.length;
     return `<div class="fanfila">${ids.map(id=>fanChip(id,{cap:opts.c===id,pts:opts.pts?opts.pts(id):null})).join("")}${opts.edit?Array.from({length:Math.max(0,huecos)},()=>`<button class="fanj vac" data-fanv="${p}"><span class="fanf">+</span><b>${FAN_POSN[p]}</b><small>libre</small></button>`).join(""):""}</div>`; }).join("");
@@ -5430,7 +5491,8 @@ function fanOnce(){
   const sel=FAN.sel&&E.includes(FAN.sel)?FAN.sel:null;
   const menu=sel?`<div class="fanmenu"><b>${fanEsc(fanJug(sel).n)}</b><span>${FAN_POSL[fanJug(sel).pos]} · ${fanEsc(fanEq(fanJug(sel).tid)[0])} · ${fanJug(sel).p.toFixed(1)}</span>
       <div><button class="q5save" data-fanact="cap"${FAN.c===sel?" disabled":""}>${FAN.c===sel?"Es tu capitán":"Hacer capitán"}</button><button class="q5link" data-fanact="cambiar">Cambiar</button><button class="q5link" data-fanact="quitar">Quitar</button></div></div>`:"";
-  box.innerHTML=`<p class="note"><b>${fanEsc(J.n)}</b> · cierra el ${fanCuando(J.pr)}</p>
+  const kv=fanJ().find(fanEnJuego);
+  box.innerHTML=`${kv?`<div class="qgate" style="max-width:640px"><b>${fanEsc(FAN.D.j[kv].n)} en juego</b><span>Tus puntos se actualizan cada minuto.</span><button class="btn" data-fanir="puntos">Ver mis puntos en vivo</button></div>`:""}<p class="note"><b>${fanEsc(J.n)}</b> · cierra el ${fanCuando(J.pr)}</p>
     <div class="fanres"><div><b class="y">${gasto.toFixed(1)}</b><span>de ${FAN_PRESUP} usados</span></div><div><b>${cam.primera?"∞":Math.max(0,2-cam.n)}</b><span>${cam.primera?"cambios (primer once)":"cambios gratis"}</span></div><div><b>${E.length}/11</b><span>jugadores</span></div></div>
     ${cam.extra?`<p class="note" style="color:#E8A48E">Llevas ${cam.n} cambios: ${cam.extra} extra = −${cam.extra*4} puntos esta jornada.</p>`:""}
     ${fanCancha(E,{edit:true,c:FAN.c})}${menu}
@@ -5454,27 +5516,65 @@ function fanLista(){
       const det=s?[s.g?`${s.g} gol${s.g>1?"es":""}`:"",s.as?`${s.as} asist.`:"",s.cs&&"GD".includes(J.pos)?`${s.cs} en cero`:"",s.min?`${s.min}'`:""].filter(Boolean).join(" · "):"Sin minutos en la Champions";
       return `<button data-fanadd="${J.id}"${no?' class="no" disabled':""}><span class="fanf">${fanEq(J.tid)[2]?`<img src="${fanEq(J.tid)[2]}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:""}</span><span><b>${fanEsc(J.n)}</b><small>${fanEsc(fanEq(J.tid)[1])} · ${fanEsc(det)}</small></span><b>${J.p.toFixed(1)}</b><b class="y">${FAN.tot[J.id]||0}</b></button>`; }).join("")||`<p class="note">Nadie con ese nombre.</p>`}</div></div>`;
 }
-function fanPuntos(){
-  const box=$("#fanBody"), C=fanCerradas().filter(k=>FAN.D.pts?.[k]);
-  if(!C.length){ const a=fanAbierta(); box.innerHTML=`<p class="note">Todavía no hay puntos. La primera jornada de este fantasy es la ${a?fanEsc(FAN.D.j[a].n.toLowerCase()):"siguiente"}; los puntos salen la mañana después de cada partido.</p>`; return; }
-  if(!FAN.vj||!C.includes(FAN.vj)) FAN.vj=C[C.length-1];
-  const k=FAN.vj, T=FAN.D.pts[k]||{}, m=fanMio(k), yo=FAN.hash&&FAN.D.tabla?.[FAN.hash];
+// ---- Puntos en vivo (27 oct 2026): durante la jornada se piden los partidos a API-Football cada minuto y se calculan
+// con las mismas reglas que usa GitHub. Al día siguiente quedan los oficiales (datos/fan_ucl.json).
+const FAN_PG={G:6,D:6,M:5,F:4}, FAN_CS={G:4,D:4,M:1,F:0}, FAN_VIVOS=["1H","HT","2H","ET","BT","P","LIVE","INT"], FAN_FIN=["FT","AET","PEN","AWD","WO"];
+function fanPtsJug(pos,s,cs,og){ const g=s.games||{}, m=g.minutes||0; if(m<=0) return null; const gl=s.goals||{}, ca=s.cards||{}, pe=s.penalty||{};
+  const G=gl.total||0, A=gl.assists||0, SV=gl.saves||0, Y=ca.yellow||0, R=ca.red||0, c=cs&&m>=60?1:0;
+  return [(m>=60?2:1)+G*FAN_PG[pos]+A*3+c*FAN_CS[pos]+(pos==="G"?Math.floor(SV/3):0)-Y-3*R-2*(pe.missed||0)-2*og,m,G,A,c,Y,R,SV]; }
+const fanEnJuego=k=>{ const J=FAN.D?.j?.[k]; return !!J&&J.pr<=Date.now()/1000&&!J.ok&&!J.fin&&J.pr>Date.now()/1000-8*86400; };
+async function fanVivo(k){
+  const J=FAN.D.j[k], V=FAN.vivo[k]; if(V&&Date.now()-V.t<55e3) return V;
+  const ids=J.f||[], R=[]; for(let i=0;i<ids.length;i+=20){ try{ R.push(...await afList("fixtures",`ids=${ids.slice(i,i+20).join("-")}`)); }catch(e){} }
+  if(!R.length) return V||null;
+  const T={}, fx=[];
+  for(const f of R){ const gl=f.goals||{}, h=f.teams?.home?.id, a=f.teams?.away?.id, rec={[h]:gl.away||0,[a]:gl.home||0}, og={};
+    fx.push({h,a,gh:gl.home,ga:gl.away,st:f.fixture?.status?.short,min:f.fixture?.status?.elapsed,ts:f.fixture?.timestamp});
+    for(const e of f.events||[]) if(e.type==="Goal"&&e.detail==="Own Goal"&&e.player?.id) og[e.player.id]=(og[e.player.id]||0)+1;
+    for(const Tm of f.players||[]) for(const pl of Tm.players||[]){ const id=String(pl.player.id), pos=fanJug(id)?.pos||"M";
+      const v=fanPtsJug(FAN_PG[pos]?pos:"M",(pl.statistics||[{}])[0]||{},(rec[Tm.team.id]??1)===0,og[pl.player.id]||0); if(v) T[id]=v; } }
+  fx.sort((x,y)=>x.ts-y.ts);
+  return FAN.vivo[k]={T,fx,t:Date.now()};
+}
+function fanVivoTimer(){ clearTimeout(FAN.vt); const k=fanTodas().find(fanEnJuego); if(!k) return;
+  FAN.vt=setTimeout(async()=>{ if(document.hidden||$("#fan").classList.contains("hidden")||!["puntos","grupos"].includes(FAN.vista)) return fanVivoTimer();
+    await fanVivo(k); if(FAN.vista==="puntos") fanPuntos(true); else fanGrupos(); },60e3); }
+const fanTodas=()=>Object.entries(FAN.D.j).sort((a,b)=>a[1].pr-b[1].pr).map(([k])=>k);
+const fanPtsDe=k=>(fanEnJuego(k)&&FAN.vivo[k]?.T)||FAN.D.pts?.[k]||null;
+function fanMarcadores(k){ const V=FAN.vivo[k]; if(!V) return "";
+  const chip=x=>{ const E1=fanEq(x.h), E2=fanEq(x.a), vivo=FAN_VIVOS.includes(x.st), fin=FAN_FIN.includes(x.st);
+    return `<span class="${vivo?"v":""}">${fanEsc(E1[1])} ${fin||vivo?`<b>${x.gh}-${x.ga}</b>`:"vs"} ${fanEsc(E2[1])}<small>${vivo?`${x.min||""}'`:fin?"Final":new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",hour:"numeric",minute:"2-digit"}).format(new Date(x.ts*1000))}</small></span>`; };
+  const ya=V.fx.filter(x=>FAN_VIVOS.includes(x.st)||FAN_FIN.includes(x.st)), luego=V.fx.filter(x=>!ya.includes(x));
+  return `${ya.length?`<div class="fanmarc">${ya.map(chip).join("")}</div>`:""}${luego.length?`<details class="fanmarcd"><summary>Faltan ${luego.length} partidos</summary><div class="fanmarc">${luego.map(chip).join("")}</div></details>`:""}`; }
+async function fanPuntos(sinRed){
+  const box=$("#fanBody"), ahora=Date.now()/1000, C=fanTodas().filter(k=>FAN.D.j[k].pr<=ahora);
+  if(!C.length){ box.innerHTML=`<p class="note">Todavía no hay puntos.</p>`; return; }
+  const enJ=C.find(fanEnJuego);
+  if(!FAN.vj||!C.includes(FAN.vj)) FAN.vj=enJ||C[C.length-1];
+  const k=FAN.vj, desdeI=fanTodas().indexOf(FAN.D.desde), practica=fanTodas().indexOf(k)<desdeI, vivo=fanEnJuego(k);
+  if(vivo&&!sinRed){ box.innerHTML=`<p class="note">Cargando marcadores…</p>`; await fanVivo(k); if(FAN.vista!=="puntos"||FAN.vj!==k) return; }
+  const T=fanPtsDe(k)||{}, abierta=fanAbierta();
+  const m=practica?(fanMio(abierta||k)||(FAN.eq?.length===11?{eq:FAN.eq,c:FAN.c}:null)):fanMio(k), yo=FAN.hash&&FAN.D.tabla?.[FAN.hash];
   const pts=id=>{ const v=T[id]; return v?v[0]*(m?.c===id?2:1):0; };
-  const total=m?m.eq.reduce((s,id)=>s+pts(id),0):null, oficial=yo?.j?.[k];
-  box.innerHTML=`<div class="qmxj"><button id="fanPrev" aria-label="Jornada anterior"${C[0]===k?" disabled":""}>‹</button><div><b>${fanEsc(FAN.D.j[k].n)}</b><small>${FAN.D.j[k].ok?"Terminada":"En juego · se actualiza cada mañana"}</small></div>
+  const total=m?m.eq.reduce((s,id)=>s+pts(id),0):null, oficial=!practica&&!vivo?yo?.j?.[k]:null;
+  const est=practica?"De práctica: así le habría ido a tu once actual (no cuenta)":vivo?`<span class="vivo" style="font-weight:700">EN VIVO</span> · se actualiza cada minuto`:FAN.D.j[k].ok?"Terminada":"Puntos oficiales mañana";
+  box.innerHTML=`<div class="qmxj"><button id="fanPrev" aria-label="Jornada anterior"${C[0]===k?" disabled":""}>‹</button><div><b>${fanEsc(FAN.D.j[k].n)}</b><small>${est}</small></div>
       <div class="qmxc"><b>${oficial??total??"–"}</b><span>puntos</span></div><button id="fanNext" aria-label="Jornada siguiente"${C[C.length-1]===k?" disabled":""}>›</button></div>
-    ${m?fanCancha(m.eq,{c:m.c,pts})+`<div class="tbl" style="max-width:640px;margin-top:10px"><table><thead><tr><th class="l">Jugador</th><th>Min</th><th>G</th><th>A</th><th>Pts</th></tr></thead><tbody>${m.eq.map(id=>{ const v=T[id]||[0,0,0,0], J=fanJug(id);
-      return `<tr><td class="l">${fanEsc(J?.n||id)}${m.c===id?" <b>(C)</b>":""}<br><small style="color:var(--muted)">${FAN_POSN[J?.pos]||""} · ${fanEsc(fanEq(J?.tid)[1])}</small></td><td>${v[1]||"–"}</td><td>${v[2]||""}</td><td>${v[3]||""}</td><td><b>${pts(id)}</b></td></tr>`; }).join("")}</tbody></table></div>
-      ${oficial!=null&&total!=null&&oficial!==total?`<p class="note">Incluye −${total-oficial} por cambios extra.</p>`:""}`
-      :`<p class="note">No tenías once en esta jornada.</p>`}`;
+    ${vivo?fanMarcadores(k):""}
+    ${m?fanCancha(m.eq,{c:m.c,pts})+`<div class="tbl" style="max-width:640px;margin-top:10px"><table><thead><tr><th class="l">Jugador</th><th>Min</th><th>G</th><th>A</th><th>Pts</th></tr></thead><tbody>${[...m.eq].sort((a,b)=>pts(b)-pts(a)).map(id=>{ const v=T[id]||[0,0,0,0], J=fanJug(id);
+      return `<tr><td class="l">${fanEsc(J?.n||id)}${m.c===id?" <b>(C)</b>":""}<br><small style="color:var(--muted)">${FAN_POSN[J?.pos]||""} · ${fanEsc(fanEq(J?.tid)[0])}</small></td><td>${v[1]||"–"}</td><td>${v[2]||""}</td><td>${v[3]||""}</td><td><b>${pts(id)}</b></td></tr>`; }).join("")}</tbody></table></div>
+      ${oficial!=null&&total!=null&&oficial<total?`<p class="note">Incluye −${total-oficial} por cambios extra.</p>`:""}`
+      :`<p class="note">${practica?"Arma tu once en «Mi once» para ver cómo le habría ido.":"No tenías once en esta jornada."}</p>`}
+    ${practica?`<p class="note">El fantasy empieza a contar en la ${fanEsc(FAN.D.j[FAN.D.desde].n.toLowerCase())}.</p>`:""}`;
+  fanVivoTimer();
 }
 // Mano a mano: emparejamientos por jornada con el método del círculo (sobre los hashes ordenados)
 function fanParejas(H,idx){ const L=[...H].sort(); if(L.length%2) L.push(null); const n=L.length; if(n<2) return [];
   const fijo=L[0], rot=L.slice(1), r=idx%(n-1), R=[...rot.slice(r),...rot.slice(0,r)], A=[fijo,...R], P=[];
   for(let i=0;i<n/2;i++) P.push([A[i],A[n-1-i]]); return P; }
-function fanTablaGrupo(H){
+function fanTablaGrupo(H,NM={}){
   const T=FAN.D.tabla||{}, C=fanCerradas().filter(k=>FAN.D.j[k].ok), S={};
-  for(const h of H) S[h]={a:T[h]?.a||"Jugador",t:T[h]?.t||0,G:0,E:0,P:0,pts:0};
+  for(const h of H) S[h]={a:T[h]?.a||NM[h]||"Jugador",t:T[h]?.t||0,G:0,E:0,P:0,pts:0};
   C.forEach((k,i)=>{ for(const [a,b] of fanParejas(H,i)){ if(!a||!b) continue; const pa=T[a]?.j?.[k]??0, pb=T[b]?.j?.[k]??0;
     if(pa>pb){S[a].G++;S[b].P++;S[a].pts+=3;} else if(pa<pb){S[b].G++;S[a].P++;S[b].pts+=3;} else {S[a].E++;S[b].E++;S[a].pts++;S[b].pts++;} } });
   return Object.entries(S).sort((x,y)=>y[1].pts-x[1].pts||y[1].t-x[1].t);
@@ -5492,13 +5592,27 @@ async function fanGrupos(){
   if(!g) return;
   const ms=await ACCT.db.collection(`grupos/${g.id}/miembros`).get().catch(()=>null);
   const el=$("#fanGrTabla"); if(!ms||!el){ if(el) el.innerHTML=`<p class="note">No pudimos cargar el grupo.</p>`; return; }
-  const H=await Promise.all(ms.docs.map(d=>q5Hash(d.id))), F=fanTablaGrupo(H), C=fanCerradas().filter(k=>FAN.D.j[k].ok), T=FAN.D.tabla||{};
+  const H=await Promise.all(ms.docs.map(d=>q5Hash(d.id))), NM=Object.fromEntries(ms.docs.map((d,i)=>[H[i],(d.data().nombre||"").split(" ")[0]])), F=fanTablaGrupo(H,NM), C=fanCerradas().filter(k=>FAN.D.j[k].ok), T=FAN.D.tabla||{};
   const ult=C[C.length-1], pr=ult?fanParejas(H,C.length-1):[], prox=fanAbierta(), prp=prox?fanParejas(H,C.length):[];
-  const nom=h=>h?(h===FAN.hash?"Tú":acctEsc(T[h]?.a||"Jugador")):"Descansa";
+  const nom=h=>h?(h===FAN.hash?"Tú":acctEsc(T[h]?.a||NM[h]||"Jugador")):"Descansa";
+  // jornada en juego: puntos al momento de cada quien (su once de esta jornada o, si no guardó, el último)
+  const kv=fanJ().find(fanEnJuego); let vivoH="";
+  if(kv){ const V=await fanVivo(kv), P=V?.T||{}, jid=fanJid(kv), ks=fanJ();
+    const pv=await Promise.all(ms.docs.map(async(d,i)=>{ let L=null;
+      try{ const s=await ACCT.db.doc(`fan_ucl/${jid}_${d.id}`).get(); if(s.exists) L=s.data(); }catch(e){}
+      if(!L&&d.id===ACCT.user.uid){ const m=fanMio(kv); if(m) L=m; }
+      if(!L&&T[H[i]]?.eq) L={eq:T[H[i]].eq,c:T[H[i]].c};
+      if(!L) return [H[i],0];
+      const E=(L.eq||[]).map(String), c=String(L.c||""); return [H[i],E.reduce((s,id)=>s+(P[id]?.[0]||0)*(id===c?2:1),0)]; }));
+    const PV=Object.fromEntries(pv), idx=C.length, par=fanParejas(H,idx);
+    vivoH=`<h3 style="margin:16px 0 6px">En vivo: ${fanEsc(FAN.D.j[kv].n)}</h3>${fanMarcadores(kv)}${par.map(([a,b])=>`<div class="fanvs"><span>${nom(a)}</span><b>${a&&b?`${PV[a]??0} – ${PV[b]??0}`:(PV[a||b]??0)}</b><span>${nom(b)}</span></div>`).join("")}
+      <p class="note">Puntos al momento, sin descontar cambios extra. Los oficiales salen al día siguiente.</p>`; }
   el.innerHTML=`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>G-E-P</th><th>Pts</th><th>Total</th></tr></thead><tbody>${F.map(([h,x],i)=>`<tr${h===FAN.hash?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${h===FAN.hash?" (tú)":""}</td><td>${x.G}-${x.E}-${x.P}</td><td><b>${x.pts}</b></td><td>${x.t}</td></tr>`).join("")}</tbody></table></div>
     <p class="note">Mano a mano: ganar 3 puntos, empatar 1. Desempata el total de puntos del fantasy. Quien todavía no guarda once aparece con 0.</p>
     ${ult?`<h3 style="margin:16px 0 6px">Última: ${fanEsc(FAN.D.j[ult].n)}</h3>${pr.map(([a,b])=>`<div class="fanvs"><span>${nom(a)}</span><b>${a&&b?`${T[a]?.j?.[ult]??0} – ${T[b]?.j?.[ult]??0}`:(T[a||b]?.j?.[ult]??0)}</b><span>${nom(b)}</span></div>`).join("")}`:""}
-    ${prox&&prp.length?`<h3 style="margin:16px 0 6px">Próxima: ${fanEsc(FAN.D.j[prox].n)}</h3>${prp.map(([a,b])=>`<div class="fanvs"><span>${nom(a)}</span><b>vs</b><span>${nom(b)}</span></div>`).join("")}`:""}`;
+    ${vivoH}
+    ${!kv&&prox&&prp.length?`<h3 style="margin:16px 0 6px">Próxima: ${fanEsc(FAN.D.j[prox].n)}</h3>${prp.map(([a,b])=>`<div class="fanvs"><span>${nom(a)}</span><b>vs</b><span>${nom(b)}</span></div>`).join("")}`:""}`;
+  fanVivoTimer();
 }
 function fanGeneral(){
   const box=$("#fanBody"), T=Object.entries(FAN.D.tabla||{}).sort((a,b)=>b[1].t-a[1].t);
@@ -5517,6 +5631,7 @@ async function fanGuarda(){
 }
 document.addEventListener("click",async ev=>{
   const t=ev.target; if(!t.closest||!t.closest("#fan")) return;
+  const ir=t.closest("[data-fanir]"); if(ir){ FAN.vista=ir.dataset.fanir; FAN.vj=null; fanRender(); return; }
   const v=t.closest("#fanView button"); if(v){ FAN.vista=v.dataset.fv; FAN.pick=null; FAN.sel=null; fanRender(); return; }
   const vac=t.closest("[data-fanv]"); if(vac){ FAN.pick=vac.dataset.fanv; FAN.cambiar=null; FAN.sel=null; FAN.q=""; fanOnce(); $("#fanQ")?.focus(); return; }
   const j=t.closest("[data-fanj]"); if(j&&FAN.vista==="once"){ FAN.sel=FAN.sel===j.dataset.fanj?null:j.dataset.fanj; FAN.pick=null; fanOnce(); return; }
@@ -5531,7 +5646,7 @@ document.addEventListener("click",async ev=>{
     if(FAN.cambiar){ FAN.eq=FAN.eq.map(x=>x===FAN.cambiar?id:x); if(FAN.c===FAN.cambiar) FAN.c=id; } else FAN.eq=[...FAN.eq,id];
     FAN.pick=null; FAN.cambiar=null; fanOnce(); return; }
   if(t.closest("#fanSave")){ fanGuarda(); return; }
-  if(t.closest("#fanPrev")||t.closest("#fanNext")){ const C=fanCerradas().filter(k=>FAN.D.pts?.[k]); const i=C.indexOf(FAN.vj)+(t.closest("#fanPrev")?-1:1); FAN.vj=C[Math.max(0,Math.min(C.length-1,i))]; fanPuntos(); return; }
+  if(t.closest("#fanPrev")||t.closest("#fanNext")){ const C=fanTodas().filter(k=>FAN.D.j[k].pr<=Date.now()/1000); const i=C.indexOf(FAN.vj)+(t.closest("#fanPrev")?-1:1); FAN.vj=C[Math.max(0,Math.min(C.length-1,i))]; fanPuntos(); return; }
   const tb=t.closest("[data-fant]"); if(tb){ FAN.tab=tb.dataset.fant; fanGrupos(); return; }
   if(t.closest("#fanGrCrear")){ const n=($("#fanGrNom").value||"").trim().slice(0,40); if(!n){ $("#fanGrNom").focus(); return; } t.disabled=true; $("#fanGrMsg").textContent="Creando…";
     try{ const uid=ACCT.user.uid, ref=ACCT.db.collection("grupos").doc(), b=ACCT.db.batch();
@@ -5560,6 +5675,78 @@ async function fanJoinRender(){
   el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo del Fantasy Champions: tabla y mano a mano cada jornada.</span><span><button class="btn" id="fanUnir">Unirme</button> <button class="q5link" id="fanNoUnir">Ahora no</button></span>`
     :`<b>No pudimos abrir la invitación</b><span>${errQ?`Código: ${acctEsc(errQ)}. `:""}Pide a quien te invitó un link nuevo.</span><button class="q5link" id="fanNoUnir">Cerrar</button>`;
 }
+// ---------- Más deportes: Fórmula 1 y tenis (27 oct 2026) ----------
+// Datos de ESPN directo desde el navegador (como la NBA): calendario, sesiones, resultados y campeonatos de F1;
+// torneos de la semana, partidos en vivo y ranking de la ATP y la WTA. Horarios del centro de México.
+const ESPN_SITE="https://site.api.espn.com/apis/site/v2/sports", ESPN_V2="https://site.api.espn.com/apis/v2/sports";
+const MAS={f1:{},ten:{tour:"atp",vista:"hoy"},c:{}};
+async function espnJ(u,ttl=60e3){ const c=MAS.c[u]; if(c&&Date.now()-c.t<ttl) return c.d;
+  const d=await fetch(u).then(r=>r.ok?r.json():null).catch(()=>null); if(d) MAS.c[u]={d,t:Date.now()}; return d||c?.d||null; }
+const masHora=(iso,o={weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",...o}).format(new Date(iso));
+const masFlag=a=>{ const f=a?.flag; const u=typeof f==="string"?(f.startsWith("http")?f:""):f?.href||""; return u?`<img class="masflag" src="${u}" alt="" loading="lazy" onerror="this.remove()">`:""; };
+const masMx=a=>{ const f=a?.flag; const t=(typeof f==="string"?f:f?.alt||"")+" "+(a?.flagAltText||"")+" "+(f?.href||""); return /mexico|\/mex\.png/i.test(t); };
+const masYmd=d=>d.toISOString().slice(0,10).replace(/-/g,"");
+// ---- F1 ----
+const F1_GP=[["Australian","Australia"],["Chinese","China"],["Japanese","Japón"],["Bahrain","Baréin"],["Saudi","Arabia Saudita"],["Miami","Miami"],["Canadian","Canadá"],["Monaco","Mónaco"],["Barcelona","Barcelona"],["Austrian","Austria"],["British","Gran Bretaña"],["Belgian","Bélgica"],["Hungarian","Hungría"],["Dutch","Países Bajos"],["Italian","Italia"],["Spanish","España"],["Madrid","Madrid"],["Azerbaijan","Azerbaiyán"],["Singapore","Singapur"],["United States","Estados Unidos"],["Mexico","Ciudad de México"],["São Paulo","Brasil"],["Sao Paulo","Brasil"],["Brazil","Brasil"],["Las Vegas","Las Vegas"],["Qatar","Qatar"],["Abu Dhabi","Abu Dabi"],["Emilia","Emilia-Romaña"]];
+const f1Nombre=l=>{ const x=F1_GP.find(([k])=>(l||"").includes(k)); return x?`GP de ${x[1]}`:(l||"").replace(/Grand Prix/,"GP"); };
+const F1_SES={FP1:"Práctica 1",FP2:"Práctica 2",FP3:"Práctica 3",Qual:"Clasificación",Race:"Carrera",SS:"Sprint Shootout",SQ:"Clasificación sprint",Sprint:"Sprint",SR:"Sprint"};
+async function f1Render(){
+  const box=$("#f1Body"); if(!box) return; if(!box.innerHTML) box.innerHTML=`<p class="note">Cargando…</p>`;
+  const [sb,st]=await Promise.all([espnJ(`${ESPN_SITE}/racing/f1/scoreboard`),espnJ(`${ESPN_V2}/racing/f1/standings`,30*60e3)]);
+  if(!sb){ box.innerHTML=`<p class="note">No pudimos cargar la Fórmula 1. Intenta de nuevo en un momento.</p>`; return; }
+  const cal=sb.leagues?.[0]?.calendar||[], now=Date.now(), sigI=cal.findIndex(c=>new Date(c.endDate).getTime()+3*3600e3>now), sig=cal[sigI];
+  let ev=sb.events?.[0];
+  if(sig&&!(ev&&new Date(ev.date)<=new Date(sig.endDate)&&new Date(ev.date)>=new Date(sig.startDate).getTime()-86400e3)){
+    const a=new Date(new Date(sig.startDate).getTime()-86400e3), b=new Date(sig.endDate); const x=await espnJ(`${ESPN_SITE}/racing/f1/scoreboard?dates=${masYmd(a)}-${masYmd(b)}`); if(x?.events?.[0]) ev=x.events[0]; }
+  const prev=sb.events?.[0]&&ev&&sb.events[0].id!==ev.id?sb.events[0]:null;
+  const ses=c=>{ const ab=c.type?.abbreviation, s=c.status?.type||{}, top=(c.competitors||[]).slice().sort((a,b)=>a.order-b.order);
+    const vivo=s.state==="in", fin=s.state==="post"||s.completed;
+    return `<div class="f1ses${vivo?" v":""}"><div><b>${F1_SES[ab]||ab}</b><small>${vivo?`<b class="vivo">EN VIVO</b>`:masHora(c.date)}</small></div>
+      ${fin||vivo?`<ol>${top.slice(0,ab==="Race"||ab==="Sprint"?10:3).map(x=>`<li${masMx(x.athlete)?' class="mx"':""}>${masFlag(x.athlete)}${hoyEsc(x.athlete?.displayName||"")}</li>`).join("")}</ol>`:""}</div>`; };
+  const evH=e=>e?`<div class="f1ev"><div class="f1evh"><b>${hoyEsc(f1Nombre(e.name))}</b><span>${hoyEsc(e.circuit?.fullName||"")}${e.circuit?.address?.city?` · ${hoyEsc(e.circuit.address.city)}`:""}</span></div>${(e.competitions||[]).slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).map(ses).join("")}</div>`:"";
+  const D=st?.children?.find(c=>/driver/i.test(c.name))?.standings?.entries||[], C=st?.children?.find(c=>/constructor/i.test(c.name))?.standings?.entries||[];
+  const sv=(e,n)=>e.stats?.find(s=>s.name===n)?.displayValue??"";
+  const vista=MAS.f1.v||"gp";
+  box.innerHTML=`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;max-width:100%;margin:0 0 12px">${[["gp","Este GP"],["pil","Pilotos"],["esc","Escuderías"],["cal","Calendario"]].map(([k,t])=>`<button data-f1v="${k}" aria-pressed="${vista===k}">${t}</button>`).join("")}</div>
+    ${vista==="gp"?`${evH(ev)}${prev?`<h3 style="margin:18px 0 8px">Anterior</h3>${evH(prev)}`:""}`
+    :vista==="pil"?`<div class="tbl" style="max-width:560px"><table><thead><tr><th>#</th><th class="l">Piloto</th><th>Pts</th></tr></thead><tbody>${D.map(e=>`<tr${masMx(e.athlete)?' class="mxrow"':""}><td>${sv(e,"rank")}</td><td class="l">${masFlag(e.athlete)}${hoyEsc(e.athlete?.displayName||"")}</td><td><b>${sv(e,"championshipPts")||sv(e,"points")}</b></td></tr>`).join("")}</tbody></table></div>`
+    :vista==="esc"?`<div class="tbl" style="max-width:560px"><table><thead><tr><th>#</th><th class="l">Escudería</th><th>Pts</th></tr></thead><tbody>${C.map(e=>`<tr><td>${sv(e,"rank")}</td><td class="l">${hoyEsc(e.team?.displayName||e.team?.name||"")}</td><td><b>${sv(e,"points")}</b></td></tr>`).join("")}</tbody></table></div>`
+    :`<div class="f1cal">${cal.map((c,i)=>`<div class="${i<sigI?"pas":i===sigI?"sig":""}"><b>${i+1}</b><span>${hoyEsc(f1Nombre(c.label))}</span><small>${masHora(c.startDate,{day:"numeric",month:"short"})} – ${masHora(c.endDate,{day:"numeric",month:"short"})}</small></div>`).join("")}</div>`}
+    <p class="note">Horarios del centro de México. Datos: ESPN.</p>`;
+  clearTimeout(MAS.f1.t); if((ev?.competitions||[]).some(c=>c.status?.type?.state==="in")) MAS.f1.t=setTimeout(()=>{ if(!document.hidden&&!$("#f1").classList.contains("hidden")) f1Render(); },60e3);
+}
+// ---- Tenis ----
+async function tenRender(){
+  const box=$("#tenBody"); if(!box) return; if(!box.innerHTML) box.innerHTML=`<p class="note">Cargando…</p>`;
+  const tour=MAS.ten.tour, vista=MAS.ten.vista;
+  const seg=`<div class="hseg" style="display:inline-flex;margin:0 8px 12px 0">${[["atp","ATP"],["wta","WTA"]].map(([k,t])=>`<button data-tent="${k}" aria-pressed="${tour===k}">${t}</button>`).join("")}</div><div class="hseg" style="display:inline-flex;margin:0 0 12px">${[["hoy","Partidos"],["rk","Ranking"]].map(([k,t])=>`<button data-tenv="${k}" aria-pressed="${vista===k}">${t}</button>`).join("")}</div>`;
+  if(vista==="rk"){ const R=await espnJ(`${ESPN_SITE}/tennis/${tour}/rankings`,3600e3), L=R?.rankings?.[0]?.ranks||[];
+    box.innerHTML=seg+(L.length?`<div class="tbl" style="max-width:560px"><table><thead><tr><th>#</th><th class="l">Jugador${tour==="wta"?"a":""}</th><th>Pts</th><th></th></tr></thead><tbody>${L.slice(0,100).map(r=>`<tr${masMx(r.athlete)?' class="mxrow"':""}><td>${r.current}</td><td class="l">${masFlag(r.athlete)}${hoyEsc(r.athlete?.displayName||"")}</td><td><b>${(r.points||0).toLocaleString("es-MX")}</b></td><td style="color:var(--muted)">${r.previous&&r.previous!==r.current?(r.previous>r.current?`▲${r.previous-r.current}`:`▼${r.current-r.previous}`):""}</td></tr>`).join("")}</tbody></table></div>`:`<p class="note">No pudimos cargar el ranking.</p>`)+`<p class="note">Datos: ESPN.</p>`; return; }
+  const S=await espnJ(`${ESPN_SITE}/tennis/${tour}/scoreboard`); const now=Date.now();
+  if(!S){ box.innerHTML=seg+`<p class="note">No pudimos cargar los partidos.</p>`; return; }
+  let hayVivo=false;
+  const torneos=(S.events||[]).map(e=>{ const sing=(e.groupings||[]).find(g=>/singles/i.test(g.grouping?.displayName||""))||(e.groupings||[])[0]; const P=(sing?.competitions||[]).filter(c=>(c.competitors||[]).every(x=>x.athlete?.displayName&&x.athlete.displayName!=="TBD"));
+    const vivos=P.filter(c=>c.status?.type?.state==="in"), prox=P.filter(c=>c.status?.type?.state==="pre"&&new Date(c.date).getTime()<now+30*3600e3), fin=P.filter(c=>c.status?.type?.state==="post"&&new Date(c.date).getTime()>now-36*3600e3).reverse();
+    if(vivos.length) hayVivo=true;
+    const mx=/queretaro|querétaro|mexico|méxico|acapulco|monterrey|guadalajara|cabos|merida|mérida/i.test(e.name+" "+(P[0]?.venue?.fullName||""));
+    return {e,vivos,prox,fin,mx,ronda:(P.find(c=>c.status?.type?.state!=="post")||P[P.length-1])?.round?.displayName||""}; }).filter(t=>t.vivos.length+t.prox.length+t.fin.length);
+  torneos.sort((a,b)=>(b.mx-a.mx)||(b.vivos.length-a.vivos.length));
+  const RONDA={"Round 1":"1.ª ronda","Round 2":"2.ª ronda","Round 3":"3.ª ronda","Round 4":"4.ª ronda","Round of 16":"Octavos","Quarterfinal":"Cuartos","Semifinal":"Semifinal","Final":"Final"};
+  const partido=c=>{ const st=c.status?.type||{}, X=(c.competitors||[]).slice().sort((a,b)=>a.order-b.order), vivo=st.state==="in";
+    return `<div class="tenp${vivo?" v":""}"><div class="tenh"><span>${hoyEsc(RONDA[c.round?.displayName]||c.round?.displayName||"")}</span><span>${vivo?`<b class="vivo">EN VIVO</b>`:st.state==="post"?"Final":masHora(c.date,{weekday:"short",hour:"numeric",minute:"2-digit"})}</span></div>
+      ${X.map(x=>`<div class="tenj${x.winner?" w":""}${masMx(x.athlete)?" mx":""}"><span>${masFlag(x.athlete)}${hoyEsc(x.athlete?.shortName||x.athlete?.displayName||"")}</span><span class="sets">${(x.linescores||[]).map(l=>`<b${l.winner?' class="g"':""}>${l.value}</b>`).join("")}</span></div>`).join("")}</div>`; };
+  box.innerHTML=seg+(torneos.length?torneos.map(t=>`<div class="tenev"><div class="f1evh"><b>${hoyEsc(t.e.name)}${t.mx?" 🇲🇽":""}</b><span>${hoyEsc(RONDA[t.ronda]||t.ronda)}</span></div>
+      ${t.vivos.length?`<div class="tengrid">${t.vivos.map(partido).join("")}</div>`:""}
+      ${t.prox.length?`<h4>Próximos</h4><div class="tengrid">${t.prox.slice(0,8).map(partido).join("")}</div>`:""}
+      ${t.fin.length?`<h4>Resultados</h4><div class="tengrid">${t.fin.slice(0,8).map(partido).join("")}</div>`:""}</div>`).join(""):`<p class="note">No hay partidos esta semana.</p>`)+`<p class="note">Individuales. Horarios del centro de México. Datos: ESPN.</p>`;
+  clearTimeout(MAS.ten.t); if(hayVivo) MAS.ten.t=setTimeout(()=>{ if(!document.hidden&&!$("#tenis").classList.contains("hidden")) tenRender(); },60e3);
+}
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
+  const f=t.closest("[data-f1v]"); if(f){ MAS.f1.v=f.dataset.f1v; f1Render(); return; }
+  const a=t.closest("[data-tent]"); if(a){ MAS.ten.tour=a.dataset.tent; tenRender(); return; }
+  const v=t.closest("[data-tenv]"); if(v){ MAS.ten.vista=v.dataset.tenv; tenRender(); return; }
+});
+
 function fanRepinta(){ FAN.nube=0; FAN.eq=null; FAN.hash=null; if(!$("#fan").classList.contains("hidden")) fanRender(); }
 
 const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
@@ -6834,7 +7021,7 @@ async function precarga(){ if(PRE_CORRE) return; PRE_CORRE=true;
 // el botón ‹ de la página, el de atrás de Safari y el gesto de deslizar en el iPhone. Abrir un partido o "Tu cuenta"
 // también cuenta como un paso: atrás cierra la ventana en lugar de salirse del sitio.
 var NAV={cur:null,liga:"",restaurando:false,listo:false};   // var: showTab puede llamarse antes de esta línea
-const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5",quinielamx:"qmx",retas:"nflq",fantasychampions:"fan",champions:"fan"};
+const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5",quinielamx:"qmx",retas:"nflq",fantasychampions:"fan",champions:"fan",f1:"f1",formula1:"f1",tenis:"tenis"};
 const NAV_NOMBRE=Object.fromEntries(Object.entries(NAV_ALIAS).map(([a,t])=>[t,a]));
 const navLiga=id=>id.startsWith("mx")?FLIG:"";
 const navHash=id=>"#"+(NAV_NOMBRE[id]||id)+(id.startsWith("mx")&&id!=="mxexplore"&&id!=="mxgoleo"?"-"+FLIG:"");
@@ -6865,7 +7052,7 @@ window.addEventListener("popstate",e=>{
   d.addEventListener("close",()=>{ if(history.state?.dlg) history.back(); });   // cerrada con ×, Esc o tocando afuera
 });
 // Si alguien pega una dirección con # en la misma pestaña (no la recarga)
-const navDeHash=()=>{const h=decodeURIComponent(location.hash.slice(1)), m=h.match(/^([a-z]+)(?:-([a-z]+))?$/); return m?{tab:NAV_ALIAS[m[1]]||m[1],liga:m[2]||""}:{tab:"hoy",liga:""};};
+const navDeHash=()=>{const h=decodeURIComponent(location.hash.slice(1)), m=h.match(/^([a-z][a-z0-9]*)(?:-([a-z]+))?$/); return m?{tab:NAV_ALIAS[m[1]]||m[1],liga:m[2]||""}:{tab:"hoy",liga:""};};
 window.addEventListener("hashchange",()=>{ const {tab,liga}=navDeHash(); if(!SECTIONS.includes(tab)) return;
   if(tab!==NAV.cur||(tab.startsWith("mx")&&liga&&liga!==FLIG)) navIr(tab,liga); });
 $("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport("hoy"); window.scrollTo(0,0); };

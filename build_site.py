@@ -2013,6 +2013,7 @@ except Exception as ex:
 #          goles L, goles V, estado, [pL, pE, pV] (probabilidades de las casas, % redondeado) o null], …]}}}
 # Firebase: qmx_jornadas/{s}-{j} = {s, j, primero: kickoff del primer partido} para las jornadas que no han empezado
 # (las reglas solo aceptan picks en qmx_picks/{s}-{j}_{uid} antes de "primero"; los picks ajenos se leen después).
+QMX_DESDE=13   # primera jornada de la quiniela (la página usa lo mismo)
 def _qmx():
     import unicodedata, re as _re
     if 'AF_FX' not in globals() or 'mx' not in AF_FX: print("Quiniela Liga MX: sin partidos de API-Football"); return
@@ -2054,6 +2055,45 @@ def _qmx():
     for j in abiertas[:3]:
         db.collection('qmx_jornadas').document(f"{slug}-{j}").set(dict(s=slug,j=j,primero=datetime.fromtimestamp(J[str(j)]["pr"],tz=ZoneInfo("UTC"))))
     if abiertas: print(f"Quiniela Liga MX: jornadas {abiertas[:3]} en Firebase")
+    # Tabla general (27 oct 2026): aciertos de todos los que tienen picks, por jornada cerrada (desde la 13).
+    # docs/datos/qmx_tabla.json = {s, al, j:{j:{fin, goles}}, t:{hash12(uid):{a, j:{j:[aciertos, pronóstico de goles]}}}}
+    try:
+        import hashlib
+        from firebase_admin import auth as _fa
+        cerr=sorted([int(j) for j,x in J.items() if x["pr"]<=ahora and int(j)>=QMX_DESDE])
+        U={}
+        for d in db.collection('qmx_picks').where('s','==',slug).stream():
+            x=d.to_dict() or {}
+            if x.get("uid") and str(x.get("j")) in J and int(x.get("j"))>=QMX_DESDE: U.setdefault(x["uid"],{})[int(x["j"])]=x
+        FIN=("FT","AET","PEN","AWD","WO")
+        res=lambda r:None if r[6] not in FIN or r[4] is None else ("L" if r[4]>r[5] else "V" if r[4]<r[5] else "E")
+        JJ={}
+        for j in cerr:
+            P=J[str(j)]["p"]; JJ[str(j)]=dict(fin=all(r[6] in FIN+("PST","CANC","ABD") for r in P),goles=sum((r[4] or 0)+(r[5] or 0) for r in P if r[6] in FIN))
+        def alias(uid):
+            try:
+                u=db.collection('usuarios').document(uid).get().to_dict() or {}
+                for v in (u.get("q5") or {}).values():
+                    if isinstance(v,dict) and v.get("a"): return str(v["a"])[:24]
+            except Exception: pass
+            try:
+                au=_fa.get_user(uid); p=(au.display_name or "").split()
+                if p: return (p[0]+(f" {p[1][0].upper()}." if len(p)>1 else ""))[:24]
+                return (au.email or "").split("@")[0][:14] or "Jugador"
+            except Exception: return "Jugador"
+        T={}
+        for uid,M in U.items():
+            jj={}
+            for j in cerr:
+                x=M.get(j)
+                if not x: continue
+                p=x.get("p") or {}
+                jj[str(j)]=[sum(1 for r in J[str(j)]["p"] if res(r) and p.get(str(r[0]))==res(r)),x.get("g")]
+            T[hashlib.sha256(uid.encode()).hexdigest()[:12]]=dict(a=alias(uid),j=jj)
+        _r=os.path.join(aqui,'docs','datos','qmx_tabla.json'); os.makedirs(os.path.dirname(_r),exist_ok=True)
+        json.dump(dict(s=slug,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j=JJ,t=T),open(_r,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+        print(f"Quiniela Liga MX: tabla general con {len(T)} jugadores; jornadas cerradas {cerr}")
+    except Exception as ex: print("Quiniela Liga MX: no se pudo armar la tabla general:",ex)
 try:
     _qmx()
 except Exception as ex:
@@ -2172,7 +2212,7 @@ def _fan_ucl():
     if repreciar: P["rep_ko"]=1
     # puntos por jornada (las terminadas se guardan y ya no se piden)
     pts=P.get("pts") or {}
-    for k in orden[desde:]:
+    for k in orden:   # todas, para que cada jugador muestre sus puntos reales desde la jornada 1
         x=J[k]
         if k in pts and P.get("j",{}).get(k,{}).get("ok"): x["ok"]=1; continue
         fin=[f for f in G[k] if (f["fixture"].get("status") or {}).get("short") in AF_FIN]
