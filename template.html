@@ -1048,9 +1048,9 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 }
 @media (max-width:720px){
   header.top nav.tabs{display:none}
-  .bnav{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:50;background:#16201d;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .bnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:50;background:#16201d;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
   .bnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:58px;background:none;border:0;color:var(--muted);font:600 12px/1 var(--body);cursor:pointer;padding:0}
-  .bnav button::before{content:"";width:22px;height:3px;border-radius:2px;background:transparent}
+  .bnav button::before{content:"";width:22px;height:3px;border-radius:2px;background:transparent;order:-1}
   .bnav button[aria-selected="true"]{color:var(--mark)}
   .bnav button[aria-selected="true"]::before{background:var(--mark)}
   body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
@@ -1134,6 +1134,16 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .fanlist span{min-width:0;display:flex;flex-direction:column}.fanlist span b{font:600 16px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fanlist small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fanlist>button>b{font:700 17px var(--display);text-align:right}.fanlist>button>b.y{color:var(--mark)}
 .fanreglas{max-width:640px;margin-top:14px;padding:10px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.5}.fanreglas summary{cursor:pointer;color:var(--ink);font:700 16px var(--display)}
+/* Barra principal (27 oct 2026): Hoy, Retas, Favoritos y Deportes (menú) */
+nav.tabs button .depch{vertical-align:-2px;margin-left:2px;transition:transform .15s}nav.tabs button[aria-expanded="true"] .depch{transform:rotate(180deg)}
+.bnav button svg{display:block}
+.depmenu{position:absolute;z-index:80;width:300px;display:flex;flex-direction:column;gap:2px;padding:6px;border-radius:16px;background:#1b2925;border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,.45)}
+.depmenu[hidden]{display:none}
+#favs .hfav>.hh h3{display:none}#favs .hfav>.hh{justify-content:flex-end}
+.depmenu button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px;border-radius:12px;border:0;background:none;color:var(--ink);cursor:pointer}
+.depmenu button:hover,.depmenu button:focus-visible{background:var(--surface);outline:none}.depmenu button[aria-current="true"]{background:var(--surface)}.depmenu button[aria-current="true"] b{color:var(--mark)}
+.depmenu b{font:700 18px/1.1 var(--display)}.depmenu span{font-size:12px;color:var(--muted)}
+.depmenu.cel{position:fixed;left:8px;right:8px;width:auto;bottom:calc(66px + env(safe-area-inset-bottom,0px));top:auto}
 .masflag{width:18px;height:12px;object-fit:cover;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .mxrow td{background:rgba(242,212,102,.10)}
 .f1ev,.tenev{max-width:720px;margin:0 0 12px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
@@ -1204,12 +1214,9 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="logo"><svg width="30" height="30" style="flex:none"><use href="#lp-logo"></use></svg>La <span>Pizarra</span></div>
   <nav class="tabs sports" aria-label="Deporte">
     <button aria-selected="true" data-sport="hoy">Hoy</button>
-    <button aria-selected="false" data-sport="mx">Fútbol</button>
-    <button aria-selected="false" data-sport="nfl">NFL</button>
-    <button aria-selected="false" data-sport="nba">NBA</button>
-    <button aria-selected="false" data-sport="ff">Fantasy</button>
     <button aria-selected="false" data-sport="qn">Retas</button>
-    <button aria-selected="false" data-sport="mas">F1 y tenis</button>
+    <button aria-selected="false" data-sport="favs">Favoritos</button>
+    <button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false">Deportes <svg class="depch" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
   </nav>
   <button class="acct" id="acctBtn" aria-label="Tu cuenta" hidden>Entrar</button>
 </header>
@@ -1385,6 +1392,10 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <p class="note">Super Bowls ganados por franquicia, de mayor a menor.</p>
   <div class="tbl"><table id="nflHonorsTable"></table></div>
 </section>
+<section class="panel hidden" id="favs">
+  <div class="headrow"><h2>Favoritos</h2></div>
+  <div id="favsBody"></div>
+</section>
 <section class="panel hidden" id="f1">
   <div class="headrow"><h2>Fórmula 1</h2></div>
   <div id="f1Body"></div>
@@ -1518,8 +1529,16 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </section>
 
 <nav class="bnav" aria-label="Secciones">
-  <button aria-selected="true" data-sport="hoy">Hoy</button><button aria-selected="false" data-sport="mx">Fútbol</button><button aria-selected="false" data-sport="nfl">NFL</button><button aria-selected="false" data-sport="nba">NBA</button><button aria-selected="false" data-sport="ff">Fantasy</button><button aria-selected="false" data-sport="qn">Retas</button><button aria-selected="false" data-sport="mas">Más</button>
+  <button aria-selected="true" data-sport="hoy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Hoy</button><button aria-selected="false" data-sport="qn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Retas</button><button aria-selected="false" data-sport="favs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>Favoritos</button><button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3 12h18"/></svg>Deportes</button>
 </nav>
+<div class="depmenu" id="depMenu" role="menu" aria-label="Deportes" hidden>
+  <button role="menuitem" data-dep="mx"><b>Fútbol</b><span>Liga MX, Europa, Champions y selecciones</span></button>
+  <button role="menuitem" data-dep="nfl"><b>NFL</b><span>Partidos, estadísticas y Power Ranking</span></button>
+  <button role="menuitem" data-dep="nba"><b>NBA</b><span>Partidos y tabla</span></button>
+  <button role="menuitem" data-dep="ff"><b>Fantasy NFL</b><span>Tu liga de Sleeper o ESPN, waivers e intercambios</span></button>
+  <button role="menuitem" data-dep="mas" data-dt="f1"><b>Fórmula 1</b><span>El GP de esta semana y los campeonatos</span></button>
+  <button role="menuitem" data-dep="mas" data-dt="tenis"><b>Tenis</b><span>ATP y WTA: partidos y ranking</span></button>
+</div>
 <div class="pzinst" id="pzInst" hidden role="dialog" aria-label="Instalar La Pizarra">
   <img src="/iconos/icono-192.png" alt="">
   <span class="t"><b>Instala La Pizarra</b><span id="pzInstTxt">Ábrela desde tu pantalla de inicio, como una app.</span></span>
@@ -1602,7 +1621,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5","qmx","fan","f1","tenis"];
+const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5","qmx","fan","f1","tenis","favs"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -1633,7 +1652,7 @@ function loadNflPlayoffs(){
 const FF_TABS=["fmatch","froster","fliga","fwaivers","ftrade"];
 const RETAS=["nflq","qmx","nbaq5","fan"];
 const MAS_TABS=["f1","tenis"];
-const sportOf=id=>id==="hoy"?"hoy":MAS_TABS.includes(id)?"mas":RETAS.includes(id)?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
+const sportOf=id=>id==="hoy"?"hoy":id==="favs"?"favs":MAS_TABS.includes(id)?"mas":RETAS.includes(id)?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
 // Abre una sección que necesita un paquete: "Cargando…" mientras llega y, si falla, un aviso para recargar
 function paqCarga(n,fn,donde){
   if(PAQ_OK[n]) return fn();
@@ -1642,13 +1661,14 @@ function paqCarga(n,fn,donde){
   paquete(n).then(()=>{ if(puse) txt(""); fn(); })
     .catch(()=>txt("No pudimos cargar esta sección. Revisa tu conexión y recarga la página."));
 }
-function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||RETAS.includes(id)||MAS_TABS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
-  const spSel=sportOf(id); document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===spSel));
+function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||id==="favs"||RETAS.includes(id)||MAS_TABS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
+  const spSel=sportOf(id); PZ_SP=spSel; const grp=["hoy","qn","favs"].includes(spSel)?spSel:"dep"; document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===grp)); depCierra();
   if(id==="hoy") hoyRender();
   if(typeof navPush==="function") navPush(id);
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
+  if(id==="favs") favsRender();
   if(id==="qmx") qmxAbre(); if(id==="fan") fanRender(); if(id==="f1") f1Render(); if(id==="tenis") tenRender();
   if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbaq5") q5Render();
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
@@ -1662,6 +1682,7 @@ function showSport(sp,tab){
   }
   document.querySelectorAll(".subnav").forEach(n=>n.hidden=n.dataset.for!==sp);
   if(sp==="hoy") return showTab("hoy");
+  if(sp==="favs"){ $(".nflart").toggleAttribute("hidden",true); $(".mxart").toggleAttribute("hidden",true); $("#tempWrap").hidden=true; return showTab("favs"); }
   if(sp==="mas"){ $(".nflart").toggleAttribute("hidden",true); $(".mxart").toggleAttribute("hidden",true); $("#tempWrap").hidden=true;
     let t=tab; if(!MAS_TABS.includes(t)){ try{ t=localStorage.getItem("pz_mas"); }catch(e){} } if(!MAS_TABS.includes(t)) t="f1";
     try{ localStorage.setItem("pz_mas",t); }catch(e){} return showTab(t); }
@@ -1672,7 +1693,19 @@ function showSport(sp,tab){
   $("#tempWrap").hidden=sp!=="mx"; if(sp==="mx") pintaTemporadas();
   showTab(tab||(sp==="nfl"?"nflgames":sp==="mx"?"mxexplore":sp==="nba"?"nbagames":"fmatch"));
 }
-document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.onclick=()=>{showSport(b.dataset.sport); window.scrollTo(0,0);});
+document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.onclick=ev=>{ if(b.dataset.sport==="dep"){ ev.stopPropagation(); return depToggle(b); } showSport(b.dataset.sport); window.scrollTo(0,0);});
+// Menú "Deportes" (27 oct 2026): en computadora sale debajo del botón; en el celular, arriba de la barra de abajo
+var PZ_SP="hoy";
+function depCierra(){ const m=$("#depMenu"); if(m) m.hidden=true; document.querySelectorAll('[data-sport=dep]').forEach(b=>b.setAttribute("aria-expanded","false")); }
+function depToggle(b){ const m=$("#depMenu"); if(!m.hidden) return depCierra();
+  const cel=!!b.closest(".bnav"); m.classList.toggle("cel",cel);
+  if(!cel){ const r=b.getBoundingClientRect(); m.style.top=(r.bottom+window.scrollY+8)+"px"; m.style.left=Math.max(16,Math.min(r.right-300,window.innerWidth-316))+"px"; } else { m.style.top=""; m.style.left=""; }
+  document.querySelectorAll('nav.sports [data-sport],.bnav [data-sport]').forEach(x=>{ if(x.dataset.sport!=="dep") return; x.setAttribute("aria-expanded","true"); });
+  document.querySelectorAll("#depMenu [data-dep]").forEach(x=>x.setAttribute("aria-current",String(x.dataset.dep===PZ_SP&&(PZ_SP!=="mas"||x.dataset.dt===NAV.cur))));
+  m.hidden=false; m.querySelector("button")?.focus({preventScroll:true}); }
+$("#depMenu").addEventListener("click",ev=>{ const x=ev.target.closest("[data-dep]"); if(!x) return; depCierra(); pzTrack("menu_deporte",{d:x.dataset.dt||x.dataset.dep}); showSport(x.dataset.dep,x.dataset.dt); window.scrollTo(0,0); });
+document.addEventListener("click",ev=>{ const m=$("#depMenu"); if(m&&!m.hidden&&!ev.target.closest("#depMenu")) depCierra(); });
+document.addEventListener("keydown",ev=>{ if(ev.key==="Escape") depCierra(); });
 document.querySelectorAll(".subnav button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 
 // Selector de competencia dentro de Fútbol. Solo Liga MX tiene Liguilla; las demás pestañas
@@ -1706,7 +1739,7 @@ function selectLeague(key,sinMostrar){
   $("#mxGames").innerHTML=""; $("#jSel").innerHTML=""; $("#mxMsg").textContent="Cargando partidos…";   // que no se quede la liga anterior en pantalla
   if(comercial(LEAGUES[FLIG])){ const k=FLIG; setLogo(null); smLeague(k).then(L=>{if(FLIG===k&&SM_ESCUDOS) setLogo(L.image_path);}).catch(()=>{}); }
   pintaTemporadas();
-  if(document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true"){ $("#heroTitle").textContent=flLabel(); if(LEAGUES[FLIG].nat) setLogo(pickLogo(SEL_LOGOS)); }
+  if(PZ_SP==="mx"){ $("#heroTitle").textContent=flLabel(); if(LEAGUES[FLIG].nat) setLogo(pickLogo(SEL_LOGOS)); }
   const cur=document.querySelector('.subnav[data-for=mx] button[aria-current]');
   const id=cur&&!cur.hidden&&cur.dataset.tab!=="mxexplore"?cur.dataset.tab:"mxgames";
   if(!sinMostrar) showTab(id);
@@ -3539,7 +3572,7 @@ function mxSeasonOf(key){
     if(MXS_CACHE[ck]) return MXS_CACHE[ck];
     MXS_CACHE[ck]=(async()=>{
       const {ev,L}=await smSeasonEvents(key);
-      if(FLIG===key&&document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(SM_ESCUDOS?L.image_path:null);
+      if(FLIG===key&&PZ_SP==="mx") setLogo(SM_ESCUDOS?L.image_path:null);
       const {weeks,liguilla}=mxGroups(ev,LEAGUES[key].liguilla,!!LEAGUES[key].cup);
       ev.forEach(e=>EV_IDX.set(e.id,e));
       return {ev,J:weeks,liguilla};
@@ -3554,7 +3587,7 @@ function mxSeasonOf(key){
     const base=await sb();
     const logos=base.leagues?.[0]?.logos||[];
     if(key==="mx"&&logos.length) MX_LOGOS=logos;
-    if(FLIG===key&&document.querySelector('nav.sports button[data-sport=mx]').getAttribute("aria-selected")==="true") setLogo(pickLogo(logos.length?logos:MX_LOGOS));
+    if(FLIG===key&&PZ_SP==="mx") setLogo(pickLogo(logos.length?logos:MX_LOGOS));
     const calRaw=base.leagues?.[0]?.calendar||[];
     // Champions (y copas): el calendario no es una lista de días sino de etapas con rango de fechas
     // ({label, entries:[{label, startDate, endDate}]}). Se pide cada etapa con ?dates=INICIO-FIN y, además,
@@ -5751,6 +5784,15 @@ document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return
   const v=t.closest("[data-tenv]"); if(v){ MAS.ten.vista=v.dataset.tenv; tenRender(); return; }
 });
 
+
+// ---------- Favoritos (27 oct 2026): tus equipos y jugadores en su propia pestaña ----------
+function favsRender(){ const b=$("#favsBody"); if(b) b.innerHTML=hoyFavHTML(); }
+$("#favs").addEventListener("click",ev=>{ const a=ev.target.closest("[data-hact]");
+  if(a){ if(a.dataset.hact==="fav") favAbre(); else if(a.dataset.hact==="mas"){ const k=a.dataset.hk; if(HOY.abiertos.has(k)) HOY.abiertos.delete(k); else HOY.abiertos.add(k); favsRender(); } return; }
+  const jf=ev.target.closest("[data-jf]"); if(jf) return favFicha(jf.dataset.jf);
+  const p=ev.target.closest("[data-hid]"); if(p) return hoyAbrir(p.dataset.hk,p.dataset.hid);
+  const n=ev.target.closest("[data-nid]"); if(n){ DLG_CUR={k:"nfl",id:n.dataset.nid}; return openNfl(n.dataset.nid); } });
+
 function fanRepinta(){ FAN.nube=0; FAN.eq=null; FAN.hash=null; if(!$("#fan").classList.contains("hidden")) fanRender(); }
 
 const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
@@ -6510,7 +6552,7 @@ const favLogoF=id=>`https://media.api-sports.io/football/teams/${id}.png`;
 const FAV_UI={tab:"mx",q:"",jug:null,jugP:null};
 const FAV_LIGA={mx:"Liga MX",eng:"Premier League",esp:"LaLiga",ita:"Serie A",ger:"Bundesliga",fra:"Ligue 1",por:"Liga Portugal",arg:"Argentina",sau:"Arabia Saudita"};
 function favGuarda(){ try{ localStorage.setItem(FAV_K,JSON.stringify(FAV)); }catch(e){} if(typeof acctPush==="function") acctPush(); favRepinta(); }
-function favRepinta(){ const h=$("#hoyFav"); if(h&&!$("#hoy").classList.contains("hidden")) h.innerHTML=hoyFavHTML(); }
+function favRepinta(){ const h=$("#hoyFav"); if(h&&!$("#hoy").classList.contains("hidden")) h.innerHTML=hoyFavHTML(); if(!$("#favs")?.classList.contains("hidden")) favsRender(); }
 function favToggle(k,dat){
   const grupo=k[0]==="p"?"jug":"eq", on=!FAV[grupo][k];
   if(on) FAV[grupo][k]=dat; else delete FAV[grupo][k];
@@ -7025,7 +7067,7 @@ async function precarga(){ if(PRE_CORRE) return; PRE_CORRE=true;
 // el botón ‹ de la página, el de atrás de Safari y el gesto de deslizar en el iPhone. Abrir un partido o "Tu cuenta"
 // también cuenta como un paso: atrás cierra la ventana en lugar de salirse del sitio.
 var NAV={cur:null,liga:"",restaurando:false,listo:false};   // var: showTab puede llamarse antes de esta línea
-const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5",quinielamx:"qmx",retas:"nflq",fantasychampions:"fan",champions:"fan",f1:"f1",formula1:"f1",tenis:"tenis"};
+const NAV_ALIAS={hoy:"hoy",futbol:"mxexplore",nfl:"nflgames",quiniela:"nflq",fantasy:"fmatch",botadeoro:"mxgoleo",goleo:"mxgoleo",nba:"nbagames",quinteta:"nbaq5",quinielamx:"qmx",retas:"nflq",fantasychampions:"fan",champions:"fan",f1:"f1",formula1:"f1",tenis:"tenis",favoritos:"favs",favs:"favs"};
 const NAV_NOMBRE=Object.fromEntries(Object.entries(NAV_ALIAS).map(([a,t])=>[t,a]));
 const navLiga=id=>id.startsWith("mx")?FLIG:"";
 const navHash=id=>"#"+(NAV_NOMBRE[id]||id)+(id.startsWith("mx")&&id!=="mxexplore"&&id!=="mxgoleo"?"-"+FLIG:"");
