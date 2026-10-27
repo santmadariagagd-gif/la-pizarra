@@ -5176,7 +5176,7 @@ async function q5JoinRender(){
   const id=Q5.join; let el=$("#q5Join"); if(!id){ el?.remove(); return; }
   if(!el){ el=document.createElement("div"); el.id="q5Join"; el.className="qgate"; el.style.maxWidth="640px"; $("#q5Body").before(el); }
   if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de La Quinteta</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
-  if(Q5.ids().includes(id)){ Q5.join=null; el.remove(); return; }
+  if(Q5.ids().includes(id)){ Q5.join=pzInv('q5',null); el.remove(); return; }
   let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); console.warn("Quinteta: invitación",errQ); return null; });
   if(!I&&errQ){ el.innerHTML=`<b>No pudimos abrir la invitación</b><span>Intenta de nuevo en un momento. Si sigue igual, avísale a quien te invitó (código: ${acctEsc(errQ)}).</span><button class="q5link" id="q5NoUnir">Cerrar</button>`; return; }
   el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo de La Quinteta (NBA). Arma tu quinteta y compite con ellos en su propia tabla.</span><span><button class="btn" id="q5Unir">Unirme</button> <button class="q5link" id="q5NoUnir">Ahora no</button></span>`
@@ -5199,10 +5199,10 @@ document.addEventListener("click",async ev=>{
     Q5.setIds(Q5.ids().filter(x=>x!==id)); Q5.grp=null; if(Q5.tab===id) Q5.tab="gen"; q5GrRender(); q5Tabla(); return; }
   if(t.closest?.("#q5Unir")){ const id=Q5.join; t.disabled=true;
     try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).set({nombre:grName(),unido:grFV().serverTimestamp()});
-      Q5.setIds([...Q5.ids(),id]); Q5.join=null; Q5.grp=null; Q5.tab=id; pzTrack("q5_unirse_grupo",{}); q5Render();
+      Q5.setIds([...Q5.ids(),id]); Q5.join=pzInv('q5',null); Q5.grp=null; Q5.tab=id; pzTrack("q5_unirse_grupo",{}); q5Render();
     }catch(e){ console.warn("Quinteta: no se pudo unir",e?.code||e); t.disabled=false; t.textContent="No se pudo, intenta de nuevo"; }
     return; }
-  if(t.closest?.("#q5NoUnir")){ Q5.join=null; q5JoinRender(); return; }
+  if(t.closest?.("#q5NoUnir")){ Q5.join=pzInv('q5',null); q5JoinRender(); return; }
 });
 function q5Repinta(){ Q5.grp=null; if(!$("#nbaq5").classList.contains("hidden")){ Q5.sel=null; Q5.edit=false; q5Render(); } if(!$("#nbagames").classList.contains("hidden")) $("#nbaInv").innerHTML=nbaInvHTML(); }
 
@@ -5285,6 +5285,7 @@ function qmxRender(sinRed){
       <div><b>Jornada ${j}</b><small>${cerrada?(todos&&fin?"Terminada":fin?`En juego · van ${fin} de ${J.p.length}`:"Cerrada · en juego"):`Cierra ${qmxHora(J.pr).toLowerCase()}`}</small></div>
       <div class="qmxc">${cab}</div><button id="qmxNext" aria-label="Jornada siguiente"${L[L.length-1]===j?" disabled":""}>›</button></div>
     ${!cerrada?`<div class="qmxtools"><span>L = gana el local · E = empate · V = gana la visita</span><button class="q5link" id="qmxCopia">Copiar a La Pizarra</button></div>`:""}
+    ${cerrada&&!hechos?`<p class="note">No guardaste picks para esta jornada (ni en este navegador ni en tu cuenta). El borde verde marca el resultado real.</p>`:""}
     <div class="qmxlist">${filas}</div>
     <div class="qmxdes"><div><b>Desempate: goles de la jornada</b><span>${cerrada?`Tu pronóstico: ${mios.g??"–"} · van ${goles} goles`:"¿Cuántos goles se meten en los partidos de la jornada?"}</span></div>
       <input id="qmxG" type="number" inputmode="numeric" min="0" max="60" value="${mios.g??""}"${cerrada?" disabled":""} aria-label="Goles de la jornada"></div>
@@ -5368,6 +5369,7 @@ async function qmxTabla(g){
   const F=Object.entries(T).sort((a,b)=>b[1].pts-a[1].pts||b[1].gan-a[1].gan||a[1].err-b[1].err), yo=ACCT.user.uid;
   const P=ultJ!=null?J[ultJ].p:[];
   box.innerHTML=Ls.length?`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ultJ}</th><th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map(([u,x],i)=>`<tr${u===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.n)}${u===yo?" (tú)":""}</td><td><b>${x.pts}</b></td><td>${x.ult??"–"}</td><td>${x.gan}</td></tr>`).join("")}</tbody></table></div>
+    ${M.length<2?`<p class="note"><b>Solo tú estás en este grupo.</b> Tus amigos tienen que abrir el link de invitación y tocar «Unirme» (si primero crean su cuenta, la invitación los espera). Mientras, todos salen en la pestaña General.</p>`:""}
     <h3 style="margin:18px 0 6px">Picks de la jornada ${ultJ}</h3><div class="tbl qmxpk"><table><thead><tr><th class="l">Partido</th>${M.map(m=>`<th>${acctEsc((m.nombre||"").split(" ")[0])}</th>`).join("")}</tr></thead><tbody>${P.map(r=>{ const R=qmxRes(r,QMX.vivo);
       return `<tr><td class="l">${hoyEsc(qmxEq(r[2]).ab||qmxEq(r[2]).n)} ${R.gl!=null&&(R.fin||R.vivo)?`${R.gl}-${R.gv}`:"vs"} ${hoyEsc(qmxEq(r[3]).ab||qmxEq(r[3]).n)}</td>${M.map(m=>{ const k=ultP[m.uid]?.pk?.p?.[r[0]]; return `<td class="${R.fin&&k?(k===R.r?"ok":"mal"):""}">${k||"–"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>
     <p class="note">Desempate de cada jornada: goles más cercanos. En la tabla, empate en puntos: más jornadas ganadas.</p>`
@@ -5377,7 +5379,7 @@ async function qmxJoinRender(){
   const id=QMX.join; let el=$("#qmxJoin"); if(!id){ el?.remove(); return; }
   if(!el){ el=document.createElement("div"); el.id="qmxJoin"; el.className="qgate"; el.style.maxWidth="640px"; $("#qmxBody").before(el); }
   if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de la Quiniela Liga MX</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
-  if(qmxIds().includes(id)){ QMX.join=null; el.remove(); return; }
+  if(qmxIds().includes(id)){ QMX.join=pzInv('qmx',null); el.remove(); return; }
   let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); console.warn("Quiniela MX: invitación",errQ); return null; });
   if(!I&&errQ){ el.innerHTML=`<b>No pudimos abrir la invitación</b><span>Intenta de nuevo en un momento. Si sigue igual, avísale a quien te invitó (código: ${acctEsc(errQ)}).</span><button class="q5link" id="qmxNoUnir">Cerrar</button>`; return; }
   el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo de la Quiniela Liga MX.</span><span><button class="btn" id="qmxUnir">Unirme</button> <button class="q5link" id="qmxNoUnir">Ahora no</button></span>`:`<b>Ese grupo ya no existe</b><button class="q5link" id="qmxNoUnir">Cerrar</button>`;
@@ -5398,10 +5400,10 @@ document.addEventListener("click",async ev=>{
     qmxSetIds(qmxIds().filter(x=>x!==id)); QMX.tab=null; qmxGrRender(); return; }
   if(t.closest("#qmxUnir")){ const id=QMX.join; t.disabled=true;
     try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).set({nombre:grName(),unido:grFV().serverTimestamp()});
-      qmxSetIds([...qmxIds(),id]); QMX.join=null; QMX.tab=id; QMX.vista="grupos"; pzTrack("qmx_unirse_grupo",{}); qmxJoinRender(); qmxRender();
+      qmxSetIds([...qmxIds(),id]); QMX.join=pzInv('qmx',null); QMX.tab=id; QMX.vista="grupos"; pzTrack("qmx_unirse_grupo",{}); qmxJoinRender(); qmxRender();
     }catch(e){ console.warn("Quiniela MX: no se pudo unir",e?.code||e); t.disabled=false; t.textContent="No se pudo, intenta de nuevo"; }
     return; }
-  if(t.closest("#qmxNoUnir")){ QMX.join=null; qmxJoinRender(); return; }
+  if(t.closest("#qmxNoUnir")){ QMX.join=pzInv('qmx',null); qmxJoinRender(); return; }
 });
 function qmxAbre(){ qmxJoinRender(); qmxRender(); }
 function qmxRepinta(){ QMX.cache={}; if(!$("#qmx").classList.contains("hidden")) qmxAbre(); }
@@ -5662,9 +5664,9 @@ document.addEventListener("click",async ev=>{
     try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).delete(); }catch(e){} fanSetIds(fanIds().filter(x=>x!==id)); FAN.tab=null; fanGrupos(); return; }
   if(t.closest("#fanUnir")){ const id=FAN.join; t.disabled=true;
     try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).set({nombre:grName(),unido:grFV().serverTimestamp()});
-      fanSetIds([...fanIds(),id]); FAN.join=null; FAN.tab=id; FAN.vista="grupos"; pzTrack("fan_unirse_grupo",{}); fanRender();
+      fanSetIds([...fanIds(),id]); FAN.join=pzInv('fan',null); FAN.tab=id; FAN.vista="grupos"; pzTrack("fan_unirse_grupo",{}); fanRender();
     }catch(e){ console.warn("Fantasy: no se pudo unir",e?.code||e); t.disabled=false; t.textContent="No se pudo, intenta de nuevo"; } return; }
-  if(t.closest("#fanNoUnir")){ FAN.join=null; fanJoinRender(); return; }
+  if(t.closest("#fanNoUnir")){ FAN.join=pzInv('fan',null); fanJoinRender(); return; }
 });
 document.addEventListener("input",ev=>{ if(ev.target.id!=="fanQ") return; FAN.q=ev.target.value; const y=ev.target.selectionStart; const L=$(".fanpick"); if(!L) return;
   const tmp=document.createElement("div"); tmp.innerHTML=fanLista(); L.querySelector(".fanlist").replaceWith(tmp.querySelector(".fanlist")); });
@@ -5672,7 +5674,7 @@ async function fanJoinRender(){
   const id=FAN.join; let el=$("#fanJoin"); if(!id){ el?.remove(); return; }
   if(!el){ el=document.createElement("div"); el.id="fanJoin"; el.className="qgate"; el.style.maxWidth="640px"; $("#fanBody").before(el); }
   if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo del Fantasy Champions</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
-  if(fanIds().includes(id)){ FAN.join=null; el.remove(); return; }
+  if(fanIds().includes(id)){ FAN.join=pzInv('fan',null); el.remove(); return; }
   let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); return null; });
   el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo del Fantasy Champions: tabla y mano a mano cada jornada.</span><span><button class="btn" id="fanUnir">Unirme</button> <button class="q5link" id="fanNoUnir">Ahora no</button></span>`
     :`<b>No pudimos abrir la invitación</b><span>${errQ?`Código: ${acctEsc(errQ)}. `:""}Pide a quien te invitó un link nuevo.</span><button class="q5link" id="fanNoUnir">Cerrar</button>`;
@@ -5954,7 +5956,7 @@ async function acctInit(){
     if(u&&acctOk()) grLoadIds().then(()=>{ grReconcile(true).catch(()=>{}); if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
     if(acctOnQ()) loadQuiniela();
     if(acctOnQ()&&qnView==="grupos") grRender();
-    if(!was!==!u||was&&u&&was.uid!==u.uid) fanRepinta();
+    if(!was!==!u||was&&u&&was.uid!==u.uid){ fanRepinta(); qmxRepinta(); q5Repinta(); }
   });
   document.addEventListener("visibilitychange",()=>{ if(document.hidden||!ACCT.user) return;
     if(!acctOk()) acctCheck(); else if(Date.now()-ACCT.last>60e3) acctPull(); });   // al volver del correo se revisa solo
@@ -5968,7 +5970,7 @@ async function acctHabiaSesion(){
   try{ if(indexedDB.databases){ const L=await indexedDB.databases(); return L.some(d=>d.name==="firebaseLocalStorageDb"); } }catch(e){}
   return true;   // si no se puede saber, se carga como antes
 }
-if(D.fb?.apiKey){ acctBtn(); setTimeout(()=>{ acctHabiaSesion().then(s=>{ if(s||GR.join) acctAsegura(); }); },0); }
+if(D.fb?.apiKey){ acctBtn(); setTimeout(()=>{ acctHabiaSesion().then(s=>{ if(s||GR.join||QMX.join||FAN.join||Q5.join) acctAsegura(); }); },0); }
 
 // ---------- Grupos de quiniela (NFL con y sin spread; 1 punto por acierto) ----------
 // Firestore (ver reglas en la sección 2.4 del contexto):
@@ -7060,12 +7062,18 @@ window.addEventListener("hashchange",()=>{ const {tab,liga}=navDeHash(); if(!SEC
 $("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport("hoy"); window.scrollTo(0,0); };
 // Invitación: lapizarra.mx/?g=ID
 (()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("qn","nflq"); qnSetView("grupos");}}catch(e){}})();
+// Invitaciones pendientes (27 oct 2026): se guardan en el navegador hasta que te unes o dices "Ahora no",
+// para que no se pierdan si primero tienes que crear tu cuenta o confirmar tu correo.
+function pzInv(k,v){ try{ if(v) localStorage.setItem("pz_inv_"+k,v); else localStorage.removeItem("pz_inv_"+k); }catch(e){} return v; }
+(()=>{ try{ if(location.search) return; const q=localStorage.getItem("pz_inv_qmx"), f=localStorage.getItem("pz_inv_fan"), c=localStorage.getItem("pz_inv_q5");
+  if(q){ QMX.join=q; QMX.vista="grupos"; } if(f){ FAN.join=f; FAN.vista="grupos"; } if(c) Q5.join=c;
+  const t=q?"quinielamx":f?"champions":c?"quinteta":""; if(t&&!location.hash) history.replaceState(null,"",location.pathname+"#"+t); }catch(e){} })();
 // Invitación a un grupo de la Quiniela Liga MX: lapizarra.mx/?qmxg=ID
-(()=>{try{const g=new URLSearchParams(location.search).get("qmxg"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){QMX.join=g; QMX.vista="grupos"; localStorage.setItem("pz_qliga","mx"); history.replaceState(null,"",location.pathname+"#quinielamx");}}catch(e){}})();
+(()=>{try{const g=new URLSearchParams(location.search).get("qmxg"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){QMX.join=pzInv("qmx",g); QMX.vista="grupos"; localStorage.setItem("pz_qliga","mx"); history.replaceState(null,"",location.pathname+"#quinielamx");}}catch(e){}})();
 // Invitación a un grupo del Fantasy Champions: lapizarra.mx/?fang=ID
-(()=>{try{const g=new URLSearchParams(location.search).get("fang"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){FAN.join=g; FAN.vista="grupos"; localStorage.setItem("pz_reta","fan"); history.replaceState(null,"",location.pathname+"#champions");}}catch(e){}})();
+(()=>{try{const g=new URLSearchParams(location.search).get("fang"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){FAN.join=pzInv("fan",g); FAN.vista="grupos"; localStorage.setItem("pz_reta","fan"); history.replaceState(null,"",location.pathname+"#champions");}}catch(e){}})();
 // Invitación a un grupo de La Quinteta: lapizarra.mx/?q5g=ID
-(()=>{try{const g=new URLSearchParams(location.search).get("q5g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){Q5.join=g; history.replaceState(null,"",location.pathname+"#quinteta");}}catch(e){}})();
+(()=>{try{const g=new URLSearchParams(location.search).get("q5g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){Q5.join=pzInv("q5",g); history.replaceState(null,"",location.pathname+"#quinteta");}}catch(e){}})();
 // Primera pantalla: la de la dirección (lapizarra.mx/#quiniela, #mxgames-eng…) o la portada Hoy
 (()=>{
   if(!GR.join){ const {tab,liga}=navDeHash(); if(SECTIONS.includes(tab)&&tab!=="hoy") navIr(tab,liga); else showSport("hoy"); }

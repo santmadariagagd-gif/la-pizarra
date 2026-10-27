@@ -2013,6 +2013,19 @@ except Exception as ex:
 #          goles L, goles V, estado, [pL, pE, pV] (probabilidades de las casas, % redondeado) o null], …]}}}
 # Firebase: qmx_jornadas/{s}-{j} = {s, j, primero: kickoff del primer partido} para las jornadas que no han empezado
 # (las reglas solo aceptan picks en qmx_picks/{s}-{j}_{uid} antes de "primero"; los picks ajenos se leen después).
+def _pz_err(donde,ex):
+    import traceback
+    t="".join(traceback.format_exception(type(ex),ex,ex.__traceback__)[-3:])[-600:]
+    print(donde+":",ex); _PZ_ERR.append({"donde":donde,"error":str(ex)[:300],"traza":t})
+    try:
+        r=os.path.join(aqui,'docs','datos','estado_build.json'); os.makedirs(os.path.dirname(r),exist_ok=True)
+        json.dump({"al":datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),"errores":_PZ_ERR},open(r,'w',encoding='utf-8'),ensure_ascii=False,indent=1)
+    except Exception: pass
+_PZ_ERR=[]
+try:   # se empieza limpio en cada corrida
+    os.makedirs(os.path.join(aqui,'docs','datos'),exist_ok=True)
+    json.dump({"al":datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),"errores":[]},open(os.path.join(aqui,'docs','datos','estado_build.json'),'w',encoding='utf-8'))
+except Exception: pass
 QMX_DESDE=13   # primera jornada de la quiniela (la página usa lo mismo)
 def _qmx():
     import unicodedata, re as _re
@@ -2093,11 +2106,11 @@ def _qmx():
         _r=os.path.join(aqui,'docs','datos','qmx_tabla.json'); os.makedirs(os.path.dirname(_r),exist_ok=True)
         json.dump(dict(s=slug,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j=JJ,t=T),open(_r,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
         print(f"Quiniela Liga MX: tabla general con {len(T)} jugadores; jornadas cerradas {cerr}")
-    except Exception as ex: print("Quiniela Liga MX: no se pudo armar la tabla general:",ex)
+    except Exception as ex: _pz_err("Quiniela Liga MX: tabla general",ex)
 try:
     _qmx()
 except Exception as ex:
-    print("Quiniela Liga MX: no se pudo preparar:",ex)
+    _pz_err("Quiniela Liga MX: no se pudo preparar",ex)
 
 # ----- Fantasy Champions (19 oct 2026) -----
 # Versión simple: 11 jugadores (1 POR, 4 DEF, 4 MED, 2 DEL), presupuesto 80, máximo 3 por equipo, capitán x2,
@@ -2226,7 +2239,9 @@ def _fan_ucl():
         fin=[f for f in G[k] if (f["fixture"].get("status") or {}).get("short") in AF_FIN]
         if not fin: continue
         D=[]
-        for i in range(0,len(fin),20): D+=af("fixtures",ids="-".join(str(f["fixture"]["id"]) for f in fin[i:i+20]))
+        try:
+            for i in range(0,len(fin),20): D+=af("fixtures",ids="-".join(str(f["fixture"]["id"]) for f in fin[i:i+20]))
+        except Exception as ex: _pz_err("Fantasy Champions: partidos de "+k,ex); continue
         T={}
         for f in D:
             gl=f.get("goals") or {}; h=f["teams"]["home"]["id"]; a=f["teams"]["away"]["id"]
@@ -2237,9 +2252,10 @@ def _fan_ucl():
             for Tm in f.get("players") or []:
                 tid=Tm["team"]["id"]
                 for pl in Tm.get("players") or []:
-                    pid=pl["player"]["id"]; r=jug.get(str(pid)); pos=r[3] if r else ((pl.get("statistics") or [{}])[0].get("games") or {}).get("position","M")[:1]
+                    pid=pl["player"]["id"]; r=jug.get(str(pid)); pos=r[3] if r else str(((pl.get("statistics") or [{}])[0].get("games") or {}).get("position") or "M")[:1]
                     if pos not in FAN_PG: pos="M"
-                    v=_fan_pts(pos,(pl.get("statistics") or [{}])[0],rec.get(tid,1)==0,og.get(pid,0))
+                    try: v=_fan_pts(pos,(pl.get("statistics") or [{}])[0] or {},rec.get(tid,1)==0,og.get(pid,0))
+                    except Exception as ex: _pz_err(f"Fantasy Champions: puntos de {pid} en {k}",ex); v=None
                     if v: T[str(pid)]=v
         pts[k]=T
         if x["fin"]: x["ok"]=1
@@ -2285,14 +2301,14 @@ def _fan_ucl():
                     d0=max(M.values(),key=lambda x:x.get("j") or ""); tabla[h].update(a=str(d0.get("a") or "Jugador")[:24])
             P["tabla"]=tabla
             print(f"Fantasy Champions: {len(tabla)} equipos en la tabla")
-        except Exception as ex: print("Fantasy Champions: Firebase:",ex)
+        except Exception as ex: _pz_err("Fantasy Champions: Firebase",ex)
     os.makedirs(os.path.dirname(ruta),exist_ok=True)
     json.dump(P,open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
     print(f"Fantasy Champions: {len(jug)} jugadores, {len(eq)} equipos; próxima: {J[actual]['n']}; jornadas con puntos: {[k for k in pts]}")
 try:
     _fan_ucl()
 except Exception as ex:
-    print("Fantasy Champions: no se pudo preparar:",ex)
+    _pz_err("Fantasy Champions: no se pudo preparar",ex)
 
 # ---------- Página ligera (5 oct 2026) ----------
 # Lo que solo usan algunas secciones sale de la página principal a docs/datos/paq_<nombre>.json; la página lo baja
