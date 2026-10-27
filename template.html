@@ -1147,6 +1147,10 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .eqp{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-align:left;font:inherit;width:100%}button.eqp{cursor:pointer}
 .eqpf{display:flex;flex-direction:column;font-size:13px}.eqpf small{color:var(--muted);font-size:11px}.eqpr{display:flex;align-items:center;gap:6px;min-width:0;font-size:14px;color:var(--muted)}.eqpr b{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.eqpr .tlogo{width:18px;height:18px}
 .eqpm{font:700 16px var(--display);padding:2px 8px;border-radius:8px;background:var(--bg)}.eqpm.g{background:#9FD3A8;color:#1d2a26}.eqpm.p{background:#E8826A;color:#1d2a26}
+.eqbajas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.eqbajas button{display:flex;flex-direction:column;align-items:flex-start;padding:7px 11px;border-radius:10px;border:1px solid #E8826A;background:rgba(232,130,106,.08);color:var(--ink);cursor:pointer;font:inherit;text-align:left}.eqbajas span{font-size:12px;color:#E8A48E}
+.eqsq button.baja{border-color:#E8826A}.eqsq em{font-style:normal;font-size:11px;color:#E8A48E}
+.jbaja{display:flex;flex-direction:column;gap:2px;margin:6px 0 4px;padding:10px 12px;border-radius:12px;border:1px solid #E8826A;background:rgba(232,130,106,.08)}.jbaja b{color:#E8A48E}.jbaja span{font-size:13px;color:var(--muted)}
+.eqotros{margin-top:12px}.eqotros summary{cursor:pointer;color:var(--muted);font-size:14px;margin-bottom:8px}
 .eqsq{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px}
 .eqsq button{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
 .eqsq i{width:26px;text-align:center;font:700 15px var(--display);font-style:normal;color:var(--muted)}.eqsq span{display:flex;flex-direction:column;font-size:14px;min-width:0}.eqsq small{color:var(--muted);font-size:11px}
@@ -1176,6 +1180,7 @@ nav.tabs button .depch{vertical-align:-2px;margin-left:2px;transition:transform 
 .tenj{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;line-height:1.7;color:var(--muted)}.tenj.w{color:var(--ink);font-weight:600}.tenj.mx>span:first-child{color:var(--mark)}
 .tenj .sets{display:flex;gap:8px;font:600 15px var(--display)}.tenj .sets b{min-width:10px;text-align:center;font-weight:500}.tenj .sets b.g{font-weight:700;color:var(--ink)}
 @media (max-width:420px){.f1ses{grid-template-columns:110px minmax(0,1fr)}.bnav button{font-size:11px}}
+.fanbaja{color:#E8A48E!important;font-weight:600}
 .fanmarcd{max-width:640px;margin:0 0 10px}.fanmarcd summary{cursor:pointer;color:var(--muted);font-size:13px;margin-bottom:6px}
 .fanmarc{max-width:640px;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.fanmarc span{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font:600 14px var(--display)}.fanmarc span.v{border-color:var(--mark)}.fanmarc small{color:var(--muted);font:400 11px var(--body)}
 .fanvs{max-width:640px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)}.fanvs span:last-child{text-align:right}.fanvs b{font:700 18px var(--display);color:var(--mark)}
@@ -5520,7 +5525,7 @@ function fanValida(E){ const cnt={}; for(const id of E){ const t=fanJug(id)?.tid
 const fanEsc=s=>hoyEsc(s);
 function fanChip(id,{cap=false,pts=null}={}){ const J=fanJug(id); if(!J) return "";
   const E=fanEq(J.tid);
-  return `<button class="fanj${cap?" cap":""}" data-fanj="${id}"><span class="fanf">${E[2]?`<img src="${E[2]}" alt="${fanEsc(E[1])}" loading="lazy" onerror="this.replaceWith(this.alt)">`:fanEsc(E[1])}${cap?`<i>C</i>`:""}</span><b>${fanEsc(J.n.split(" ").slice(-1)[0])}</b><small>${pts!=null?`${pts} pts`:J.p.toFixed(1)}</small></button>`; }
+  return `<button class="fanj${cap?" cap":""}" data-fanj="${id}"><span class="fanf">${E[2]?`<img src="${E[2]}" alt="${fanEsc(E[1])}" loading="lazy" onerror="this.replaceWith(this.alt)">`:fanEsc(E[1])}${cap?`<i>C</i>`:""}</span><b>${fanEsc(J.n.split(" ").slice(-1)[0])}</b><small>${pts!=null?`${pts} pts`:J.p.toFixed(1)}${FAN.D.baja?.[id]&&pts==null?` · <span class="fanbaja">baja</span>`:""}</small></button>`; }
 function fanCancha(E,opts={}){
   const filas=["F","M","D","G"].map(p=>{ const ids=E.filter(id=>fanJug(id)?.pos===p), huecos=FAN_FORM[p]-ids.length;
     return `<div class="fanfila">${ids.map(id=>fanChip(id,{cap:opts.c===id,pts:opts.pts?opts.pts(id):null})).join("")}${opts.edit?Array.from({length:Math.max(0,huecos)},()=>`<button class="fanj vac" data-fanv="${p}"><span class="fanf">+</span><b>${FAN_POSN[p]}</b><small>libre</small></button>`).join(""):""}</div>`; }).join("");
@@ -5544,6 +5549,7 @@ function fanOnce(){
   const J=FAN.D.j[k], E=FAN.eq, gasto=fanGasto(E), err=fanValida(E), cam=fanCambios(k), guardado=fanLs()[fanJid(k)];
   const sel=FAN.sel&&E.includes(FAN.sel)?FAN.sel:null;
   const menu=sel?`<div class="fanmenu"><b>${fanEsc(fanJug(sel).n)}</b><span>${FAN_POSL[fanJug(sel).pos]} · ${fanEsc(fanEq(fanJug(sel).tid)[0])} · ${fanJug(sel).p.toFixed(1)}</span>
+      ${FAN.D.baja?.[sel]?`<span class="fanbaja">Baja: ${fanEsc(bajaEs(FAN.D.baja[sel][0],FAN.D.baja[sel][1]))}. Considera cambiarlo.</span>`:""}
       <div><button class="q5save" data-fanact="cap"${FAN.c===sel?" disabled":""}>${FAN.c===sel?"Es tu capitán":"Hacer capitán"}</button><button class="q5link" data-fanact="cambiar">Cambiar</button><button class="q5link" data-fanact="quitar">Quitar</button></div></div>`:"";
   const kv=fanJ().find(fanEnJuego);
   box.innerHTML=`${kv?`<div class="qgate" style="max-width:640px"><b>${fanEsc(FAN.D.j[kv].n)} en juego</b><span>Tus puntos se actualizan cada minuto.</span><button class="btn" data-fanir="puntos">Ver mis puntos en vivo</button></div>`:""}<p class="note"><b>${fanEsc(J.n)}</b> · cierra el ${fanCuando(J.pr)}</p>
@@ -5567,8 +5573,8 @@ function fanLista(){
     <input id="fanQ" type="search" placeholder="Busca jugador o equipo" value="${fanEsc(FAN.q||"")}" aria-label="Buscar jugador">
     <p class="note" style="margin:6px 0">Te quedan ${resto.toFixed(1)} · ordenados por los puntos que llevan en la Champions</p>
     <div class="fanlist">${L.map(J=>{ const ya=E.includes(J.id), no=ya||J.p>resto+1e-9||(cnt[J.tid]||0)>=3, s=FAN.est[J.id];
-      const det=s?[s.g?`${s.g} gol${s.g>1?"es":""}`:"",s.as?`${s.as} asist.`:"",s.cs&&"GD".includes(J.pos)?`${s.cs} en cero`:"",s.min?`${s.min}'`:""].filter(Boolean).join(" · "):"Sin minutos en la Champions";
-      return `<button data-fanadd="${J.id}"${no?' class="no" disabled':""}><span class="fanf">${fanEq(J.tid)[2]?`<img src="${fanEq(J.tid)[2]}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:""}</span><span><b>${fanEsc(J.n)}</b><small>${fanEsc(fanEq(J.tid)[1])} · ${fanEsc(det)}</small></span><b>${J.p.toFixed(1)}</b><b class="y">${FAN.tot[J.id]||0}</b></button>`; }).join("")||`<p class="note">Nadie con ese nombre.</p>`}</div></div>`;
+      const bj=FAN.D.baja?.[J.id], det=(bj?`Baja: ${bajaEs(bj[0],bj[1])} · `:"")+(s?[s.g?`${s.g} gol${s.g>1?"es":""}`:"",s.as?`${s.as} asist.`:"",s.cs&&"GD".includes(J.pos)?`${s.cs} en cero`:"",s.min?`${s.min}'`:""].filter(Boolean).join(" · "):"Sin minutos en la Champions");
+      return `<button data-fanadd="${J.id}"${no?' class="no" disabled':""}><span class="fanf">${fanEq(J.tid)[2]?`<img src="${fanEq(J.tid)[2]}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:""}</span><span><b>${fanEsc(J.n)}</b><small${bj?' class="fanbaja"':""}>${fanEsc(fanEq(J.tid)[1])} · ${fanEsc(det)}</small></span><b>${J.p.toFixed(1)}</b><b class="y">${FAN.tot[J.id]||0}</b></button>`; }).join("")||`<p class="note">Nadie con ese nombre.</p>`}</div></div>`;
 }
 // ---- Puntos en vivo (27 oct 2026): durante la jornada se piden los partidos a API-Football cada minuto y se calculan
 // con las mismas reglas que usa GitHub. Al día siguiente quedan los oficiales (datos/fan_ucl.json).
@@ -5816,6 +5822,12 @@ $("#favs").addEventListener("click",ev=>{ const a=ev.target.closest("[data-hact]
 // la del jugador (en la misma ventana; "‹ Volver" regresa a la anterior). Equipo: teams, fixtures (últimos y próximos),
 // standings y players/squads de API-Football vía el Worker. Jugador: favFicha generalizada (todas las competiciones).
 const FICHA={pila:[],cache:{}};
+// Bajas (27 oct 2026): API-Football (injuries) marca por partido quién no juega y por qué
+const BAJA_ES=[[/red card/i,"Suspendido (roja)"],[/yellow/i,"Suspendido (amarillas)"],[/suspen/i,"Suspendido"],[/knee/i,"Lesión de rodilla"],[/hamstring/i,"Lesión en el isquiotibial"],
+  [/muscle/i,"Lesión muscular"],[/thigh/i,"Lesión en el muslo"],[/calf/i,"Lesión en la pantorrilla"],[/groin/i,"Lesión en la ingle"],[/ankle/i,"Lesión de tobillo"],[/foot/i,"Lesión en el pie"],
+  [/hip/i,"Lesión de cadera"],[/back/i,"Lesión de espalda"],[/shoulder/i,"Lesión de hombro"],[/achilles/i,"Lesión en el tendón de Aquiles"],[/broken|fracture/i,"Fractura"],[/cruciate|acl/i,"Lesión de ligamento cruzado"],
+  [/ligament/i,"Lesión de ligamentos"],[/concussion|head/i,"Golpe en la cabeza"],[/knock/i,"Golpe"],[/ill|virus|flu/i,"Enfermedad"],[/surgery/i,"Operación"],[/injury/i,"Lesión"],[/personal|family/i,"Motivos personales"],[/international/i,"Con su selección"],[/coach|inactive/i,"Decisión técnica"]];
+const bajaEs=(r,t)=>{ const x=BAJA_ES.find(([re])=>re.test(r||"")); return (x?x[1]:(r||"Baja"))+(/questionable/i.test(t||"")?" (en duda)":""); };
 const fichaTemp=()=>new Date().getMonth()>=6?new Date().getFullYear():new Date().getFullYear()-1;
 const fichaLg=afId=>Object.keys(LEAGUES).find(k=>String(LEAGUES[k].af)===String(afId))||null;
 const fichaAf=(r,q)=>FICHA.cache[r+"?"+q]||(FICHA.cache[r+"?"+q]=afList(r,q).catch(e=>{ delete FICHA.cache[r+"?"+q]; return null; }));
@@ -5830,8 +5842,8 @@ const FICHA_POS={Goalkeeper:"Porteros",Defender:"Defensas",Midfielder:"Medios",A
 async function eqFicha(id,nueva=true){
   id=String(id); fichaAbre(eqFicha,[id],nueva); pzTrack("ficha_equipo",{});
   const T=fichaTemp();
-  const [I,U,P,S,Q]=await Promise.all([fichaAf("teams",`id=${id}`),fichaAf("fixtures",`team=${id}&last=6&${AF_TZ}`),fichaAf("fixtures",`team=${id}&next=4&${AF_TZ}`),
-    fichaAf("standings",`team=${id}&season=${T}`),fichaAf("players/squads",`team=${id}`)]);
+  const [I,U,P,S,Q,L]=await Promise.all([fichaAf("teams",`id=${id}`),fichaAf("fixtures",`team=${id}&last=6&${AF_TZ}`),fichaAf("fixtures",`team=${id}&next=4&${AF_TZ}`),
+    fichaAf("standings",`team=${id}&season=${T}`),fichaAf("players/squads",`team=${id}`),fichaAf("injuries",`team=${id}&season=${T}`)]);
   if(FICHA.actual?.[0]!==eqFicha||FICHA.actual[1][0]!==id) return;
   const t=I?.[0]?.team, v=I?.[0]?.venue; if(!t){ $("#gbody").innerHTML=`${fichaVolver()}<p class="note">No pudimos cargar este equipo. Intenta de nuevo en un momento.</p>`; return; }
   const nom=esTeam(afNombre(t)), sel=!!t.national;
@@ -5847,15 +5859,37 @@ async function eqFicha(id,nueva=true){
     const abre=k&&(comercial(LEAGUES[k])||LEAGUES[k].nat)?` data-hk="${k}" data-hid="${f.fixture.id}"`:"";
     return `<${abre?"button":"div"} class="eqp"${abre}><span class="eqpf">${hoyEsc(fecha)}<small>${hoyEsc(fichaComp(f.league?.name))}</small></span><span class="eqpr">${local?"vs":"en"} ${riv?.logo&&SM_ESCUDOS?logoImg(riv.logo,"tlogo"):""}<b data-eqf="${riv?.id}">${hoyEsc(esTeam(afNombre(riv)))}</b></span>${fut?"":`<span class="eqpm ${res}">${mio??"–"}-${suyo??"–"}</span>`}</${abre?"button":"div"}>`; };
   const ult=(U||[]).slice().sort((a,b)=>b.fixture.timestamp-a.fixture.timestamp), prox=(P||[]).slice().sort((a,b)=>a.fixture.timestamp-b.fixture.timestamp);
-  const J=Q?.[0]?.players||[], grupos=["Goalkeeper","Defender","Midfielder","Attacker"].map(p=>[p,J.filter(x=>x.position===p)]).filter(([,L])=>L.length);
-  const plantel=grupos.map(([p,L])=>`<h4 class="stat-cat">${FICHA_POS[p]}</h4><div class="eqsq">${L.map(x=>`<button data-jgf="${x.id}" data-jgn="${hoyEsc(x.name||"")}"><i>${x.number??""}</i><span>${hoyEsc(x.name||"")}${x.age?`<small>${x.age} años</small>`:""}</span></button>`).join("")}</div>`).join("");
+  // Plantel (27 oct 2026): el de API-Football (players/squads) mezcla a los de las fuerzas básicas y repite dorsales, así que
+  // el plantel principal sale de las convocatorias de sus últimos partidos (dorsal y posición de esa alineación); los demás
+  // registrados quedan aparte, sin dorsal.
+  const J=Q?.[0]?.players||[], edad=Object.fromEntries(J.map(x=>[x.id,x.age])), sqNom=Object.fromEntries(J.map(x=>[x.id,x.name]));
+  const terminados=ult.filter(f=>["FT","AET","PEN"].includes(f.fixture?.status?.short)||f.goals?.home!=null).slice(0,6);
+  const F=terminados.length?await fichaAf("fixtures",`ids=${terminados.map(f=>f.fixture.id).join("-")}`):null;
+  if(FICHA.actual?.[0]!==eqFicha||FICHA.actual[1][0]!==id) return;
+  const C=new Map(), PZ={G:"Goalkeeper",D:"Defender",M:"Midfielder",F:"Attacker"}; let nF=0;
+  for(const f of F||[]){ const L=(f.lineups||[]).find(l=>String(l.team?.id)===id); if(!L) continue; nF++;
+    [...(L.startXI||[]).map(x=>[x,1]),...(L.substitutes||[]).map(x=>[x,0])].forEach(([x,tit])=>{ const p=x.player||{}; if(!p.id) return;
+      const c=C.get(p.id)||{id:p.id,name:sqNom[p.id]||p.name,number:p.number,pos:{},conv:0,tit:0,age:edad[p.id]}; c.conv++; c.tit+=tit; if(p.pos) c.pos[p.pos]=(c.pos[p.pos]||0)+1; if(c.number==null) c.number=p.number; C.set(p.id,c); }); }
+  const sqPos=Object.fromEntries(J.map(x=>[x.id,x.position]));
+  // bajas: lo que API-Football reporta para su próximo partido o, si todavía no hay reporte, para el último
+  const fxB=new Set([prox[0]?.fixture?.id,ult[0]?.fixture?.id].filter(Boolean)), BJ=new Map();
+  for(const x of L||[]){ if(!fxB.has(x.fixture?.id)||String(x.team?.id)!==id) continue; const o=BJ.get(x.player.id); if(!o||x.fixture.timestamp>o.fixture.timestamp) BJ.set(x.player.id,x); }
+  if([...BJ.values()].some(x=>x.fixture.id===prox[0]?.fixture?.id)) for(const [k,x] of BJ) if(x.fixture.id!==prox[0]?.fixture?.id) BJ.delete(k);
+  const prin=[...C.values()].map(c=>({...c,position:sqPos[c.id]||PZ[Object.entries(c.pos).sort((a,b)=>b[1]-a[1])[0]?.[0]]||"Midfielder"}));
+  const lesion=prin.length>=11?J.filter(x=>!C.has(x.id)&&BJ.has(x.id)&&!/card|suspen/i.test(BJ.get(x.id).player.reason||"")).map(x=>({...x,conv:null})):[];
+  const base=prin.length>=11?[...prin,...lesion]:J, otros=prin.length>=11?J.filter(x=>!C.has(x.id)&&!lesion.includes(x)&&!lesion.some(y=>y.id===x.id)):[];
+  const btn=x=>`<button data-jgf="${x.id}" data-jgn="${hoyEsc(x.name||"")}"${BJ.has(x.id)?' class="baja"':""}><i>${x.number??""}</i><span>${hoyEsc(x.name||"")}${BJ.has(x.id)?`<em>${hoyEsc(bajaEs(BJ.get(x.id).player.reason,BJ.get(x.id).player.type))}</em>`:""}<small>${[x.age?`${x.age} años`:"",x.conv!=null?(x.tit?`titular en ${x.tit} de ${nF}`:`banca en ${x.conv} de ${nF}`):""].filter(Boolean).join(" · ")}</small></span></button>`;
+  const grupos=["Goalkeeper","Defender","Midfielder","Attacker"].map(p=>[p,base.filter(x=>x.position===p).sort((a,b)=>(b.tit||0)-(a.tit||0)||(b.conv||0)-(a.conv||0)||(a.number??99)-(b.number??99))]).filter(([,L])=>L.length);
+  const plantel=grupos.map(([p,L])=>`<h4 class="stat-cat">${FICHA_POS[p]}</h4><div class="eqsq">${L.map(btn).join("")}</div>`).join("")
+    +(otros.length?`<details class="eqotros"><summary>Otros ${otros.length} registrados (fuerzas básicas, lesionados o sin jugar)</summary><div class="eqsq">${otros.map(x=>btn({...x,number:null,conv:null})).join("")}</div></details>`:"");
   $("#gbody").innerHTML=`<div class="eqfi">${fichaVolver()}
     <div class="eqhead">${t.logo&&SM_ESCUDOS?`<img src="${t.logo}" alt="" onerror="this.remove()">`:""}<div><h2>${hoyEsc(nom)}</h2><p class="sub">${hoyEsc([sel?"Selección":esTeam(t.country||""),v?.name,v?.city,t.founded?`Fundado en ${t.founded}`:""].filter(Boolean).join(" · "))}</p></div></div>
     ${fichaStar((sel&&id==="16")?"f16":"f"+id,{n:nom,logo:t.logo,lg:sel?"sel":kPrin||""},"al equipo")}
     ${pos?`<h4 class="stat-cat">Temporada</h4>${pos}`:""}
+    ${BJ.size?`<h4 class="stat-cat">Bajas ${[...BJ.values()].some(x=>x.fixture.id===prox[0]?.fixture?.id)?"para su próximo partido":"en su último partido"}</h4><div class="eqbajas">${[...BJ.values()].map(x=>`<button data-jgf="${x.player.id}" data-jgn="${hoyEsc(sqNom[x.player.id]||x.player.name)}"><b>${hoyEsc(sqNom[x.player.id]||x.player.name)}</b><span>${hoyEsc(bajaEs(x.player.reason,x.player.type))}</span></button>`).join("")}</div>`:""}
     ${prox.length?`<h4 class="stat-cat">Próximos partidos</h4><div class="eqlist">${prox.map(f=>fila(f,true)).join("")}</div>`:""}
     ${ult.length?`<h4 class="stat-cat">Últimos resultados</h4><div class="eqlist">${ult.map(f=>fila(f,false)).join("")}</div>`:""}
-    ${plantel?`<h4 class="stat-cat" style="margin-top:18px">Plantel</h4><p class="note" style="margin:0 0 6px">Toca a un jugador para ver su ficha.</p>${plantel}`:""}
+    ${plantel?`<h4 class="stat-cat" style="margin-top:18px">Plantel</h4><p class="note" style="margin:0 0 6px">${prin.length>=11?`Los convocados en sus últimos ${nF} partidos, con el dorsal que usaron. `:""}Toca a un jugador para ver su ficha.</p>${plantel}`:""}
     <p class="note">Datos: API-Football.</p></div>`;
 }
 async function jugFicha(id,x={},nueva=true){
@@ -6759,7 +6793,7 @@ async function fichaAF(id){   // todas las competiciones de la temporada (club y
 async function favFichaPinta(id,x){
   const k="p"+id, LG=["mx","eng","esp","ita","ger","fra","por"];
   if(LG.includes(x.lg)){ favJugLiga(x.lg); await FAV_JFP[x.lg]; }
-  const R=await fichaAF(id);
+  const [R,LJ]=await Promise.all([fichaAF(id),fichaAf("injuries",`player=${id}&season=${fichaTemp()}`)]);
   if(FICHA.actual?.[0]!==jugFicha||+FICHA.actual[1][0]!==id) return;
   if(!x.n) x={...x,n:R?.[0]?.player?.name||""}; const ape=(x.n||"").split(" ").slice(-1)[0];
   const J=FAV_JF[x.lg], f=J?.filas?.find(r=>r.id===id), eq=f?J.equipos?.[f.t]:null;
@@ -6801,6 +6835,8 @@ async function favFichaPinta(id,x){
   const foto=P?.player?.photo, tidN=tid?String(tid):"", clubN=esTeam(afNombre({id:tidN,name:nomClub}));
   $("#gbody").innerHTML=`<div class="jfi">${fichaVolver()}<div class="eqhead">${foto?`<img class="jfoto" src="${foto}" alt="" onerror="this.remove()">`:""}<div><h2>${hoyEsc(x.n)}</h2><p class="sub">${tidN?`<button class="filink" data-eqf="${tidN}">${hoyEsc(clubN)}</button>`:hoyEsc(clubN)}${hoyEsc([posTxt,P?.player?.age?`${P.player.age} años`:"",P?.player?.nationality?esTeam(P.player.nationality):""].filter(Boolean).map(s=>" · "+s).join(""))}</p></div></div>
     ${fichaStar(k,{n:x.n,club:nomClub,lg:x.lg||""},"al jugador")}
+    ${(()=>{ const b=(LJ||[]).slice().sort((a,b)=>b.fixture.timestamp-a.fixture.timestamp)[0]; if(!b||b.fixture.timestamp*1000<Date.now()-12*86400e3) return "";
+      return `<div class="jbaja"><b>${hoyEsc(bajaEs(b.player.reason,b.player.type))}</b><span>Reportado como baja para el partido del ${new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"long"}).format(new Date(b.fixture.timestamp*1000))}.</span></div>`; })()}
     ${st?`<h4 class="stat-cat">${filas.length?"Esta temporada · todas las competiciones":"Esta temporada · liga"}</h4><div class="jfg">${st}</div>`:`<p class="note">Todavía no tenemos sus estadísticas de esta temporada.</p>`}
     ${desglose}${extra?`<div class="jfx" style="margin-top:14px">${extra}</div>`:""}</div>`;
 }

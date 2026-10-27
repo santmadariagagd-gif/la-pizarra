@@ -2259,6 +2259,16 @@ def _fan_ucl():
                     if v: T[str(pid)]=v
         pts[k]=T
         if x["fin"]: x["ok"]=1
+    # bajas (27 oct 2026): lesionados y suspendidos que API-Football reporta para la jornada que viene (o la última)
+    try:
+        ia=orden.index(actual); fx_b={f for k in orden[max(0,ia-1):ia+1] for f in J[k]["f"]}; baja={}
+        for x in af("injuries",league=2,season=s):
+            fid=(x.get("fixture") or {}).get("id"); pid=str((x.get("player") or {}).get("id") or "")
+            if fid not in fx_b or not pid: continue
+            ts=(x.get("fixture") or {}).get("timestamp") or 0
+            if pid not in baja or ts>baja[pid][2]: baja[pid]=[(x["player"].get("reason") or "")[:40],(x["player"].get("type") or "")[:20],ts]
+        P["baja"]=baja
+    except Exception as ex: _pz_err("Fantasy Champions: bajas",ex)
     P.update(s=s,desde=FAN_DESDE,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j={k:J[k] for k in orden},eq=eq,
              jug=sorted(jug.values(),key=lambda r:(-r[4],r[1])),pts=pts)
     # tabla general (con la llave de administrador) y jornadas abiertas en Firebase
