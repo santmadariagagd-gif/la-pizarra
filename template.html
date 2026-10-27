@@ -1134,6 +1134,23 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .fanlist span{min-width:0;display:flex;flex-direction:column}.fanlist span b{font:600 16px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fanlist small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fanlist>button>b{font:700 17px var(--display);text-align:right}.fanlist>button>b.y{color:var(--mark)}
 .fanreglas{max-width:640px;margin-top:14px;padding:10px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.5}.fanreglas summary{cursor:pointer;color:var(--ink);font:700 16px var(--display)}
+/* Fichas de equipos y jugadores (27 oct 2026) */
+[data-eqf],[data-jgf]{cursor:pointer}td .nm[data-eqf]:hover,td .nm[data-jgf]:hover,.deq b[data-eqf]:hover{text-decoration:underline;text-decoration-color:var(--mark);text-underline-offset:3px}
+.eqhead{display:flex;align-items:center;gap:14px;margin:4px 0 10px}.eqhead img{width:56px;height:56px;object-fit:contain}.eqhead img.jfoto{border-radius:50%;object-fit:cover;background:var(--surface)}.eqhead h2{margin:0}.eqhead .sub{margin:2px 0 0}
+.fivolver{border:0;background:none;color:var(--mark);font:600 15px var(--body);padding:4px 0;cursor:pointer;margin-bottom:4px}
+.fistar{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--mark);background:none;color:var(--mark);font:600 14px var(--body);cursor:pointer;margin-bottom:6px}.fistar[aria-pressed="true"]{background:var(--mark);color:#1d2a26}
+.filink{border:0;background:none;padding:0;color:var(--mark);font:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.pjcard .filink{margin-top:8px;font-weight:600}
+.eqpos{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.eqpos>b{font:700 26px var(--display);color:var(--mark)}.eqpos span{display:flex;flex-direction:column}.eqpos small{color:var(--muted);font-size:12px}
+.eqforma{flex-direction:row!important;gap:3px}.eqforma i{width:20px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font:700 11px var(--body);font-style:normal;color:#1d2a26}.eqforma i.g{background:#9FD3A8}.eqforma i.e{background:#C9D6CF}.eqforma i.p{background:#E8826A}
+.eqlist{display:flex;flex-direction:column;gap:4px}
+.eqp{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-align:left;font:inherit;width:100%}button.eqp{cursor:pointer}
+.eqpf{display:flex;flex-direction:column;font-size:13px}.eqpf small{color:var(--muted);font-size:11px}.eqpr{display:flex;align-items:center;gap:6px;min-width:0;font-size:14px;color:var(--muted)}.eqpr b{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.eqpr .tlogo{width:18px;height:18px}
+.eqpm{font:700 16px var(--display);padding:2px 8px;border-radius:8px;background:var(--bg)}.eqpm.g{background:#9FD3A8;color:#1d2a26}.eqpm.p{background:#E8826A;color:#1d2a26}
+.eqsq{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px}
+.eqsq button{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.eqsq i{width:26px;text-align:center;font:700 15px var(--display);font-style:normal;color:var(--muted)}.eqsq span{display:flex;flex-direction:column;font-size:14px;min-width:0}.eqsq small{color:var(--muted);font-size:11px}
+@media (max-width:420px){.eqp{grid-template-columns:86px minmax(0,1fr) auto}}
 /* Barra principal (27 oct 2026): Hoy, Retas, Favoritos y Deportes (menú) */
 nav.tabs button .depch{vertical-align:-2px;margin-left:2px;transition:transform .15s}nav.tabs button[aria-expanded="true"] .depch{transform:rotate(180deg)}
 .bnav button svg{display:block}
@@ -3898,7 +3915,8 @@ function detCard(R,H,A){
   }
   return `<div class="pjcard ${lado}"><div class="pjtop"><span class="pjn">${detEsc(p.jersey||"")}</span><span><b>${detEsc(p.athlete?.displayName||"")}</b><small>${detEsc(eq)}${pos?` · ${pos}`:""}</small></span><button class="pjx" data-pjx aria-label="Cerrar">×</button></div>
     <div class="hseg">${[["partido","En este partido"],["temporada","En la temporada"]].map(([k,l])=>`<button data-pjm="${k}" aria-pressed="${DET.modo===k}">${l}</button>`).join("")}</div>
-    ${nums?`<div class="pjnums">${nums.map(([n,v])=>`<div><b>${detEsc(v)}</b><span>${n}</span></div>`).join("")}</div>${nota?`<p class="note">${detEsc(nota)}</p>`:""}`:`<p class="note">${vacio}</p>`}</div>`;
+    ${nums?`<div class="pjnums">${nums.map(([n,v])=>`<div><b>${detEsc(v)}</b><span>${n}</span></div>`).join("")}</div>${nota?`<p class="note">${detEsc(nota)}</p>`:""}`:`<p class="note">${vacio}</p>`}
+    ${DET.af&&/^\d+$/.test(pid)?`<button class="filink" data-jgf="${pid}" data-jgn="${detEsc(p.athlete?.displayName||"")}">Ver su ficha completa ›</button>`:""}</div>`;
 }
 // Al pedir la temporada: primero el archivo de la liga; si el jugador no está ahí, API-Football
 async function detTempCarga(){
@@ -3935,7 +3953,7 @@ function mxDetHTML(e,c,H,A,sm){
   const st=e.status?.type?.state, pre=st==="pre", vivo=st==="in", jug=!pre;
   const T=x=>({n:esTeam(x.team?.shortDisplayName||x.team?.displayName),logo:x.team?.logo});
   const tH=T(H), tA=T(A), hs=c.teams[0].score, as=c.teams[1].score;
-  const K=detEventos(sm,H), goles=K.filter(k=>/Gol|Autogol/.test(k.tp)); DET.K=K; DET.est=st;
+  const K=detEventos(sm,H), goles=K.filter(k=>/Gol|Autogol/.test(k.tp)); DET.K=K; DET.est=st; DET.af=!!sm?._f;
   const sem=["mx","mundo"].map(s=>D.semana?.[s]).find(S=>S&&String(S.id)===String(e.id));
   const et=hoyEtapa([e],FLIG);
   // Encabezado
@@ -3952,7 +3970,7 @@ function mxDetHTML(e,c,H,A,sm){
   const cuenta=pre&&!c.tbd?`<div class="dcount"><span>Empieza en</span><span class="dcd" id="dcd"></span></div>`:"";
   const sede=e.competitions?.[0]?.venue?.fullName||"";
   const head=`<div class="dhead"><div class="dtop">${chip}<span>${detEsc(e._comp||LEAGUES[FLIG]?.label||"")}${et?` · ${detEsc(et)}`:""}</span>${sem?.badge?`<span class="badge">${detEsc(sem.badge)}</span>`:""}</div>
-    <div class="deq"><div class="dt">${logoImg(tH.logo)}<b class="${c.teams[0].win?"w":""}">${detEsc(tH.n)}</b>${jug?`<small>${gol(true)}</small>`:""}</div><div class="dc">${centro}</div><div class="dt">${logoImg(tA.logo)}<b class="${c.teams[1].win?"w":""}">${detEsc(tA.n)}</b>${jug?`<small>${gol(false)}</small>`:""}</div></div>
+    <div class="deq"><div class="dt">${logoImg(tH.logo)}<b class="${c.teams[0].win?"w":""}"${sm?._f&&H.team?.id?` data-eqf="${H.team.id}"`:""}>${detEsc(tH.n)}</b>${jug?`<small>${gol(true)}</small>`:""}</div><div class="dc">${centro}</div><div class="dt">${logoImg(tA.logo)}<b class="${c.teams[1].win?"w":""}"${sm?._f&&A.team?.id?` data-eqf="${A.team.id}"`:""}>${detEsc(tA.n)}</b>${jug?`<small>${gol(false)}</small>`:""}</div></div>
     ${cuenta}${linea}<div class="dpie"><span>${detEsc(sede)}</span>${vivo?`<span id="dupd">Actualizado hace un momento</span>`:""}</div></div>`;
   // Estadísticas
   const bt=sm?.boxscore?.teams||[], hT=bt.find(x=>x.homeAway==="home"), aT=bt.find(x=>x.homeAway==="away");
@@ -4513,13 +4531,13 @@ async function loadMxTable(){
         $("#mxtTitle").textContent=`Grupos · ${flLabel()}`;
         $("#mxTable").innerHTML=""; $("#mxTable").closest(".tbl").style.display="none";
         const grupos=[...new Map(rows.map(r=>[r.grupo,1])).keys()];
-        const fila=(r,i)=>`<tr><td class="tm">${i+1}</td><td class="l">${r.logo?`<img src="${r.logo}" alt="" width="20" height="20" style="vertical-align:-4px;margin-right:8px">`:""}<span class="nm">${r.n}</span></td><td>${r.pts}</td><td>${r.pj}</td><td>${r.g}</td><td>${r.e}</td><td>${r.p}</td><td>${r.gf}</td><td>${r.gc}</td><td>${r.dg==null?"–":(r.dg>0?"+":"")+r.dg}</td></tr>`;
+        const fila=(r,i)=>`<tr><td class="tm">${i+1}</td><td class="l">${r.logo?`<img src="${r.logo}" alt="" width="20" height="20" style="vertical-align:-4px;margin-right:8px">`:""}<span class="nm"${usaAF(LEAGUES[FLIG])&&r.id?` data-eqf="${r.id}"`:""}>${r.n}</span></td><td>${r.pts}</td><td>${r.pj}</td><td>${r.g}</td><td>${r.e}</td><td>${r.p}</td><td>${r.gf}</td><td>${r.gc}</td><td>${r.dg==null?"–":(r.dg>0?"+":"")+r.dg}</td></tr>`;
         G.innerHTML=grupos.map(g=>`<h3>${g.replace(/^Group /,"Grupo ")}</h3><div class="tbl"><table><thead><tr><th></th><th class="l">Equipo</th><th>Pts</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>Dif.</th></tr></thead><tbody>${rows.filter(r=>r.grupo===g).map(fila).join("")}</tbody></table></div>`).join("");
         MX_TABLE_ROWS=rows; return;
       }
       G.innerHTML=""; $("#mxTable").closest(".tbl").style.display="";
       const st={k:"rk",dir:"asc",render(){table($("#mxTable"),[
-        {k:"n",h:"Equipo",l:1,f:r=>`${r.logo?`<img src="${r.logo}" alt="" width="20" height="20" style="vertical-align:-4px;margin-right:8px">`:""}<span class="nm">${r.n}</span>`,asc:1},
+        {k:"n",h:"Equipo",l:1,f:r=>`${r.logo?`<img src="${r.logo}" alt="" width="20" height="20" style="vertical-align:-4px;margin-right:8px">`:""}<span class="nm"${usaAF(LEAGUES[FLIG])&&r.id?` data-eqf="${r.id}"`:""}>${r.n}</span>`,asc:1},
         {k:"pts",h:"Puntos"},{k:"pj",h:"PJ"},{k:"g",h:"G"},{k:"e",h:"E"},{k:"p",h:"P",asc:1},{k:"gf",h:"GF"},{k:"gc",h:"GC",asc:1},{k:"dg",h:"Dif.",f:r=>r.dg==null?"–":(r.dg>0?"+":"")+r.dg}],rows,this)}};
       st.render(); MX_TABLE_ROWS=rows; if(LEAGUES[FLIG].liguilla&&mxLgLoaded) renderMxBracket(rows);
       return;
@@ -4684,7 +4702,7 @@ const mxpState={k:"g",dir:"desc",pos:"ALL",team:"",q:"",render(){
   const rows=MXP.filter(r=>(this.pos==="ALL"||r.pg===this.pos)&&(!this.team||r.t===this.team)&&(!q||r.n.toLowerCase().includes(q)));
   const has=k=>MXP.some(r=>r[k]!=null);
   const gk=this.pos==="G";
-  const cols=[{k:"n",h:"Jugador",l:1,f:r=>`<span class="nm">${r.n}</span><span class="tm">${r.t}${r.pos?" · "+r.pos:""}</span>`,asc:1},
+  const cols=[{k:"n",h:"Jugador",l:1,f:r=>`<span class="nm"${comercial(LEAGUES[FLIG])&&r.id?` data-jgf="${r.id}" data-jgn="${hoyEsc(r.n)}"`:""}>${r.n}</span><span class="tm">${r.t}${r.pos?" · "+r.pos:""}</span>`,asc:1},
     {k:"ap",h:"PJ"},{k:"tit",h:"Titular"},{k:"min",h:"Minutos",f:r=>fmt(r.min)},
     ...(gk?[{k:"sv",h:"Atajadas"},{k:"gc",h:"Goles recibidos",asc:1},{k:"cs",h:"Porterías en cero"}]
           :[{k:"g",h:"Goles"},{k:"as",h:"Asistencias"},{k:"ga",h:"G + A"},{k:"g90",h:"Goles por 90",f:r=>fmt(r.g90,2)},{k:"sh",h:"Tiros"},{k:"sot",h:"Tiros a gol"},{k:"acc",h:"% a gol",f:r=>r.acc==null?"–":Math.round(r.acc*100)+"%"},{k:"fs",h:"Faltas recibidas"}]),
@@ -5793,6 +5811,68 @@ $("#favs").addEventListener("click",ev=>{ const a=ev.target.closest("[data-hact]
   const p=ev.target.closest("[data-hid]"); if(p) return hoyAbrir(p.dataset.hk,p.dataset.hid);
   const n=ev.target.closest("[data-nid]"); if(n){ DLG_CUR={k:"nfl",id:n.dataset.nid}; return openNfl(n.dataset.nid); } });
 
+// ---------- Fichas de equipos y jugadores de fútbol (27 oct 2026) ----------
+// Cualquier elemento con data-eqf="<id de equipo de API-Football>" abre la ficha del equipo y data-jgf="<id de jugador>"
+// la del jugador (en la misma ventana; "‹ Volver" regresa a la anterior). Equipo: teams, fixtures (últimos y próximos),
+// standings y players/squads de API-Football vía el Worker. Jugador: favFicha generalizada (todas las competiciones).
+const FICHA={pila:[],cache:{}};
+const fichaTemp=()=>new Date().getMonth()>=6?new Date().getFullYear():new Date().getFullYear()-1;
+const fichaLg=afId=>Object.keys(LEAGUES).find(k=>String(LEAGUES[k].af)===String(afId))||null;
+const fichaAf=(r,q)=>FICHA.cache[r+"?"+q]||(FICHA.cache[r+"?"+q]=afList(r,q).catch(e=>{ delete FICHA.cache[r+"?"+q]; return null; }));
+function fichaAbre(fn,args,nueva=true){
+  if(nueva&&dlg.open&&$("#gbody .eqfi,#gbody .jfi,#gbody .det")) FICHA.pila.push(FICHA.actual||null);
+  if(!dlg.open) FICHA.pila=[];
+  FICHA.actual=[fn,args]; $("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando…</p>`; if(!dlg.open) dlg.showModal();
+}
+const fichaVolver=()=>FICHA.pila.length&&FICHA.pila[FICHA.pila.length-1]?`<button class="fivolver" data-fivolver>‹ Volver</button>`:"";
+const fichaStar=(k,dat,tipo)=>{ const on=!!FAV[k[0]==="p"?"jug":"eq"][k]; return `<button class="fistar" data-fistar="${hoyEsc(k)}" data-fidat='${hoyEsc(JSON.stringify(dat))}' aria-pressed="${on}"><svg width="16" height="16" viewBox="0 0 24 24" fill="${on?"currentColor":"none"}" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>${on?"Lo sigues":`Seguir ${tipo}`}</button>`; };
+const FICHA_POS={Goalkeeper:"Porteros",Defender:"Defensas",Midfielder:"Medios",Attacker:"Delanteros"};
+async function eqFicha(id,nueva=true){
+  id=String(id); fichaAbre(eqFicha,[id],nueva); pzTrack("ficha_equipo",{});
+  const T=fichaTemp();
+  const [I,U,P,S,Q]=await Promise.all([fichaAf("teams",`id=${id}`),fichaAf("fixtures",`team=${id}&last=6&${AF_TZ}`),fichaAf("fixtures",`team=${id}&next=4&${AF_TZ}`),
+    fichaAf("standings",`team=${id}&season=${T}`),fichaAf("players/squads",`team=${id}`)]);
+  if(FICHA.actual?.[0]!==eqFicha||FICHA.actual[1][0]!==id) return;
+  const t=I?.[0]?.team, v=I?.[0]?.venue; if(!t){ $("#gbody").innerHTML=`${fichaVolver()}<p class="note">No pudimos cargar este equipo. Intenta de nuevo en un momento.</p>`; return; }
+  const nom=esTeam(afNombre(t)), sel=!!t.national;
+  // posiciones (liga primero)
+  const tablas=(S||[]).flatMap(x=>(x.league?.standings||[]).map(g=>({lg:x.league,r:g.find(r=>String(r.team?.id)===id),n:g.length}))).filter(x=>x.r);
+  tablas.sort((a,b)=>(fichaLg(a.lg.id)?0:1)-(fichaLg(b.lg.id)?0:1));
+  const lgPrin=tablas[0]?.lg, kPrin=lgPrin?fichaLg(lgPrin.id):null;
+  const pos=tablas.slice(0,3).map(({lg,r,n})=>{ const a=r.all||{}, grp=String(r.group||"");
+    return `<div class="eqpos"><b>${r.rank}º</b><span><b>${hoyEsc(fichaComp(lg.name))}</b><small>${grp&&!/^(liga|league|premier|serie|bundes|ligue|primera)/i.test(grp)&&grp!==lg.name?hoyEsc(grp)+" · ":""}${r.points} pts · ${a.win}G ${a.draw}E ${a.lose}P · ${a.goals?.for}-${a.goals?.against}</small></span>${r.form?`<span class="eqforma">${[...r.form.slice(-5)].map(c=>`<i class="${c==="W"?"g":c==="L"?"p":"e"}">${c==="W"?"G":c==="L"?"P":"E"}</i>`).join("")}</span>`:""}</div>`; }).join("");
+  const fila=(f,fut)=>{ const h=f.teams?.home, a=f.teams?.away, local=String(h?.id)===id, riv=local?a:h, gl=f.goals||{}, k=fichaLg(f.league?.id);
+    const mio=local?gl.home:gl.away, suyo=local?gl.away:gl.home, res=fut||mio==null?"":mio>suyo?"g":mio<suyo?"p":"e";
+    const fecha=new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",day:"numeric",month:"short",...(fut?{hour:"numeric",minute:"2-digit"}:{})}).format(new Date(f.fixture.timestamp*1000));
+    const abre=k&&(comercial(LEAGUES[k])||LEAGUES[k].nat)?` data-hk="${k}" data-hid="${f.fixture.id}"`:"";
+    return `<${abre?"button":"div"} class="eqp"${abre}><span class="eqpf">${hoyEsc(fecha)}<small>${hoyEsc(fichaComp(f.league?.name))}</small></span><span class="eqpr">${local?"vs":"en"} ${riv?.logo&&SM_ESCUDOS?logoImg(riv.logo,"tlogo"):""}<b data-eqf="${riv?.id}">${hoyEsc(esTeam(afNombre(riv)))}</b></span>${fut?"":`<span class="eqpm ${res}">${mio??"–"}-${suyo??"–"}</span>`}</${abre?"button":"div"}>`; };
+  const ult=(U||[]).slice().sort((a,b)=>b.fixture.timestamp-a.fixture.timestamp), prox=(P||[]).slice().sort((a,b)=>a.fixture.timestamp-b.fixture.timestamp);
+  const J=Q?.[0]?.players||[], grupos=["Goalkeeper","Defender","Midfielder","Attacker"].map(p=>[p,J.filter(x=>x.position===p)]).filter(([,L])=>L.length);
+  const plantel=grupos.map(([p,L])=>`<h4 class="stat-cat">${FICHA_POS[p]}</h4><div class="eqsq">${L.map(x=>`<button data-jgf="${x.id}" data-jgn="${hoyEsc(x.name||"")}"><i>${x.number??""}</i><span>${hoyEsc(x.name||"")}${x.age?`<small>${x.age} años</small>`:""}</span></button>`).join("")}</div>`).join("");
+  $("#gbody").innerHTML=`<div class="eqfi">${fichaVolver()}
+    <div class="eqhead">${t.logo&&SM_ESCUDOS?`<img src="${t.logo}" alt="" onerror="this.remove()">`:""}<div><h2>${hoyEsc(nom)}</h2><p class="sub">${hoyEsc([sel?"Selección":esTeam(t.country||""),v?.name,v?.city,t.founded?`Fundado en ${t.founded}`:""].filter(Boolean).join(" · "))}</p></div></div>
+    ${fichaStar((sel&&id==="16")?"f16":"f"+id,{n:nom,logo:t.logo,lg:sel?"sel":kPrin||""},"al equipo")}
+    ${pos?`<h4 class="stat-cat">Temporada</h4>${pos}`:""}
+    ${prox.length?`<h4 class="stat-cat">Próximos partidos</h4><div class="eqlist">${prox.map(f=>fila(f,true)).join("")}</div>`:""}
+    ${ult.length?`<h4 class="stat-cat">Últimos resultados</h4><div class="eqlist">${ult.map(f=>fila(f,false)).join("")}</div>`:""}
+    ${plantel?`<h4 class="stat-cat" style="margin-top:18px">Plantel</h4><p class="note" style="margin:0 0 6px">Toca a un jugador para ver su ficha.</p>${plantel}`:""}
+    <p class="note">Datos: API-Football.</p></div>`;
+}
+async function jugFicha(id,x={},nueva=true){
+  id=+id; fichaAbre(jugFicha,[id,x],nueva); pzTrack("ficha_jugador",{});
+  const k="p"+id; if(!x.n&&FAV.jug[k]) x={...FAV.jug[k],...x};
+  return favFichaPinta(id,x);
+}
+async function favFicha(k){ const x=FAV.jug[k]; if(!x) return; return jugFicha(+k.slice(1),x); }
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
+  const e=t.closest("[data-eqf]"); if(e&&e.dataset.eqf&&e.dataset.eqf!=="undefined"){ ev.preventDefault(); ev.stopPropagation(); return eqFicha(e.dataset.eqf); }
+  const j=t.closest("[data-jgf]"); if(j&&j.dataset.jgf){ ev.preventDefault(); ev.stopPropagation(); return jugFicha(j.dataset.jgf,{n:j.dataset.jgn||""}); }
+  if(t.closest("[data-fivolver]")){ ev.stopPropagation(); const prev=FICHA.pila.pop(); if(prev){ const [fn,args]=prev; if(fn) fn(...args,false); else dlg.close(); } return; }
+  const s=t.closest("[data-fistar]"); if(s){ ev.stopPropagation(); let dat={}; try{ dat=JSON.parse(s.dataset.fidat); }catch(e){} const on=favToggle(s.dataset.fistar,dat);
+    s.setAttribute("aria-pressed",on); s.innerHTML=s.innerHTML.replace(/fill="[^"]*"/,`fill="${on?"currentColor":"none"}"`).replace(/(<\/svg>).*$/,`$1${on?"Lo sigues":s.dataset.fistar[0]==="p"?"Seguir al jugador":"Seguir al equipo"}`); return; }
+},true);
+dlg.addEventListener("close",()=>{ FICHA.pila=[]; FICHA.actual=null; });
+
 function fanRepinta(){ FAN.nube=0; FAN.eq=null; FAN.hash=null; if(!$("#fan").classList.contains("hidden")) fanRender(); }
 
 const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
@@ -6657,7 +6737,7 @@ function favTarjetaEq(k,x){
   const id=k.slice(1), I=D.eq_info?.[id]||{}, p=I.p, lgNom=I.lg==="sel"?"Selección":FAV_LIGA[I.lg]||LEAGUES[I.lg]?.label||"";
   const sub=[lgNom,I.pos?`${I.pos}º · ${I.pts} pts`:""].filter(Boolean).join(" · ");
   const px=p?`<span class="px"><b>${p[5]?"vs":"visita a"} ${hoyEsc(esTeam(p[4]))}</b>${favCuando(p[1])}${p[2]!==I.lg&&LEAGUES[p[2]]?` · ${hoyEsc(LEAGUES[p[2]].label)}`:""}</span>`:`<span class="px">Sin partido próximo</span>`;
-  const abre=p&&LEAGUES[p[2]]?` data-hk="${p[2]}" data-hid="${p[0]}"`:"";
+  const abre=` data-eqf="${id}"`;   // 27 oct 2026: la tarjeta abre la ficha del equipo (ahí está su próximo partido)
   return `<${abre?"button":"div"} class="hfc"${abre}><span class="t">${logo}<span><b>${hoyEsc(x.n)}</b><small>${hoyEsc(sub)}</small></span></span>${favForma(I.f)}${px}${favNota(n=>String(n.tid)===id)}</${abre?"button":"div"}>`;
 }
 // Ficha de un jugador que sigues (se abre en la ventana de detalle): estadísticas de su liga (jugadores_<liga>.json) o, si
@@ -6676,13 +6756,12 @@ async function fichaAF(id){   // todas las competiciones de la temporada (club y
 // Ficha de un jugador que sigues (ventana de detalle): totales de la temporada en TODAS las competiciones y desglose por
 // competencia (club y selección), de API-Football (players?id=&season=); si no responde, sus estadísticas de liga
 // (jugadores_<liga>.json) o la fila de la Bota de Oro. Además: lugar en la Bota, convocado con México, próximo partido de su club y su nota.
-async function favFicha(k){
-  const x=FAV.jug[k]; if(!x) return;
-  const id=+k.slice(1), ape=(x.n||"").split(" ").slice(-1)[0], LG=["mx","eng","esp","ita","ger","fra","por"];
-  $("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando…</p>`; if(!dlg.open) dlg.showModal();
-  pzTrack("fav_ficha",{});
+async function favFichaPinta(id,x){
+  const k="p"+id, LG=["mx","eng","esp","ita","ger","fra","por"];
   if(LG.includes(x.lg)){ favJugLiga(x.lg); await FAV_JFP[x.lg]; }
   const R=await fichaAF(id);
+  if(FICHA.actual?.[0]!==jugFicha||+FICHA.actual[1][0]!==id) return;
+  if(!x.n) x={...x,n:R?.[0]?.player?.name||""}; const ape=(x.n||"").split(" ").slice(-1)[0];
   const J=FAV_JF[x.lg], f=J?.filas?.find(r=>r.id===id), eq=f?J.equipos?.[f.t]:null;
   const b=[...(D.bota?.ls||[]),...(D.bota?.mex||[])].find(r=>r[0]===id), posB=b?(D.bota.ls||[]).indexOf(b)+1:0;
   const POS={G:"Portero",D:"Defensa",M:"Medio",F:"Delantero",Goalkeeper:"Portero",Defender:"Defensa",Midfielder:"Medio",Attacker:"Delantero"};
@@ -6695,8 +6774,8 @@ async function favFicha(k){
       g:st.goals?.total||0,a:st.goals?.assists||0,sh:st.shots?.total||0,sot:st.shots?.on||0,yc:st.cards?.yellow||0,rc:(st.cards?.red||0)+(st.cards?.yellowred||0),
       sv:st.goals?.saves||0,gc:st.goals?.conceded||0};}).filter(r=>r.pj>0||r.min>0);
   const club=filas.filter(r=>!r.sel), sel=filas.filter(r=>r.sel);
-  const nomClub=(club.slice().sort((a,b)=>b.min-a.min)[0]?.club)||(eq?eq[0]:(b?b[8]:x.club))||"";
   const tid=club.slice().sort((a,b)=>b.min-a.min)[0]?.tid||(eq?(eq[1]||"").match(/teams\/(\d+)/)?.[1]:null);
+  const nomClub=esTeam(afNombre({id:tid,name:(club.slice().sort((a,b)=>b.min-a.min)[0]?.club)||(eq?eq[0]:(b?b[8]:x.club))||""}));
   const portero=(filas.find(r=>r.pos)?.pos||f?.pos)==="Goalkeeper"||f?.pos==="G";
   const sum=(L,c)=>L.reduce((s,r)=>s+(r[c]||0),0);
   let st="";
@@ -6711,7 +6790,7 @@ async function favFicha(k){
   const tabla=(L,tit)=>L.length?`<h4 class="stat-cat">${hoyEsc(tit)}</h4><div class="tbl"><table><thead><tr><th class="l">Competencia</th><th>PJ</th><th>Min</th><th>G</th><th>A</th></tr></thead><tbody>${
     L.map(r=>`<tr><td class="l">${SM_ESCUDOS&&r.logo?logoImg(r.logo,"tlogo"):""}<span class="nm">${hoyEsc(r.comp)}</span></td><td>${r.pj}</td><td>${mil(r.min)}</td><td><b>${r.g}</b></td><td>${r.a}</td></tr>`).join("")}${
     L.length>1?`<tr><td class="l"><b>Total</b></td><td><b>${sum(L,"pj")}</b></td><td><b>${mil(sum(L,"min"))}</b></td><td><b>${sum(L,"g")}</b></td><td><b>${sum(L,"a")}</b></td></tr>`:""}</tbody></table></div>`:"";
-  const clubs=[...new Set(club.map(r=>r.club))];
+  const clubs=[...new Set(club.map(r=>esTeam(afNombre({id:r.tid,name:r.club}))))];
   const desglose=tabla(club,clubs.length===1?`Con ${clubs[0]}`:"Con sus clubes")+tabla(sel,`Con ${sel[0]?esTeam(sel[0].club):"su selección"}`);
   const I=tid?D.eq_info?.[tid]:null, p=I?.p, nota=favNota(n=>ape.length>2&&n.tit.includes(ape));
   const extra=[posB?`<div><small>Bota de Oro ${hoyEsc(D.bota.temp||"")}</small><b>${posB}º</b> con ${goNum(b[3])} puntos (${b[4]} goles de liga × ${goNum(b[10])})</div>`:"",
@@ -6719,11 +6798,13 @@ async function favFicha(k){
     p?`<button data-hk="${p[2]}" data-hid="${p[0]}"><small>Próximo partido de ${hoyEsc(nomClub)}</small><b>${p[5]?"vs":"visita a"} ${hoyEsc(esTeam(p[4]))}</b> · ${favCuando(p[1])}</button>`:"",
     nota?`<div><small>Lo último</small>${nota}</div>`:""].filter(Boolean).join("");
   const posTxt=POS[filas.find(r=>r.pos)?.pos]||POS[f?.pos]||"";
-  $("#gbody").innerHTML=`<div class="jfi"><h2>${hoyEsc(x.n)}</h2><p class="sub">${hoyEsc([nomClub,posTxt,P?.player?.age?`${P.player.age} años`:""].filter(Boolean).join(" · "))}</p>
+  const foto=P?.player?.photo, tidN=tid?String(tid):"", clubN=esTeam(afNombre({id:tidN,name:nomClub}));
+  $("#gbody").innerHTML=`<div class="jfi">${fichaVolver()}<div class="eqhead">${foto?`<img class="jfoto" src="${foto}" alt="" onerror="this.remove()">`:""}<div><h2>${hoyEsc(x.n)}</h2><p class="sub">${tidN?`<button class="filink" data-eqf="${tidN}">${hoyEsc(clubN)}</button>`:hoyEsc(clubN)}${hoyEsc([posTxt,P?.player?.age?`${P.player.age} años`:"",P?.player?.nationality?esTeam(P.player.nationality):""].filter(Boolean).map(s=>" · "+s).join(""))}</p></div></div>
+    ${fichaStar(k,{n:x.n,club:nomClub,lg:x.lg||""},"al jugador")}
     ${st?`<h4 class="stat-cat">${filas.length?"Esta temporada · todas las competiciones":"Esta temporada · liga"}</h4><div class="jfg">${st}</div>`:`<p class="note">Todavía no tenemos sus estadísticas de esta temporada.</p>`}
     ${desglose}${extra?`<div class="jfx" style="margin-top:14px">${extra}</div>`:""}</div>`;
 }
-$("#gbody").addEventListener("click",ev=>{ const p=ev.target.closest(".jfi [data-hid]"); if(p){ hoyAbrir(p.dataset.hk,p.dataset.hid); } });
+$("#gbody").addEventListener("click",ev=>{ const p=ev.target.closest(".jfi [data-hid],.eqfi [data-hid]"); if(p){ hoyAbrir(p.dataset.hk,p.dataset.hid); } });
 function hoyFavHTML(){
   const E=Object.entries(FAV.eq), J=Object.entries(FAV.jug);
   if(!E.length&&!J.length) return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3></div><div class="hfcta"><b>Sigue a tus equipos y jugadores</b><span>Elige tus equipos de la Liga MX, Europa o la NFL, y a tus jugadores, para verlos primero aquí.</span><button class="btn" data-hact="fav">Elegir equipos</button></div></section>`;
