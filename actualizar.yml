@@ -2,6 +2,7 @@ name: Actualizar La Pizarra
 on:
   schedule:
     - cron: "0 13 * * *"   # todos los días 7:00 am CDMX
+    - cron: "0 5 * * *"    # y 11:00 pm CDMX (puntos de la quiniela y del fantasy esa misma noche)
   workflow_dispatch:        # botón "Run workflow"
   push:
     paths: ["notas.json", "ranking.json", "template.html", "build_site.py"]
