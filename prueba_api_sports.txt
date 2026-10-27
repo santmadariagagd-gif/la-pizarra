@@ -1,0 +1,6 @@
+F1 estado: plan=Free activo=True usadas hoy=0/100 errores=[]
+F1 carreras 2026: resultados=0 errores={'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'} ejemplo=
+F1 pilotos 2026: resultados=0 errores={'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'} ejemplo=
+NBA estado: plan=Free activo=True usadas hoy=0/100 errores=[]
+NBA juegos 2026-27: resultados=0 errores={'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'} ejemplo=
+NBA tabla 2026-27: resultados=0 errores={'plan': 'Free plans do not have access to this season, try from 2022 to 2024.'} ejemplo=
