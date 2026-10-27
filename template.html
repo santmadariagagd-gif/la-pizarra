@@ -1048,12 +1048,14 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 }
 @media (max-width:720px){
   header.top nav.tabs{display:none}
-  .bnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:50;background:#16201d;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-  .bnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:58px;background:none;border:0;color:var(--muted);font:600 12px/1 var(--body);cursor:pointer;padding:0}
-  .bnav button::before{content:"";width:22px;height:3px;border-radius:2px;background:transparent;order:-1}
+  .bnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:50;padding:6px;border-radius:32px;
+    background:rgba(28,44,39,.62);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 18px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.05)}
+  .bnav .pzlente{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/4);border-radius:26px;background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 14px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,1.3,.4,1);pointer-events:none}
+  .bnav button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:52px;background:none;border:0;color:#C9D6CF;font:600 11px/1 var(--body);cursor:pointer;padding:0;transition:transform .12s,color .2s}
+  .bnav button:active{transform:scale(.94)}
   .bnav button[aria-selected="true"]{color:var(--mark)}
-  .bnav button[aria-selected="true"]::before{background:var(--mark)}
-  body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+  body{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
 }
 /* ---------- Quiniela Liga MX (19 oct 2026) ---------- */
 .qliga{display:inline-flex;margin:0 0 12px}
@@ -1155,6 +1157,38 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .eqsq button{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
 .eqsq i{width:26px;text-align:center;font:700 15px var(--display);font-style:normal;color:var(--muted)}.eqsq span{display:flex;flex-direction:column;font-size:14px;min-width:0}.eqsq small{color:var(--muted);font-size:11px}
 @media (max-width:420px){.eqp{grid-template-columns:86px minmax(0,1fr) auto}}
+/* Animaciones (27 oct 2026) */
+@keyframes pzdestello{0%{box-shadow:0 0 0 0 rgba(242,212,102,.9);background-color:#4a5a2c}100%{box-shadow:0 0 0 16px rgba(242,212,102,0)}}
+@keyframes pznum{0%{transform:translateY(-70%) scale(.6);opacity:0}60%{transform:translateY(8%) scale(1.25);opacity:1}100%{transform:none}}
+@keyframes pzentra{0%{transform:translateY(18px) scale(.985);opacity:0}100%{transform:none;opacity:1}}
+@keyframes pzbrillo{0%{background-position:-240px 0}100%{background-position:240px 0}}
+@keyframes pzcae{0%{transform:translate3d(0,-30px,0) rotate(0);opacity:1}100%{transform:translate3d(var(--dx),105vh,0) rotate(var(--rot));opacity:.9}}
+@keyframes pzaviso{0%{transform:translate(-50%,-150%) scale(.92);opacity:0}12%{transform:translate(-50%,6%) scale(1.02);opacity:1}18%{transform:translate(-50%,0) scale(1)}85%{transform:translate(-50%,0);opacity:1}100%{transform:translate(-50%,-150%);opacity:0}}
+@keyframes pzllena{from{width:0}}
+@keyframes pzrebote{0%{transform:scale(.4)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes pzsube{0%{transform:translateY(14px);opacity:0}100%{transform:none;opacity:1}}
+@keyframes pzlate{0%{box-shadow:0 0 0 0 rgba(255,122,89,.7)}70%{box-shadow:0 0 0 8px rgba(255,122,89,0)}100%{box-shadow:0 0 0 0 rgba(255,122,89,0)}}
+.pzgol{animation:pzdestello 1.3s ease-out;border-color:var(--mark)!important}
+.pzgolnum{display:inline-block;animation:pznum .7s cubic-bezier(.3,1.4,.4,1);color:var(--mark)!important}
+.pzcasc>*,.pzcasc .games>*,.pzcasc .hstrip>*,.pzcasc .hlist>*,.pzcasc .qmxlist>*,.pzcasc .eqlist>*,.pzcasc .tengrid>*{animation:pzentra .45s cubic-bezier(.2,.8,.2,1) both}
+.pzcasc>*:nth-child(2),.pzcasc .games>*:nth-child(2),.pzcasc .hstrip>*:nth-child(2),.pzcasc .hlist>*:nth-child(2),.pzcasc .qmxlist>*:nth-child(2){animation-delay:.05s}
+.pzcasc>*:nth-child(3),.pzcasc .games>*:nth-child(3),.pzcasc .hstrip>*:nth-child(3),.pzcasc .hlist>*:nth-child(3),.pzcasc .qmxlist>*:nth-child(3){animation-delay:.1s}
+.pzcasc>*:nth-child(4),.pzcasc .games>*:nth-child(4),.pzcasc .hstrip>*:nth-child(4),.pzcasc .hlist>*:nth-child(4),.pzcasc .qmxlist>*:nth-child(4){animation-delay:.15s}
+.pzcasc>*:nth-child(5),.pzcasc .games>*:nth-child(5),.pzcasc .hstrip>*:nth-child(5),.pzcasc .hlist>*:nth-child(5),.pzcasc .qmxlist>*:nth-child(5){animation-delay:.2s}
+.pzcasc>*:nth-child(n+6),.pzcasc .games>*:nth-child(n+6),.pzcasc .hstrip>*:nth-child(n+6),.pzcasc .hlist>*:nth-child(n+6),.pzcasc .qmxlist>*:nth-child(n+6){animation-delay:.25s}
+.pzskel{display:flex;flex-direction:column;gap:10px;max-width:720px}.pzskel>div{display:flex;flex-direction:column;gap:9px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.pzskel i{display:block;height:10px;border-radius:6px;background:linear-gradient(90deg,#2a4239 0,#36544a 60px,#2a4239 120px);background-size:480px 100%;animation:pzbrillo 1.2s linear infinite}
+.pzconf{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden}.pzconf i{position:absolute;top:0;width:9px;height:14px;border-radius:2px;animation:pzcae var(--dur) cubic-bezier(.25,.6,.4,1) var(--del) both}
+#pzAviso{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));z-index:210;width:min(360px,calc(100% - 24px));box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:20px;
+  background:rgba(30,48,42,.75);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.2);box-shadow:0 12px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22);transform:translate(-50%,-150%);opacity:0;pointer-events:none}
+#pzAviso.on{animation:pzaviso 4.2s cubic-bezier(.2,.9,.3,1) both}#pzAviso>span:last-child{display:flex;flex-direction:column}#pzAviso b{font:700 22px/1.1 var(--display);color:var(--mark)}#pzAviso small{font-size:13px;color:#C9D6CF}
+.pzai{flex:none;width:40px;height:40px;border-radius:20px;background:var(--mark);color:#1d2a26;display:inline-flex;align-items:center;justify-content:center}
+.pzllena .vr s i{animation:pzllena .9s cubic-bezier(.2,.8,.2,1) both}
+.pzok{display:inline-flex;align-items:center;gap:6px;color:#9FD3A8;font-weight:600}.pzok svg{animation:pzrebote .45s cubic-bezier(.3,1.5,.5,1) both}
+.pzmov{display:inline-block;margin-left:6px;font-size:12px;font-weight:700;animation:pzsube .4s ease-out .3s both}.pzmov.up{color:#9FD3A8}.pzmov.down{color:#FF9C80}
+button,.btn{transition:transform .12s}button:active:not(:disabled){transform:scale(.97)}
+@media (min-width:721px){header.top nav.tabs{background:rgba(38,61,54,.55);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);border-color:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 /* Barra principal (27 oct 2026): Hoy, Retas, Favoritos y Deportes (menú) */
 nav.tabs button .depch{vertical-align:-2px;margin-left:2px;transition:transform .15s}nav.tabs button[aria-expanded="true"] .depch{transform:rotate(180deg)}
 .bnav button svg{display:block}
@@ -1164,7 +1198,7 @@ nav.tabs button .depch{vertical-align:-2px;margin-left:2px;transition:transform 
 .depmenu button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px;border-radius:12px;border:0;background:none;color:var(--ink);cursor:pointer}
 .depmenu button:hover,.depmenu button:focus-visible{background:var(--surface);outline:none}.depmenu button[aria-current="true"]{background:var(--surface)}.depmenu button[aria-current="true"] b{color:var(--mark)}
 .depmenu b{font:700 18px/1.1 var(--display)}.depmenu span{font-size:12px;color:var(--muted)}
-.depmenu.cel{position:fixed;left:8px;right:8px;width:auto;bottom:calc(66px + env(safe-area-inset-bottom,0px));top:auto}
+.depmenu.cel{position:fixed;left:12px;right:12px;width:auto;bottom:calc(82px + env(safe-area-inset-bottom,0px));top:auto;background:rgba(27,41,37,.82);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%);border-color:rgba(255,255,255,.16);animation:pzsube .28s cubic-bezier(.2,.9,.3,1.1)}
 .masflag{width:18px;height:12px;object-fit:cover;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .mxrow td{background:rgba(242,212,102,.10)}
 .f1ev,.tenev{max-width:720px;margin:0 0 12px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
@@ -1678,13 +1712,13 @@ const sportOf=id=>id==="hoy"?"hoy":id==="favs"?"favs":MAS_TABS.includes(id)?"mas
 // Abre una sección que necesita un paquete: "Cargando…" mientras llega y, si falla, un aviso para recargar
 function paqCarga(n,fn,donde){
   if(PAQ_OK[n]) return fn();
-  const el=donde&&$(donde), txt=t=>{ if(!el) return; if(el.tagName==="P") el.textContent=t; else el.innerHTML=t?`<p class="note">${t}</p>`:""; };
+  const el=donde&&$(donde), txt=t=>{ if(!el) return; if(el.tagName==="P") el.textContent=t; else el.innerHTML=t==="Cargando…"?pzSkel(4):t?`<p class="note">${t}</p>`:""; };
   const puse=el&&!el.textContent.trim(); if(puse) txt("Cargando…");
   paquete(n).then(()=>{ if(puse) txt(""); fn(); })
     .catch(()=>txt("No pudimos cargar esta sección. Revisa tu conexión y recarga la página."));
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||id==="favs"||RETAS.includes(id)||MAS_TABS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
-  const spSel=sportOf(id); PZ_SP=spSel; const grp=["hoy","qn","favs"].includes(spSel)?spSel:"dep"; document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===grp)); depCierra();
+  const spSel=sportOf(id); PZ_SP=spSel; const grp=["hoy","qn","favs"].includes(spSel)?spSel:"dep"; document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===grp)); depCierra(); PZ_CASC=Date.now()+2500; if(typeof pzLente==="function") pzLente();
   if(id==="hoy") hoyRender();
   if(typeof navPush==="function") navPush(id);
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
@@ -5299,7 +5333,7 @@ function qmxGuarda(j,x){
   const jid=qmxJid(j), L=qmxLs(); L[jid]=x; qmxLsSet(L);
   if(!(typeof acctOk==="function"&&acctOk())) return;
   clearTimeout(QMX.t); QMX.t=setTimeout(async()=>{
-    try{ await ACCT.db.doc(`qmx_picks/${jid}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,jid,j,s:qmxD().s,p:x.p,g:x.g??null,t:grFV().serverTimestamp()}); $("#qmxGuardo")&&($("#qmxGuardo").textContent="Guardado en tu cuenta."); }
+    try{ await ACCT.db.doc(`qmx_picks/${jid}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,jid,j,s:qmxD().s,p:x.p,g:x.g??null,t:grFV().serverTimestamp()}); $("#qmxGuardo")&&($("#qmxGuardo").innerHTML=pzOk("Guardado en tu cuenta")); }
     catch(e){ console.warn("Quiniela MX: no se guardó",e?.code||e); $("#qmxGuardo")&&($("#qmxGuardo").textContent="No se pudo guardar en tu cuenta (¿ya cerró la jornada?)."); }
   },500);
 }
@@ -5382,7 +5416,7 @@ async function qmxVivoYa(js){ const now=Date.now()/1000, ids=[];
   for(let i=0;i<ids.length;i+=20){ try{ const R=await afList("fixtures",`ids=${ids.slice(i,i+20).join("-")}`);
     for(const f of R) QMX.vivo[f.fixture.id]={gl:f.goals?.home,gv:f.goals?.away,st:f.fixture?.status?.short,min:f.fixture?.status?.elapsed}; }catch(e){} } }
 async function qmxGeneral(){
-  const box=$("#qmxBody"); box.innerHTML=`<p class="note">Cargando…</p>`;
+  const box=$("#qmxBody"); box.innerHTML=pzSkel(4);
   const G=await qmxTablaGen(); if(QMX.vista!=="general") return;
   if(!G||G.s!==qmxD().s||!Object.keys(G.t||{}).length){ box.innerHTML=`<p class="note">La tabla general aparece la mañana después de que cierre la primera jornada con picks guardados en una cuenta.</p>`; return; }
   const js=Object.keys(G.j).map(Number).sort((a,b)=>a-b), ult=js[js.length-1], yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null;
@@ -5401,7 +5435,7 @@ async function qmxGrRender(){
   if(QMX.tab&&!G.some(g=>g.id===QMX.tab)) QMX.tab=null; if(!QMX.tab&&G.length) QMX.tab=G[0].id;
   const g=G.find(x=>x.id===QMX.tab);
   box.innerHTML=`${G.length?`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px">${G.map(x=>`<button data-qmxt="${x.id}" aria-pressed="${x.id===QMX.tab}">${acctEsc(x.nombre)}</button>`).join("")}</div>`:`<p class="note">Todavía no estás en ningún grupo de la Liga MX.</p>`}
-    <div id="qmxTabla">${g?`<p class="note">Cargando tabla…</p>`:""}</div>
+    <div id="qmxTabla">${g?pzSkel(2):""}</div>
     ${g?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» de la Quiniela Liga MX en La Pizarra: ${qmxLink(g.id)}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-qmxcopy="${g.id}">Copiar link</button> · <button class="q5link" data-qmxsalir="${g.id}">Salir</button></p>`:""}
     <div class="q5new"><input id="qmxGrNom" maxlength="40" placeholder="Nombre del grupo (ej. La quiniela de la oficina)" aria-label="Nombre del grupo"><button class="q5save" id="qmxGrCrear">Crear grupo</button></div><p class="note" id="qmxGrMsg"></p>`;
   if(g) qmxTabla(g);
@@ -5422,9 +5456,9 @@ async function qmxTabla(g){
     if(term){ const mx=Math.max(...M.map(m=>S[m.uid].a)); const top=M.filter(m=>S[m.uid].a===mx);
       const best=top.sort((a,b)=>(S[a.uid].pk?.g!=null?Math.abs(S[a.uid].pk.g-goles):99)-(S[b.uid].pk?.g!=null?Math.abs(S[b.uid].pk.g-goles):99))[0]; if(best&&mx>0) T[best.uid].gan++; }
     ultJ=j; ultP=S; }
-  const F=Object.entries(T).sort((a,b)=>b[1].pts-a[1].pts||b[1].gan-a[1].gan||a[1].err-b[1].err), yo=ACCT.user.uid;
+  const F=Object.entries(T).sort((a,b)=>b[1].pts-a[1].pts||b[1].gan-a[1].gan||a[1].err-b[1].err), yo=ACCT.user.uid, mv=pzMov("qmx_"+g.id,String(ultJ),F.map(([u])=>u));
   const P=ultJ!=null?J[ultJ].p:[];
-  box.innerHTML=Ls.length?`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ultJ}</th><th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map(([u,x],i)=>`<tr${u===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.n)}${u===yo?" (tú)":""}</td><td><b>${x.pts}</b></td><td>${x.ult??"–"}</td><td>${x.gan}</td></tr>`).join("")}</tbody></table></div>
+  box.innerHTML=Ls.length?`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ultJ}</th><th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map(([u,x],i)=>`<tr${u===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.n)}${u===yo?" (tú)":""}${mv(u)}</td><td><b>${x.pts}</b></td><td>${x.ult??"–"}</td><td>${x.gan}</td></tr>`).join("")}</tbody></table></div>
     ${M.length<2?`<p class="note"><b>Solo tú estás en este grupo.</b> Tus amigos tienen que abrir el link de invitación y tocar «Unirme» (si primero crean su cuenta, la invitación los espera). Mientras, todos salen en la pestaña General.</p>`:""}
     <h3 style="margin:18px 0 6px">Picks de la jornada ${ultJ}</h3><div class="tbl qmxpk"><table><thead><tr><th class="l">Partido</th>${M.map(m=>`<th>${acctEsc((m.nombre||"").split(" ")[0])}</th>`).join("")}</tr></thead><tbody>${P.map(r=>{ const R=qmxRes(r,QMX.vivo);
       return `<tr><td class="l">${hoyEsc(qmxEq(r[2]).ab||qmxEq(r[2]).n)} ${R.gl!=null&&(R.fin||R.vivo)?`${R.gl}-${R.gv}`:"vs"} ${hoyEsc(qmxEq(r[3]).ab||qmxEq(r[3]).n)}</td>${M.map(m=>{ const k=ultP[m.uid]?.pk?.p?.[r[0]]; return `<td class="${R.fin&&k?(k===R.r?"ok":"mal"):""}">${k||"–"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>
@@ -5534,7 +5568,7 @@ function fanCancha(E,opts={}){
 async function fanRender(){
   const box=$("#fanBody"); if(!box) return;
   document.querySelectorAll("#fanView button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.fv===FAN.vista)));
-  if(!FAN.D) box.innerHTML=`<p class="note">Cargando…</p>`;
+  if(!FAN.D) box.innerHTML=pzSkel(3);
   const D=await fanCarga(); if(!D){ box.innerHTML=`<p class="note">El Fantasy de la Champions aparece en la próxima actualización.</p>`; return; }
   fanNube(); fanJoinRender();
   if(typeof acctOk==="function"&&acctOk()&&!FAN.hash) FAN.hash=await q5Hash(ACCT.user.uid);
@@ -5647,14 +5681,14 @@ async function fanGrupos(){
   if(FAN.tab&&!G.some(g=>g.id===FAN.tab)) FAN.tab=null; if(!FAN.tab&&G.length) FAN.tab=G[0].id;
   const g=G.find(x=>x.id===FAN.tab);
   box.innerHTML=`${G.length?`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px">${G.map(x=>`<button data-fant="${x.id}" aria-pressed="${x.id===FAN.tab}">${acctEsc(x.nombre)}</button>`).join("")}</div>`:`<p class="note">Todavía no estás en ningún grupo de Fantasy.</p>`}
-    <div id="fanGrTabla">${g?`<p class="note">Cargando…</p>`:""}</div>
+    <div id="fanGrTabla">${g?pzSkel(2):""}</div>
     ${g?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» del Fantasy Champions en La Pizarra: https://lapizarra.mx/?fang=${g.id}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-fancopy="${g.id}">Copiar link</button> · <button class="q5link" data-fansalir="${g.id}">Salir</button></p>`:""}
     <div class="q5new"><input id="fanGrNom" maxlength="40" placeholder="Nombre del grupo" aria-label="Nombre del grupo"><button class="q5save" id="fanGrCrear">Crear grupo</button></div><p class="note" id="fanGrMsg"></p>`;
   if(!g) return;
   const ms=await ACCT.db.collection(`grupos/${g.id}/miembros`).get().catch(()=>null);
   const el=$("#fanGrTabla"); if(!ms||!el){ if(el) el.innerHTML=`<p class="note">No pudimos cargar el grupo.</p>`; return; }
   const H=await Promise.all(ms.docs.map(d=>q5Hash(d.id))), NM=Object.fromEntries(ms.docs.map((d,i)=>[H[i],(d.data().nombre||"").split(" ")[0]])), F=fanTablaGrupo(H,NM), C=fanCerradas().filter(k=>FAN.D.j[k].ok), T=FAN.D.tabla||{};
-  const ult=C[C.length-1], pr=ult?fanParejas(H,C.length-1):[], prox=fanAbierta(), prp=prox?fanParejas(H,C.length):[];
+  const ult=C[C.length-1], pr=ult?fanParejas(H,C.length-1):[], prox=fanAbierta(), prp=prox?fanParejas(H,C.length):[], mv=pzMov("fan_"+g.id,String(ult||""),F.map(([h])=>h));
   const nom=h=>h?(h===FAN.hash?"Tú":acctEsc(T[h]?.a||NM[h]||"Jugador")):"Descansa";
   // jornada en juego: puntos al momento de cada quien (su once de esta jornada o, si no guardó, el último)
   const kv=fanJ().find(fanEnJuego); let vivoH="";
@@ -5668,7 +5702,7 @@ async function fanGrupos(){
     const PV=Object.fromEntries(pv), idx=C.length, par=fanParejas(H,idx);
     vivoH=`<h3 style="margin:16px 0 6px">En vivo: ${fanEsc(FAN.D.j[kv].n)}</h3>${fanMarcadores(kv)}${par.map(([a,b])=>`<div class="fanvs"><span>${nom(a)}</span><b>${a&&b?`${PV[a]??0} – ${PV[b]??0}`:(PV[a||b]??0)}</b><span>${nom(b)}</span></div>`).join("")}
       <p class="note">Puntos al momento, sin descontar cambios extra. Los oficiales salen al día siguiente.</p>`; }
-  el.innerHTML=`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>G-E-P</th><th>Pts</th><th>Total</th></tr></thead><tbody>${F.map(([h,x],i)=>`<tr${h===FAN.hash?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${h===FAN.hash?" (tú)":""}</td><td>${x.G}-${x.E}-${x.P}</td><td><b>${x.pts}</b></td><td>${x.t}</td></tr>`).join("")}</tbody></table></div>
+  el.innerHTML=`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>G-E-P</th><th>Pts</th><th>Total</th></tr></thead><tbody>${F.map(([h,x],i)=>`<tr${h===FAN.hash?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${h===FAN.hash?" (tú)":""}${mv(h)}</td><td>${x.G}-${x.E}-${x.P}</td><td><b>${x.pts}</b></td><td>${x.t}</td></tr>`).join("")}</tbody></table></div>
     <p class="note">Mano a mano: ganar 3 puntos, empatar 1. Desempata el total de puntos del fantasy. Quien todavía no guarda once aparece con 0.</p>
     ${ult?`<h3 style="margin:16px 0 6px">Última: ${fanEsc(FAN.D.j[ult].n)}</h3>${pr.map(([a,b])=>`<div class="fanvs"><span>${nom(a)}</span><b>${a&&b?`${T[a]?.j?.[ult]??0} – ${T[b]?.j?.[ult]??0}`:(T[a||b]?.j?.[ult]??0)}</b><span>${nom(b)}</span></div>`).join("")}`:""}
     ${vivoH}
@@ -5687,7 +5721,7 @@ async function fanGuarda(){
   const L=fanLs(); L[jid]=x; fanLsSet(L); pzTrack("fan_guardar",{});
   if(!(typeof acctOk==="function"&&acctOk())){ fanOnce(); return; }
   try{ await ACCT.db.doc(`fan_ucl/${jid}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,jid,j:k,s:fanSlug(),eq:x.eq.map(Number),c:Number(x.c),a,t:grFV().serverTimestamp()});
-    fanOnce(); $("#fanMsg").textContent="Guardado en tu cuenta."; }
+    fanOnce(); $("#fanMsg").innerHTML=pzOk("Guardado en tu cuenta"); }
   catch(e){ console.warn("Fantasy: no se guardó",e?.code||e); fanOnce(); $("#fanMsg").textContent="No se pudo guardar en tu cuenta (¿ya cerró la jornada?)."; }
 }
 document.addEventListener("click",async ev=>{
@@ -5752,7 +5786,7 @@ const F1_GP=[["Australian","Australia"],["Chinese","China"],["Japanese","Japón"
 const f1Nombre=l=>{ const x=F1_GP.find(([k])=>(l||"").includes(k)); return x?`GP de ${x[1]}`:(l||"").replace(/Grand Prix/,"GP"); };
 const F1_SES={FP1:"Práctica 1",FP2:"Práctica 2",FP3:"Práctica 3",Qual:"Clasificación",Race:"Carrera",SS:"Sprint Shootout",SQ:"Clasificación sprint",Sprint:"Sprint",SR:"Sprint"};
 async function f1Render(){
-  const box=$("#f1Body"); if(!box) return; if(!box.innerHTML) box.innerHTML=`<p class="note">Cargando…</p>`;
+  const box=$("#f1Body"); if(!box) return; if(!box.innerHTML) box.innerHTML=pzSkel(4);
   const [sb,st]=await Promise.all([espnJ(`${ESPN_SITE}/racing/f1/scoreboard`),espnJ(`${ESPN_V2}/racing/f1/standings`,30*60e3)]);
   if(!sb){ box.innerHTML=`<p class="note">No pudimos cargar la Fórmula 1. Intenta de nuevo en un momento.</p>`; return; }
   const cal=sb.leagues?.[0]?.calendar||[], now=Date.now(), sigI=cal.findIndex(c=>new Date(c.endDate).getTime()+3*3600e3>now), sig=cal[sigI];
@@ -5778,7 +5812,7 @@ async function f1Render(){
 }
 // ---- Tenis ----
 async function tenRender(){
-  const box=$("#tenBody"); if(!box) return; if(!box.innerHTML) box.innerHTML=`<p class="note">Cargando…</p>`;
+  const box=$("#tenBody"); if(!box) return; if(!box.innerHTML) box.innerHTML=pzSkel(4);
   const tour=MAS.ten.tour, vista=MAS.ten.vista;
   const seg=`<div class="hseg" style="display:inline-flex;margin:0 8px 12px 0">${[["atp","ATP"],["wta","WTA"]].map(([k,t])=>`<button data-tent="${k}" aria-pressed="${tour===k}">${t}</button>`).join("")}</div><div class="hseg" style="display:inline-flex;margin:0 0 12px">${[["hoy","Partidos"],["rk","Ranking"]].map(([k,t])=>`<button data-tenv="${k}" aria-pressed="${vista===k}">${t}</button>`).join("")}</div>`;
   if(vista==="rk"){ const R=await espnJ(`${ESPN_SITE}/tennis/${tour}/rankings`,3600e3), L=R?.rankings?.[0]?.ranks||[];
@@ -5834,7 +5868,7 @@ const fichaAf=(r,q)=>FICHA.cache[r+"?"+q]||(FICHA.cache[r+"?"+q]=afList(r,q).cat
 function fichaAbre(fn,args,nueva=true){
   if(nueva&&dlg.open&&$("#gbody .eqfi,#gbody .jfi,#gbody .det")) FICHA.pila.push(FICHA.actual||null);
   if(!dlg.open) FICHA.pila=[];
-  FICHA.actual=[fn,args]; $("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando…</p>`; if(!dlg.open) dlg.showModal();
+  FICHA.actual=[fn,args]; $("#gbody").innerHTML=pzSkel(4); if(!dlg.open) dlg.showModal();
 }
 const fichaVolver=()=>FICHA.pila.length&&FICHA.pila[FICHA.pila.length-1]?`<button class="fivolver" data-fivolver>‹ Volver</button>`:"";
 const fichaStar=(k,dat,tipo)=>{ const on=!!FAV[k[0]==="p"?"jug":"eq"][k]; return `<button class="fistar" data-fistar="${hoyEsc(k)}" data-fidat='${hoyEsc(JSON.stringify(dat))}' aria-pressed="${on}"><svg width="16" height="16" viewBox="0 0 24 24" fill="${on?"currentColor":"none"}" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>${on?"Lo sigues":`Seguir ${tipo}`}</button>`; };
@@ -5907,6 +5941,67 @@ document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return
 },true);
 dlg.addEventListener("close",()=>{ FICHA.pila=[]; FICHA.actual=null; });
 
+// ---------- Animaciones (27 oct 2026): goles en vivo, votación, carga, guardar, tablas y barra de vidrio ----------
+// Todo con CSS; con "reducir movimiento" activado en el teléfono no se anima nada (y no cae confeti).
+const PZ_RM=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+const pzNorm=s=>goNorm(String(s||"")).replace(/[^a-z0-9]/g,"");
+// Aviso de vidrio arriba (gol de tu equipo, etc.)
+function pzAviso(tit,sub){
+  let el=$("#pzAviso"); if(!el){ el=document.createElement("div"); el.id="pzAviso"; el.setAttribute("role","status"); document.body.append(el); }
+  el.innerHTML=`<span class="pzai"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z"/></svg></span><span><b>${hoyEsc(tit)}</b><small>${hoyEsc(sub||"")}</small></span>`;
+  el.classList.remove("on"); void el.offsetWidth; el.classList.add("on");
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("on"),4200);
+}
+// Goles: se comparan los marcadores de las tarjetas (portada, partidos de fútbol y NFL) con los que ya se veían
+var PZ_SC=new Map();
+function pzGoles(root){
+  for(const el of root.querySelectorAll("[data-gid],.hv[data-hid],.hv[data-nid]")){
+    const id=el.dataset.gid||el.dataset.hid||el.dataset.nid, B=[...el.querySelectorAll(".team .sc, .r b")], sc=B.map(b=>parseInt(b.textContent,10));
+    if(!id||sc.length<2||sc.some(isNaN)) continue;
+    const prev=PZ_SC.get(id); PZ_SC.set(id,sc); if(!prev||prev.length!==sc.length) continue;
+    const nm=[...el.querySelectorAll(".team .tn, .r span:first-child")].map(s=>(s.childNodes[0]?.textContent||s.textContent||"").trim());
+    sc.forEach((v,i)=>{ if(v<=prev[i]) return;
+      B[i].classList.add("pzgolnum"); el.classList.remove("pzgol"); void el.offsetWidth; el.classList.add("pzgol");
+      const mio=Object.values(FAV.eq).some(x=>pzNorm(x.n)&&pzNorm(x.n)===pzNorm(nm[i]));
+      if(mio) pzAviso(`¡${el.dataset.nid?"Anotó":"GOL de"} ${nm[i]}!`,`${nm[0]} ${sc[0]}-${sc[1]} ${nm[1]}`); });
+  }
+}
+// Entrada en cascada: solo la primera vez que se pinta una sección (no en cada refresco en vivo)
+var PZ_CASC=0;
+const PZ_LISTAS=["#hoyVivo","#hoyMarc","#mxGames","#nflGames","#qmxBody","#fanBody","#f1Body","#tenBody","#favsBody","#qGames"];
+const pzObs=typeof MutationObserver!=="undefined"?new MutationObserver(M=>{ const vistos=new Set(M.map(m=>m.target));
+  for(const t of vistos){ pzGoles(t); if(Date.now()<PZ_CASC&&!PZ_RM()){ t.classList.remove("pzcasc"); void t.offsetWidth; t.classList.add("pzcasc"); clearTimeout(t._pzc); t._pzc=setTimeout(()=>t.classList.remove("pzcasc"),1400); } } }):null;
+function pzObserva(){ if(!pzObs) return; for(const s of PZ_LISTAS){ const el=$(s); if(el&&!el._pzo){ el._pzo=1; pzObs.observe(el,{childList:true}); } } }
+// Esqueletos de carga (en lugar de "Cargando…")
+const pzSkel=(n=4)=>`<div class="pzskel" aria-label="Cargando" role="status">${Array.from({length:n},()=>`<div><i style="width:40%"></i><i style="width:70%;height:16px"></i><i style="width:55%;height:16px"></i></div>`).join("")}</div>`;
+// Confeti (votación acertada)
+function pzConfeti(){
+  if(PZ_RM()) return; const c=document.createElement("div"); c.className="pzconf"; c.setAttribute("aria-hidden","true");
+  const col=["#F2D466","#9FD3A8","#FF9C80","#ECEFE7","#7FB8E8"];
+  c.innerHTML=Array.from({length:60},(_,i)=>`<i style="left:${Math.random()*100}%;background:${col[i%5]};--dx:${Math.round((Math.random()-.5)*200)}px;--rot:${Math.round(Math.random()*720-360)}deg;--dur:${(1.8+Math.random()*1.4).toFixed(2)}s;--del:${(Math.random()*.5).toFixed(2)}s${i%3?"":";width:7px;height:7px;border-radius:4px"}"></i>`).join("");
+  document.body.append(c); setTimeout(()=>c.remove(),4200);
+}
+const PZ_VA=new Set();
+function pzVoto(el,id,mine,res){
+  const k=id+"|"+(mine??"")+"|"+(res??"");
+  if(!PZ_VA.has(k)){ PZ_VA.add(k); el.classList.remove("pzllena"); void el.offsetWidth; el.classList.add("pzllena"); }
+  if(res!=null&&mine===res){ let ya=null; try{ ya=localStorage.getItem("pz_conf_"+id); localStorage.setItem("pz_conf_"+id,"1"); }catch(e){}
+    if(!ya){ pzConfeti(); pzAviso("¡Le atinaste!","Tu voto del partido de la semana fue el bueno"); } }
+}
+// "Guardado" con palomita que rebota
+const pzOk=t=>`<span class="pzok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>${hoyEsc(t)}</span>`;
+// Flechitas de la tabla: tu lugar contra la jornada anterior (se guarda en el navegador)
+function pzMov(scope,sig,keys){
+  let S={}; try{ S=JSON.parse(localStorage.getItem("pz_mov_"+scope)||"{}")||{}; }catch(e){}
+  const cur=Object.fromEntries(keys.map((k,i)=>[k,i+1]));
+  if(S.sig!==sig){ S={sig,prev:S.cur||null,cur}; try{ localStorage.setItem("pz_mov_"+scope,JSON.stringify(S)); }catch(e){} }
+  const P=S.prev||{}; return k=>{ const a=P[k], b=cur[k]; if(!a||!b||a===b) return ""; return `<span class="pzmov ${a>b?"up":"down"}">${a>b?"▲":"▼"}${Math.abs(a-b)}</span>`; };
+}
+// Barra de abajo: la "lente" de vidrio se desliza a la opción activa
+function pzLente(){ const n=$(".bnav"); if(!n) return; let l=n.querySelector(".pzlente"); if(!l){ l=document.createElement("span"); l.className="pzlente"; l.setAttribute("aria-hidden","true"); n.prepend(l); }
+  const B=[...n.querySelectorAll("button")], i=Math.max(0,B.findIndex(b=>b.getAttribute("aria-selected")==="true")); l.style.transform=`translateX(${i*100}%)`; }
+
+pzObserva();
 function fanRepinta(){ FAN.nube=0; FAN.eq=null; FAN.hash=null; if(!$("#fan").classList.contains("hidden")) fanRender(); }
 
 const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
@@ -7071,7 +7166,7 @@ async function hoyAbrir(k,id){
   pzTrack("hoy_partido",{liga:k});
   if(!LEAGUES[k]||!(comercial(LEAGUES[k])||LEAGUES[k].nat)) return hoyIrLiga(k);
   if(FLIG!==k) selectLeague(k,true);
-  $("#gbody").innerHTML=`<p class="note" style="text-align:center">Cargando…</p>`; if(!dlg.open) dlg.showModal();
+  $("#gbody").innerHTML=pzSkel(3); if(!dlg.open) dlg.showModal();
   try{
     const {ev}=LEAGUES[k].nat?await selSeason():await mxSeasonOf(k), s=ev.find(x=>x.id===id);
     if(!s){ dlg.close(); return hoyIrLiga(k); }
@@ -7144,6 +7239,7 @@ function votosPinta(){
     const pie=res!=null&&tot?`<p class="vn">Ganó ${hoyEsc(res===1?"el empate":nom(res))} · <b>el ${pct(res)}% le atinó</b>${mine!=null?(mine===res?" · tú también":" · tú no"):""}</p>`
       :!cerrado?`<p class="vn">${VOTO.msg[id]?VOTO.msg[id]+" · ":""}<button class="vc" data-vcambio="${id}">Cambiar mi voto</button></p>`:tot?"":`<p class="vn">Nadie votó en este partido.</p>`;
     el.innerHTML=tit+`<div class="vres">${tot?filas:`<p class="vn">Todavía no hay votos.</p>`}</div>`+pie;
+    if(tot&&typeof pzVoto==="function") pzVoto(el,id,mine,res);
   }
 }
 async function votar(id,r){
