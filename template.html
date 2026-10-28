@@ -377,7 +377,12 @@ dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 dialog#fdlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(620px,96vw);max-height:92vh}
 dialog#fdlg::backdrop{background:rgba(0,0,0,.55)}
 #fdlg h2{margin:4px 0 6px;font:700 30px/1 var(--display)}#fdlg .note{margin:0 0 12px}
-#fdlg .ftabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:0 0 10px}#fdlg .ftabs button{padding:0 2px;font-size:14px;min-width:0}
+#fdlg .ftabs{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;margin:0 0 10px;-webkit-overflow-scrolling:touch}#fdlg .ftabs::-webkit-scrollbar{display:none}#fdlg .ftabs button{flex:0 0 auto;padding:0 12px;font-size:14px;white-space:nowrap}
+#fdlg .fsub{display:inline-flex;margin:0 0 10px}
+#fdlg .fchips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0 10px;margin-bottom:4px}#fdlg .fchips::-webkit-scrollbar{display:none}
+#fdlg .fchips button{flex:0 0 auto;min-height:36px;padding:0 12px;border-radius:18px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px Barlow,sans-serif;cursor:pointer;white-space:nowrap}
+#fdlg .fchips button[aria-pressed="true"]{background:var(--mark);color:#1d2a26;border-color:var(--mark)}
+.hfc .px em.vivo{font-style:normal;color:#FF9C80;font-weight:700}
 .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
 .fgh{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
 .fit{display:flex;align-items:center;gap:9px;min-height:52px;padding:0 10px 0 8px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 16px/1.1 var(--display);text-align:left;cursor:pointer}
@@ -843,6 +848,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .dcount>span:first-child{font-size:13px;font-weight:600;color:var(--muted)}
 .dcd{display:flex;gap:8px}
 .dcd span{display:flex;flex-direction:column;align-items:center;min-width:46px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 4px}
+@media (max-width:560px){.dcount{flex-direction:column;align-items:stretch;gap:8px}.dcount>span:first-child{text-align:center}.dcd{gap:6px}.dcd span{flex:1 1 0;min-width:0}.deq .dt b{font-size:18px;overflow-wrap:anywhere}.deq .dh{font-size:22px}.deq .dd{font-size:12px}}
 .dcd b{font:700 22px/1 var(--display)}.dcd .ya{color:var(--mark);font-size:18px}.dcd small{font-size:11px;color:var(--muted)}
 .dline{display:flex;flex-direction:column;gap:4px}
 .dtl{position:relative;height:46px}
@@ -2774,7 +2780,7 @@ function qnNeedAcct(p){ if(!D.fb||acctOk()) return false; QN_PEND=p; ACCT.why="p
 function qnDoPick(qw,k,t,mode){
   const g=(qnCache?.games||[]).find(x=>`${x.a}@${x.h}`===k); if(!g||g.lock||(g.ko&&+g.ko<=Date.now())) return false;
   const all=qnPicksAll(), S=all[D.season]=all[D.season]||{}, W=S[qw]=S[qw]||{}, G=W[k]=W[k]||{};
-  if(G[mode]?.t===t) delete G[mode]; else {G[mode]=mode==="ats"?{t,L:g.L}:{t}; pzTrack("hacer_pick",{modo:mode});}
+  if(G[mode]?.t===t) delete G[mode]; else {G[mode]=mode==="ats"?{t,L:g.L}:{t}; pzTrack("hacer_pick",{modo:mode}); vidaAct("p");}
   if(!Object.keys(G).length) delete W[k];
   qnPicksSave(all); grOnPick(qw,k,G); return true;
 }
@@ -3135,7 +3141,7 @@ function nflDetHTML(x,S,b,L){
   return `<div class="det ndet${pre?" pre":""}" data-tab="${NDET.tab}">${head}<nav class="dtabs" aria-label="Secciones del partido">${tabs.map(t=>`<button data-ntab="${t}" class="${t==="Estadísticas"?"solocel":""}" aria-pressed="${NDET.tab===t}">${t}</button>`).join("")}</nav><div class="ngrid">${cuerpo}</div></div>`;
 }
 async function openNfl(id,quiet){
-  const x=(D.sched||[]).find(g=>g.id===id); if(!x) return;
+  const x=(D.sched||[]).find(g=>g.id===id); if(!x) return; if(!quiet) vidaAct("f");
   if(!dlg.open){ $("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando…</p>`; dlg.showModal(); }
   if(!PAQ_OK.box) await paquete("box").catch(()=>{});
   const L=NLIVE[id], b=(D.box||{})[id], pre=x.hs==null&&!L;
@@ -4058,7 +4064,7 @@ function mxPreviaHTML(sm,H,A){
 async function openMx(id,quiet){
   const {ev}=LEAGUES[FLIG].nat?await selSeason():await mxSeason(); const e=ev.find(x=>x.id===id); if(!e) return;
   const keep=quiet?$("#gbody").scrollTop:0;
-  if(!quiet){$("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando detalle…</p>`; dlg.showModal();}
+  if(!quiet){$("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando detalle…</p>`; dlg.showModal(); vidaAct("f");}
   let sm=null; try{sm=e._sm?await smSummary(e,FLIG):await fetch(`${ESPN}/site/v2/sports/soccer/${e._slug||flSlug()}/summary?event=${id}`).then(r=>r.json());}catch(err){}
   if(quiet&&(!dlg.open||DLG_CUR?.id!==id)) return;   // lo cerraron o abrieron otro mientras se actualizaba
   if(sm?._f){ const x=afEvent(sm._f,LEAGUES[FLIG]||{}); hoyCopia(e,x); }   // el detalle trae el marcador y el estado más recientes
@@ -5607,7 +5613,7 @@ document.addEventListener("click",ev=>{
   const go=t.closest("[data-qmxj]"); if(go){ QMX.j=+go.dataset.qmxj; qmxRender(); return; }
   const b=t.closest("[data-qmx]"); if(b&&!b.disabled){ const j=QMX.j, x=qmxMios(j), f=b.dataset.qmx;
     if(qmxD().J[j].pr<=Date.now()/1000){ qmxRender(); return; }
-    x.p={...x.p}; if(x.p[f]===b.dataset.k) delete x.p[f]; else x.p[f]=b.dataset.k; qmxGuarda(j,x); pzTrack("qmx_pick",{}); const y=window.scrollY; qmxRender(true); window.scrollTo(0,y); return; }
+    x.p={...x.p}; if(x.p[f]===b.dataset.k) delete x.p[f]; else x.p[f]=b.dataset.k; qmxGuarda(j,x); pzTrack("qmx_pick",{}); vidaAct("p"); const y=window.scrollY; qmxRender(true); window.scrollTo(0,y); return; }
   if(t.closest("#qmxShare")){ (async()=>{ const j=QMX.j, J=qmxD().J[j], mios=qmxMios(j), R=J.p.map(r=>qmxRes(r,QMX.vivo));
       const celdas=J.p.map((r,i)=>R[i].susp?null:mios.p[r[0]]?mios.p[r[0]]===R[i].r:false), ac=celdas.filter(x=>x===true).length, n=J.p.filter((r,i)=>!R[i].susp).length;
       const G=await qmxTablaGen(), yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null, st=[];
@@ -6116,7 +6122,7 @@ function fichaAbre(fn,args,nueva=true){
   FICHA.actual=[fn,args]; $("#gbody").innerHTML=pzSkel(4); if(!dlg.open) dlg.showModal();
 }
 const fichaVolver=()=>FICHA.pila.length&&FICHA.pila[FICHA.pila.length-1]?`<button class="fivolver" data-fivolver>‹ Volver</button>`:"";
-const fichaStar=(k,dat,tipo)=>{ const on=!!FAV[k[0]==="p"?"jug":"eq"][k]; return `<button class="fistar" data-fistar="${hoyEsc(k)}" data-fidat='${hoyEsc(JSON.stringify(dat))}' aria-pressed="${on}"><svg width="16" height="16" viewBox="0 0 24 24" fill="${on?"currentColor":"none"}" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>${on?"Lo sigues":`Seguir ${tipo}`}</button>`; };
+const fichaStar=(k,dat,tipo)=>{ const on=!!FAV[favGrupo(k)][k]; return `<button class="fistar" data-fistar="${hoyEsc(k)}" data-fidat='${hoyEsc(JSON.stringify(dat))}' aria-pressed="${on}"><svg width="16" height="16" viewBox="0 0 24 24" fill="${on?"currentColor":"none"}" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>${on?"Lo sigues":`Seguir ${tipo}`}</button>`; };
 const FICHA_POS={Goalkeeper:"Porteros",Defender:"Defensas",Midfielder:"Medios",Attacker:"Delanteros"};
 async function eqFicha(id,nueva=true){
   id=String(id); fichaAbre(eqFicha,[id],nueva); pzTrack("ficha_equipo",{});
@@ -6349,7 +6355,7 @@ function chatPinta(){
   if(abajo||!CHAT.pintado){ L.scrollTop=L.scrollHeight; } CHAT.pintado=1;
 }
 async function chatManda(t){
-  t=(t||"").trim().slice(0,280); if(!t||!CHAT.g) return; const msg=$("#chatMsg");
+  t=(t||"").trim().slice(0,280); if(!t||!CHAT.g) return; const msg=$("#chatMsg"); vidaAct("c");
   if(Date.now()-CHAT.ult<1500){ if(msg) msg.textContent="Más despacio."; return; } CHAT.ult=Date.now();
   try{ await ACCT.db.collection(`grupos/${CHAT.g}/chat`).add({uid:ACCT.user.uid,n:grName().split(" ")[0].slice(0,40),t,ts:grFV().serverTimestamp()}); if(msg) msg.textContent=""; pzTrack("chat_mensaje",{}); }
   catch(e){ if(msg) msg.textContent=`No se mandó${e?.code?` (${e.code})`:""}.`; }
@@ -6490,17 +6496,22 @@ function vidaMisHoy(){
   const R=[]; for(const e of (HOY.ev?.values?.()||[])){ const cs=e.competitions?.[0]?.competitors||[], i=cs.findIndex(c=>FAV.eq["f"+c.team?.id]); if(i>=0) R.push({e,cs,i}); }
   const dia=hoyYmd();
   for(const s of D.sched||[]){ if(!s.ko||hoyYmd(+new Date(s.ko))!==dia) continue; const lado=FAV.eq["n"+s.h]?"h":FAV.eq["n"+s.a]?"a":null; if(lado) R.push({nfl:s,lado}); }
-  return R.sort((a,b)=>(a.e?.date||a.nfl.ko).localeCompare(b.e?.date||b.nfl.ko));
+  for(const k of Object.keys(FAV.eq)) if(k[0]==="b"){ const X=favxPide(k,()=>favxNbaEq(k.slice(1))); if(!X||X.err) continue;
+    if(X.ult&&hoyYmd(+new Date(X.ult.d))===dia) R.push({nba:{k,g:X.ult,fin:true}}); if(X.prox&&hoyYmd(+new Date(X.prox.d))===dia) R.push({nba:{k,g:X.prox,fin:false}}); }
+  return R.sort((a,b)=>vidaFecha(a).localeCompare(vidaFecha(b)));
 }
+const vidaFecha=x=>x.e?.date||x.nfl?.ko||x.nba?.g?.d||"";
+const vidaFin=x=>x.e?x.e.status?.type?.state==="post":x.nfl?(x.nfl.hs!=null||!!NLIVE[x.nfl.id]?.done):!!x.nba?.fin;
 function vidaFilaRes(x){
   let yo,riv,gy,gr,fin,vivo,min="",liga,abre="";
-  if(x.e){ const st=x.e.status?.type?.state, c=x.cs, o=1-x.i; yo=esTeam(c[x.i].team?.shortDisplayName||c[x.i].team?.displayName); riv=esTeam(c[o].team?.shortDisplayName||c[o].team?.displayName);
+  if(x.nba){ const g=x.nba.g, ab=x.nba.k.slice(1); yo=NBA_N[ab]||ab; riv=NBA_N[g.riv]||g.riv; gy=g.gy; gr=g.gr; fin=x.nba.fin; vivo=!!g.vivo; liga="NBA"; abre=` data-hact="nbafav"`; }
+  else if(x.e){ const st=x.e.status?.type?.state, c=x.cs, o=1-x.i; yo=esTeam(c[x.i].team?.shortDisplayName||c[x.i].team?.displayName); riv=esTeam(c[o].team?.shortDisplayName||c[o].team?.displayName);
     gy=c[x.i].score; gr=c[o].score; fin=st==="post"; vivo=st==="in"; min=vivo?mxCard(x.e,0).status||"":""; liga=LEAGUES[x.e._k]?.label||""; abre=` data-hk="${x.e._k}" data-hid="${x.e.id}"`; }
   else { const s=x.nfl, L=NLIVE[s.id]; yo=NT[x.lado==="h"?s.h:s.a]?.n||""; riv=NT[x.lado==="h"?s.a:s.h]?.n||""; const hs=s.hs??L?.hs, as=s.as_??L?.as;
     gy=x.lado==="h"?hs:as; gr=x.lado==="h"?as:hs; fin=s.hs!=null||!!L?.done; vivo=!fin&&!!L?.live; liga="NFL"; abre=` data-nid="${s.id}"`; }
-  const ko=x.e?+new Date(x.e.date)/1000:+new Date(x.nfl.ko)/1000;
+  const ko=+new Date(vidaFecha(x))/1000;
   const r=fin&&gy!=null&&gr!=null?(+gy>+gr?["G","g"]:+gy<+gr?["P","p"]:["E","e"]):null;
-  const der=fin||vivo?`<b class="vmar" data-pzsc="v${x.e?.id||x.nfl.id}">${gy??"–"}-${gr??"–"}</b>`:`<b class="vmar">${vidaHora(ko)}</b>`;
+  const der=fin||vivo?`<b class="vmar" data-pzsc="v${x.e?.id||x.nfl?.id||x.nba.k}">${gy??"–"}-${gr??"–"}</b>`:`<b class="vmar">${vidaHora(ko)}</b>`;
   return `<button class="vfila"${abre}><i class="vr ${r?r[1]:vivo?"vivo":""}">${r?r[0]:vivo?"":`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`}</i>
     <span><b>${hoyEsc(yo)}</b><small>${hoyEsc(liga)} · ${vivo?`<em>En vivo ${hoyEsc(min)}</em>`:fin?(r[0]==="G"?"ganó":r[0]==="P"?"perdió":"empató")+" contra "+hoyEsc(riv):"contra "+hoyEsc(riv)}</small></span>${der}</button>`;
 }
@@ -6559,7 +6570,7 @@ function vidaPortadaHTML(){
       ${st==="pre"||!e&&cl.ts>Date.now()/1000?vidaCuentaHTML(cl.ts):""}
       <div class="vbtns">${abre?`<button class="vbtn" data-hk="${cl.lg}" data-hid="${cl.fid}">${st==="pre"||!e?"Ver la previa":"Ver el partido"}</button>`:""}${cl.lg==="mx"&&D.qmx?`<button class="vbtn2" data-vir="qmx">Mete tu quiniela</button>`:""}</div>
       ${cie}${acc}</div></div>`; }
-  const col=vidaColFav()||["#4f7a5e","#2c4a40"], mis=vidaMisHoy(), fin=mis.filter(x=>x.e?x.e.status?.type?.state==="post":(x.nfl.hs!=null||NLIVE[x.nfl.id]?.done)), pend=mis.filter(x=>!fin.includes(x));
+  const col=vidaColFav()||["#4f7a5e","#2c4a40"], mis=vidaMisHoy(), fin=mis.filter(vidaFin), pend=mis.filter(x=>!fin.includes(x));
   const noche=h>=19||h<5; let cuerpo="";
   if((noche||!pend.length)&&fin.length) cuerpo=`<p class="vtit">Así le fue a los tuyos</p><div class="vlista">${fin.map(vidaFilaRes).join("")}</div>${pend.length?`<div class="vlista">${pend.map(vidaFilaRes).join("")}</div>`:""}`;
   else if(pend.length) cuerpo=`<p class="vtit">${pend.length===1&&!fin.length?"Hoy juega tu equipo":"Hoy juegan los tuyos"}</p><div class="vlista">${pend.concat(fin).map(vidaFilaRes).join("")}</div>`;
@@ -6576,6 +6587,9 @@ $("#hoyPor")?.addEventListener("click",ev=>{
   if(t.dataset.vact==="semana") return vidaHistoria();
 });   // los partidos (data-hid / data-nid) y "Sigue a tus equipos" (data-hact) los abre el manejador de #hoy
 
+// ---- Actividad de la semana (este navegador): partidos que abriste, reacciones, mensajes y picks ----
+const vidaSemana=()=>{ const d=new Date(Date.now()-6*3600e3), dow=(d.getUTCDay()+6)%7; return new Date(d.getTime()-dow*864e5).toISOString().slice(0,10); };
+function vidaAct(k){ try{ let A=JSON.parse(localStorage.getItem("pz_act")||"{}"); const s=vidaSemana(); if(A.s!==s) A={s,f:0,r:0,c:0,p:0}; A[k]=(A[k]||0)+1; localStorage.setItem("pz_act",JSON.stringify(A)); }catch(e){} }
 // ---- Rachas y logros ----
 const VIDA_LOGROS=[["pick","1","Primera quiniela","Guardaste tus primeros picks","#9FD3A8"],["racha3","3","Tres seguidas","Picks en 3 jornadas seguidas","#FF9C80"],
   ["seis","6+","Seis o más","6 aciertos o más en una jornada","#F2D466"],["perfecta","9/9","Jornada perfecta","Le atinaste a todos los partidos","#F2D466"],
@@ -6640,15 +6654,36 @@ function vidaSlides(){
     if(x.best){ const b=x.best, nm=b.mi==="L"?vidaNomEq(b.r[2])||qmxEq(b.r[2]).n:b.mi==="V"?vidaNomEq(b.r[3])||qmxEq(b.r[3]).n:"Empate";
       S.push({eti:"Tu mejor pick",grande:nm,txt:`${qmxEq(b.r[2]).n} ${b.R.gl}-${b.R.gv} ${qmxEq(b.r[3]).n}`,sub:`Solo ${b.pct}% le daban esa opción`,c:"#9FD3A8",fondo:"#8a2a3b",tam:nm.length>9?60:80}); } }
   else if(G.yo){ const js=Object.keys(G.yo.j).map(Number).sort((a,b)=>b-a), j=js[0]; if(j!=null) S.push({eti:"Quiniela Liga MX",grande:`${G.yo.j[j][0]}`,txt:`aciertos en la jornada ${j}`,sub:"",c:"#F2D466",fondo:"#4f7a5e",tam:130}); }
-  if(G.gen) S.push({eti:"En la general",grande:`${G.gen.pos}º`,txt:`de ${G.gen.de} en la Quiniela Liga MX`,sub:`Llevas ${G.gen.pts} puntos`,c:"#FF9C80",fondo:"#8a4a3a",tam:130});
+  if(D.week&&typeof qnRecord==="function") for(const m of ["su","ats"]){ const R=qnRecord(m,D.week); if(R.w+R.l+R.p){ const T=qnRecord(m);
+    S.push({eti:"Quiniela NFL",grande:`${R.w}-${R.l}`,txt:`en la semana ${D.week} ${m==="ats"?"contra el spread":"sin spread"}`,sub:`Temporada: ${qnRecTxt(T)}`,c:"#7FB8E8",fondo:"#1c3a5e",tam:118}); break; } }
+  if(G.gen) S.push({eti:"En la general",grande:`${G.gen.pos}º`,txt:`de ${G.gen.de} en la Quiniela Liga MX`,sub:`${G.gen.de>2?`Mejor que el ${Math.round((G.gen.de-G.gen.pos)/(G.gen.de-1)*100)}% · `:""}${G.gen.pts} puntos`,c:"#FF9C80",fondo:"#8a4a3a",tam:130});
   if(G.fan) S.push({eti:"Fantasy Champions",grande:`${G.fan.pts} pts`,txt:`en la ${G.fan.n.toLowerCase()}`,sub:`${G.fan.pos}º de ${G.fan.de} · ${G.fan.tot} en total`,c:"#7FB8E8",fondo:"#2f5a8a",tam:96});
   const eqs=Object.keys(FAV.eq).filter(k=>k[0]==="f"&&D.eq_info?.[k.slice(1)]?.f).map(k=>[FAV.eq[k].n,D.eq_info[k.slice(1)].f.slice(-1)]);
   if(eqs.length){ const c={G:0,E:0,P:0}; eqs.forEach(([,r])=>c[r]!=null&&c[r]++);
     S.push({eti:"Tus equipos",grande:`${c.G}G · ${c.E}E · ${c.P}P`,txt:eqs.slice(0,4).map(([n])=>esTeam(n)).join(", ")+(eqs.length>4?` y ${eqs.length-4} más`:""),sub:c.P?"En su último partido":"Ninguno perdió en su último partido",c:"#F2D466",fondo:(vidaColFav()||["#3d6b5a"])[0],tam:64}); }
-  if(S.length&&G.T.size) S.push({eti:"Tu racha",grande:`${G.racha}`,txt:G.racha===1?"jornada seguida con picks":"jornadas seguidas con picks",sub:`${G.T.size} de ${VIDA_LOGROS.length} logros desbloqueados`,c:"#FF9C80",fondo:"#6b3a2f",tam:130});
+  if(D.qmx){ let n=0,u=0; for(const [jid,x] of Object.entries(qmxLs())){ if(!jid.startsWith(qmxD().s+"-")) continue; const J=qmxD().J[+jid.split("-")[1]]; if(!J) continue;
+      for(const r of J.p){ const mi=x.p?.[r[0]]; if(!mi||!r[7]) continue; n++; if(r[7]["LEV".indexOf(mi)]<Math.max(...r[7])) u++; } }
+    if(n>=5){ const pc=Math.round(u/n*100), [t,d]=pc>=40?["Valiente","Te gusta ir contra la corriente"]:pc>=20?["Calculador","Arriesgas cuando vale la pena"]:["A la segura","Casi siempre vas con el favorito"];
+      S.push({eti:"Tu estilo",grande:t,txt:`${pc}% de tus picks fueron contra el favorito`,sub:d,c:"#C9D6CF",fondo:"#4a3f6b",tam:t.length>9?62:84}); } }
+  const At=[];
+  for(const [k,x] of Object.entries(FAV.jug)){
+    if(k[0]==="r"){ const P=FAVX.d._f1?.P?.[k.slice(1)]; if(P) At.push([`${P.rank}º`,`${x.n} en el campeonato de F1`,`${P.pts} pts${P.ult&&/^\d+$/.test(P.ult)?` · ${P.ult} en el último GP`:""}`,x.n]); }
+    else if(k[0]==="t"){ const tr=x.tour||"atp", R=FAVX.d["_ten_"+tr]?.rk?.[k.slice(1)]; if(R) At.push([`#${R.cur}`,`${x.n} en el ranking ${tr.toUpperCase()}`,`${R.pts} puntos`,x.n]); } }
+  for(const k of Object.keys(FAV.eq)) if(k[0]==="b"){ const X=FAVX.d[k]; if(X&&!X.err) At.push([`${X.w}-${X.l}`,`${NBA_N[k.slice(1)]||k.slice(1)} en la NBA`,X.ult?`${X.ult.g?"Ganó":"Perdió"} su último partido ${X.ult.gy}-${X.ult.gr}`:"",NBA_N[k.slice(1)]]); }
+  if(At.length){ const a=At[0]; S.push({eti:At.length>1?"Tus atletas":"Tu atleta",grande:a[0],txt:a[1],sub:At.length>1?At.slice(1,3).map(x=>`${x[3]}: ${x[0]}`).join(" · "):a[2],c:"#FF9C80",fondo:"#5a2f2f",tam:a[0].length>5?90:120}); }
+  let A={}; try{ A=JSON.parse(localStorage.getItem("pz_act")||"{}"); }catch(e){}
+  if(A.s===vidaSemana()&&(A.f||0)+(A.r||0)+(A.c||0)+(A.p||0)>=2) S.push({eti:"Tu semana en números",grande:`${A.f||0}`,txt:A.f===1?"partido que abriste":"partidos que abriste",
+    sub:[A.p?`${A.p} picks`:"",A.r?`${A.r} reacciones`:"",A.c?`${A.c} mensajes en tus grupos`:""].filter(Boolean).join(" · ")||"¡Ven más seguido!",c:"#9FD3A8",fondo:"#2f5a4a",tam:130});
+  { const ahora=Date.now()/1000, v=Object.keys(FAV.eq).filter(k=>k[0]==="f").map(k=>[k,D.eq_info?.[k.slice(1)]?.p]).filter(([,p])=>p&&p[1]>ahora&&p[1]<ahora+8*86400).sort((a,b)=>a[1][1]-b[1][1])[0];
+    if(v){ const [k,p]=v, riv=esTeam(p[4]); S.push({eti:"Lo que viene",grande:`${p[5]?"vs":"en"} ${riv}`,txt:`${FAV.eq[k].n} · ${qmxHora(p[1])}`,sub:LEAGUES[p[2]]?.label||"",c:"#F2D466",fondo:(vidaColEq(k)||["#3d6b5a"])[0],tam:riv.length>8?54:72}); } }
+  if(S.length&&G.racha>0) S.push({eti:"Tu racha",grande:`${G.racha}`,txt:G.racha===1?"jornada seguida con picks":"jornadas seguidas con picks",sub:`${G.T.size} de ${VIDA_LOGROS.length} logros desbloqueados`,c:"#FF9C80",fondo:"#6b3a2f",tam:130});
   return S;
 }
-function vidaHistoria(){
+async function vidaHistoria(){
+  if(VIDA.abriendo) return; VIDA.abriendo=1;
+  try{ for(const [k,x] of Object.entries(FAV.jug)){ if(k[0]==="r") favxPide("_f1",favxF1); if(k[0]==="t"){ const tr=x.tour||"atp"; favxPide("_ten_"+tr,()=>favxTenis(tr)); } }
+    for(const k of Object.keys(FAV.eq)) if(k[0]==="b") favxPide(k,()=>favxNbaEq(k.slice(1)));
+    const P=Object.values(FAVX.p); if(P.length) await Promise.race([Promise.allSettled(P),new Promise(r=>setTimeout(r,2500))]); }finally{ VIDA.abriendo=0; }
   const S=vidaSlides(); if(!S.length) return; pzTrack("resumen_semana",{n:S.length});
   let el=$("#vstory"); if(!el){ el=document.createElement("div"); el.id="vstory"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true"); el.setAttribute("aria-label","Tu semana en La Pizarra"); document.body.append(el); }
   const ini=new Date(Date.now()-6*864e5), fmt=d=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"short"}).format(d).replace(".","");
@@ -6713,7 +6748,7 @@ async function vidaReacManda(fid){
 document.addEventListener("click",ev=>{ const b=ev.target.closest?.(".vreac [data-vr]"); if(!b) return;
   const fid=b.closest(".vreac").dataset.vrid, k=b.dataset.vr, R=VIDA.reac[fid]||(VIDA.reac[fid]={c:{},cola:{},prev:null,unsub:null});
   if((R.cola[k]||0)>=5) return;
-  R.cola[k]=(R.cola[k]||0)+1; R.c[k]=(R.c[k]||0)+1; vidaReacVuela(k,3,b); vidaReacPinta(fid);
+  R.cola[k]=(R.cola[k]||0)+1; R.c[k]=(R.c[k]||0)+1; vidaAct("r"); vidaReacVuela(k,3,b); vidaReacPinta(fid);
   b.classList.remove("vbump"); void b.offsetWidth; b.classList.add("vbump");
   clearTimeout(R.t); R.t=setTimeout(()=>vidaReacManda(fid),900); if(!R.unsub) vidaReacConecta(fid); pzTrack("reaccion",{k}); });
 dlg.addEventListener("close",()=>{ for(const R of Object.values(VIDA.reac)){ if(R.unsub){ try{ R.unsub(); }catch(e){} R.unsub=null; R.prev=null; } } });
@@ -7514,7 +7549,7 @@ const FAV_LIGA={mx:"Liga MX",eng:"Premier League",esp:"LaLiga",ita:"Serie A",ger
 function favGuarda(){ try{ localStorage.setItem(FAV_K,JSON.stringify(FAV)); }catch(e){} if(typeof acctPush==="function") acctPush(); favRepinta(); }
 function favRepinta(){ const h=$("#hoyFav"); if(h&&!$("#hoy").classList.contains("hidden")) h.innerHTML=hoyFavHTML(); if(!$("#favs")?.classList.contains("hidden")) favsRender(); }
 function favToggle(k,dat){
-  const grupo=k[0]==="p"?"jug":"eq", on=!FAV[grupo][k];
+  const grupo=favGrupo(k), on=!FAV[grupo][k];
   if(on) FAV[grupo][k]=dat; else delete FAV[grupo][k];
   pzTrack("fav",{k,on}); favGuarda(); return on;
 }
@@ -7550,7 +7585,7 @@ const FAV_ESTRELLA=`<svg width="20" height="20" viewBox="0 0 24 24" stroke-width
 const favIni=n=>(n||"").split(/\s+/).filter(Boolean).map(w=>w[0]).join("").replace(/[^A-Za-zÁÉÍÓÚÑ]/g,"").slice(0,3).toUpperCase();
 function favItem(x,grupo){
   const on=!!FAV[grupo][x.k], logo=x.logo&&SM_ESCUDOS?`<img src="${x.logo}" alt="" loading="lazy" onerror="this.remove()">`:favIni(x.n);
-  const sub=grupo==="jug"?[x.club,x.g!=null?`${x.g} ${x.g===1?"gol":"goles"}`:""].filter(Boolean).join(" · "):(x.sub||"");
+  const sub=x.sub||(grupo==="jug"?[x.club,x.g!=null?`${x.g} ${x.g===1?"gol":"goles"}`:""].filter(Boolean).join(" · "):"");
   return `<button class="fit" data-fk="${hoyEsc(x.k)}" aria-pressed="${on}"><span class="fl">${logo}</span><span class="fn">${hoyEsc(x.n)}${sub?`<small>${hoyEsc(sub)}</small>`:""}</span>${FAV_ESTRELLA}</button>`;
 }
 function favListaHTML(){
@@ -7561,16 +7596,19 @@ function favListaHTML(){
     const R=FAV_UI.jug.filter(x=>goNorm(x.n+" "+x.club).includes(q)).slice(0,40);
     return R.length?`<div class="fgrid">${R.map(x=>favItem(x,"jug")).join("")}</div>`:`<p class="note">No lo encontramos. Buscamos en la Liga MX, las grandes ligas de Europa, los goleadores de toda Europa y la Selección.</p>`;
   }
+  if(["nba","f1","ten"].includes(FAV_UI.tab)) return favxListaHTML(FAV_UI.tab,q);
   const L=favEquipos(FAV_UI.tab).filter(x=>x.h||!q||goNorm(x.n).includes(q));
   const R=L.filter((x,i)=>!x.h||(L[i+1]&&!L[i+1].h));   // sin encabezados vacíos
-  return R.length?`<div class="fgrid">${R.map(x=>x.h?`<p class="fgh">${hoyEsc(x.h)}</p>`:favItem(x,"eq")).join("")}</div>`:`<p class="note">No hay equipos con ese nombre en esta pestaña.</p>`;
+  const mundo=FAV_UI.tab==="mundo"?favxMundoHTML(q):"";
+  return R.length?`<div class="fgrid">${R.map(x=>x.h?`<p class="fgh">${hoyEsc(x.h)}</p>`:favItem(x,"eq")).join("")}</div>${mundo}`:mundo||`<p class="note">No hay equipos con ese nombre en esta pestaña.</p>`;
 }
-function favRender(){
-  const tabs=[["mx","Liga MX"],["mundo","Mundo"],["nfl","NFL"],["sel","México"],["jug","Jugadores"]];
+function favCentra(){ for(const el of document.querySelectorAll('#fbody .ftabs [aria-pressed="true"],#fLista .fchips [aria-pressed="true"]')){ const c=el.parentElement; c.scrollLeft=el.offsetLeft-(c.clientWidth-el.offsetWidth)/2; } }
+function favRender(){ setTimeout(favCentra,0);
+  const tabs=[["mx","Liga MX"],["mundo","Fútbol mundial"],["sel","México"],["jug","Futbolistas"],["nfl","NFL"],["nba","NBA"],["f1","F1"],["ten","Tenis"]];
   $("#fbody").innerHTML=`<h2>Mis equipos</h2><p class="note">Toca la estrella de los equipos y jugadores que quieras seguir. ${acctOk()?"Se guardan en tu cuenta.":"Se guardan en este navegador; si entras con tu cuenta, en todos tus dispositivos."}</p>
     <div class="hseg ftabs" role="group" aria-label="Tipo">${tabs.map(([k,l])=>`<button data-ft="${k}" aria-pressed="${FAV_UI.tab===k}">${l}</button>`).join("")}</div>
     <label class="gobus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
-      <input id="fQ" type="search" autocomplete="off" placeholder="${FAV_UI.tab==="jug"?"Busca un jugador (Raúl Jiménez, Mbappé…)":"Busca un equipo"}" aria-label="Buscar" value="${hoyEsc(FAV_UI.q)}"></label>
+      <input id="fQ" type="search" autocomplete="off" placeholder="${{jug:"Busca un futbolista (Raúl Jiménez, Mbappé…)",mundo:"Busca cualquier equipo del mundo",f1:"Busca un piloto o escudería",ten:"Busca un tenista",nba:FAV_UI.nbav==="jug"?"Busca un jugador de ese equipo":"Busca un equipo de la NBA"}[FAV_UI.tab]||"Busca un equipo"}" aria-label="Buscar" value="${hoyEsc(FAV_UI.q)}"></label>
     <div id="fLista">${favListaHTML()}</div>
     <div class="fpie"><button class="btn" id="fListo">Listo · ${favN()}</button></div>`;
 }
@@ -7581,12 +7619,14 @@ fdlg.addEventListener("click",ev=>{
   if(ev.target===fdlg) return fdlg.close();
   const t=ev.target.closest("[data-ft]"); if(t){ FAV_UI.tab=t.dataset.ft; FAV_UI.q=""; if(FAV_UI.tab==="jug") favCargaJug(); return favRender(); }
   if(ev.target.closest("#fListo")) return fdlg.close();
+  const sb=ev.target.closest("[data-fsub]"); if(sb){ const [c,v]=sb.dataset.fsub.split(":"); FAV_UI[c]=v; FAV_UI.q=""; return favRender(); }
+  const tm=ev.target.closest("[data-fnbatm]"); if(tm){ FAV_UI.nbatm=tm.dataset.fnbatm; FAV_UI.q=""; const y=$("#fLista .fchips")?.scrollLeft||0; $("#fLista").innerHTML=favListaHTML(); const c=$("#fLista .fchips"); if(c) c.scrollLeft=y; return; }
   const b=ev.target.closest("[data-fk]"); if(b){
-    const k=b.dataset.fk, grupo=k[0]==="p"?"jug":"eq";
+    const k=b.dataset.fk, grupo=favGrupo(k);
     let x=null;
     if(grupo==="jug") x=(FAV_UI.jug||[]).find(y=>y.k===k)||favSugeridos().find(y=>y.k===k);
     else x=["mx","mundo","nfl","sel"].flatMap(favEquipos).find(y=>y.k===k);
-    const dat=x?(grupo==="jug"?{n:x.n,club:x.club,lg:x.lg}:{n:x.n,logo:x.logo||"",lg:x.lg}):{n:b.textContent.trim()};
+    const dat=FAVX_IT[k]?.dat||(x?(grupo==="jug"?{n:x.n,club:x.club,lg:x.lg}:{n:x.n,logo:x.logo||"",lg:x.lg}):{n:b.querySelector(".fn")?.childNodes[0]?.textContent.trim()||b.textContent.trim()});
     const on=favToggle(k,dat); b.setAttribute("aria-pressed",on); $("#fListo").textContent=`Listo · ${favN()}`;
   }
 });
@@ -7604,7 +7644,133 @@ const favCuando=ts=>{ const d=new Date(ts*1000); return `${cap(new Intl.DateTime
 const favForma=f=>f?`<span class="fo">${[...f].map(r=>`<s class="${r}">${r}</s>`).join("")}</span>`:"";
 function favNota(fn){ const n=(D.noticias||[]).find(fn); if(!n) return "";
   const [tl]=ULT_TIPO[n.tipo]||["Nota"]; return `<span class="nt"><span class="utag u-${n.tipo}">${tl}</span><span>${hoyEsc(n.tit)}</span></span>`; }
+// ---------- Favoritos de todo (28 oct 2026): cualquier equipo de fútbol del mundo, NBA, F1, tenis y atletas ----------
+// Claves nuevas en FAV.eq: b<ABR> equipo de la NBA, e<id> escudería de F1. En FAV.jug: a<id> jugador de la NBA (dat.tm = su
+// equipo), r<id> piloto de F1, t<id> tenista (dat.tour = atp | wta). Fútbol de otras ligas: f<id> como siempre, buscado en
+// API-Football (teams?search=) y su próximo partido y forma con fixtures?team= (por el Worker).
+// NBA, F1 y tenis vienen de ESPN desde el navegador, igual que esas secciones. FAVX guarda lo que ya se pidió (10 min).
+const FAVX={d:{},p:{}}, FAVX_IT={}, FAVX_L={}, FAVX_LP={};
+const favGrupo=k=>"part".includes(k[0])?"jug":"eq";
+function favxPide(k,fn){
+  const c=FAVX.d[k]; if(c&&Date.now()-c.t<10*60e3) return c;
+  if(!FAVX.p[k]) FAVX.p[k]=Promise.resolve().then(fn).then(d=>{ FAVX.d[k]={t:Date.now(),...(d||{err:1})}; }).catch(()=>{ FAVX.d[k]={t:Date.now(),err:1}; })
+    .finally(()=>{ delete FAVX.p[k]; favRepinta(); if(typeof VIDA!=="undefined"){ VIDA.por=""; vidaPinta(); } });
+  return c||null;
+}
+const favxHora=iso=>masHora(iso,{weekday:"short",hour:"numeric",minute:"2-digit"}).replace(/\./g,"");
+// ---- datos ----
+async function favxNbaEq(ab){
+  const id=NBA_ID[ab]||NBA.eq?.[ab]?.id; if(!id) return null;
+  const j=await fetch(`${NBA_API}/teams/${id}/schedule?season=${NBA_TEMP}&seasontype=2`).then(r=>r.json());
+  let w=0,l=0,ult=null,prox=null; const sc=x=>x?.score?.displayValue??x?.score?.value??x?.score??null;
+  for(const e of (j.events||[]).slice().sort((a,b)=>new Date(a.date)-new Date(b.date))){
+    const C=e.competitions?.[0]||{}, cs=C.competitors||[], yo=cs.find(x=>String(x.id||x.team?.id)===String(id)), riv=cs.find(x=>x!==yo), st=C.status?.type?.state||e.status?.type?.state;
+    const o={d:e.date,riv:nbaAb(riv?.team?.abbreviation||""),loc:yo?.homeAway==="home",gy:sc(yo),gr:sc(riv)};
+    if(st==="post"){ if(yo?.winner) w++; else l++; ult={...o,g:!!yo?.winner}; } else if(!prox) prox={...o,vivo:st==="in"};
+  }
+  return {w,l,ult,prox};
+}
+async function favxF1(){
+  const [st,sb]=await Promise.all([espnJ(`${ESPN_V2}/racing/f1/standings`,30*60e3),espnJ(`${ESPN_SITE}/racing/f1/scoreboard`,10*60e3)]);
+  const sv=(e,n)=>e.stats?.find(s=>s.name===n)?.displayValue;
+  const ult=e=>{ const L=(e.stats||[]).filter(s=>!["rank","championshipPts","points","overall"].includes(s.name)&&s.displayValue!=null&&s.displayValue.trim()!==""); const x=L[L.length-1]; return x?x.displayValue.trim():null; };
+  const P={}, C={}, Dr=st?.children?.find(c=>/driver/i.test(c.name))?.standings?.entries||[], Co=st?.children?.find(c=>/constructor/i.test(c.name))?.standings?.entries||[];
+  Dr.forEach(e=>{ if(e.athlete?.id) P[e.athlete.id]={n:e.athlete.displayName,rank:+sv(e,"rank"),pts:sv(e,"championshipPts"),ult:ult(e),a:e.athlete}; });
+  Co.forEach(e=>{ if(e.team?.id) C[e.team.id]={n:e.team.displayName||e.team.name,rank:+sv(e,"rank"),pts:sv(e,"points"),ult:ult(e)}; });
+  const cal=sb?.leagues?.[0]?.calendar||[], now=Date.now(), sig=cal.find(c=>new Date(c.endDate).getTime()+3*3600e3>now);
+  return {P,C,sig:sig?{n:f1Nombre(sig.label),d:sig.startDate,fin:sig.endDate}:null};
+}
+async function favxTenis(tour){
+  const [R,S]=await Promise.all([espnJ(`${ESPN_SITE}/tennis/${tour}/rankings`,3600e3),espnJ(`${ESPN_SITE}/tennis/${tour}/scoreboard`,5*60e3)]);
+  const rk={}; (R?.rankings?.[0]?.ranks||[]).forEach(r=>{ if(r.athlete?.id) rk[r.athlete.id]={cur:r.current,pts:r.points,n:r.athlete.displayName,a:r.athlete}; });
+  const M={}, now=Date.now();
+  for(const e of S?.events||[]) for(const g of e.groupings||[]){ if(!/singles/i.test(g.grouping?.displayName||"")) continue;
+    for(const c of g.competitions||[]){ const st=c.status?.type?.state, X=(c.competitors||[]).slice().sort((a,b)=>a.order-b.order);
+      for(const x of X){ const id=String(x.athlete?.id||x.id||""); if(!id) continue; const riv=X.find(y=>y!==x), t=new Date(c.date).getTime();
+        const o={st,d:c.date,torneo:e.name,riv:riv?.athlete?.shortName||riv?.athlete?.displayName||"",sets:X.map(y=>(y.linescores||[]).map(l=>l.value)),yo:X.indexOf(x),gano:!!x.winner};
+        const pr=st==="in"?3:st==="pre"&&t<now+36*3600e3?2:st==="post"&&t>now-48*3600e3?1:0; if(pr&&(!M[id]||pr>M[id].pr||(pr===M[id].pr&&st==="post"&&t>new Date(M[id].d)))) M[id]={...o,pr}; } } }
+  return {rk,M};
+}
+async function favxAfEq(id){   // equipo de fútbol que no está en D.eq_info: próximo partido y forma de los últimos 5
+  const [N,L]=await Promise.all([afList("fixtures",`team=${id}&next=1&${AF_TZ}`).catch(()=>[]),afList("fixtures",`team=${id}&last=5&${AF_TZ}`).catch(()=>[])]);
+  const lado=f=>f.teams?.home?.id===+id; const n=N[0];
+  const p=n?[n.fixture.id,n.fixture.timestamp,AF_KEY[n.league?.id]||"",lado(n)?n.teams.away.id:n.teams.home.id,lado(n)?n.teams.away.name:n.teams.home.name,lado(n)?1:0]:null;
+  const f=L.slice().sort((a,b)=>a.fixture.timestamp-b.fixture.timestamp).map(x=>{ const a=x.goals?.home, b=x.goals?.away; if(a==null||b==null) return ""; const y=lado(x)?a:b, r=lado(x)?b:a; return y>r?"G":y<r?"P":"E"; }).join("");
+  return {I:{p,f,lg:n?AF_KEY[n.league?.id]||"":"",comp:n?.league?.name||""}};
+}
+// ---- tarjetas (Hoy y Favoritos) ----
+const favxLogoNba=ab=>`<i>${SM_ESCUDOS?`<img src="${nbaLogoUrl(ab)}" alt="" loading="lazy" onerror="this.remove()">`:favIni(NBA_N[ab]||ab)}</i>`;
+document.addEventListener("click",ev=>{ const a=ev.target.closest?.('[data-hact="nbafav"],[data-hact="f1fav"],[data-hact="tenfav"]'); if(!a) return;
+  ev.stopPropagation(); const v=a.dataset.hact; pzTrack("fav_tarjeta",{t:v}); if(v==="nbafav") showSport("nba"); else showSport("mas",v==="f1fav"?"f1":"tenis"); window.scrollTo(0,0); },true);
+function favxTarjNba(k,x){
+  const ab=k.slice(1), X=favxPide(k,()=>favxNbaEq(ab)), n=NBA_N[ab]||x.n;
+  if(!X||X.err) return `<div class="hfc"><span class="t">${favxLogoNba(ab)}<span><b>${hoyEsc(n)}</b><small>NBA</small></span></span><span class="px">${X?.err?"Sin datos por ahora":"Cargando…"}</span></div>`;
+  const u=X.ult, pr=X.prox;
+  const forma=u?`<span class="fo"><s class="${u.g?"G":"P"}">${u.g?"G":"P"}</s></span>`:"";
+  const px=pr?`<span class="px"><b>${pr.loc?"vs":"@"} ${hoyEsc(NBA_N[pr.riv]||pr.riv)}</b>${pr.vivo?`<em class="vivo">En vivo ${pr.gy??""}-${pr.gr??""}</em>`:favxHora(pr.d)}</span>`:`<span class="px">Sin partido próximo</span>`;
+  return `<button class="hfc" data-hact="nbafav"><span class="t">${favxLogoNba(ab)}<span><b>${hoyEsc(n)}</b><small>NBA · ${X.w}-${X.l}${u?` · ${u.g?"ganó":"perdió"} ${u.gy}-${u.gr} ${u.loc?"vs":"en"} ${hoyEsc(NBA_N[u.riv]||u.riv)}`:""}</small></span></span>${forma}${px}</button>`;
+}
+function favxTarjEsc(k,x){
+  const F=favxPide("_f1",favxF1), C=F?.C?.[k.slice(1)];
+  return `<button class="hfc" data-hact="f1fav"><span class="t"><i>${favIni(x.n)}</i><span><b>${hoyEsc(x.n)}</b><small>F1 · ${C?`${C.rank}º en constructores · ${C.pts} pts`:F?"Sin datos por ahora":"Cargando…"}</small></span></span>${F?.sig?`<span class="px"><b>${hoyEsc(F.sig.n)}</b>${masHora(F.sig.d,{weekday:"short",day:"numeric",month:"short"})}</span>`:""}</button>`;
+}
+function favxTarjAtleta(k,x){
+  const tipo=k[0], id=k.slice(1); let sub="", px="", act="";
+  if(tipo==="r"){ const F=favxPide("_f1",favxF1), P=F?.P?.[id]; act="f1fav";
+    sub=P?`F1 · ${P.rank}º · ${P.pts} pts${P.ult?` · último GP: ${/^\d+$/.test(P.ult)?P.ult+" pts":"sin puntos"}`:""}`:F?"F1":"Cargando…";
+    if(F?.sig) px=`<span class="px"><b>${hoyEsc(F.sig.n)}</b>${masHora(F.sig.d,{weekday:"short",day:"numeric",month:"short"})}</span>`; }
+  else if(tipo==="t"){ const tour=x.tour||"atp", T=favxPide("_ten_"+tour,()=>favxTenis(tour)), R=T?.rk?.[id], M=T?.M?.[id]; act="tenfav";
+    sub=`${tour.toUpperCase()}${R?` · #${R.cur} del mundo · ${R.pts} pts`:T?"":" · cargando…"}`;
+    if(M){ const sets=M.sets[M.yo].map((v,i)=>`${v}-${M.sets[1-M.yo]?.[i]??""}`).join(" ");
+      px=`<span class="px"><b>vs ${hoyEsc(M.riv)}</b>${M.st==="in"?`<em class="vivo">En vivo ${sets}</em>`:M.st==="post"?`${M.gano?"Ganó":"Perdió"} ${sets}`:favxHora(M.d)} · ${hoyEsc(M.torneo)}</span>`; } }
+  else if(tipo==="a"){ const ab=x.tm, X=ab?favxPide("b"+ab,()=>favxNbaEq(ab)):null, pr=X?.prox; act="nbafav";
+    sub=`NBA · ${hoyEsc(NBA_N[ab]||x.club||"")}${x.pos?` · ${hoyEsc(x.pos)}`:""}`;
+    if(pr) px=`<span class="px"><b>${pr.loc?"vs":"@"} ${hoyEsc(NBA_N[pr.riv]||pr.riv)}</b>${pr.vivo?`<em class="vivo">En vivo ${pr.gy??""}-${pr.gr??""}</em>`:favxHora(pr.d)}</span>`; }
+  return `<button class="hfc hfa" data-hact="${act}"><span class="t"><i>${favIni(x.n)}</i><span><b>${hoyEsc(x.n)}</b><small>${sub}</small></span></span>${px}</button>`;
+}
+// ---- listas del diálogo "Mis equipos" ----
+function favxItem(x,grupo){ FAVX_IT[x.k]={grupo,dat:x.dat}; return favItem(x,grupo); }
+function favxCarga(clave,fn){ if(FAVX_L[clave]||FAVX_LP[clave]) return FAVX_L[clave]||null;
+  FAVX_LP[clave]=Promise.resolve().then(fn).then(L=>{ FAVX_L[clave]=L||[]; }).catch(()=>{ FAVX_L[clave]=[]; }).finally(()=>{ delete FAVX_LP[clave]; if(fdlg.open){ $("#fLista").innerHTML=favListaHTML(); favCentra(); } });
+  return null; }
+const FAVX_CARGA=`<div class="pzskel" role="status" aria-label="Cargando"><div><i style="width:60%"></i><i style="width:40%"></i></div><div><i style="width:50%"></i><i style="width:70%"></i></div></div>`;
+function favxSeg(clave,ops){ const v=FAV_UI[clave]||ops[0][0]; return `<div class="hseg fsub" role="group">${ops.map(([k,t])=>`<button data-fsub="${clave}:${k}" aria-pressed="${v===k}">${t}</button>`).join("")}</div>`; }
+function favxListaHTML(tab,q){
+  const filtra=L=>L.filter(x=>!q||goNorm(x.n+" "+(x.sub||"")).includes(q));
+  const grid=(L,grupo,vacio)=>L.length?`<div class="fgrid">${L.map(x=>favxItem(x,grupo)).join("")}</div>`:`<p class="note">${vacio}</p>`;
+  if(tab==="nba"){ const v=FAV_UI.nbav||"eq", seg=favxSeg("nbav",[["eq","Equipos"],["jug","Jugadores"]]);
+    const E=favxCarga("nba",async()=>Object.keys(NBA_ID).map(ab=>({k:"b"+ab,n:NBA_N[ab]||ab,logo:nbaLogoUrl(ab),sub:"NBA",dat:{n:NBA_N[ab]||ab,logo:nbaLogoUrl(ab),lg:"nba"}})).sort((a,b)=>a.n.localeCompare(b.n,"es")));   // la lista de ESPN (/teams) no deja leerse desde el navegador
+    if(!E) return seg+FAVX_CARGA;
+    if(v==="eq") return seg+grid(filtra(E),"eq","No hay equipos con ese nombre.");
+    const tm=FAV_UI.nbatm||Object.keys(FAV.eq).find(k=>k[0]==="b")?.slice(1)||"LAL";
+    const chips=`<div class="fchips">${E.map(x=>`<button data-fnbatm="${x.k.slice(1)}" aria-pressed="${x.k.slice(1)===tm}">${hoyEsc(x.n)}</button>`).join("")}</div>`;
+    const R=favxCarga("nbaj_"+tm,async()=>{ const id=NBA_ID[tm]; const j=await fetch(`${NBA_API}/teams/${id}/roster`).then(r=>r.json());
+      return (j.athletes||[]).map(a=>({k:"a"+a.id,n:a.displayName,sub:[NBA_N[tm],a.position?.abbreviation,a.jersey?"#"+a.jersey:""].filter(Boolean).join(" · "),dat:{n:a.displayName,club:NBA_N[tm]||tm,tm,pos:a.position?.abbreviation||"",lg:"nba"}})); });
+    return seg+`<p class="fgh">Escoge el equipo para ver a sus jugadores</p>`+chips+(R?grid(filtra(R),"jug","No encontramos a ese jugador en este equipo."):FAVX_CARGA); }
+  if(tab==="f1"){ const v=FAV_UI.f1v||"pil", seg=favxSeg("f1v",[["pil","Pilotos"],["esc","Escuderías"]]);
+    const F=favxCarga("f1",async()=>{ const F=await favxF1(); FAVX.d._f1={t:Date.now(),...F}; return F; }); if(!F) return seg+FAVX_CARGA;
+    const L=v==="pil"?Object.entries(F.P).map(([id,p])=>({k:"r"+id,n:p.n,sub:`${p.rank}º · ${p.pts} pts`,r:p.rank,dat:{n:p.n,club:"F1",lg:"f1"}})):Object.entries(F.C).map(([id,c])=>({k:"e"+id,n:c.n,sub:`${c.rank}º · ${c.pts} pts`,r:c.rank,dat:{n:c.n,logo:"",lg:"f1"}}));
+    return seg+grid(filtra(L.sort((a,b)=>a.r-b.r)),v==="pil"?"jug":"eq","No lo encontramos."); }
+  if(tab==="ten"){ const tour=FAV_UI.tenv||"atp", seg=favxSeg("tenv",[["atp","ATP"],["wta","WTA"]]);
+    const T=favxCarga("ten_"+tour,async()=>{ const T=await favxTenis(tour); FAVX.d["_ten_"+tour]={t:Date.now(),...T}; return T; }); if(!T) return seg+FAVX_CARGA;
+    const L=Object.entries(T.rk).map(([id,r])=>({k:"t"+id,n:r.n,sub:`#${r.cur} · ${r.pts} pts`,r:r.cur,dat:{n:r.n,club:tour.toUpperCase(),tour,lg:"ten"}})).sort((a,b)=>a.r-b.r);
+    return seg+grid(filtra(L).slice(0,q?60:100),"jug","No está entre los mejores del ranking."); }
+  return "";
+}
+// Fútbol de todo el mundo: búsqueda en API-Football (3 letras o más)
+function favxMundoHTML(q){
+  if(q.length<3) return `<p class="fgh">¿No está tu equipo? Escribe su nombre (3 letras o más) y lo buscamos en todo el mundo</p>`;
+  const clave="af_"+q; clearTimeout(FAVX.tq);
+  if(!FAVX_L[clave]&&!FAVX_LP[clave]){ FAVX.tq=setTimeout(()=>favxCarga(clave,async()=>{ const R=await afList("teams",`search=${encodeURIComponent(q)}`);
+    return R.slice(0,30).map(r=>({k:"f"+r.team.id,n:r.team.name,logo:r.team.logo,sub:[r.team.national?"Selección":"",r.team.country].filter(Boolean).join(" · "),dat:{n:r.team.name,logo:r.team.logo||"",lg:"otro"}})); }),450);
+    return `<p class="fgh">Buscando en todo el mundo…</p>`; }
+  const L=FAVX_L[clave]; if(!L) return `<p class="fgh">Buscando en todo el mundo…</p>`;
+  return L.length?`<p class="fgh">En todo el mundo</p><div class="fgrid">${L.map(x=>favxItem(x,"eq")).join("")}</div>`:`<p class="fgh">No encontramos equipos con ese nombre en el mundo.</p>`;
+}
+
 function favTarjetaEq(k,x){
+  if(k[0]==="b") return favxTarjNba(k,x);
+  if(k[0]==="e") return favxTarjEsc(k,x);
   const logo=`<i>${x.logo&&SM_ESCUDOS?`<img src="${x.logo}" alt="" loading="lazy" onerror="this.remove()">`:favIni(x.n)}</i>`;
   if(k[0]==="n"){   // NFL
     const ab=k.slice(1), pr=(D.pr_nfl||[]).find(t=>t.t===ab), now=Date.now();
@@ -7614,7 +7780,7 @@ function favTarjetaEq(k,x){
     const px=g?`<span class="px"><b>${hoyEsc(riv)}</b>${g.ko?`${favCuando(+new Date(g.ko)/1000)}`:"Por definir"}${lin}</span>`:"";
     return `<${g?"button":"div"} class="hfc"${g?` data-nid="${g.id}"`:""}><span class="t">${logo}<span><b>${hoyEsc(NT[ab]?.n||x.n)}</b><small>${hoyEsc(sub)}</small></span></span>${px}${favNota(n=>n.liga==="nfl"&&n.tid===ab)}</${g?"button":"div"}>`;
   }
-  const id=k.slice(1), I=D.eq_info?.[id]||{}, p=I.p, lgNom=I.lg==="sel"?"Selección":FAV_LIGA[I.lg]||LEAGUES[I.lg]?.label||"";
+  const id=k.slice(1), I=D.eq_info?.[id]||favxPide(k,()=>favxAfEq(id))?.I||{}, p=I.p, lgNom=I.lg==="sel"?"Selección":FAV_LIGA[I.lg]||LEAGUES[I.lg]?.label||I.comp||"";
   const sub=[lgNom,I.pos?`${I.pos}º · ${I.pts} pts`:""].filter(Boolean).join(" · ");
   const px=p?`<span class="px"><b>${p[5]?"vs":"visita a"} ${hoyEsc(esTeam(p[4]))}</b>${favCuando(p[1])}${p[2]!==I.lg&&LEAGUES[p[2]]?` · ${hoyEsc(LEAGUES[p[2]].label)}`:""}</span>`:`<span class="px">Sin partido próximo</span>`;
   const abre=` data-eqf="${id}"`;   // 27 oct 2026: la tarjeta abre la ficha del equipo (ahí está su próximo partido)
@@ -7688,10 +7854,10 @@ async function favFichaPinta(id,x){
 }
 $("#gbody").addEventListener("click",ev=>{ const p=ev.target.closest(".jfi [data-hid],.eqfi [data-hid]"); if(p){ hoyAbrir(p.dataset.hk,p.dataset.hid); } });
 function hoyFavHTML(){
-  const E=Object.entries(FAV.eq), J=Object.entries(FAV.jug);
-  if(!E.length&&!J.length) return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3></div><div class="hfcta"><b>Sigue a tus equipos y jugadores</b><span>Elige tus equipos de la Liga MX, Europa o la NFL, y a tus jugadores, para verlos primero aquí.</span><button class="btn" data-hact="fav">Elegir equipos</button></div></section>`;
+  const E=Object.entries(FAV.eq), J0=Object.entries(FAV.jug), A=J0.filter(([k])=>"art".includes(k[0])), J=J0.filter(([k])=>k[0]==="p");
+  if(!E.length&&!J0.length) return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3></div><div class="hfcta"><b>Sigue a tus equipos y jugadores</b><span>Elige tus equipos de fútbol de cualquier liga, la NFL o la NBA, y a tus jugadores, pilotos de F1 y tenistas, para verlos primero aquí.</span><button class="btn" data-hact="fav">Elegir equipos</button></div></section>`;
   return `<section class="hsec hfav"><div class="hh"><h3>Mis equipos</h3><button class="hlink" data-hact="fav">Editar</button></div>
-    ${E.length?`<div class="hfstrip">${E.map(([k,x])=>favTarjetaEq(k,x)).join("")}</div>`:""}
+    ${E.length+A.length?`<div class="hfstrip">${E.map(([k,x])=>favTarjetaEq(k,x)).join("")}${A.map(([k,x])=>favxTarjAtleta(k,x)).join("")}</div>`:""}
     ${J.length?`<div class="hfjug"><button class="hfjbtn" data-hact="mas" data-hk="jug" aria-expanded="${HOY.abiertos.has("jug")}"><span>Mis jugadores<small>${J.length}</small></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
       ${HOY.abiertos.has("jug")?`<div class="hfjl">${J.map(([k,x])=>`<button data-jf="${hoyEsc(k)}"><i>${favIni(x.n)}</i>${hoyEsc(x.n)}</button>`).join("")}</div>`:""}</div>`:""}</section>`;
 }
