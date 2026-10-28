@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install nflreadpy firebase-admin
+      - run: pip install nflreadpy firebase-admin pandas pyarrow   # pyarrow: lo pide polars para pasar los datos a pandas
       - run: python periodico.py
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # llave de la API de Claude

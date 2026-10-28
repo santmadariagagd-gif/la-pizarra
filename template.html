@@ -1054,7 +1054,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 }
 @media (max-width:720px){
   header.top nav.tabs{display:none}
-  .bnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:50;padding:6px;border-radius:32px;
+  .bnav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:50;padding:6px;border-radius:32px;
     background:rgba(28,44,39,.62);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.16);
     box-shadow:0 18px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.05)}
   .bnav{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -1063,7 +1063,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   .bnav button.pzsobre{color:var(--mark)}
   .bnav.pzarr button[aria-selected="true"]:not(.pzsobre){color:#C9D6CF}
   main,.wrap{min-height:calc(100lvh - 60px)}
-  .bnav .pzlente{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/4);border-radius:26px;background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 14px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,1.3,.4,1),scale .25s ease;pointer-events:none}
+  .bnav .pzlente{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/5);border-radius:26px;background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 14px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,1.3,.4,1),scale .25s ease;pointer-events:none}
   .bnav button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:52px;background:none;border:0;color:#C9D6CF;font:600 11px/1 var(--body);cursor:pointer;padding:0;transition:transform .12s,color .2s}
   .bnav button:active{transform:scale(.94)}
   .bnav button[aria-selected="true"]{color:var(--mark)}
@@ -1690,6 +1690,28 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .nbsq td,.nbsq th,.nbsbx td,.nbsbx th{white-space:nowrap}.nbsbx tr.tit td:first-child{font-weight:700}.nbsbx small{color:var(--muted)}.nbsbx td.on{font-weight:700;color:var(--mark)}
 .nbsduela{height:auto;aspect-ratio:50/47;max-width:520px}.nbsley{margin:6px 0 0}.nbscmp{max-width:560px}
 
+/* Fantasy NFL: rankings de la semana y sugerencias de intercambio (28 oct 2026) */
+.frkh h2{margin:0}.frkpos,.frkver{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;margin:10px 0 0}.frkpos::-webkit-scrollbar{display:none}.frkpos button,.frkver button{flex:none}
+.frknl{margin-top:8px}
+.frkl{display:flex;flex-direction:column;gap:6px;margin-top:12px;max-width:760px}
+.frkr{display:grid;grid-template-columns:34px minmax(0,1fr) auto 92px;align-items:center;gap:10px;padding:9px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.frkr.tuyo{border-color:var(--mark);background:linear-gradient(90deg,rgba(242,212,102,.12),var(--surface) 60%)}
+.frkn{font:800 20px var(--display);text-align:center;color:var(--muted)}.frkj{display:flex;flex-direction:column;min-width:0}.frkj b{font:700 16px/1.2 var(--display)}.frkj small{font-size:12px;color:var(--muted)}
+.frkx{display:flex;align-items:center;gap:8px}.frkpj{display:flex;flex-direction:column;align-items:flex-end;line-height:1}.frkpj b{font:800 18px var(--display)}.frkpj small{font-size:10px;color:var(--muted)}
+.frkrg{position:relative;height:22px}.frkrg::before{content:"";position:absolute;left:0;right:0;top:5px;height:4px;border-radius:2px;background:rgba(255,255,255,.1)}
+.frkrg i{position:absolute;top:4px;height:6px;border-radius:3px;background:var(--alt)}.frkrg small{position:absolute;left:0;bottom:-2px;font-size:10px;color:var(--muted)}
+.tag.frklib{background:rgba(143,214,166,.2);color:var(--good)}
+@media (max-width:520px){.frkr{grid-template-columns:28px minmax(0,1fr) auto}.frkrg{display:none}}
+#tradeSug{margin-bottom:22px}#tradeSug h3{margin:0 0 8px}
+.tsl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.tsc{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}
+.tsh{display:flex;flex-direction:column}.tsh b{font:800 17px var(--display)}.tsh small{font-size:12px;color:var(--muted)}
+.tsp{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}
+.tsp>span:not(.tsf){display:flex;flex-direction:column;padding:8px 10px;border-radius:12px;background:var(--bg);min-width:0}
+.tsp small{font:700 10px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.tsp b{font:700 15px/1.2 var(--display)}.tsp em{font-style:normal;font-size:11px;color:var(--muted)}
+.tsd{box-shadow:inset 3px 0 0 var(--bad)}.tsr{box-shadow:inset 3px 0 0 var(--good)}.tsf{font-size:20px;color:var(--mark)}
+.tsvacio{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:16px;border:1px dashed var(--mark);background:var(--surface)}.tsvacio span{font-size:14px;color:var(--muted)}
+
 /* desbloqueables del avatar (28 oct 2026) */
 .pzcor{position:absolute;z-index:2;top:-24%;left:50%;width:46%;transform:translateX(-50%) rotate(-8deg);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
 .pzllama{position:absolute;z-index:2;right:-6%;bottom:-4%;width:36%;transform-origin:50% 90%;animation:vllama .9s ease-in-out infinite;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
@@ -1838,6 +1860,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
     <button aria-selected="true" data-sport="hoy">Hoy</button>
     <button aria-selected="false" data-sport="qn">Retas</button>
     <button aria-selected="false" data-sport="favs">Favoritos</button>
+    <button aria-selected="false" data-sport="ff">Fantasy NFL</button>
     <button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false">Deportes <svg class="depch" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
   </nav>
   <button class="ambtn" id="amBtn" aria-label="Amigos" title="Amigos" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.9-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6-.4 4.6 1.2 5 4.3"/></svg></button>
@@ -1856,7 +1879,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <button aria-current="page" data-tab="nbagames">Partidos</button><button data-tab="nbatable">Tabla</button><button data-tab="nbastats">Estadísticas</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
-  <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fmatch">Matchup</button><button data-tab="froster">Roster</button><button data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
+  <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fmatch">Matchup</button><button data-tab="froster">Roster</button><button data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="frank">Rankings</button><button data-tab="ftrade">Intercambios</button>
 </nav>
 <nav class="subnav" data-for="mx" aria-label="Secciones Liga MX" hidden>
   <select id="flSel" class="league" aria-label="Competición"></select><button data-tab="mxexplore">Explorar</button><button aria-current="page" data-tab="mxgames">Partidos</button><button data-tab="mxtable">Tabla</button><button data-tab="mxplayers">Jugadores</button><button data-tab="mxliguilla" id="tabLlaves">Liguilla</button><button data-tab="mxko" hidden>Eliminatoria</button><button data-tab="mxpr">Power Ranking</button><button data-tab="mxgoleo">Goleo</button><button data-tab="mxsquad" hidden>Plantel</button><button data-tab="mxhonors">Palmarés</button><button data-tab="mxhist" hidden>Historia</button><button data-tab="mxrecords" hidden>Récords</button>
@@ -2149,7 +2172,11 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="tbl"><table id="slTrend"></table></div>
 
 </section>
+<section class="panel hidden" id="frank">
+  <div id="frkBody"></div>
+</section>
 <section class="panel hidden" id="ftrade">
+  <div id="tradeSug"></div>
   <h2>Analizador de intercambios</h2>
   <div class="bar" id="tradeTeamBar" hidden><label class="slider">Negocias con <select id="tradeTeam"></select></label></div>
   <div class="trade">
@@ -2162,13 +2189,12 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </section>
 
 <nav class="bnav" aria-label="Secciones">
-  <button aria-selected="true" data-sport="hoy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Hoy</button><button aria-selected="false" data-sport="qn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Retas</button><button aria-selected="false" data-sport="favs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>Favoritos</button><button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3 12h18"/></svg>Deportes</button>
+  <button aria-selected="true" data-sport="hoy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Hoy</button><button aria-selected="false" data-sport="qn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Retas</button><button aria-selected="false" data-sport="favs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>Favoritos</button><button aria-selected="false" data-sport="ff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="9.5" ry="6" transform="rotate(-35 12 12)"/><path d="M9.5 14.5l5-5M10.5 11l1 1M12 9.5l1 1M13.5 12.5l-1-1"/></svg>Fantasy</button><button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3 12h18"/></svg>Deportes</button>
 </nav>
 <div class="depmenu" id="depMenu" role="menu" aria-label="Deportes" hidden>
   <button role="menuitem" data-dep="mx"><b>Fútbol</b><span>Liga MX, Europa, Champions y selecciones</span></button>
   <button role="menuitem" data-dep="nfl"><b>NFL</b><span>Partidos, estadísticas y Power Ranking</span></button>
-  <button role="menuitem" data-dep="nba"><b>NBA</b><span>Partidos y tabla</span></button>
-  <button role="menuitem" data-dep="ff"><b>Fantasy NFL</b><span>Tu liga de Sleeper o ESPN, waivers e intercambios</span></button>
+  <button role="menuitem" data-dep="nba"><b>NBA</b><span>Partidos, tabla y estadísticas</span></button>
   <button role="menuitem" data-dep="mas" data-dt="f1"><b>Fórmula 1</b><span>El GP de esta semana y los campeonatos</span></button>
   <button role="menuitem" data-dep="mas" data-dt="tenis"><b>Tenis</b><span>ATP y WTA: partidos y ranking</span></button>
 </div>
@@ -2274,7 +2300,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbastats","nbaq5","qmx","fan","f1","tenis","favs","amigos"];
+const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","frank","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbastats","nbaq5","qmx","fan","f1","tenis","favs","amigos"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -2302,7 +2328,7 @@ function loadNflPlayoffs(){
   }
 }
 // Qué botón de deporte se marca (arriba en computadora y en la barra de abajo en el celular) según la sección
-const FF_TABS=["fmatch","froster","fliga","fwaivers","ftrade"];
+const FF_TABS=["fmatch","froster","fliga","fwaivers","frank","ftrade"];
 const RETAS=["nflq","qmx","nbaq5","fan"];
 const MAS_TABS=["f1","tenis"];
 const sportOf=id=>id==="hoy"?"hoy":id==="favs"?"favs":id==="amigos"?"amigos":MAS_TABS.includes(id)?"mas":RETAS.includes(id)?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
@@ -2315,7 +2341,7 @@ function paqCarga(n,fn,donde){
     .catch(()=>txt("No pudimos cargar esta sección. Revisa tu conexión y recarga la página."));
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||id==="favs"||id==="amigos"||RETAS.includes(id)||MAS_TABS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
-  const spSel=sportOf(id); PZ_SP=spSel; const grp=["hoy","qn","favs"].includes(spSel)?spSel:spSel==="amigos"?"amigos":"dep"; $("#amBtn")?.setAttribute("aria-current",String(spSel==="amigos")); document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===grp)); depCierra(); if(typeof chatCierra==="function") chatCierra(); PZ_CASC=Date.now()+2500; if(typeof pzEntraSeccion==="function") pzEntraSeccion(id); if(typeof pzLente==="function") pzLente();
+  const spSel=sportOf(id); PZ_SP=spSel; const grp=["hoy","qn","favs","ff"].includes(spSel)?spSel:spSel==="amigos"?"amigos":"dep"; $("#amBtn")?.setAttribute("aria-current",String(spSel==="amigos")); document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===grp)); depCierra(); if(typeof chatCierra==="function") chatCierra(); PZ_CASC=Date.now()+2500; if(typeof pzEntraSeccion==="function") pzEntraSeccion(id); if(typeof pzLente==="function") pzLente();
   if(id==="hoy") hoyRender();
   if(typeof navPush==="function") navPush(id);
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
@@ -2325,7 +2351,7 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   if(id==="qmx") qmxAbre(); if(id==="fan") fanRender(); if(id==="f1") f1Render(); if(id==="tenis") tenRender();
   if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbastats") nbaStats(); if(id==="nbaq5") q5Render();
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
-  if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",fantasyInit,id==="fwaivers"?"#notes":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
+  if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",()=>{ fantasyInit(); if(id==="frank") frkRender(); if(id==="ftrade") tsRender(); },id==="fwaivers"?"#notes":id==="frank"?"#frkBody":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp,tab){
   if(sp==="qn"){   // Retas (19 oct 2026): Quiniela NFL, Quiniela Liga MX y La Quinteta en un solo lugar; abre la última que usaste
     let t=tab; if(!RETAS.includes(t)){ try{ t=localStorage.getItem("pz_reta"); }catch(e){} }
@@ -2756,7 +2782,7 @@ function slRender(){
   const max=power[0]?.v||1;
   $("#slPower").innerHTML=power.map(({r,v})=>`<div class="prow${r===me?" me":""}"><span class="pn">${teamName(r)}</span><span class="pb"><i style="width:${(v/max*100).toFixed(1)}%"></i></span><span class="pv">${fmt(v)}</span></div>`).join("");
   slFree();
-  slStand(stand,pts); slTrendRender(); slPaperLoad();
+  slStand(stand,pts); slTrendRender(); slPaperLoad(); if(typeof tsRender==="function") tsRender(); if(!$("#frank")?.classList.contains("hidden")) frkRender();
   // trade partner
   const others=rs.filter(r=>r!==me);
   $("#tradeTeam").innerHTML=`<option value="">Cualquier equipo</option>`+others.map(r=>`<option value="${r.roster_id}">${teamName(r)}</option>`).join("");
@@ -5468,6 +5494,101 @@ setInterval(liveTick,45e3);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden) liveTick();});
 setTimeout(()=>nflLiveUpdate(true).catch(()=>{}),800);   // al abrir: marcadores de la jornada aunque nflverse no los tenga todavía
 
+// ---------- Fantasy NFL: rankings de la semana por posición y sugerencias de intercambio (28 oct 2026) ----------
+// Rankings: consenso semanal de expertos (FantasyPros vía nflverse, D.ffw), PPR: lugar en su posición, calificación de
+// arranque, proyección, rival y el rango de los expertos (mejor y peor). Con tu liga conectada marca tus jugadores y los libres.
+const FRK={pos:"QB",ver:"todos"};
+const FRK_POS=[["QB","QB"],["RB","RB"],["WR","WR"],["TE","TE"],["FLEX","Flex"],["K","K"],["DST","Defensas"]];
+function frkLista(){
+  const F=D.ffw; if(!F?.p) return [];
+  const byGs=Object.fromEntries((D.fantasy||[]).filter(p=>p.g).map(p=>[p.g,p])), gs2sid={};
+  for(const [sid,m] of Object.entries(D.sleeper||{})) if(m[3]) gs2sid[m[3]]=sid;
+  const L=[];
+  for(const [k,v] of Object.entries(F.p)){
+    let n=v[7]||"", pos=v[8]||"", t=v[9]||"", sid=null, g=null;
+    if(k.startsWith("DEF:")){ t=k.slice(4); pos="DST"; n=n||(NT[t]?.n?`${NT[t].n} D/ST`:`${t} D/ST`); sid=t; }
+    else if(k.startsWith("n|")){ const [,nn,tt]=k.split("|"); t=t||tt; n=n||nn; }
+    else { g=k; const f=byGs[k]; sid=gs2sid[k]||null; const m=sid?D.sleeper[sid]:null; n=n||f?.n||m?.[0]||"Jugador"; pos=pos||f?.p||m?.[1]||""; t=t||f?.t||m?.[2]||""; }
+    if(!pos) continue; if(pos==="DEF") pos="DST";
+    L.push({k,g,sid,n,pos,t,pr:v[0],gr:v[1]||"",pj:v[2],riv:v[3]||"",ecr:v[4],mej:v[5],peor:v[6]});
+  }
+  return L;
+}
+function frkDueno(x){   // "tuyo" | "libre" | "otro" | null (sin liga)
+  if(!SL.league||!SL.taken) return null;
+  const mios=new Set((SL.mine?.players||[]).map(String)), misG=new Set([...mios].map(id=>D.sleeper[id]?.[3]||ESPNP[id]?.g).filter(Boolean));
+  if(x.pos==="DST"){ const t=fmTm(x.t); return mios.has(t)?"tuyo":SL.taken.has(t)?"otro":"libre"; }
+  if((x.g&&misG.has(x.g))||(x.sid&&mios.has(x.sid))) return "tuyo";
+  return (x.g&&SL.takenG?.has(x.g))||(x.sid&&SL.taken.has(x.sid))?"otro":"libre";
+}
+function frkRender(){
+  const box=$("#frkBody"); if(!box) return; const F=D.ffw;
+  if(!F?.p){ box.innerHTML=`<p class="note">Todavía no sale el consenso de los expertos para esta semana. Normalmente aparece el martes o miércoles.</p>`; return; }
+  const L=frkLista(), liga=!!(SL.league&&SL.taken);
+  let R=FRK.pos==="FLEX"?L.filter(x=>["RB","WR","TE"].includes(x.pos)).sort((a,b)=>(b.pj||0)-(a.pj||0)||(a.ecr||999)-(b.ecr||999)):L.filter(x=>x.pos===FRK.pos).sort((a,b)=>(a.pr||999)-(b.pr||999));
+  R=R.map((x,i)=>({...x,lug:FRK.pos==="FLEX"?i+1:x.pr,d:frkDueno(x)}));
+  if(liga&&FRK.ver!=="todos") R=R.filter(x=>x.d===FRK.ver);
+  const mx=Math.max(1,...R.map(x=>x.peor||0));
+  box.innerHTML=`<div class="frkh"><div><h2>Rankings de la semana ${F.w}</h2><p class="note">Consenso de los expertos de FantasyPros, formato PPR. Actualizado el ${new Intl.DateTimeFormat("es-MX",{day:"numeric",month:"long"}).format(new Date(F.fecha+"T12:00:00"))}.</p></div></div>
+    <div class="hseg frkpos" role="group" aria-label="Posición">${FRK_POS.map(([k,n])=>`<button data-frkp="${k}" aria-pressed="${FRK.pos===k}">${n}</button>`).join("")}</div>
+    ${liga?`<div class="hseg frkver" role="group" aria-label="Qué jugadores">${[["todos","Todos"],["tuyo","Mis jugadores"],["libre","Libres en mi liga"]].map(([k,n])=>`<button data-frkv="${k}" aria-pressed="${FRK.ver===k}">${n}</button>`).join("")}</div>`:`<p class="note frknl">Conecta tu liga en Matchup para ver cuáles son tuyos y cuáles están libres.</p>`}
+    <div class="frkl">${R.slice(0,FRK.pos==="FLEX"?60:40).map(x=>`<div class="frkr${x.d==="tuyo"?" tuyo":""}"><b class="frkn">${x.lug??"–"}</b>
+        <span class="frkj"><b>${hoyEsc(x.n)}${x.d==="tuyo"?' <span class="tag yes">Tuyo</span>':x.d==="libre"?' <span class="tag frklib">Libre</span>':""}</b><small>${hoyEsc([FRK.pos==="FLEX"?x.pos:"",fmTm(x.t),x.riv.replace(/^vs\.\s*/,"vs ").replace(/^at\s+/,"en ")].filter(Boolean).join(" · "))}</small></span>
+        <span class="frkx">${fmGrade(x.gr)}<span class="frkpj"><b>${x.pj!=null?fmt(x.pj,1):"–"}</b><small>pts</small></span></span>
+        ${x.mej!=null&&x.peor!=null?`<span class="frkrg" title="Los expertos lo ponen entre el ${x.mej} y el ${x.peor} de su posición"><i style="left:${(x.mej-1)/mx*100}%;width:${Math.max(2,(x.peor-x.mej)/mx*100)}%"></i><small>${x.mej}–${x.peor}</small></span>`:"<span></span>"}</div>`).join("")||`<p class="note">No hay jugadores con ese filtro.</p>`}</div>
+    <p class="note">La calificación (A+ a F) dice qué tanto conviene arrancarlo esta semana; la barrita, entre qué lugares lo ponen los expertos.</p>`;
+}
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return; let b;
+  if((b=t.closest("[data-frkp]"))){ FRK.pos=b.dataset.frkp; return frkRender(); }
+  if((b=t.closest("[data-frkv]"))){ FRK.ver=b.dataset.frkv; return frkRender(); }
+});
+
+// ---- Sugerencias de intercambio ----
+// Con tu liga conectada: para cada posición se compara la fuerza de tus titulares contra la del resto de la liga (valor de
+// consenso para el resto de la temporada). Se buscan 1 por 1 con otro equipo donde los dos ganan: tú das a alguien de una
+// posición donde te sobra (banca con valor) y recibes a alguien de una posición donde estás débil, y al revés para ellos.
+// El valor de lo que das y lo que recibes queda parejo (máximo 15% de diferencia), para que sea creíble que lo acepten.
+function tsNecesidades(r,slots){
+  const P=(r.players||[]).map(slPlayer).filter(p=>["QB","RB","WR","TE"].includes(p.p)).map(p=>({...p,v:val(p)})).sort((a,b)=>b.v-a.v);
+  const cupo={QB:0,RB:0,WR:0,TE:0}; let flex=0; for(const s of slots){ if(cupo[s]!=null) cupo[s]++; else if(/FLEX/.test(s)) flex++; }
+  const tit={}, banca={}; for(const pos in cupo){ const L=P.filter(p=>p.p===pos); tit[pos]=L.slice(0,cupo[pos]); banca[pos]=L.slice(cupo[pos]); }
+  const fl=Object.values(banca).flat().filter(p=>p.p!=="QB").sort((a,b)=>b.v-a.v).slice(0,flex); for(const p of fl){ banca[p.p]=banca[p.p].filter(x=>x!==p); }
+  const fuerza={}; for(const pos in cupo) fuerza[pos]=cupo[pos]?tit[pos].reduce((s,p)=>s+p.v,0)/cupo[pos]:0;
+  return {cupo,tit,banca,fuerza};
+}
+function tsSugerencias(){
+  const me=SL.mine, rs=SL.rosters||[]; if(!me||rs.length<2) return [];
+  const slots=(SL.league?.roster_positions||[]).filter(s=>!["BN","TAXI","IR"].includes(s)); if(!slots.length) return [];
+  const N=new Map(rs.map(r=>[r,tsNecesidades(r,slots)])), pos=["QB","RB","WR","TE"];
+  const prom={}; for(const p of pos){ const v=[...N.values()].map(n=>n.fuerza[p]); prom[p]=v.reduce((a,b)=>a+b,0)/v.length||1; }
+  const yo=N.get(me), rel=n=>Object.fromEntries(pos.map(p=>[p,n.fuerza[p]/prom[p]]));
+  const miRel=rel(yo), S=[];
+  for(const r of rs){ if(r===me) continue; const el=N.get(r), suRel=rel(el);
+    for(const x of pos) for(const y of pos){ if(x===y||!yo.cupo[x]||!yo.cupo[y]) continue;
+      if(!(miRel[y]<1&&suRel[x]<1)) continue;   // a mí me falta y, a ellos x; yo ando mejor en x, ellos en y
+      const doy=yo.banca[x].filter(p=>p.v>800), recibo=[...el.tit[y],...el.banca[y]].filter(p=>p.v>800);
+      const peorMio=yo.tit[y][yo.tit[y].length-1]?.v||0, peorSuyo=el.tit[x][el.tit[x].length-1]?.v||0, suBanca=el.banca[y][0]?.v||0;
+      for(const d of doy) for(const q of recibo){ const dif=Math.abs(d.v-q.v)/Math.max(d.v,q.v); if(dif>.15) continue;
+        const pierden=el.tit[y].includes(q)?q.v-suBanca:0;   // si les pides un titular, lo suplen con el mejor de su banca
+        const gano=q.v-peorMio, ganan=d.v-peorSuyo-pierden; if(gano<=0||ganan<=0) continue;
+        S.push({r,d,q,x,y,score:gano+ganan*.6-dif*2000}); } } }
+  const usados=new Set(); return S.sort((a,b)=>b.score-a.score).filter(s=>{ const k=s.d.sid+"|"+s.q.sid; if(usados.has(s.d.sid)||usados.has(s.q.sid)||usados.has(k)) return false; usados.add(s.d.sid); usados.add(s.q.sid); usados.add(k); return true; }).slice(0,5);
+}
+const TS_POS={QB:"QB",RB:"corredores",WR:"receptores",TE:"alas cerradas"};
+function tsRender(){
+  const el=$("#tradeSug"); if(!el) return;
+  if(!SL.mine){ el.innerHTML=`<div class="tsvacio"><b>Sugerencias de intercambio</b><span>Conecta tu liga en Matchup y aquí te decimos con quién te conviene cambiar y a quién ofrecerle.</span></div>`; return; }
+  const S=tsSugerencias();
+  el.innerHTML=`<h3>Te conviene ofrecer</h3>${S.length?`<div class="tsl">${S.map((s,i)=>`<div class="tsc"><div class="tsh"><b>${hoyEsc(teamName(s.r))}</b><small>A ellos les faltan ${TS_POS[s.x]} y les sobran ${TS_POS[s.y]}</small></div>
+      <div class="tsp"><span class="tsd"><small>Das</small><b>${hoyEsc(s.d.n)}</b><em>${s.d.p} · ${fmTm(s.d.t)} · ${fmt(s.d.v)}</em></span><span class="tsf" aria-hidden="true">⇄</span><span class="tsr"><small>Recibes</small><b>${hoyEsc(s.q.n)}</b><em>${s.q.p} · ${fmTm(s.q.t)} · ${fmt(s.q.v)}</em></span></div>
+      <button class="q5link" data-tsi="${i}">Revisarlo en el analizador</button></div>`).join("")}</div>`
+    :`<p class="note">Con los rosters de tu liga no encontramos un cambio 1 por 1 que les convenga a los dos. Prueba armar uno abajo.</p>`}
+    <p class="note">Valor = consenso de los expertos para el resto de la temporada. Solo son ideas: revisa lesiones y calendario antes de ofrecer.</p>`;
+  TS_ULT=S;
+}
+let TS_ULT=[];
+document.addEventListener("click",ev=>{ const b=ev.target.closest?.("[data-tsi]"); if(!b) return; const s=TS_ULT[+b.dataset.tsi]; if(!s) return;
+  sides.A.splice(0,sides.A.length,s.d); sides.B.splice(0,sides.B.length,s.q); renderTrade(); $("#tradeTeam").value=String(s.r.roster_id); $("#verdict")?.scrollIntoView({behavior:"smooth",block:"center"}); pzTrack("ff_sugerencia",{}); });
 // ---------- Fantasy: matchup de la semana (Sleeper) ----------
 // API documentada de Sleeper: /state/nfl → semana actual; /league/{id}/matchups/{semana} → una fila por equipo:
 // {roster_id, matchup_id, points, starters[], starters_points[], players[], players_points{}}. Mismo matchup_id = juegan entre sí.
@@ -6841,14 +6962,14 @@ function pzMov(scope,sig,keys){
 // Barra de abajo: la "lente" de vidrio se desliza a la opción activa
 // Deslizar el dedo sobre la barra (como en iOS): la lente sigue al dedo y al soltar te lleva a esa sección
 (()=>{ const n=$(".bnav"); if(!n) return; let x0=null, l0=0, arr=false, idx=0, pid=null;
-  const B=()=>[...n.querySelectorAll("button")], ancho=()=>(n.clientWidth-12)/4;
+  const B=()=>[...n.querySelectorAll("button")], ancho=()=>(n.clientWidth-12)/Math.max(1,B().length);
   const marca=i=>B().forEach((b,k)=>b.classList.toggle("pzsobre",k===i));
   n.addEventListener("pointerdown",ev=>{ if(ev.pointerType==="mouse"&&ev.button!==0) return; const l=n.querySelector(".pzlente"); if(!l) return;
     x0=ev.clientX; pid=ev.pointerId; arr=false; const i=Math.max(0,B().findIndex(b=>b.getAttribute("aria-selected")==="true")); l0=i*ancho(); idx=i; });
   n.addEventListener("pointermove",ev=>{ if(x0==null||ev.pointerId!==pid) return; const dx=ev.clientX-x0, l=n.querySelector(".pzlente");
     if(!arr&&Math.abs(dx)<8) return;
     if(!arr){ arr=true; n.classList.add("pzarr"); try{ n.setPointerCapture(pid); }catch(e){} }
-    const w=ancho(), pos=Math.max(-w*.15,Math.min(3.15*w,l0+dx)); idx=Math.max(0,Math.min(3,Math.round(pos/w)));
+    const w=ancho(), u=B().length-1, pos=Math.max(-w*.15,Math.min((u+.15)*w,l0+dx)); idx=Math.max(0,Math.min(u,Math.round(pos/w)));
     l.style.transform=`translateX(${pos}px)`; marca(idx); });
   const fin=ev=>{ if(x0==null) return; const era=arr; x0=null; if(!era) return;
     n.classList.remove("pzarr"); marca(-1); n._pzNoClick=Date.now();
@@ -7011,7 +7132,7 @@ function pzCampo(gid,v){
 let PZ_ULT_IDX=0;
 function pzEntraSeccion(id){
   const el=$("#"+id); if(!el||PZ_RM()) return;
-  const grupos=["hoy","qn","favs","dep"], g=sportOf(id), gi=grupos.indexOf(["hoy","qn","favs"].includes(g)?g:"dep");
+  const grupos=["hoy","qn","favs","ff","dep"], g=sportOf(id), gi=grupos.indexOf(["hoy","qn","favs","ff"].includes(g)?g:"dep");
   const sub=[...document.querySelectorAll(".subnav:not([hidden]) button")].findIndex(b=>b.dataset.tab===id), idx=gi*100+Math.max(0,sub);
   const dir=idx>=PZ_ULT_IDX?"pzder":"pzizq"; PZ_ULT_IDX=idx;
   el.classList.remove("pzder","pzizq"); void el.offsetWidth; el.classList.add(dir); setTimeout(()=>el.classList.remove(dir),450);

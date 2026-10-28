@@ -718,7 +718,7 @@ out['sched']=sched
 # ---------- Arranca o banca: consenso semanal de expertos (FantasyPros vía ffverse / nflreadpy) ----------
 # load_ff_rankings('week'): ranking de consenso de la semana (formato PPR) con calificación de arranque
 # (start_sit_grade A+…F), proyección en puntos (r2p_pts), rival y mejor/peor ranking de los expertos.
-# Se manda como D.ffw = {w: semana, p: {llave: [lugar en su posición, calificación, proyección, rival, ecr, mejor, peor]}}.
+# Se manda como D.ffw = {w: semana, p: {llave: [lugar en su posición, calificación, proyección, rival, ecr, mejor, peor, nombre, posición, equipo]}}.
 # Llave: gsis_id (se cruza con D.sleeper[sid][3]); "DEF:KC" para defensas; "n|nombre|equipo" si no hay gsis.
 def _ffw():
     import unicodedata as _ud, re as _re
@@ -739,7 +739,8 @@ def _ffw():
         try: pr=int(''.join(ch for ch in str(r.pos_rank) if ch.isdigit()))
         except Exception: pr=None
         val=[pr,r.start_sit_grade if isinstance(r.start_sit_grade,str) else "",rnd(r.r2p_pts,1),
-             r.player_opponent if isinstance(r.player_opponent,str) else "",rnd(r.ecr,1),_i(r.best),_i(r.worst)]
+             r.player_opponent if isinstance(r.player_opponent,str) else "",rnd(r.ecr,1),_i(r.best),_i(r.worst),
+             str(r.player_name or ""),str(r.pos or ""),str(tm or "")]   # 28 oct 2026: nombre, posición y equipo (pestaña Rankings)
         if r.pos=='DST': P["DEF:"+str(tm)]=val; continue
         try: g=g_of.get(int(r.fantasypros_id))
         except Exception: g=None
