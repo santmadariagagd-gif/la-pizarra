@@ -1439,6 +1439,95 @@ html.vsinscroll{overflow:hidden}
 @media (pointer:coarse){html,body{overscroll-behavior-y:contain}}
 @keyframes vbrilloBar{0%,60%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 @media (min-width:721px){ .vin{padding:22px 24px 20px} .vsal{font-size:34px} .vlista{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))} .vacc{margin-top:2px} }
+/* ---------- Perfil, portada personalizable y Favoritos v2 (28 oct 2026) ---------- */
+.pzav{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;box-sizing:border-box}
+.pzav.mc{background:var(--anillo)}.pzav.mc::before{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;animation:pzavgira 6s linear infinite;z-index:0}
+@keyframes pzavgira{to{transform:rotate(360deg)}}
+.pzavin{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.pzavin svg{display:block}
+.acct.in.conav{border:0;background:none;padding:0;width:40px;height:40px;overflow:visible}
+.aperf{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--line);margin:0 0 16px}
+.aperf>span:nth-child(2){flex:1;display:flex;flex-direction:column}.aperf b{font-size:16px}.aperf small{color:var(--muted);font-size:13px}
+.aperfv{width:56px;height:56px;border-radius:50%;border:1.5px dashed var(--mark);color:var(--mark);display:inline-flex;align-items:center;justify-content:center;font:700 22px var(--display);flex:none}
+.pzc-m>.pzav{align-self:flex-end}
+.vsalf{display:flex;align-items:center;gap:12px}.vgrande .vsalf{justify-content:center}
+.vav{flex:none;padding:0;border:0;background:none;cursor:pointer;border-radius:50%}
+/* editor */
+.peed h2{margin:0 0 12px}
+.petop{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.peprev{flex:none;display:inline-flex}
+.pedat{flex:1 1 180px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pelab{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.pedat input{min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 17px var(--body);padding:0 12px;width:100%;box-sizing:border-box}
+.pedat small{color:var(--muted);font-size:13px}
+.pemini{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.pet{margin:16px 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted);font-family:var(--body)}.pet small{text-transform:none;letter-spacing:0;font-weight:400}
+.pechips{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px 0 4px}.pechips::-webkit-scrollbar{display:none}
+.pech{flex:none;width:64px;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;color:var(--ink);cursor:pointer;padding:0;font:500 11px/1.2 var(--body);text-align:center}
+.pech i{width:44px;height:44px;border-radius:50%;border:3px solid transparent;box-sizing:border-box;display:block}
+.pech[aria-pressed="true"] i{border-color:var(--mark)}.pech span{max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.peseg{display:inline-flex;flex-wrap:wrap;max-width:100%}
+.pepal{display:flex;flex-wrap:wrap;gap:8px}
+.pepal button{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.2);cursor:pointer;padding:0}
+.pepal button[aria-pressed="true"]{outline:3px solid var(--mark);outline-offset:2px}
+.pefila{display:flex;gap:18px;flex-wrap:wrap}
+.penum{display:inline-flex;align-items:center;gap:14px;min-height:44px;padding:0 4px;border-radius:22px;background:var(--surface);border:1px solid var(--line)}
+.penum button{width:36px;height:36px;border-radius:50%;border:0;background:var(--bg);color:var(--ink);font-size:20px;cursor:pointer}.penum b{font:800 24px var(--display);min-width:28px;text-align:center}
+.pefon{display:inline-flex;gap:8px;flex-wrap:wrap}.pefon button{width:38px;height:38px;border-radius:50%;border:3px solid var(--line);cursor:pointer;padding:0}.pefon button[aria-pressed="true"]{border-color:var(--mark)}
+.pemar{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.pemar button{display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 10px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-align:left;font:600 13px var(--body)}
+.pemar button[aria-pressed="true"]{border-color:var(--mark)}.pemar button:disabled{opacity:.45;cursor:not-allowed}
+.pemar i{flex:none;width:30px;height:30px;border-radius:50%}.pemar small{display:block;font-weight:400;color:var(--muted)}
+.pepie{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+/* portada personalizable */
+.hoyacc{display:flex;align-items:center;gap:8px}
+.hcfgbtn{position:relative;flex:none;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.hcfgbtn.on::after{content:"";position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--mark)}
+.hoymain{display:flex;flex-direction:column}
+.hcfg h2{margin:0 0 6px}.hcfgp{display:flex;gap:16px;margin:8px 0 12px}
+.hcfgl{display:flex;flex-direction:column;gap:8px}
+.hcfgr{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.hcfgr.off{opacity:.6}
+.hcfgr label{flex:1;display:flex;align-items:center;gap:12px;cursor:pointer;min-width:0}
+.hcfgr label>span:last-child{display:flex;flex-direction:column;min-width:0}.hcfgr b{font-size:15px}.hcfgr small{font-size:12px;color:var(--muted)}
+.hsw{position:relative;flex:none;width:44px;height:26px}.hsw input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.hsw i{position:absolute;inset:0;border-radius:13px;background:var(--line);transition:background .2s}
+.hsw i::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#ECEFE7;transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+.hsw input:checked+i{background:#9FD3A8}.hsw input:checked+i::after{transform:translateX(18px)}
+.hsw input:focus-visible+i{outline:2px solid var(--mark);outline-offset:2px}
+.hcfgo{display:flex;gap:4px}.hcfgo button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}.hcfgo button:disabled{opacity:.3;cursor:default}
+/* Favoritos v2 */
+.fvtop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 4px}
+.fvdeps{display:inline-flex;flex-wrap:nowrap;overflow-x:auto;max-width:calc(100% - 70px);scrollbar-width:none}.fvdeps::-webkit-scrollbar{display:none}.fvdeps button{flex:none;white-space:nowrap}
+.fvsec{margin-top:20px}
+.fvlist{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.fvrow{display:grid;grid-template-columns:62px minmax(0,1fr) 16px;gap:12px;align-items:center;padding:10px 14px;background:var(--surface);border:0;border-top:1px solid var(--line);color:var(--ink);text-align:left;font:inherit;cursor:pointer;min-height:56px}
+.fvrow:first-child{border-top:0}.fvrow:hover{background:#2c463e}
+.fvd{display:flex;flex-direction:column;align-items:flex-start}.fvd b{font:700 15px var(--display)}.fvd small{font-size:12px;color:var(--muted)}.fvd b.vivo{font-size:12px;color:#FF9C80}
+.fvt{display:flex;flex-direction:column;min-width:0}.fvt b{font:700 17px/1.2 var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fvt small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fvch{color:var(--muted)}
+.fvgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}.fvgrid .hfc{flex:none;width:auto}
+.fvnotas{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.fvnota{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-align:left;font:inherit}
+button.fvnota{cursor:pointer}.fvnota .utag{align-self:flex-start}.fvnota b{font:700 16px/1.2 var(--display)}.fvnota>span:last-child{font-size:13px;color:var(--muted)}
+
+/* desbloqueables del avatar (28 oct 2026) */
+.pzcor{position:absolute;z-index:2;top:-24%;left:50%;width:46%;transform:translateX(-50%) rotate(-8deg);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+.pzllama{position:absolute;z-index:2;right:-6%;bottom:-4%;width:36%;transform-origin:50% 90%;animation:vllama .9s ease-in-out infinite;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.pzav.brillo .pzavin::after{content:"";position:absolute;inset:-20%;background:conic-gradient(from 0deg,transparent 0 70%,rgba(255,255,255,.55) 80%,transparent 90%);animation:pzavgira 2.4s linear infinite;pointer-events:none}
+.fconf{animation:pzconfmueve 6s linear infinite}@keyframes pzconfmueve{to{background-position:0 48px,6px 54px,3px 57px,0 0}}
+.vsal small.vtit2{display:block;font:600 14px/1.3 var(--body);color:var(--mark);text-shadow:none;margin-top:2px}
+.pzc-tit{font-weight:700;color:var(--mark)}
+.petit{color:var(--mark)}
+.penuevo{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:8px;background:var(--mark);color:#1d2a26;font:700 10px var(--body);font-style:normal;vertical-align:middle}
+.penuevo.p{position:absolute;top:-8px;right:-10px;margin:0}
+.pefon button{position:relative;display:inline-flex;align-items:center;justify-content:center;color:#ECEFE7}.pefon button:disabled{opacity:.45;cursor:not-allowed}
+.peseg button:disabled,.pex button:disabled{opacity:.45;cursor:not-allowed}.peseg button svg,.pex button svg{margin-right:4px;vertical-align:-1px}
+.pex{display:flex;flex-wrap:wrap;gap:6px}.pex button{min-height:36px;padding:0 12px;border-radius:18px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px var(--body);cursor:pointer}
+.pex button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}
+.pefalta{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}.pefalta li{display:flex;align-items:center;gap:6px}.pefalta b{color:#C9D6CF;font-weight:600}
+.penov{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:linear-gradient(120deg,rgba(242,212,102,.25),var(--surface) 70%);border:1px solid rgba(242,212,102,.5);display:flex;flex-direction:column;gap:2px;animation:ventra .5s cubic-bezier(.2,.8,.2,1) both}
+.penov b{color:var(--mark)}.penov span{font-size:13px;color:#DCE4DE}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -1534,7 +1623,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 
 <!-- PORTADA: HOY EN LA PIZARRA (5 oct 2026) -->
 <section class="panel" id="hoy">
-  <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div></div>
+  <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hoyacc"><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div><button class="hcfgbtn" id="hoyCfg" aria-label="Personalizar tu portada" title="Personalizar tu portada"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div></div>
   <div id="hoyPor"></div>
   <div id="hoyVivo"></div>
   <div class="hoygrid">
@@ -6095,8 +6184,9 @@ document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return
 
 
 // ---------- Favoritos (27 oct 2026): tus equipos y jugadores en su propia pestaña ----------
-function favsRender(){ const b=$("#favsBody"); if(b) b.innerHTML=hoyFavHTML(); }
-$("#favs").addEventListener("click",ev=>{ const a=ev.target.closest("[data-hact]");
+// favsRender: ver "Favoritos v2" (28 oct 2026)
+$("#favs").addEventListener("click",ev=>{ const dp=ev.target.closest("[data-fvdep]"); if(dp){ FAVS.dep=dp.dataset.fvdep; pzTrack("favs_deporte",{d:FAVS.dep}); return favsRender(); }
+  const a=ev.target.closest("[data-hact]");
   if(a){ if(a.dataset.hact==="fav") favAbre(); else if(a.dataset.hact==="mas"){ const k=a.dataset.hk; if(HOY.abiertos.has(k)) HOY.abiertos.delete(k); else HOY.abiertos.add(k); favsRender(); } return; }
   const jf=ev.target.closest("[data-jf]"); if(jf) return favFicha(jf.dataset.jf);
   const p=ev.target.closest("[data-hid]"); if(p) return hoyAbrir(p.dataset.hk,p.dataset.hid);
@@ -6349,7 +6439,7 @@ function chatPinta(){
   L.innerHTML=CHAT.sis.map(t=>`<div class="pzc-sis">${t}</div>`).join("")
     +(M.length?M.map(m=>{ const mio=m.uid===yo, puedo=mio||CHAT.dueno===yo;
       return mio?`<div class="pzc-m mio" data-cid="${m.id}"><span>${acctEsc(m.t)}</span><small>${hora(m.ts)} · <button data-chatdel="${m.id}">Borrar</button></small></div>`
-        :`<div class="pzc-m" data-cid="${m.id}"><i style="background:${color(m.uid)}">${acctEsc((m.n||"?")[0].toUpperCase())}</i><div><small>${acctEsc(m.n||"Jugador")}</small><span>${acctEsc(m.t)}</span>
+        :`<div class="pzc-m" data-cid="${m.id}">${(()=>{ const pf=PERF.cache[m.uid]; if(pf===undefined) perfCarga(m.uid); return pf?perfAvatar(pf,32):`<i style="background:${color(m.uid)}">${acctEsc((m.n||"?")[0].toUpperCase())}</i>`; })()}<div><small>${acctEsc(m.n||"Jugador")}${PERF.cache[m.uid]&&perfTitulo(PERF.cache[m.uid])?` · <b class="pzc-tit">${acctEsc(perfTitulo(PERF.cache[m.uid]))}</b>`:""}</small><span>${acctEsc(m.t)}</span>
           <small>${hora(m.ts)} · ${puedo?`<button data-chatdel="${m.id}">Borrar</button> · `:""}<button data-chatoc="${m.id}">Ocultar</button></small></div></div>`; }).join("")
       :`<p class="note" style="text-align:center">Todavía no hay mensajes. Rompe el hielo.</p>`);
   if(abajo||!CHAT.pintado){ L.scrollTop=L.scrollHeight; } CHAT.pintado=1;
@@ -6552,13 +6642,15 @@ function vidaCierreTick(){
 function vidaAccHTML(){
   const G=VIDA.log; if(!G) return "";
   const n=G.T.size, hayRes=vidaSlides().length>0, {d}=vidaParte(), dest=["Mon","Tue"].includes(d);
-  if(!n&&!hayRes) return "";
-  return `<div class="vacc">${n?`<button class="vchip" data-vact="logros">${G.racha>=2?`<span class="vfl">${VIDA_FLAMA}${G.racha}</span>`:""}<span>${n} ${n===1?"logro":"logros"}</span></button>`:""}
+  const conCta=typeof acctOk==="function"&&acctOk(), sinAv=conCta&&!perfMio(), nv=conCta&&!sinAv?perfNuevos().length:0;
+  if(!n&&!hayRes&&!sinAv&&!nv) return "";
+  return `<div class="vacc">${sinAv||nv?`<button class="vchip vdest" data-vact="perfil"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M8 4l4 2 4-2 5 3-2 4-2-1v10H7V10l-2 1-2-4z"/></svg>${sinAv?"Arma tu avatar":`${nv} ${nv===1?"cosa nueva":"cosas nuevas"} para tu avatar`}</button>`:""}${n?`<button class="vchip" data-vact="logros">${G.racha>=2?`<span class="vfl">${VIDA_FLAMA}${G.racha}</span>`:""}<span>${n} ${n===1?"logro":"logros"}</span></button>`:""}
     ${hayRes?`<button class="vchip${dest?" vdest":""}" data-vact="semana"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 3v3M15 3v3"/></svg>Tu semana</button>`:""}</div>`;
 }
 function vidaPortadaHTML(){
   const {h}=vidaParte(), nom=(typeof q5AliasDef==="function"?q5AliasDef():"").split(" ")[0], sal=h<5?"Buenas noches":h<12?"Buenos días":h<19?"Buenas tardes":"Buenas noches";
-  const saludo=`<p class="vsal">${sal}${nom?`, ${hoyEsc(nom)}`:""}</p>`, cie=vidaCierreHTML(), acc=vidaAccHTML();
+  const yo=typeof acctOk==="function"&&acctOk()?perfMio():null, nom2=yo?.a?yo.a.split(" ")[0]:nom;
+  const saludo=`<div class="vsalf">${yo?`<button class="vav" data-vact="perfil" aria-label="Editar tu perfil">${perfAvatar(yo,48)}</button>`:""}<p class="vsal">${sal}${nom2?`, ${hoyEsc(nom2)}`:""}${yo&&perfTitulo(yo)?`<small class="vtit2">${hoyEsc(perfTitulo(yo))}</small>`:""}</p></div>`, cie=vidaCierreHTML(), acc=vidaAccHTML();
   const cl=vidaClasico();
   if(cl){ const cH=PZ_COL[cl.h]||["#3d6b5a","#ECEFE7"], cV=PZ_COL[cl.v]||["#2c4a40","#ECEFE7"], e=HOY.ev?.get(cl.fid), st=e?.status?.type?.state;
     const sc=e&&st!=="pre"?e.competitions[0].competitors.map(c=>c.score??"–"):null;
@@ -6593,6 +6685,7 @@ $("#hoyPor")?.addEventListener("click",ev=>{
   if(t.dataset.vir){ pzTrack("portada_cierre",{k:t.dataset.vir}); navIr(t.dataset.vir); window.scrollTo(0,0); return; }
   if(t.dataset.vact==="logros") return vidaLogrosAbre();
   if(t.dataset.vact==="semana") return vidaHistoria();
+  if(t.dataset.vact==="perfil") return perfAbre();
 });   // los partidos (data-hid / data-nid) y "Sigue a tus equipos" (data-hact) los abre el manejador de #hoy
 
 // ---- Actividad de la semana (este navegador): partidos que abriste, reacciones, mensajes y picks ----
@@ -6637,7 +6730,7 @@ async function vidaLogrosCalc(forzar){
     const nuevos=[...T].filter(k=>!(prev||[]).includes(k)); VIDA.nuevos=new Set(prev?nuevos:[]);
     try{ localStorage.setItem("pz_logros",JSON.stringify([...T])); }catch(e){}
     if(nuevos.length){ const L=VIDA_LOGROS.find(x=>x[0]===nuevos[0]);
-      setTimeout(()=>pzAviso(prev?"¡Nuevo logro!":`¡Ya tienes ${T.size} ${T.size===1?"logro":"logros"}!`,prev?`${L[2]}${nuevos.length>1?` y ${nuevos.length-1} más`:""}`:"Tócalos en la portada para verlos"),prev?600:2500); }
+      setTimeout(()=>pzAviso(prev?"¡Nuevo logro!":`¡Ya tienes ${T.size} ${T.size===1?"logro":"logros"}!`,prev?`${L[2]}${nuevos.length>1?` y ${nuevos.length-1} más`:""}${typeof perfDesbDe==="function"&&perfDesbDe(nuevos[0]).length?` · Desbloqueaste: ${perfDesbDe(nuevos[0]).join(", ").toLowerCase()}`:""}`:"Tócalos en la portada para verlos"),prev?600:2500); }
     VIDA.log={T,racha,Q,G,yo,gen,fan}; VIDA.logT=Date.now(); return VIDA.log;
   })().finally(()=>{ VIDA.logP=null; vidaPinta(); });
   return VIDA.logP;
@@ -6796,9 +6889,229 @@ function vidaTick(){
 }
 function vidaInicia(){ clearInterval(VIDA.t); VIDA.t=setInterval(vidaTick,1000); setTimeout(()=>vidaLogrosCalc(),2500); }
 
+// ---------- Tu perfil (28 oct 2026): avatar con la camiseta de tu equipo ----------
+// perfiles/{uid} = {a apodo, eq clave del equipo, c1, c2, c3 colores, d diseño, n número, f fondo, m marco, x detalles [],
+// ti título, k1, k2 colores de visita, vi (usa la de visita), t}. Lo leen los que tienen cuenta; solo tú lo escribes
+// (reglas_perfiles.txt). También se guarda en el navegador (pz_perfil, que viaja con tu cuenta como lo demás).
+// Desbloqueables (28 oct 2026): cada logro (VIDA_LOGROS) abre un fondo, diseño, marco, detalle, título o la camiseta de visita.
+const PERF={yo:null,cache:{},ed:null,nuevos:new Set()};
+const PERF_DIS=[["liso","Liso"],["rayas","Rayas"],["franja","Franja"],["mitades","Mitades"],["banda","Banda"],["cuadros","Cuadros","seis"],["portero","Portero","once"]];
+const PERF_PRESET={2287:"franja",2278:"rayas",2295:"franja",2286:"banda",2282:"rayas",529:"rayas",2312:"rayas",2291:"banda",165:"liso",157:"liso"};
+const PERF_FONDOS=[["#263D36"],["radial-gradient(circle at 30% 20%,#3d6b5a,#1F332D)"],["linear-gradient(160deg,#12305E,#1F332D)"],["linear-gradient(160deg,#6b3a2f,#1F332D)"],["radial-gradient(circle at 50% 0%,#F2D466,#8a6d1f)"],
+  ["linear-gradient(90deg,transparent 48%,rgba(255,255,255,.55) 48% 52%,transparent 52%),repeating-linear-gradient(90deg,#2f7a3e 0 14%,#286b35 14% 28%)","pick","Cancha"],
+  ["radial-gradient(circle at 18% 8%,rgba(255,255,230,.75),transparent 22%),radial-gradient(circle at 82% 8%,rgba(255,255,230,.75),transparent 22%),linear-gradient(180deg,#0d1b2a,#1c3a2e)","cincuenta","Estadio de noche"],
+  ["radial-gradient(#F2D466 1.5px,transparent 2.2px) 0 0/12px 12px,radial-gradient(#FF9C80 1.5px,transparent 2.2px) 6px 6px/12px 12px,radial-gradient(#9FD3A8 1.2px,transparent 2px) 3px 9px/12px 12px,#263D36","comparte","Confeti"]];
+const PERF_MARCOS=[["no","Sin marco",null,""],["fuego","Racha de fuego","racha3","conic-gradient(#FF9C80,#F2D466,#FF9C80)"],["oro","Marco dorado","perfecta","conic-gradient(#F2D466,#FFF6C9,#F2D466,#C9A227,#F2D466)"],["lider","Marco de líder","lider","conic-gradient(#C9A7F0,#7FB8E8,#C9A7F0)"]];
+const PERF_X=[["nd","Número dorado","perfecta"],["est","Estrella en el escudo","goles"],["cor","Corona","lider"],["llama","Llamita animada","rd7"],["brillo","Brillo que da la vuelta","rd30"]];
+const PERF_TIT=[["","Sin título",null],["sabe","El que sabe","seis"],["const","Constante","racha3"],["profeta","El Profeta","perfecta"],["halcon","Ojo de halcón","goles"],["lider","El Líder","lider"],["fanta","Fantasista","once"],["fiel","Fiel","fan3"],["presume","El Presumido","comparte"],["imparable","Imparable","rd7"]];
+const PERF_PAL=["#FFFFFF","#1A1A1A","#C8102E","#12305E","#0047BB","#6CABDD","#FFD23F","#F4B400","#00843D","#A50044","#7A3E9D","#E8742C"], PERF_NEON=["#39FF14","#FF2BD6","#00E5FF"];
+const PERF_REQ_PRONTO={rd7:"7 días seguidos en el reto del día (muy pronto)",rd30:"30 días seguidos en el reto del día (muy pronto)"};
+const PERF_CAM="M38 20 L50 13 Q60 21 70 13 L82 20 L106 34 L97 55 L85 49 L85 120 L35 120 L35 49 L23 55 L14 34 Z";
+const perfLum=x=>{ const n=parseInt(String(x).slice(1),16); return .299*(n>>16)+.587*(n>>8&255)+.114*(n&255); };
+const perfNomEq=k=>!k?"":k[0]==="n"?(NT[k.slice(1)]?.name||NT[k.slice(1)]?.n||""):+k.slice(1)===16?"México":vidaNomEq(+k.slice(1));
+// ---- desbloqueos ----
+function perfDesb(){   // [{id, tipo, n, req}] todo lo que se gana con logros
+  const L=[]; PERF_FONDOS.forEach((f,i)=>{ if(f[1]) L.push({id:"f"+i,tipo:"Fondo",n:f[2],req:f[1]}); });
+  PERF_DIS.forEach(d=>{ if(d[2]) L.push({id:"d_"+d[0],tipo:"Diseño",n:d[1],req:d[2]}); });
+  PERF_MARCOS.forEach(m=>{ if(m[2]) L.push({id:"m_"+m[0],tipo:"Marco",n:m[1],req:m[2]}); });
+  PERF_X.forEach(x=>L.push({id:"x_"+x[0],tipo:"Detalle",n:x[1],req:x[2]}));
+  PERF_TIT.forEach(t=>{ if(t[2]) L.push({id:"t_"+t[0],tipo:"Título",n:t[1],req:t[2]}); });
+  L.push({id:"vis",tipo:"Camiseta",n:"Camiseta de visita",req:"fan3"}); L.push({id:"neon",tipo:"Colores",n:"Colores neón",req:"once"});
+  return L;
+}
+const perfTiene=req=>!req||!!VIDA.log?.T?.has(req);
+const perfReqTxt=req=>PERF_REQ_PRONTO[req]||(()=>{ const l=VIDA_LOGROS.find(x=>x[0]===req); return l?`${l[2]}: ${l[3].charAt(0).toLowerCase()+l[3].slice(1)}`:""; })();
+function perfDesbDe(logro){ return perfDesb().filter(d=>d.req===logro).map(d=>d.n); }
+function perfVistos(){ try{ return new Set(JSON.parse(localStorage.getItem("pz_perf_visto")||"[]")); }catch(e){ return new Set(); } }
+function perfNuevos(){ if(!VIDA.log) return []; const V=perfVistos(); return perfDesb().filter(d=>perfTiene(d.req)&&!V.has(d.id)); }
+// ---- datos ----
+function perfLimpia(p){ if(!p||typeof p!=="object") return null; const col=c=>/^#[0-9A-Fa-f]{6}$/.test(c||"")?c:null;
+  return {a:String(p.a||"").replace(/[<>"&]/g,"").slice(0,24),eq:/^[fn][A-Za-z0-9]{1,8}$/.test(p.eq||"")?p.eq:"",c1:col(p.c1)||"#3d6b5a",c2:col(p.c2)||"#F2D466",c3:col(p.c3)||col(p.c2)||"#F2D466",
+    d:PERF_DIS.some(x=>x[0]===p.d)?p.d:"liso",n:Math.max(0,Math.min(99,parseInt(p.n,10)||0)),f:Math.max(0,Math.min(PERF_FONDOS.length-1,parseInt(p.f,10)||0)),m:PERF_MARCOS.some(x=>x[0]===p.m)?p.m:"no",
+    x:(Array.isArray(p.x)?p.x:[]).filter(v=>PERF_X.some(y=>y[0]===v)).slice(0,5),ti:PERF_TIT.some(t=>t[0]===p.ti)?p.ti:"",k1:col(p.k1)||"",k2:col(p.k2)||"",vi:!!p.vi&&!!col(p.k1)}; }
+function perfDef(){
+  const k=Object.keys(FAV.eq).find(k=>k[0]==="f"&&PZ_COL[k.slice(1)])||Object.keys(FAV.eq).find(k=>k[0]==="n"&&NT[k.slice(1)]?.c)||"";
+  const c=k?vidaColEq(k):["#3d6b5a","#F2D466"];
+  return perfLimpia({a:(typeof q5AliasDef==="function"?q5AliasDef():"").slice(0,24),eq:k,c1:c[0],c2:c[1],c3:c[1],d:k?PERF_PRESET[k.slice(1)]||"liso":"liso",n:10,f:0,m:"no",k1:c[1],k2:c[0]});
+}
+function perfMio(){ if(PERF.yo) return PERF.yo; try{ const x=JSON.parse(localStorage.getItem("pz_perfil")||"null"); if(x) PERF.yo=perfLimpia(x); }catch(e){} return PERF.yo; }
+const perfTitulo=p=>PERF_TIT.find(t=>t[0]===p?.ti&&t[0])?.[1]||"";
+// La forma de la camiseta se define una sola vez en la página (así todos los avatares la comparten)
+(()=>{ const s=document.createElementNS("http://www.w3.org/2000/svg","svg"); s.setAttribute("width","0"); s.setAttribute("height","0"); s.setAttribute("aria-hidden","true");
+  s.style.cssText="position:absolute;width:0;height:0;overflow:hidden"; s.innerHTML=`<defs><clipPath id="pzcam"><path d="${PERF_CAM}"/></clipPath></defs>`; document.body.prepend(s); })();
+const PERF_CUADROS=(()=>{ let r=""; for(let i=0;i<10;i++) for(let j=0;j<10;j++) if((i+j)%2) r+=`<rect x="${i*12}" y="${j*12}" width="12" height="12"/>`; return r; })();
+function perfAvatar(p,tam=44){
+  if(!p) return ""; const mc=PERF_MARCOS.find(m=>m[0]===p.m)?.[3]||"", d=p.d, o=x=>d===x?1:0, X=new Set(p.x||[]);
+  const [c1,c2,c3]=p.vi&&p.k1?[p.k1,p.k2||p.c1,p.k2||p.c1]:[p.c1,p.c2,p.c3];
+  const num=X.has("nd")?"#F2D466":perfLum(c1)>150?(perfLum(c2)<130?c2:"#1d2a26"):(perfLum(c2)>150?c2:"#FFFFFF");
+  const fondo=PERF_FONDOS[p.f]?.[0]||PERF_FONDOS[0][0];
+  const estrella=X.has("est")?`<polygon points="74,30 75.8,34.6 80.7,34.9 76.9,38 78.1,42.8 74,40.1 69.9,42.8 71.1,38 67.3,34.9 72.2,34.6" fill="#F2D466" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>`:"";
+  return `<span class="pzav${mc?" mc":""}${X.has("brillo")?" brillo":""}" style="width:${tam}px;height:${tam}px${mc?`;--anillo:${mc};padding:${Math.max(2,Math.round(tam*.06))}px`:""}" aria-hidden="true">${X.has("cor")?`<span class="pzcor"><svg viewBox="0 0 30 22" width="100%"><path d="M2 20h26l2-16-8 6-7-9-7 9-8-6z" fill="#F2D466" stroke="#8a6d1f" stroke-width="1.2"/></svg></span>`:""}<span class="pzavin${p.f===7?" fconf":""}" style="background:${fondo}"><svg viewBox="0 0 120 120" width="92%" height="92%">
+    <g clip-path="url(#pzcam)"><rect width="120" height="120" fill="${c1}"/><g opacity="${o("rayas")}" fill="${c2}"><rect x="24" width="9" height="120"/><rect x="40" width="9" height="120"/><rect x="56" width="9" height="120"/><rect x="72" width="9" height="120"/><rect x="88" width="9" height="120"/></g>
+    <polygon opacity="${o("franja")}" points="20,20 40,20 110,110 90,120" fill="${c2}"/><rect opacity="${o("mitades")}" x="60" width="60" height="120" fill="${c2}"/><rect opacity="${o("banda")}" y="56" width="120" height="14" fill="${c2}"/>
+    ${d==="cuadros"?`<g fill="${c2}">${PERF_CUADROS}</g>`:""}${d==="portero"?`<g fill="${c2}"><polygon points="38,20 14,34 23,55 35,49"/><polygon points="82,20 106,34 97,55 85,49"/><rect y="62" width="120" height="4"/><rect y="70" width="120" height="4"/></g>`:""}
+    <rect y="34" width="22" height="22" fill="${c3}"/><rect x="98" y="34" width="22" height="22" fill="${c3}"/></g>
+    <path d="M50 13 Q60 24 70 13" fill="none" stroke="${c3}" stroke-width="4"/><path d="${PERF_CAM}" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.5"/>${estrella}
+    <text x="60" y="90" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="800" font-size="36" fill="${num}" paint-order="stroke" stroke-linejoin="round"${X.has("nd")?` stroke="#7a5a00" stroke-width="2"`:` stroke="${c1}" stroke-width="3"`}>${p.n}</text></svg></span>${X.has("llama")?`<span class="pzllama"><svg viewBox="0 0 24 24" width="100%" fill="#FF9C80"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.4 1.2-3.8 2.3-5 .2 1.6 1 2.6 2 3-.6-3 .2-6 .7-9z"/></svg></span>`:""}</span>`;
+}
+async function perfCargaYo(){
+  if(!(typeof acctOk==="function"&&acctOk())||!ACCT.db) return;
+  try{ const s=await ACCT.db.doc(`perfiles/${ACCT.user.uid}`).get(); if(s.exists){ PERF.yo=perfLimpia(s.data()); try{ localStorage.setItem("pz_perfil",JSON.stringify(PERF.yo)); }catch(e){} }
+    else if(perfMio()) await ACCT.db.doc(`perfiles/${ACCT.user.uid}`).set({...perfMio(),t:grFV().serverTimestamp()}); }catch(e){ console.warn("Perfil:",e?.code||e); }
+  acctBtn(); if(typeof vidaPinta==="function") vidaPinta();
+}
+function perfCarga(uid){   // perfil de otro (para el chat)
+  if(PERF.cache[uid]!==undefined||!ACCT.db) return; PERF.cache[uid]=null;
+  ACCT.db.doc(`perfiles/${uid}`).get().then(s=>{ PERF.cache[uid]=s.exists?perfLimpia(s.data()):false; if(PERF.cache[uid]) chatPinta(); }).catch(()=>{ PERF.cache[uid]=false; });
+}
+// ---- Editor ----
+function perfAbre(){
+  if(!(typeof acctOk==="function"&&acctOk())){ if(typeof acctOpen==="function") acctOpen(); return; }
+  const go=()=>{ PERF.ed={...(perfMio()||perfDef())}; PERF.nuevos=new Set(perfNuevos().map(d=>d.id));
+    try{ localStorage.setItem("pz_perf_visto",JSON.stringify(perfDesb().filter(d=>perfTiene(d.req)).map(d=>d.id))); }catch(e){}
+    pzTrack("perfil_abre",{nuevos:PERF.nuevos.size}); perfEdPinta(); if(!dlg.open) dlg.showModal(); FICHA.pila=[]; if(typeof vidaPinta==="function") vidaPinta(); };
+  if(VIDA.log) go(); else vidaLogrosCalc().then(go);
+}
+const PERF_CANDADO=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
+function perfEdPinta(){
+  const e=PERF.ed, box=$("#gbody"), y=box.scrollTop, N=PERF.nuevos, nuevo=id=>N.has(id)?`<em class="penuevo">Nuevo</em>`:"";
+  const favs=Object.keys(FAV.eq).filter(k=>(k[0]==="f"&&PZ_COL[k.slice(1)])||(k[0]==="n"&&NT[k.slice(1)]?.c));
+  const eqs=[...favs,...Object.keys(PZ_COL).map(id=>"f"+id).filter(k=>!favs.includes(k))];
+  const chip=k=>{ const c=vidaColEq(k)||["#3d6b5a","#F2D466"]; return `<button class="pech" data-pe-eq="${k}" aria-pressed="${e.eq===k}" aria-label="${hoyEsc(perfNomEq(k))}"><i style="background:linear-gradient(90deg,${c[0]} 50%,${c[1]} 50%)"></i><span>${hoyEsc(perfNomEq(k))}</span></button>`; };
+  const neon=perfTiene("once"), pal=(campo)=>`<div class="pepal">${[...PERF_PAL,...(neon?PERF_NEON:[])].map(c=>`<button data-pe-col="${campo}:${c}" aria-pressed="${e[campo]===c}" aria-label="Color ${c}" style="background:${c}"></button>`).join("")}</div>`;
+  const falta=L=>{ const F=L.filter(x=>!perfTiene(x.req)); return F.length?`<ul class="pefalta">${F.map(x=>`<li>${PERF_CANDADO}<b>${hoyEsc(x.n)}</b> · ${hoyEsc(perfReqTxt(x.req))}</li>`).join("")}</ul>`:""; };
+  const btn=(attr,on,ok,txt,id)=>`<button ${attr} aria-pressed="${on}"${ok?"":" disabled"}>${ok?"":PERF_CANDADO}${txt}${nuevo(id)}</button>`;
+  const vis=perfTiene("fan3"), tit=perfTitulo(e);
+  box.innerHTML=`<div class="peed"><h2>Tu perfil</h2>
+    <div class="petop"><span class="peprev">${perfAvatar(e,140)}</span><span class="pedat"><label class="pelab" for="peA">Apodo</label><input id="peA" maxlength="24" value="${hoyEsc(e.a)}" placeholder="Cómo te ven tus amigos" autocomplete="off">
+      <small>${e.eq?`Le va al ${hoyEsc(perfNomEq(e.eq))}`:"Escoge tu equipo abajo"}${tit?` · <b class="petit">${hoyEsc(tit)}</b>`:""}</small><span class="pemini">${perfAvatar(e,28)}<span>Así sales en el chat</span></span></span></div>
+    ${N.size?`<div class="penov"><b>Desbloqueaste ${N.size===1?"algo nuevo":`${N.size} cosas nuevas`}</b><span>${[...N].map(id=>perfDesb().find(d=>d.id===id)?.n).filter(Boolean).map(hoyEsc).join(" · ")}</span></div>`:""}
+    <h3 class="pet">Tu equipo</h3><div class="pechips">${eqs.map(chip).join("")}</div>
+    <h3 class="pet">Camiseta</h3><div class="hseg peseg">${btn(`data-pe-vi="0"`,!e.vi,true,"Local","")}${btn(`data-pe-vi="1"`,!!e.vi,vis,"Visita","vis")}</div>
+    ${e.vi&&vis?`<h3 class="pet">Color de visita</h3>${pal("k1")}<h3 class="pet">Detalles de visita</h3>${pal("k2")}`:`<h3 class="pet">Color principal</h3>${pal("c1")}<h3 class="pet">Segundo color</h3>${pal("c2")}`}
+    ${vis?"":falta([{n:"Camiseta de visita",req:"fan3"}])}${neon?"":falta([{n:"Colores neón",req:"once"}])}
+    <h3 class="pet">Diseño</h3><div class="hseg peseg">${PERF_DIS.map(([v,n,req])=>btn(`data-pe-d="${v}"`,e.d===v,perfTiene(req),n,"d_"+v)).join("")}</div>${falta(PERF_DIS.filter(d=>d[2]).map(d=>({n:d[1],req:d[2]})))}
+    <div class="pefila"><span><h3 class="pet">Número</h3><span class="penum"><button data-pe-n="-1" aria-label="Menos">−</button><b>${e.n}</b><button data-pe-n="1" aria-label="Más">+</button></span></span></div>
+    <h3 class="pet">Fondo</h3><span class="pefon">${PERF_FONDOS.map(([f,req,n],i)=>{ const ok=perfTiene(req); return `<button data-pe-f="${i}" aria-pressed="${e.f===i}" aria-label="${n||`Fondo ${i+1}`}"${ok?"":" disabled"} class="${i===7?"fconf":""}" style="background:${f}">${ok?"":PERF_CANDADO}${N.has("f"+i)?`<em class="penuevo p">Nuevo</em>`:""}</button>`; }).join("")}</span>
+    ${falta(PERF_FONDOS.filter(f=>f[1]).map(f=>({n:`Fondo ${f[2].toLowerCase()}`,req:f[1]})))}
+    <h3 class="pet">Marco</h3><div class="pemar">${PERF_MARCOS.map(([v,n,req,g])=>{ const ok=perfTiene(req);
+      return `<button data-pe-m="${v}" aria-pressed="${e.m===v}"${ok?"":" disabled"}><i style="background:${g||"var(--line)"}"></i><span>${n}${nuevo("m_"+v)}${ok?"":`<small>${hoyEsc(perfReqTxt(req))}</small>`}</span></button>`; }).join("")}</div>
+    <h3 class="pet">Detalles</h3><div class="pex">${PERF_X.map(([v,n,req])=>btn(`data-pe-x="${v}"`,(e.x||[]).includes(v),perfTiene(req),n,"x_"+v)).join("")}</div>${falta(PERF_X.map(x=>({n:x[1],req:x[2]})))}
+    <h3 class="pet">Título <small>(sale debajo de tu nombre)</small></h3><div class="pex">${PERF_TIT.map(([v,n,req])=>btn(`data-pe-ti="${v}"`,(e.ti||"")===v,perfTiene(req),n,v?"t_"+v:"")).join("")}</div>${falta(PERF_TIT.filter(t=>t[2]).map(t=>({n:t[1],req:t[2]})))}
+    <div class="pepie"><button class="btn" id="peGuarda">Guardar</button><span class="note" id="peMsg"></span></div>
+    <p class="note">Tu perfil lo ven las personas con cuenta en La Pizarra (por ahora, en el chat de tus grupos). Ganas más cosas con tus logros.</p></div>`;
+  box.scrollTop=y;
+}
+document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest||!PERF.ed||!t.closest("#gbody .peed")) return;
+  const e=PERF.ed, b=t.closest("button"); if(!b||b.disabled) return;
+  if(b.dataset.peEq!=null){ const k=b.dataset.peEq, c=vidaColEq(k)||[e.c1,e.c2]; Object.assign(e,{eq:k,c1:c[0],c2:c[1],c3:c[1],k1:c[1],k2:c[0],d:PERF_PRESET[k.slice(1)]||(perfTiene(PERF_DIS.find(x=>x[0]===e.d)?.[2])?e.d:"liso")}); return perfEdPinta(); }
+  if(b.dataset.peVi!=null){ e.vi=b.dataset.peVi==="1"; if(e.vi&&!e.k1){ e.k1=e.c2; e.k2=e.c1; } return perfEdPinta(); }
+  if(b.dataset.peCol){ const [c,v]=b.dataset.peCol.split(":"); e[c]=v; if(c==="c2") e.c3=v; return perfEdPinta(); }
+  if(b.dataset.peD){ e.d=b.dataset.peD; return perfEdPinta(); }
+  if(b.dataset.peN){ e.n=(e.n+ +b.dataset.peN+100)%100; return perfEdPinta(); }
+  if(b.dataset.peF){ e.f=+b.dataset.peF; return perfEdPinta(); }
+  if(b.dataset.peM){ e.m=b.dataset.peM; return perfEdPinta(); }
+  if(b.dataset.peX){ const S=new Set(e.x||[]); S.has(b.dataset.peX)?S.delete(b.dataset.peX):S.add(b.dataset.peX); e.x=[...S]; return perfEdPinta(); }
+  if(b.dataset.peTi!=null){ e.ti=b.dataset.peTi; return perfEdPinta(); }
+  if(b.id==="peGuarda"){ const p=perfLimpia({...e,a:($("#peA")?.value||"").trim()||e.a}); PERF.yo=p; try{ localStorage.setItem("pz_perfil",JSON.stringify(p)); }catch(x){} if(typeof acctPush==="function") acctPush();
+    $("#peMsg").textContent="Guardando…";
+    try{ await ACCT.db.doc(`perfiles/${ACCT.user.uid}`).set({...p,t:grFV().serverTimestamp()}); $("#peMsg").innerHTML=pzOk("Guardado"); pzTrack("perfil_guarda",{d:p.d,f:p.f,m:p.m,x:p.x.length}); }
+    catch(x){ $("#peMsg").textContent=`Se guardó en este navegador, pero no en tu cuenta${x?.code?` (${x.code})`:""}.`; }
+    acctBtn(); vidaPinta(); pzChispas(b); }
+});
+document.addEventListener("input",ev=>{ if(ev.target.id!=="peA"||!PERF.ed) return; PERF.ed.a=ev.target.value.slice(0,24); });
+dlg.addEventListener("close",()=>{ PERF.ed=null; });
+
+// ---------- Tu portada (28 oct 2026): escoge qué sale en Hoy y en qué orden ----------
+// localStorage "pz_hoy" = {o: [secciones ocultas], ord: [orden de las de la columna principal]}; viaja con tu cuenta.
+const HOY_SEC=[["hoyPor","Saludo y tus pendientes","Tu equipo de hoy, el cierre de tus picks y tu semana",0],["hoyVivo","En vivo","Los partidos que se están jugando",0],
+  ["hoyFav","Mis equipos","Tarjetas de tus equipos y atletas",1],["hoySem","Partidos de la semana","Los dos partidos grandes y la votación",1],["hoyMarc","Partidos de hoy","Todos los marcadores del día por liga",1],
+  ["hoyUlt","Lo último","Lesiones, rachas, fichajes y notas",1],["hoyNfl","NFL de la semana","Juegos y momios de la semana",1],["hoyLpz","Lo de La Pizarra","Datos, Power Ranking y tablas",0]];
+const HOY_ESENCIAL=["hoyPor","hoyVivo","hoyFav","hoyMarc"];
+function hoyConf(){ try{ return JSON.parse(localStorage.getItem("pz_hoy")||"{}")||{}; }catch(e){ return {}; } }
+function hoyConfGuarda(C){ try{ localStorage.setItem("pz_hoy",JSON.stringify(C)); }catch(e){} if(typeof acctPush==="function") acctPush(); hoyConfAplica(); }
+function hoyConfAplica(){ const C=hoyConf(), oc=new Set(C.o||[]), ord=C.ord||[];
+  for(const [id,,,mov] of HOY_SEC){ const el=$("#"+id); if(!el) continue; el.hidden=oc.has(id); if(mov){ const i=ord.indexOf(id); el.style.order=i>=0?String(i):""; } }
+  const b=$("#hoyCfg"); if(b) b.classList.toggle("on",oc.size>0); }
+function hoyConfLista(){ const ord=hoyConf().ord||[], mov=HOY_SEC.filter(x=>x[3]); const M=mov.slice().sort((a,b)=>{ const i=ord.indexOf(a[0]), j=ord.indexOf(b[0]); return (i<0?99+mov.indexOf(a):i)-(j<0?99+mov.indexOf(b):j); });
+  return [HOY_SEC[0],HOY_SEC[1],...M,HOY_SEC[7]]; }
+function hoyConfAbre(){
+  const oc=new Set(hoyConf().o||[]), L=hoyConfLista(), M=L.filter(x=>x[3]);
+  $("#gbody").innerHTML=`<div class="hcfg"><h2>Tu portada</h2><p class="note">Escoge qué quieres ver en Hoy y en qué orden. ${typeof acctOk==="function"&&acctOk()?"Se guarda en tu cuenta.":"Se guarda en este navegador."}</p>
+    <div class="hcfgp"><button class="q5link" data-hcp="todo">Ver todo</button><button class="q5link" data-hcp="esencial">Solo lo esencial</button></div>
+    <div class="hcfgl">${L.map(([id,n,d,mov])=>{ const i=M.findIndex(x=>x[0]===id);
+      return `<div class="hcfgr${oc.has(id)?" off":""}"><label><span class="hsw"><input type="checkbox" data-hcv="${id}"${oc.has(id)?"":" checked"}><i></i></span><span><b>${n}</b><small>${d}</small></span></label>
+        ${mov?`<span class="hcfgo"><button data-hcm="${id}:-1" aria-label="Subir ${n}"${i===0?" disabled":""}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button><button data-hcm="${id}:1" aria-label="Bajar ${n}"${i===M.length-1?" disabled":""}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></span>`:""}</div>`; }).join("")}</div></div>`;
+  if(!dlg.open) dlg.showModal(); FICHA.pila=[]; pzTrack("portada_personaliza",{});
+}
+document.addEventListener("change",ev=>{ const c=ev.target.closest?.("[data-hcv]"); if(!c) return; const C=hoyConf(), oc=new Set(C.o||[]);
+  if(c.checked) oc.delete(c.dataset.hcv); else oc.add(c.dataset.hcv); C.o=[...oc]; hoyConfGuarda(C); c.closest(".hcfgr")?.classList.toggle("off",!c.checked); });
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
+  if(t.closest("#hoyCfg")) return hoyConfAbre();
+  const m=t.closest("[data-hcm]"); if(m){ const [id,d]=m.dataset.hcm.split(":"), C=hoyConf(), L=hoyConfLista().filter(x=>x[3]).map(x=>x[0]), i=L.indexOf(id), j=i+ +d;
+    if(j<0||j>=L.length) return; [L[i],L[j]]=[L[j],L[i]]; C.ord=L; hoyConfGuarda(C); return hoyConfAbre(); }
+  const p=t.closest("[data-hcp]"); if(p){ const C=hoyConf(); C.o=p.dataset.hcp==="todo"?[]:HOY_SEC.map(x=>x[0]).filter(id=>!HOY_ESENCIAL.includes(id)); hoyConfGuarda(C); return hoyConfAbre(); }
+});
+
+// ---------- Favoritos v2 (28 oct 2026): lo que viene, resultados, tus tarjetas y las notas de tus equipos ----------
+const FAVS={dep:"todo"};
+const favDep=k=>({f:"fut",p:"fut",n:"nfl",b:"nba",a:"nba",e:"f1",r:"f1",t:"ten"})[k[0]]||"fut";
+const FAVS_DEP={fut:"Fútbol",nfl:"NFL",nba:"NBA",f1:"F1",ten:"Tenis"};
+async function favxUltAf(id){ const L=await afList("fixtures",`team=${id}&last=1&${AF_TZ}`); const f=L[0]; if(!f) return {u:null};
+  return {u:{fid:String(f.fixture.id),ts:f.fixture.timestamp,lg:AF_KEY[f.league?.id]||"",h:f.teams.home,a:f.teams.away,gh:f.goals?.home,ga:f.goals?.away,comp:f.league?.name||""}}; }
+function favsItems(){
+  const now=Date.now()/1000, V=[], R=[], ver=k=>FAVS.dep==="todo"||favDep(k)===FAVS.dep, abreAf=(lg,fid,id)=>{ const L=LEAGUES[lg]; return L&&(comercial(L)||L.nat)?` data-hk="${lg}" data-hid="${fid}"`:` data-eqf="${id}"`; };
+  for(const [k,x] of Object.entries(FAV.eq)){ if(!ver(k)) continue; const dep=favDep(k);
+    if(k[0]==="f"){ const id=k.slice(1), I=D.eq_info?.[id]||favxPide(k,()=>favxAfEq(id))?.I, p=I?.p;
+      if(p&&p[1]>now-2.5*3600&&p[1]<now+10*86400) V.push({ts:p[1],dep,t:`${x.n} ${p[5]?"vs":"en casa de"} ${esTeam(p[4])}`,s:LEAGUES[p[2]]?.label||I.comp||"",abre:abreAf(p[2],p[0],id)});
+      const U=favxPide("u"+id,()=>favxUltAf(id))?.u;
+      if(U&&U.ts>now-9*86400&&U.gh!=null){ const loc=U.h.id===+id, gy=loc?U.gh:U.ga, gr=loc?U.ga:U.gh; R.push({ts:U.ts,dep,r:gy>gr?"G":gy<gr?"P":"E",t:`${x.n} ${gy}-${gr} ${esTeam(loc?U.a.name:U.h.name)}`,s:LEAGUES[U.lg]?.label||U.comp,abre:abreAf(U.lg,U.fid,id)}); } }
+    else if(k[0]==="n"){ const ab=k.slice(1), S=(D.sched||[]).filter(s=>s.h===ab||s.a===ab), nom=NT[ab]?.n||x.n;
+      const nx=S.filter(s=>s.hs==null&&s.ko&&+new Date(s.ko)/1000>now-4*3600).sort((a,b)=>a.ko.localeCompare(b.ko))[0];
+      if(nx&&+new Date(nx.ko)/1000<now+10*86400){ const loc=nx.h===ab; V.push({ts:+new Date(nx.ko)/1000,dep,t:`${nom} ${loc?"vs":"en casa de"} ${NT[loc?nx.a:nx.h]?.n||""}`,s:"NFL",vivo:!!NLIVE[nx.id]?.live,abre:` data-nid="${nx.id}"`}); }
+      const ul=S.filter(s=>s.hs!=null&&s.ko).sort((a,b)=>b.ko.localeCompare(a.ko))[0];
+      if(ul&&+new Date(ul.ko)/1000>now-9*86400){ const loc=ul.h===ab, gy=loc?ul.hs:ul.as_, gr=loc?ul.as_:ul.hs; R.push({ts:+new Date(ul.ko)/1000,dep,r:gy>gr?"G":gy<gr?"P":"E",t:`${nom} ${gy}-${gr} ${NT[loc?ul.a:ul.h]?.n||""}`,s:"NFL",abre:` data-nid="${ul.id}"`}); } }
+    else if(k[0]==="b"){ const X=favxPide(k,()=>favxNbaEq(k.slice(1))), nom=NBA_N[k.slice(1)]||x.n;
+      if(X?.prox) V.push({ts:+new Date(X.prox.d)/1000,dep,t:`${nom} ${X.prox.loc?"vs":"en casa de"} ${NBA_N[X.prox.riv]||X.prox.riv}`,s:"NBA",vivo:X.prox.vivo,abre:` data-hact="nbafav"`});
+      if(X?.ult&&+new Date(X.ult.d)/1000>now-9*86400) R.push({ts:+new Date(X.ult.d)/1000,dep,r:X.ult.g?"G":"P",t:`${nom} ${X.ult.gy}-${X.ult.gr} ${NBA_N[X.ult.riv]||X.ult.riv}`,s:"NBA",abre:` data-hact="nbafav"`}); }
+  }
+  const F1k=[...Object.keys(FAV.eq),...Object.keys(FAV.jug)].filter(k=>"er".includes(k[0])&&ver(k));
+  if(F1k.length){ const F=favxPide("_f1",favxF1); if(F?.sig&&+new Date(F.sig.fin)/1000>now-3*3600) V.push({ts:+new Date(F.sig.d)/1000,dep:"f1",t:F.sig.n,s:`F1 · ${F1k.map(k=>(FAV.eq[k]||FAV.jug[k]).n).join(", ")}`,abre:` data-hact="f1fav"`}); }
+  for(const [k,x] of Object.entries(FAV.jug)){ if(k[0]!=="t"||!ver(k)) continue; const tr=x.tour||"atp", M=favxPide("_ten_"+tr,()=>favxTenis(tr))?.M?.[k.slice(1)]; if(!M) continue;
+    const ts=+new Date(M.d)/1000, sets=M.sets[M.yo].map((v,i)=>`${v}-${M.sets[1-M.yo]?.[i]??""}`).join(" ");
+    if(M.st==="post") R.push({ts,dep:"ten",r:M.gano?"G":"P",t:`${x.n} vs ${M.riv}`,s:`${M.torneo} · ${sets}`,abre:` data-hact="tenfav"`});
+    else V.push({ts,dep:"ten",t:`${x.n} vs ${M.riv}`,s:M.st==="in"?`${M.torneo} · ${sets}`:M.torneo,vivo:M.st==="in",abre:` data-hact="tenfav"`}); }
+  return {V:V.sort((a,b)=>a.ts-b.ts),R:R.sort((a,b)=>b.ts-a.ts)};
+}
+function favsCuando(ts){ const d=hoyYmd(ts*1000), hoy=hoyYmd(), man=hoyYmd(Date.now()+864e5);
+  return [d===hoy?"Hoy":d===man?"Mañana":cap(masHora(new Date(ts*1000).toISOString(),{weekday:"short",day:"numeric"}).replace(".","")),masHora(new Date(ts*1000).toISOString(),{hour:"numeric",minute:"2-digit"})]; }
+const FAVS_FLECHA=`<svg class="fvch" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>`;
+function favsFila(x,res){ const [d,h]=favsCuando(x.ts);
+  return `<button class="fvrow"${x.abre}><span class="fvd">${res?`<i class="vr ${x.r==="G"?"g":x.r==="P"?"p":"e"}">${x.r}</i>`:x.vivo?`<b class="vivo">EN VIVO</b>`:`<b>${hoyEsc(d)}</b><small>${hoyEsc(h)}</small>`}</span>
+    <span class="fvt"><b>${hoyEsc(x.t)}</b><small>${hoyEsc(x.s||"")}${res?` · ${hoyEsc(d.toLowerCase())}`:""}</small></span>${FAVS_FLECHA}</button>`; }
+function favsRender(){
+  const b=$("#favsBody"); if(!b) return; const E=Object.keys(FAV.eq), J=Object.keys(FAV.jug);
+  if(!E.length&&!J.length){ b.innerHTML=hoyFavHTML(); return; }
+  const deps=Object.keys(FAVS_DEP).filter(d=>[...E,...J].some(k=>favDep(k)===d)); if(!deps.includes(FAVS.dep)) FAVS.dep="todo";
+  const ver=k=>FAVS.dep==="todo"||favDep(k)===FAVS.dep, {V,R}=favsItems();
+  const cards=[...Object.entries(FAV.eq).filter(([k])=>ver(k)).map(([k,x])=>favTarjetaEq(k,x)),...Object.entries(FAV.jug).filter(([k])=>"art".includes(k[0])&&ver(k)).map(([k,x])=>favxTarjAtleta(k,x))];
+  const jug=Object.entries(FAV.jug).filter(([k])=>k[0]==="p"&&ver(k));
+  const notas=(D.noticias||[]).filter(n=>n.liga==="nfl"?FAV.eq["n"+n.tid]&&ver("n"):FAV.eq["f"+n.tid]&&ver("f")).slice(0,6);
+  const sec=(t,h,extra="")=>`<section class="hsec fvsec"><div class="hh"><h3>${t}</h3>${extra}</div>${h}</section>`;
+  b.innerHTML=`<div class="fvtop">${deps.length>1?`<div class="hseg fvdeps" role="group" aria-label="Deporte">${[["todo","Todo"],...deps.map(d=>[d,FAVS_DEP[d]])].map(([k,n])=>`<button data-fvdep="${k}" aria-pressed="${FAVS.dep===k}">${n}</button>`).join("")}</div>`:"<span></span>"}
+      <button class="hlink" data-hact="fav">Editar</button></div>
+    ${V.length?sec("Lo que viene",`<div class="fvlist">${V.slice(0,8).map(x=>favsFila(x)).join("")}</div>`):""}
+    ${R.length?sec("Resultados recientes",`<div class="fvlist">${R.slice(0,8).map(x=>favsFila(x,true)).join("")}</div>`):""}
+    ${cards.length?sec("Tus equipos y atletas",`<div class="fvgrid">${cards.join("")}</div>`):""}
+    ${jug.length?sec("Tus futbolistas",`<div class="hfjl">${jug.map(([k,x])=>`<button data-jf="${hoyEsc(k)}"><i>${favIni(x.n)}</i>${hoyEsc(x.n)}</button>`).join("")}</div>`):""}
+    ${notas.length?sec("Lo último de tus equipos",`<div class="fvnotas">${notas.map(n=>{ const [tl]=ULT_TIPO[n.tipo]||["Nota"]; const ab=n.nid?` data-nid="${hoyEsc(n.nid)}"`:n.fx&&LEAGUES[n.liga]&&comercial(LEAGUES[n.liga])?` data-hk="${n.liga}" data-hid="${hoyEsc(String(n.fx))}"`:"";
+      return `<${ab?"button":"div"} class="fvnota"${ab}><span class="utag u-${n.tipo}">${hoyEsc(tl)}</span><b>${hoyEsc(n.tit)}</b><span>${hoyEsc(n.det)}</span></${ab?"button":"div"}>`; }).join("")}</div>`):""}
+    ${!V.length&&!R.length&&!cards.length&&!jug.length?`<p class="note">No tienes favoritos de ${FAVS_DEP[FAVS.dep]||"este deporte"}.</p>`:""}`;
+}
+
 function fanRepinta(){ FAN.nube=0; FAN.eq=null; FAN.hash=null; if(!$("#fan").classList.contains("hidden")) fanRender(); }
 
-const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
+const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio","pz_hoy","pz_perfil"];
 const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
 const acctLsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
 const acctLsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
@@ -6897,7 +7210,8 @@ function acctSlHint(){
 function acctBtn(){
   const b=$("#acctBtn"), u=ACCT.user; b.hidden=!(ACCT.ready||(D.fb?.apiKey&&!ACCT_INI)); b.classList.toggle("in",!!u);
   if(!u){b.textContent="Entrar"; b.setAttribute("aria-label","Entrar a tu cuenta"); return;}
-  const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase();
+  const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase(), pf=typeof perfMio==="function"&&perfMio();
+  b.classList.toggle("conav",!!pf); if(pf){ b.innerHTML=perfAvatar(pf,36); b.setAttribute("aria-label","Tu cuenta"); return; }
   b.innerHTML=u.photoURL?`<img src="${acctEsc(u.photoURL)}" alt="" referrerpolicy="no-referrer">`:acctEsc(ini);
   b.setAttribute("aria-label","Tu cuenta");
 }
@@ -6909,12 +7223,13 @@ function acctRender(){
     const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase();
     box.innerHTML=`<h2>Tu cuenta</h2>
       <div class="aid"><div class="av">${u.photoURL?`<img src="${acctEsc(u.photoURL)}" alt="" referrerpolicy="no-referrer">`:acctEsc(ini)}</div><div><b>${acctEsc(u.displayName||u.email||"")}</b>${u.displayName&&u.email?`<small>${acctEsc(u.email)}</small>`:""}</div></div>
+      ${acctOk()?`<div class="aperf">${perfMio()?perfAvatar(perfMio(),56):`<span class="aperfv">?</span>`}<span><b>${perfMio()?"Tu perfil":"Arma tu perfil"}</b><small>${perfMio()?"Cambia tu avatar y tu apodo":"Tu avatar con la camiseta de tu equipo"}</small></span><button class="btn" id="aPerf">${perfMio()?"Editar":"Armar"}</button></div>`:""}
       ${acctOk()?"":`<div class="averify"><b>Confirma tu correo</b><span>Te mandamos un link a ${acctEsc(u.email)}. Hasta que lo abras, tu liga y tus picks se guardan solo en este navegador. Revisa también spam.</span>
         <button class="btn" id="aChk">Ya lo confirmé</button><button class="alink" id="aResend">Reenviar el correo</button></div>`}
       <ul class="asaved"><li><span>Liga de fantasy</span><b>${sl?acctEsc(lg||sl):"Sin conectar"}</b></li><li><span>Picks de la temporada ${D.season}</span><b>${n}</b></li></ul>
       <div class="aform"><button class="btn" id="aOut">Cerrar sesión</button><p class="amsg" id="aMsg" aria-live="polite"></p>
       <div class="alinks"><button class="alink danger" id="aDel">Borrar mi cuenta</button></div></div>`;
-    $("#aOut").onclick=acctOut; $("#aDel").onclick=acctDelete;
+    $("#aOut").onclick=acctOut; $("#aDel").onclick=acctDelete; if($("#aPerf")) $("#aPerf").onclick=()=>{ adlg.close(); perfAbre(); };
     if(!acctOk()){ $("#aChk").onclick=()=>acctRun(async()=>{ if(!await acctCheck()) acctMsg("Todavía no aparece confirmado. Abre el link del correo y vuelve a intentar."); });
       $("#aResend").onclick=()=>acctRun(async()=>{ await ACCT.user.sendEmailVerification(ACCT_BACK); acctMsg("Listo, te lo volvimos a mandar.",true); }); }
     return;
@@ -6996,7 +7311,8 @@ async function acctInit(){
   catch(e){console.warn("Cuentas: no se pudo cargar Firebase",e); return;}
   ACCT.auth.onAuthStateChanged(u=>{
     const was=ACCT.user; ACCT.user=u||null; ACCT.ready=true; acctBtn(); acctSlHint(); try{localStorage.setItem("pz_sesion",u?"1":"0");}catch(e){}
-    if(u&&(!was||was.uid!==u.uid)){ if(u.emailVerified){ acctPull(); if(adlg.open) adlg.close(); } else if(adlg.open) acctRender(); }
+    if(u&&(!was||was.uid!==u.uid)){ if(u.emailVerified){ acctPull(); if(adlg.open) adlg.close(); } else if(adlg.open) acctRender(); if(typeof perfCargaYo==="function") perfCargaYo(); }
+    if(!u&&typeof PERF!=="undefined") PERF.yo=null;
     GR.loaded=false; GR.ids=[]; GR.info={}; GR.data={};
     if(u&&acctOk()) grLoadIds().then(()=>{ grReconcile(true).catch(()=>{}); if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
     if(acctOnQ()) loadQuiniela();
@@ -8080,6 +8396,7 @@ function hoyPaint(){
   $("#hoyNfl").innerHTML=hoyNflHTML(); $("#hoyLpz").innerHTML=hoyLpzHTML();
   if(typeof votosPinta==="function") votosPinta();
   if(typeof vidaPinta==="function") vidaPinta();
+  if(typeof hoyConfAplica==="function") hoyConfAplica();
 }
 function hoyRender(){
   hoyPaint(); hoyMx(); votosCarga();
