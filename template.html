@@ -1550,6 +1550,19 @@ button.fvnota{cursor:pointer}.fvnota .utag{align-self:flex-start}.fvnota b{font:
 .fvres.g{--rc:#9FD3A8}.fvres.p{--rc:#FF9C80}.fvres.e{--rc:#C9D6CF}
 .fvrt{flex:1;display:flex;flex-direction:column;min-width:0}.fvrt b{font:700 16px/1.2 var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fvrt small{font-size:12px;color:var(--muted)}
 .fvres i{flex:none;font:800 11px var(--body);font-style:normal;letter-spacing:.06em;text-transform:uppercase;color:var(--rc)}
+.fvsuf{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:22px;background:linear-gradient(150deg,rgba(255,156,128,.16),var(--surface) 60%);border:1px solid rgba(255,156,128,.35)}
+.fvsg{display:flex;align-items:center;gap:16px}
+.fvsmed{--p:50;flex:none;width:108px;height:108px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(closest-side,var(--surface) 78%,transparent 79% 100%),conic-gradient(#FF9C80 calc(var(--p)*1%),rgba(255,255,255,.1) 0)}
+.fvsmed b{font:800 34px/1 var(--display)}.fvsmed b small{font-size:16px}.fvsmed span{font-size:11px;color:var(--muted);text-align:center;max-width:70px;line-height:1.1}
+.fvsv{display:flex;flex-direction:column;gap:4px;min-width:0}.fvsv b{font:800 24px/1.05 var(--display)}.fvsv span{font-size:14px;color:#C9D6CF}
+.fvsl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.fvsl li{display:grid;grid-template-columns:18px auto minmax(0,1fr) 70px auto;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:rgba(0,0,0,.18)}
+.fvsn{font:800 14px var(--display);color:var(--muted);text-align:center}
+.fvst{display:flex;flex-direction:column;min-width:0}.fvst b{font:700 15px/1.2 var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fvst small{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fvsb{height:8px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}.fvsb i{display:block;height:100%;border-radius:4px}
+.fvsl em{font:800 11px var(--body);font-style:normal;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;text-align:right;min-width:62px}
+@media (max-width:420px){.fvsl li{grid-template-columns:18px auto minmax(0,1fr) auto}.fvsb{display:none}}
 @media (max-width:520px){.fvedit{width:40px;height:40px;padding:0;justify-content:center;border-radius:50%}.fvedit span{display:none}}
 @media (min-width:900px){.fvrail{flex-wrap:wrap;overflow:visible;margin:0;padding:4px 0}.fvtile{flex:0 0 190px}}
 
@@ -2094,9 +2107,29 @@ const LEAGUES={
   ccc:{slug:"",label:"Concachampions",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:1111,af:16,tipo:"copa",pais:"CON",cid:null,region:"Concacaf",cids:["484","840","124"]},
   lgc:{slug:"",label:"Leagues Cup",liguilla:false,players:true,pr:false,photos:false,rk:null,sm:3211,af:772,tipo:"torneo",pais:"CON",cid:null,region:"Concacaf",cids:["484","840","124"]},
   sau:{slug:"",label:"Liga Profesional Saudí",liguilla:false,players:true,pr:true,photos:false,rk:"saudi",sm:944,af:307,tipo:"liga",pais:"SA",cid:"682",region:"Asia"},
+  // Selecciones (28 oct 2026): solo selecciones mayores. GitHub dice cuáles están activas (D.inter_on); las demás no aparecen.
+  // grupoLiga: grupos dentro de ligas A, B, C… (Nations League); cnl: en la Concacaf "League A - 2" es el grupo, no la jornada;
+  // mayores: fuera sub-17, sub-20, olímpicos y femenil; ventana: solo los partidos de [días antes, días después].
+  unl:{slug:"",label:"Nations League UEFA",liguilla:false,players:false,pr:false,photos:false,rk:null,af:5,tipo:"torneo",pais:"EU",cid:null,region:"Selecciones",inter:true,grupoLiga:true},
+  cnl:{slug:"",label:"Nations League Concacaf",liguilla:false,players:false,pr:false,photos:false,rk:null,af:536,tipo:"torneo",pais:"CON",cid:null,region:"Selecciones",inter:true,cnl:true},
+  ami:{slug:"",label:"Amistosos internacionales",liguilla:false,players:false,pr:false,photos:false,rk:null,af:10,tipo:"copa",pais:"INT",cid:null,region:"Selecciones",inter:true,mayores:true,ventana:[45,60]},
+  wcqcon:{slug:"",label:"Eliminatoria Concacaf",liguilla:false,players:false,pr:false,photos:false,rk:null,af:31,tipo:"torneo",pais:"CON",cid:null,region:"Selecciones",inter:true},
+  wcqsud:{slug:"",label:"Eliminatoria Conmebol",liguilla:false,players:false,pr:false,photos:false,rk:null,af:34,tipo:"torneo",pais:"SUD",cid:null,region:"Selecciones",inter:true},
+  wcqeur:{slug:"",label:"Eliminatoria UEFA",liguilla:false,players:false,pr:false,photos:false,rk:null,af:32,tipo:"torneo",pais:"EU",cid:null,region:"Selecciones",inter:true},
+  wcqafr:{slug:"",label:"Eliminatoria África",liguilla:false,players:false,pr:false,photos:false,rk:null,af:29,tipo:"torneo",pais:"INT",cid:null,region:"Selecciones",inter:true},
+  wcqasi:{slug:"",label:"Eliminatoria Asia",liguilla:false,players:false,pr:false,photos:false,rk:null,af:30,tipo:"torneo",pais:"INT",cid:null,region:"Selecciones",inter:true},
+  wcqofc:{slug:"",label:"Eliminatoria Oceanía",liguilla:false,players:false,pr:false,photos:false,rk:null,af:33,tipo:"torneo",pais:"INT",cid:null,region:"Selecciones",inter:true},
+  wcqrep:{slug:"",label:"Repechaje mundialista",liguilla:false,players:false,pr:false,photos:false,rk:null,af:37,tipo:"copa",pais:"INT",cid:null,region:"Selecciones",inter:true},
+  oro:{slug:"",label:"Copa Oro",liguilla:false,players:false,pr:false,photos:false,rk:null,af:22,tipo:"torneo",pais:"CON",cid:null,region:"Selecciones",inter:true},
+  cam:{slug:"",label:"Copa América",liguilla:false,players:false,pr:false,photos:false,rk:null,af:9,tipo:"torneo",pais:"SUD",cid:null,region:"Selecciones",inter:true},
+  eur:{slug:"",label:"Eurocopa",liguilla:false,players:false,pr:false,photos:false,rk:null,af:4,tipo:"torneo",pais:"EU",cid:null,region:"Selecciones",inter:true},
+  can:{slug:"",label:"Copa Africana",liguilla:false,players:false,pr:false,photos:false,rk:null,af:6,tipo:"torneo",pais:"INT",cid:null,region:"Selecciones",inter:true},
+  asi:{slug:"",label:"Copa Asiática",liguilla:false,players:false,pr:false,photos:false,rk:null,af:7,tipo:"torneo",pais:"INT",cid:null,region:"Selecciones",inter:true},
 };
-const BANDERA={MX:"🇲🇽",GB:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",ES:"🇪🇸",IT:"🇮🇹",DE:"🇩🇪",FR:"🇫🇷",PT:"🇵🇹",AR:"🇦🇷",SA:"🇸🇦",EU:"🇪🇺",SUD:"🌎",CON:"🌎"};
-const PAIS_ES={MX:"México",GB:"Inglaterra",ES:"España",IT:"Italia",DE:"Alemania",FR:"Francia",PT:"Portugal",AR:"Argentina",SA:"Arabia Saudita",EU:"Europa",SUD:"Sudamérica",CON:"Concacaf"};
+// Solo las de selecciones que están activas (D.inter_on = {clave: temporada}); sin ese dato, las Nations League y los amistosos.
+for(const [k,L] of Object.entries(LEAGUES)) if(L.inter&&!(D.inter_on?k in D.inter_on:["unl","cnl","ami"].includes(k))) delete LEAGUES[k];
+const BANDERA={INT:"🌍",MX:"🇲🇽",GB:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",ES:"🇪🇸",IT:"🇮🇹",DE:"🇩🇪",FR:"🇫🇷",PT:"🇵🇹",AR:"🇦🇷",SA:"🇸🇦",EU:"🇪🇺",SUD:"🌎",CON:"🌎"};
+const PAIS_ES={INT:"Internacional",MX:"México",GB:"Inglaterra",ES:"España",IT:"Italia",DE:"Alemania",FR:"Francia",PT:"Portugal",AR:"Argentina",SA:"Arabia Saudita",EU:"Europa",SUD:"Sudamérica",CON:"Concacaf"};
 // Dónde va cada pin en el mapa (coordenadas del SVG, proyección Natural Earth)
 const PIN={MX:[222.7,184],GB:[496.4,91.6],ES:[490.5,130.4],IT:[531.7,123],DE:[525.1,95.9],FR:[506.2,110.3],PT:[478.9,132.6],AR:[332.1,369.7],SA:[621.6,182.7],EU:[560,70],SUD:[356.2,292.1],CON:[262,205]};
 const TIPO_ES={liga:"Liga",copa:"Copa",torneo:"Torneo",sel:"Selección"};
@@ -2219,7 +2252,7 @@ function applyLeagueTabs(){
   $('.subnav[data-for=mx] button[data-tab=mxhist]').hidden=!(D.historia?.[FLIG]?.length||D.hist_n?.[FLIG]);
   $("#mxgames .weeknav").style.display=L.nat?"none":""; // .weeknav tiene display:flex, que le gana a "hidden"
 }
-const REGIONES=["México","Europa","Sudamérica","Concacaf","Asia"];
+const REGIONES=["México","Europa","Sudamérica","Concacaf","Asia","Selecciones"].filter(r=>Object.values(LEAGUES).some(L=>L.region===r));
 $("#flSel").innerHTML=REGIONES.map(r=>`<optgroup label="${r}">${Object.entries(LEAGUES).filter(([,L])=>L.region===r).map(([k,L])=>`<option value="${k}">${BANDERA[L.pais]||""} ${L.label}</option>`).join("")}</optgroup>`).join("");
 applyLeagueTabs();
 $("#flSel").value=FLIG;
@@ -3502,10 +3535,33 @@ const AF_CIUDAD={"Mexico City":"Ciudad de México","D.F.":"Ciudad de México","M
   "Santiago de Queretaro":"Querétaro","Santiago Querétaro":"Querétaro","Santiago de Querétaro":"Querétaro","Ciudad Juarez":"Ciudad Juárez","Leon":"León","León de los Aldamas":"León",
   "Mazatlan":"Mazatlán","San Nicolas de los Garza":"San Nicolás de los Garza","Toluca de Lerdo":"Toluca","Guadalupe":"Monterrey"};
 // Acentos que API-Football no trae (solo nombres seguros; los momios se emparejan por palabras sin acentos)
+// Selecciones en español (28 oct 2026)
+const AF_PAIS={"Mexico":"México","USA":"Estados Unidos","United States":"Estados Unidos","Canada":"Canadá","Panama":"Panamá","Haiti":"Haití","Curaçao":"Curazao","Curacao":"Curazao",
+  "Trinidad and Tobago":"Trinidad y Tobago","Dominican Republic":"República Dominicana","Suriname":"Surinam","Guadeloupe":"Guadalupe","Martinique":"Martinica","French Guyana":"Guayana Francesa",
+  "St. Lucia":"Santa Lucía","St. Kitts and Nevis":"San Cristóbal y Nieves","St. Vincent / Grenadines":"San Vicente y las Granadinas","Antigua and Barbuda":"Antigua y Barbuda",
+  "Cayman Islands":"Islas Caimán","British Virgin Islands":"Islas Vírgenes Británicas","US Virgin Islands":"Islas Vírgenes de EE. UU.","Turks and Caicos Islands":"Islas Turcas y Caicos",
+  "Saint Martin":"San Martín","Sint Maarten":"Sint Maarten","Bermuda":"Bermudas","Bahamas":"Bahamas","Grenada":"Granada","Belize":"Belice","Bonaire":"Bonaire","Dominica":"Dominica",
+  "Brazil":"Brasil","Peru":"Perú","Bolivia":"Bolivia","Germany":"Alemania","Spain":"España","France":"Francia","England":"Inglaterra","Italy":"Italia","Netherlands":"Países Bajos",
+  "Belgium":"Bélgica","Switzerland":"Suiza","Croatia":"Croacia","Norway":"Noruega","Sweden":"Suecia","Denmark":"Dinamarca","Poland":"Polonia","Turkey":"Turquía","Türkiye":"Turquía",
+  "Scotland":"Escocia","Wales":"Gales","Northern Ireland":"Irlanda del Norte","Ireland":"Irlanda","Republic of Ireland":"Irlanda","Czechia":"Chequia","Czech Republic":"Chequia",
+  "Ukraine":"Ucrania","Greece":"Grecia","Hungary":"Hungría","Romania":"Rumania","Russia":"Rusia","Finland":"Finlandia","Iceland":"Islandia","Slovakia":"Eslovaquia","Slovenia":"Eslovenia",
+  "Bosnia and Herzegovina":"Bosnia y Herzegovina","Bosnia & Herzegovina":"Bosnia y Herzegovina","North Macedonia":"Macedonia del Norte","Montenegro":"Montenegro","Serbia":"Serbia",
+  "Bulgaria":"Bulgaria","Cyprus":"Chipre","Armenia":"Armenia","Azerbaijan":"Azerbaiyán","Georgia":"Georgia","Belarus":"Bielorrusia","Moldova":"Moldavia","Lithuania":"Lituania",
+  "Latvia":"Letonia","Estonia":"Estonia","Luxembourg":"Luxemburgo","Faroe Islands":"Islas Feroe","Kazakhstan":"Kazajistán","Andorra":"Andorra","San Marino":"San Marino",
+  "Liechtenstein":"Liechtenstein","Malta":"Malta","Gibraltar":"Gibraltar","Kosovo":"Kosovo","Austria":"Austria","Israel":"Israel","Albania":"Albania",
+  "Morocco":"Marruecos","South Africa":"Sudáfrica","Egypt":"Egipto","Tunisia":"Túnez","Algeria":"Argelia","Cameroon":"Camerún","Ivory Coast":"Costa de Marfil","Côte d'Ivoire":"Costa de Marfil",
+  "Cape Verde":"Cabo Verde","Cape Verde Islands":"Cabo Verde","Nigeria":"Nigeria","Ghana":"Ghana","Senegal":"Senegal","Mali":"Malí","DR Congo":"RD Congo","Congo DR":"RD Congo",
+  "Burkina Faso":"Burkina Faso","Guinea":"Guinea","Equatorial Guinea":"Guinea Ecuatorial","Gabon":"Gabón","Zambia":"Zambia","Angola":"Angola","Mozambique":"Mozambique","Benin":"Benín",
+  "Sudan":"Sudán","Libya":"Libia","Kenya":"Kenia","Uganda":"Uganda","Tanzania":"Tanzania","Zimbabwe":"Zimbabue","Comoros":"Comoras","Mauritania":"Mauritania","Ethiopia":"Etiopía",
+  "Japan":"Japón","South Korea":"Corea del Sur","Korea Republic":"Corea del Sur","North Korea":"Corea del Norte","Saudi Arabia":"Arabia Saudita","Iran":"Irán","Iraq":"Irak","Qatar":"Catar",
+  "United Arab Emirates":"Emiratos Árabes Unidos","Jordan":"Jordania","Uzbekistan":"Uzbekistán","Oman":"Omán","Bahrain":"Baréin","Kuwait":"Kuwait","Syria":"Siria","Lebanon":"Líbano",
+  "Palestine":"Palestina","China PR":"China","China":"China","Chinese Taipei":"Taiwán","Thailand":"Tailandia","Vietnam":"Vietnam","Indonesia":"Indonesia","Malaysia":"Malasia",
+  "Philippines":"Filipinas","India":"India","Kyrgyzstan":"Kirguistán","Tajikistan":"Tayikistán","Turkmenistan":"Turkmenistán","Australia":"Australia","New Zealand":"Nueva Zelanda",
+  "New Caledonia":"Nueva Caledonia","Tahiti":"Tahití","Fiji":"Fiyi","Solomon Islands":"Islas Salomón","Papua New Guinea":"Papúa Nueva Guinea"};
 const AF_NOMBRE={"Atletico Madrid":"Atlético Madrid","Paris Saint Germain":"Paris Saint-Germain","Alaves":"Alavés","Cadiz":"Cádiz","Almeria":"Almería","Leganes":"Leganés",
   "Malaga":"Málaga","Borussia Monchengladbach":"Borussia Mönchengladbach","Heart Of Midlothian":"Heart of Midlothian","Atletico Mineiro":"Atlético Mineiro","Sao Paulo":"São Paulo","Gremio":"Grêmio"};
 const AF_COD={};   // abreviaturas por id de equipo (de teams?league=&season=; los partidos no las traen)
-const afNombre=t=>AF_EQ[t?.id]?.[0]||AF_NOMBRE[t?.name]||t?.name||"";
+const afNombre=t=>AF_EQ[t?.id]?.[0]||AF_NOMBRE[t?.name]||AF_PAIS[t?.name]||t?.name||"";
 const afTeam=t=>{const n=afNombre(t); return {id:String(t?.id),displayName:n,shortDisplayName:SM_SHORT[n]||n,name:n,location:n,abbreviation:AF_EQ[t?.id]?.[1]||AF_COD[t?.id]||t?.code||"",logo:SM_ESCUDOS?t?.logo:null};};
 const AF_POST=new Set(["FT","AET","PEN","AWD","WO"]);
 const AF_VIVO=new Set(["1H","HT","2H","ET","BT","P","LIVE"]);
@@ -3567,6 +3623,12 @@ async function afSeasonEvents(key){
   let ev=afMarcaTorneos((await AF_EV[ck]).map(f=>afEvent(f,lg)).sort((a,b)=>new Date(a.date)-new Date(b.date)));
   // Copas: fuera las rondas clasificatorias y preliminares (equipos amateur), como antes con Sportmonks
   if(lg.tipo==="copa") ev=ev.filter(e=>!/qualif|prelim/i.test(e._stage||""));
+  // Selecciones (28 oct 2026): amistosos solo de selecciones mayores y de las últimas/próximas semanas, agrupados por mes;
+  // Nations League de la Concacaf: "League A - 2" es el grupo 2 de la Liga A (no la jornada).
+  if(lg.mayores){ const J=/\bU-?\d{2}\b|olymp|women|femen/i; ev=ev.filter(e=>!e.competitions[0].competitors.some(c=>J.test(c.team?.displayName||""))); }
+  if(lg.ventana){ const now=Date.now(), [a,b]=lg.ventana; ev=ev.filter(e=>{ const t=+new Date(e.date); return t>=now-a*864e5&&t<=now+b*864e5; }); }
+  if(lg.mayores) ev.forEach(e=>{ e._stage=cap(new Intl.DateTimeFormat("es-MX",{timeZone:TZ,month:"long",year:"numeric"}).format(new Date(e.date))); e._round=e._stage; e._ko=false; });
+  if(lg.cnl) ev.forEach(e=>{ const m=/^League ([A-Z])$/i.exec(e._stage||""); if(m&&/^\d+$/.test(e._round||"")){ e._grp=`Liga ${m[1].toUpperCase()} · Grupo ${e._round}`; e._stage=e._grp; e._round=e._grp; e._ko=false; } });
   // Champions: fuera las rondas clasificatorias (todo lo que no es de fase de liga/grupos y se jugó antes de que empezara)
   if(lg.sinPrevias){ const g=ev.filter(e=>/^\d+$/.test(e._round||"")); if(g.length){ const t0=Math.min(...g.map(e=>+new Date(e.date))); ev=ev.filter(e=>/^\d+$/.test(e._round||"")||+new Date(e.date)>=t0); } }
   if(lg.liguilla){ const t=afTorneoActual(ev,sel); if(t){ ev=ev.filter(e=>afTorneo(e)===t); S._stage={name:t}; } }
@@ -3586,14 +3648,24 @@ function afStandings(key){
     // la Leagues Cup no trae tabla), se calcula con los partidos.
     const grupos=t?G.filter(g=>nomT(g)===t):G;
     const varios=grupos.length>1;
-    const grupoNom=x=>String(x||"").split(/\s+-\s+|,\s*|:\s*/).pop().replace(/^group\s*/i,lg.zonas?"Zona ":"Grupo ");
+    const grupoNom=x=>{ const m=lg.grupoLiga&&/League\s+(\w+)\s*-\s*Group\s+(\w+)/i.exec(String(x||"")); if(m) return `Liga ${m[1]} · Grupo ${m[2]}`;
+      return String(x||"").split(/\s+-\s+|,\s*|:\s*/).pop().replace(/^group\s*/i,lg.zonas?"Zona ":"Grupo "); };
     let rows=grupos.flatMap(g=>g.map(r=>({grupo:varios?grupoNom(r.group):null,n:afNombre(r.team),id:String(r.team?.id),logo:SM_ESCUDOS?r.team?.logo:null,
       rk:r.rank,pj:r.all?.played,g:r.all?.win,e:r.all?.draw,p:r.all?.lose,gf:r.all?.goals?.for,gc:r.all?.goals?.against,dg:r.goalsDiff,pts:r.points,zn:null})));
-    if(!rows.length) rows=afTablaPartidos(ev);
+    if(!rows.length) rows=lg.cnl?afTablaGrupos(ev):afTablaPartidos(ev);
     return {rows,titulo:t?`${t} ${t==="Clausura"&&!lg.anual?S.id+1:S.id}`:`Temporada ${afTemporadaNombre(S)}`};
   })();
   AF_TB[ck].catch(()=>{delete AF_TB[ck];});
   return AF_TB[ck];
+}
+// Tabla por grupos calculada con los partidos (e._grp), para torneos que no traen tabla (Nations League de la Concacaf)
+function afTablaGrupos(ev){
+  const G={};
+  for(const e of ev){ if(!e._grp) continue; const T=G[e._grp]||(G[e._grp]={}), [h,a]=e.competitions[0].competitors;
+    for(const c of [h,a]) T[c.team.id]=T[c.team.id]||{grupo:e._grp,n:c.team.displayName,id:c.team.id,logo:c.team.logo,pj:0,g:0,e:0,p:0,gf:0,gc:0,dg:0,pts:0,zn:null};
+    if(e.status?.type?.state!=="post") continue; const gh=+h.score, ga=+a.score; if(isNaN(gh)||isNaN(ga)) continue;
+    for(const [c,gf,gc] of [[h,gh,ga],[a,ga,gh]]){ const r=T[c.team.id]; r.pj++; r.gf+=gf; r.gc+=gc; r.dg=r.gf-r.gc; if(gf>gc){r.g++; r.pts+=3;} else if(gf===gc){r.e++; r.pts++;} else r.p++; } }
+  return Object.keys(G).sort().flatMap(g=>Object.values(G[g]).sort((x,y)=>y.pts-x.pts||y.dg-x.dg||y.gf-x.gf).map((r,i)=>({...r,rk:i+1})));
 }
 // Tabla calculada con los partidos terminados de fase regular o de grupos (puntos, diferencia, goles a favor)
 function afTablaPartidos(ev){
@@ -7768,6 +7840,34 @@ function favsAgenda(L){
 }
 function favsRes(x){ const [d]=favsCuando(x.ts), r=x.r==="G"?"g":x.r==="P"?"p":"e";
   return `<button class="fvres ${r}"${x.abre}>${favsLogo(x.k,36)}<span class="fvrt"><b>${hoyEsc(x.t)}</b><small>${hoyEsc(x.s||"")} · ${hoyEsc(d.toLowerCase())}</small></span><i>${x.r==="G"?"Ganó":x.r==="P"?"Perdió":"Empate"}</i></button>`; }
+// El Sufrómetro (28 oct 2026): qué tan ganadores son tus equipos. Cada equipo saca una calificación de 0 a 100: fútbol con
+// los puntos de sus últimos 5 partidos (60%) y su lugar en la tabla (40%); NFL y NBA con su récord; F1 con su lugar en el
+// campeonato; tenis con su ranking. El Sufrómetro es 100 menos el promedio.
+function favsGana(k,x){
+  const t=k[0], id=k.slice(1);
+  if(t==="f"){ const I=D.eq_info?.[id]||favxPide(k,()=>favxAfEq(id))?.I; if(!I?.f) return null; const f=[...I.f], fp=f.reduce((s,r)=>s+(r==="G"?3:r==="E"?1:0),0)/(3*f.length);
+    const v=I.pos?.6*fp+.4*Math.max(0,1-(I.pos-1)/17):fp; return {v,det:`Últimos ${f.length}: ${I.f}${I.pos?` · ${I.pos}º`:""}`}; }
+  if(t==="n"){ const pr=(D.pr_nfl||[]).find(z=>z.t===id); if(!pr||pr.w+pr.l<1) return null; return {v:pr.w/(pr.w+pr.l),det:`${pr.w}-${pr.l}`}; }
+  if(t==="b"){ const X=favxPide(k,()=>favxNbaEq(id)); if(!X||X.err||X.w+X.l<1) return null; return {v:X.w/(X.w+X.l),det:`${X.w}-${X.l}`}; }
+  if(t==="e"){ const C=favxPide("_f1",favxF1)?.C?.[id]; if(!C?.rank) return null; return {v:Math.max(0,1-(C.rank-1)/10),det:`${C.rank}º en constructores`}; }
+  if(t==="r"){ const P=favxPide("_f1",favxF1)?.P?.[id]; if(!P?.rank) return null; return {v:Math.max(0,1-(P.rank-1)/21),det:`${P.rank}º en el campeonato`}; }
+  if(t==="t"){ const R=favxPide("_ten_"+(x.tour||"atp"),()=>favxTenis(x.tour||"atp"))?.rk?.[id]; if(!R?.cur) return null; return {v:Math.max(0,1-Math.log10(R.cur)/2.3),det:`#${R.cur} del mundo`}; }
+  return null;
+}
+const FAVS_SUF=[[75,"Aplanadora","#9FD3A8"],[60,"Cumple","#C6E35A"],[45,"Ni fu ni fa","#F2D466"],[30,"Te hace sufrir","#FFB27A"],[0,"Puro dolor","#FF9C80"]];
+const FAVS_VER=[[70,"Le vas a puro ganador","¿Seguro que no te subiste al barco?"],[55,"Aficionado feliz","Ganas más de lo que sufres. Disfrútalo mientras dure."],
+  [42,"Sufridor de medio tiempo","Una de cal y una de arena."],[28,"Sufridor profesional","Lo tuyo es amor del bueno."],[0,"Masoquista certificado","Nadie te obliga… pero ahí sigues."]];
+function favsSufre(){
+  const L=[...Object.entries(FAV.eq),...Object.entries(FAV.jug).filter(([k])=>"rt".includes(k[0]))].map(([k,x])=>{ const g=favsGana(k,x); return g?{k,x,...g,n:Math.round(g.v*100)}:null; }).filter(Boolean);
+  if(!L.length) return "";
+  L.sort((a,b)=>b.n-a.n); const prom=L.reduce((s,z)=>s+z.n,0)/L.length, suf=Math.round(100-prom), V=FAVS_VER.find(([m])=>prom>=m);
+  const nom=(k,x)=>k[0]==="b"?(NBA_N[k.slice(1)]||x.n):k[0]==="n"?(NT[k.slice(1)]?.n||x.n):x.n;
+  return `<div class="fvsuf"><div class="fvsg"><div class="fvsmed" style="--p:${suf}"><b>${suf}<small>%</small></b><span>de sufrimiento</span></div>
+      <div class="fvsv"><b>${hoyEsc(V[1])}</b><span>${hoyEsc(V[2])}</span></div></div>
+    <ol class="fvsl">${L.map((z,i)=>{ const T=FAVS_SUF.find(([m])=>z.n>=m); return `<li><span class="fvsn">${i+1}</span>${favsLogo(z.k,32)}<span class="fvst"><b>${hoyEsc(nom(z.k,z.x))}</b><small>${hoyEsc(z.det)}</small></span>
+      <span class="fvsb"><i style="width:${Math.max(4,z.n)}%;background:${T[2]}"></i></span><em style="color:${T[2]}">${T[1]}</em></li>`; }).join("")}</ol>
+    <p class="note">Del más ganador al más perdedor, con cómo les ha ido esta temporada.</p></div>`;
+}
 function favsRender(){
   const b=$("#favsBody"); if(!b) return; const E=Object.keys(FAV.eq), J=Object.keys(FAV.jug);
   if(!E.length&&!J.length){ b.innerHTML=hoyFavHTML(); return; }
@@ -7778,11 +7878,13 @@ function favsRender(){
   const notas=(D.noticias||[]).filter(n=>n.liga==="nfl"?FAV.eq["n"+n.tid]&&ver("n"):FAV.eq["f"+n.tid]&&ver("f")).slice(0,6);
   const sec=(t,h,extra="")=>`<section class="hsec fvsec"><div class="hh"><h3>${t}</h3>${extra}</div>${h}</section>`;
   const rail=b.querySelector(".fvrail")?.scrollLeft||0;
+  const suf=FAVS.dep==="todo"?favsSufre():"";
   b.innerHTML=`<div class="fvtop">${deps.length>1?`<div class="hseg fvdeps" role="group" aria-label="Deporte">${[["todo","Todo"],...deps.map(d=>[d,FAVS_DEP[d]])].map(([k,n])=>`<button data-fvdep="${k}" aria-pressed="${FAVS.dep===k}">${n}</button>`).join("")}</div>`:"<span></span>"}
       <button class="fvedit" data-hact="fav" aria-label="Editar tus favoritos"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg><span>Editar</span></button></div>
     ${V.length?favsHero(V[0]):""}
     ${tiles.length?sec(FAVS.dep==="todo"?"Tus equipos y atletas":"Tus favoritos",`<div class="fvrail">${tiles.join("")}<button class="fvtile fvmas" data-hact="fav"><span class="amplus">+</span><span>Agregar</span></button></div>`):""}
     ${V.length>1?sec("Agenda",favsAgenda(V.slice(1,9))):""}
+    ${suf?sec("El Sufrómetro",suf):""}
     ${R.length?sec("Resultados",`<div class="fvresl">${R.slice(0,8).map(favsRes).join("")}</div>`):""}
     ${jug.length?sec("Tus futbolistas",`<div class="hfjl">${jug.map(([k,x])=>`<button data-jf="${hoyEsc(k)}"><i>${favIni(x.n)}</i>${hoyEsc(x.n)}</button>`).join("")}</div>`):""}
     ${notas.length?sec("Lo último de tus equipos",`<div class="fvnotas">${notas.map(n=>{ const [tl]=ULT_TIPO[n.tipo]||["Nota"]; const ab=n.nid?` data-nid="${hoyEsc(n.nid)}"`:n.fx&&LEAGUES[n.liga]&&comercial(LEAGUES[n.liga])?` data-hk="${n.liga}" data-hid="${hoyEsc(String(n.fx))}"`:"";
@@ -8827,7 +8929,10 @@ async function favFichaPinta(id,x){
     const sel=l.country==="World"&&(t.name===nac||/^(mexico|méxico)$/i.test(t.name||"")&&/mexic/i.test(nac));
     return {sel,club:t.name||"",tid:t.id,logo:l.logo,comp:fichaComp(l.name),pj:g.appearences||0,tit:g.lineups||0,min:g.minutes||0,pos:g.position,
       g:st.goals?.total||0,a:st.goals?.assists||0,sh:st.shots?.total||0,sot:st.shots?.on||0,yc:st.cards?.yellow||0,rc:(st.cards?.red||0)+(st.cards?.yellowred||0),
-      sv:st.goals?.saves||0,gc:st.goals?.conceded||0};}).filter(r=>r.pj>0||r.min>0);
+      sv:st.goals?.saves||0,gc:st.goals?.conceded||0,pas:/^world cup/i.test(l.name||"")};}).filter(r=>r.pj>0||r.min>0);
+  // 28 oct 2026: API-Football pone el Mundial y su eliminatoria en la temporada del año del Mundial (2026), pero se jugaron
+  // en la temporada pasada: no cuentan en los totales de esta temporada y se muestran aparte.
+  const pasada=filas.filter(r=>r.pas); filas.splice(0,filas.length,...filas.filter(r=>!r.pas));
   const club=filas.filter(r=>!r.sel), sel=filas.filter(r=>r.sel);
   const tid=club.slice().sort((a,b)=>b.min-a.min)[0]?.tid||(eq?(eq[1]||"").match(/teams\/(\d+)/)?.[1]:null);
   const nomClub=esTeam(afNombre({id:tid,name:(club.slice().sort((a,b)=>b.min-a.min)[0]?.club)||(eq?eq[0]:(b?b[8]:x.club))||""}));
@@ -8846,7 +8951,7 @@ async function favFichaPinta(id,x){
     L.map(r=>`<tr><td class="l">${SM_ESCUDOS&&r.logo?logoImg(r.logo,"tlogo"):""}<span class="nm">${hoyEsc(r.comp)}</span></td><td>${r.pj}</td><td>${mil(r.min)}</td><td><b>${r.g}</b></td><td>${r.a}</td></tr>`).join("")}${
     L.length>1?`<tr><td class="l"><b>Total</b></td><td><b>${sum(L,"pj")}</b></td><td><b>${mil(sum(L,"min"))}</b></td><td><b>${sum(L,"g")}</b></td><td><b>${sum(L,"a")}</b></td></tr>`:""}</tbody></table></div>`:"";
   const clubs=[...new Set(club.map(r=>esTeam(afNombre({id:r.tid,name:r.club}))))];
-  const desglose=tabla(club,clubs.length===1?`Con ${clubs[0]}`:"Con sus clubes")+tabla(sel,`Con ${sel[0]?esTeam(sel[0].club):"su selección"}`);
+  const desglose=tabla(club,clubs.length===1?`Con ${clubs[0]}`:"Con sus clubes")+tabla(sel,`Con ${sel[0]?esTeam(sel[0].club):"su selección"}`)+(pasada.length?tabla(pasada,"Temporada pasada · Mundial y eliminatoria"):"");
   const I=tid?D.eq_info?.[tid]:null, p=I?.p, nota=favNota(n=>ape.length>2&&n.tit.includes(ape));
   const extra=[posB?`<div><small>Bota de Oro ${hoyEsc(D.bota.temp||"")}</small><b>${posB}º</b> con ${goNum(b[3])} puntos (${b[4]} goles de liga × ${goNum(b[10])})</div>`:"",
     (D.sel_plantel||[]).some(s=>s.id===id)?`<div><small>Selección</small>Convocado en la última fecha FIFA</div>`:"",

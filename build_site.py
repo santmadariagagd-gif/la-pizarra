@@ -1570,6 +1570,24 @@ if AFK:
                     except Exception as ex: print(f"{nombre} {t or año}: no se pudo:",ex)
         except Exception as ex:
             print(f"{nombre} (API-Football): no se pudieron obtener estadísticas de jugadores:",ex)
+    # ---------- Selecciones (28 oct 2026) ----------
+    # Competencias de selecciones mayores que se muestran en la página cuando están activas: su temporada actual empieza
+    # en los próximos 45 días o terminó hace menos de 21. out['inter_on'] = {clave: temporada}. Solo una llamada por torneo.
+    INTER={"unl":5,"cnl":536,"ami":10,"wcqcon":31,"wcqsud":34,"wcqeur":32,"wcqafr":29,"wcqasi":30,"wcqofc":33,"wcqrep":37,
+           "oro":22,"cam":9,"eur":4,"can":6,"asi":7}
+    out['inter_on']={}
+    try:
+        _hoyd=date.today()
+        for k,lid in INTER.items():
+            try:
+                L=(af("leagues",id=lid) or [{}])[0]
+                S=next((x for x in L.get("seasons") or [] if x.get("current")),None)
+                if not S or not S.get("start") or not S.get("end"): continue
+                ini=date.fromisoformat(S["start"]); fin=date.fromisoformat(S["end"])
+                if ini<=_hoyd+timedelta(days=45) and fin>=_hoyd-timedelta(days=21): out['inter_on'][k]=S["year"]
+            except Exception as ex: print(f"Selecciones {k}: no se pudo revisar:",ex)
+        print("Selecciones activas:",out['inter_on'])
+    except Exception as ex: print("Selecciones: no se pudieron revisar:",ex)
     # ---------- Partidos de la semana (portada, 6 oct 2026) ----------
     # Uno de Liga MX y uno del resto del mundo por semana (lunes a domingo, hora de México), con un "índice de interés":
     #   arrastre de cada equipo en México (3/2/1) + clásico (+4) + partido parejo en la tabla (hasta +1) + los dos arriba
@@ -1663,13 +1681,16 @@ if AFK:
     try:
         import re as _re
         AF_CLAVE={lid:k for k,(lid,_n,_l) in AF_LIGAS.items()}
+        for _k in (out.get('inter_on') or {}): AF_CLAVE[INTER[_k]]=_k   # selecciones activas (28 oct 2026)
+        _juv=_re.compile(r"\bU-?\d{2}\b|olymp|women",_re.I)
         _hoy=datetime.now(ZoneInfo("America/Mexico_City")).date()
         for _i in range(-1,3):   # ayer (resultados), hoy y los 2 días siguientes
             _d=(_hoy+timedelta(days=_i)).isoformat(); _f=[]
             for f in af("fixtures",date=_d,timezone="America/Mexico_City"):
                 lg=f.get("league") or {}; T=f.get("teams") or {}; H=T.get("home") or {}; A=T.get("away") or {}
-                k=AF_CLAVE.get(lg.get("id")) or ("sel" if 16 in (H.get("id"),A.get("id")) else None)
+                k=("sel" if 16 in (H.get("id"),A.get("id")) else None) or AF_CLAVE.get(lg.get("id"))   # México siempre como "Selección"
                 if not k: continue
+                if k=="ami" and (_juv.search(H.get("name") or "") or _juv.search(A.get("name") or "")): continue   # solo selecciones mayores
                 rd=str(lg.get("round") or "").strip()
                 if _re.search(r"qualif|prelim",rd,_re.I): continue                         # rondas previas (como en la página)
                 if k in AF_SIN_PREVIAS and _re.fullmatch(r"play-?offs?",rd,_re.I): continue          # play-off previo de agosto
