@@ -1051,7 +1051,13 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   .bnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:50;padding:6px;border-radius:32px;
     background:rgba(28,44,39,.62);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.16);
     box-shadow:0 18px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.05)}
-  .bnav .pzlente{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/4);border-radius:26px;background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 14px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,1.3,.4,1);pointer-events:none}
+  .bnav{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .bnav.pzarr{touch-action:none}
+  .bnav.pzarr .pzlente{transition:none;background:rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 8px 24px rgba(0,0,0,.3);scale:1.12 1.1}
+  .bnav button.pzsobre{color:var(--mark)}
+  .bnav.pzarr button[aria-selected="true"]:not(.pzsobre){color:#C9D6CF}
+  main,.wrap{min-height:calc(100lvh - 60px)}
+  .bnav .pzlente{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/4);border-radius:26px;background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 14px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,1.3,.4,1),scale .25s ease;pointer-events:none}
   .bnav button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:52px;background:none;border:0;color:#C9D6CF;font:600 11px/1 var(--body);cursor:pointer;padding:0;transition:transform .12s,color .2s}
   .bnav button:active{transform:scale(.94)}
   .bnav button[aria-selected="true"]{color:var(--mark)}
@@ -6042,6 +6048,24 @@ function pzMov(scope,sig,keys){
   const P=S.prev||{}; return k=>{ const a=P[k], b=cur[k]; if(!a||!b||a===b) return ""; return `<span class="pzmov ${a>b?"up":"down"}">${a>b?"▲":"▼"}${Math.abs(a-b)}</span>`; };
 }
 // Barra de abajo: la "lente" de vidrio se desliza a la opción activa
+// Deslizar el dedo sobre la barra (como en iOS): la lente sigue al dedo y al soltar te lleva a esa sección
+(()=>{ const n=$(".bnav"); if(!n) return; let x0=null, l0=0, arr=false, idx=0, pid=null;
+  const B=()=>[...n.querySelectorAll("button")], ancho=()=>(n.clientWidth-12)/4;
+  const marca=i=>B().forEach((b,k)=>b.classList.toggle("pzsobre",k===i));
+  n.addEventListener("pointerdown",ev=>{ if(ev.pointerType==="mouse"&&ev.button!==0) return; const l=n.querySelector(".pzlente"); if(!l) return;
+    x0=ev.clientX; pid=ev.pointerId; arr=false; const i=Math.max(0,B().findIndex(b=>b.getAttribute("aria-selected")==="true")); l0=i*ancho(); idx=i; });
+  n.addEventListener("pointermove",ev=>{ if(x0==null||ev.pointerId!==pid) return; const dx=ev.clientX-x0, l=n.querySelector(".pzlente");
+    if(!arr&&Math.abs(dx)<8) return;
+    if(!arr){ arr=true; n.classList.add("pzarr"); try{ n.setPointerCapture(pid); }catch(e){} }
+    const w=ancho(), pos=Math.max(-w*.15,Math.min(3.15*w,l0+dx)); idx=Math.max(0,Math.min(3,Math.round(pos/w)));
+    l.style.transform=`translateX(${pos}px)`; marca(idx); });
+  const fin=ev=>{ if(x0==null) return; const era=arr; x0=null; if(!era) return;
+    n.classList.remove("pzarr"); marca(-1); n._pzNoClick=Date.now();
+    const b=B()[idx]; pzLente();
+    if(b){ if(b.dataset.sport==="dep") depToggle(b); else { const l=n.querySelector(".pzlente"); if(l) l.style.transform=`translateX(${idx*100}%)`; showSport(b.dataset.sport); window.scrollTo(0,0); } } };
+  n.addEventListener("pointerup",fin); n.addEventListener("pointercancel",fin);
+  n.addEventListener("click",ev=>{ if(n._pzNoClick&&Date.now()-n._pzNoClick<400){ ev.stopPropagation(); ev.preventDefault(); } },true);
+})();
 function pzLente(){ const n=$(".bnav"); if(!n) return; let l=n.querySelector(".pzlente"); if(!l){ l=document.createElement("span"); l.className="pzlente"; l.setAttribute("aria-hidden","true"); n.prepend(l); }
   const B=[...n.querySelectorAll("button")], i=Math.max(0,B.findIndex(b=>b.getAttribute("aria-selected")==="true")); l.style.transform=`translateX(${i*100}%)`; }
 
