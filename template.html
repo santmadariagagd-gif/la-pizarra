@@ -1326,7 +1326,7 @@ nav.tabs button .depch{vertical-align:-2px;margin-left:2px;transition:transform 
 .vfondo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,32,28,.18),rgba(20,32,28,.55))}
 @keyframes vderiva{0%,100%{background-position:0% 0%}50%{background-position:100% 35%}}
 .vin{padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px}
-.vin>*{animation:ventra .5s cubic-bezier(.2,.8,.2,1) both}.vin>*:nth-child(2){animation-delay:.06s}.vin>*:nth-child(3){animation-delay:.12s}.vin>*:nth-child(4){animation-delay:.18s}.vin>*:nth-child(5){animation-delay:.24s}.vin>*:nth-child(n+6){animation-delay:.3s}
+.vin>*{animation:ventra .5s cubic-bezier(.2,.8,.2,1) both}.vya .vin>*{animation:none}.vin>*:nth-child(2){animation-delay:.06s}.vin>*:nth-child(3){animation-delay:.12s}.vin>*:nth-child(4){animation-delay:.18s}.vin>*:nth-child(5){animation-delay:.24s}.vin>*:nth-child(n+6){animation-delay:.3s}
 @keyframes ventra{0%{transform:translateY(12px);opacity:0}100%{transform:none;opacity:1}}
 .vsal{margin:0;font:700 30px/1.05 var(--display);text-shadow:0 2px 12px rgba(0,0,0,.25)}
 .vtit{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--mark)}
@@ -5550,7 +5550,7 @@ async function qmxNube(j){
   catch(e){ /* sin documento todavía */ }
 }
 function qmxGuarda(j,x){
-  const jid=qmxJid(j), L=qmxLs(); L[jid]=x; qmxLsSet(L); if(typeof vidaCierreTick==="function"){ vidaCierreTick(); VIDA.por=""; }
+  const jid=qmxJid(j), L=qmxLs(); L[jid]=x; qmxLsSet(L); if(typeof vidaCierreTick==="function") vidaCierreTick();
   if(!(typeof acctOk==="function"&&acctOk())) return;
   clearTimeout(QMX.t); QMX.t=setTimeout(async()=>{
     try{ await ACCT.db.doc(`qmx_picks/${jid}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,jid,j,s:qmxD().s,p:x.p,g:x.g??null,t:grFV().serverTimestamp()}); $("#qmxGuardo")&&($("#qmxGuardo").innerHTML=pzOk("Guardado en tu cuenta")); }
@@ -6221,7 +6221,7 @@ function pzGoles(root){
 }
 // Entrada en cascada: solo la primera vez que se pinta una sección (no en cada refresco en vivo)
 var PZ_CASC=0;
-const PZ_LISTAS=["#hoyPor","#gbody","#q5Body","#hoyVivo","#hoyMarc","#mxGames","#nflGames","#qmxBody","#fanBody","#f1Body","#tenBody","#favsBody","#qGames"];
+const PZ_LISTAS=["#gbody","#q5Body","#hoyVivo","#hoyMarc","#mxGames","#nflGames","#qmxBody","#fanBody","#f1Body","#tenBody","#favsBody","#qGames"];
 const pzObs=typeof MutationObserver!=="undefined"?new MutationObserver(M=>{ const vistos=new Set(M.map(m=>m.target));
   for(const t of vistos){ pzGoles(t); pzAplica(t); pzCuenta(t); vidaBote(t); if(Date.now()<PZ_CASC&&!PZ_RM()){ t.classList.remove("pzcasc"); void t.offsetWidth; t.classList.add("pzcasc"); clearTimeout(t._pzc); t._pzc=setTimeout(()=>t.classList.remove("pzcasc"),1400); } } }):null;
 function pzObserva(){ if(!pzObs) return; for(const s of PZ_LISTAS){ const el=$(s); if(el&&!el._pzo){ el._pzo=1; pzObs.observe(el,{childList:true}); } } }
@@ -6562,7 +6562,8 @@ function vidaPortadaHTML(){
   const cl=vidaClasico();
   if(cl){ const cH=PZ_COL[cl.h]||["#3d6b5a","#ECEFE7"], cV=PZ_COL[cl.v]||["#2c4a40","#ECEFE7"], e=HOY.ev?.get(cl.fid), st=e?.status?.type?.state;
     const sc=e&&st!=="pre"?e.competitions[0].competitors.map(c=>c.score??"–"):null;
-    const eq=(id,c)=>`<span class="veq"><i style="background:${c[0]};color:${c[1]};${c[0]==="#FFFFFF"?`box-shadow:inset 0 0 0 4px ${c[1]}`:""}">${hoyEsc(vidaAb(id))}</i><b>${hoyEsc(vidaNomEq(id))}</b></span>`;
+    const lum=x=>{ const n=parseInt(x.slice(1),16); return .299*(n>>16)+.587*(n>>8&255)+.114*(n&255); }, tx=c=>lum(c[0])>150?(lum(c[1])<120?c[1]:"#1d2a26"):(lum(c[1])>150?c[1]:"#FFFFFF");
+    const eq=(id,c)=>`<span class="veq"><i style="background:${c[0]};color:${tx(c)};${c[0]==="#FFFFFF"?`box-shadow:inset 0 0 0 4px ${c[1]}`:""}">${hoyEsc(vidaAb(id))}</i><b>${hoyEsc(vidaNomEq(id))}</b></span>`;
     const lig=LEAGUES[cl.lg], abre=lig&&(comercial(lig)||lig.nat);
     return `<div class="vpor vgrande" style="--c1:${cH[0]};--c2:${cV[0]}"><div class="vfondo" aria-hidden="true"></div><div class="vin">${saludo}
       <span class="vtag">${hoyEsc(cl.nom)} · ${st==="in"?"En vivo":st==="post"?"Final":qmxHora(cl.ts)}</span>
@@ -6579,7 +6580,14 @@ function vidaPortadaHTML(){
     cuerpo=t?`<p class="vtxt">Hoy hay ${t}.${Object.keys(FAV.eq).length?"":` <button class="vlink" data-hact="fav">Sigue a tus equipos</button> para verlos aquí primero.`}</p>`:""; }
   return `<div class="vpor" style="--c1:${col[0]};--c2:${col[1]}"><div class="vfondo" aria-hidden="true"></div><div class="vin">${saludo}${cuerpo}${cie}${acc}</div></div>`;
 }
-function vidaPinta(){ const el=$("#hoyPor"); if(!el||$("#hoy").classList.contains("hidden")) return; const h=vidaPortadaHTML(); if(h!==VIDA.por){ VIDA.por=h; el.innerHTML=h; } }
+// Solo se vuelve a pintar si algo cambió de verdad (la cuenta regresiva la mueve el reloj y no cuenta). Si el fondo es el
+// mismo, se cambia solo el contenido (.vin) para que el fondo no se reinicie, y la entrada en cascada sale solo la primera vez.
+function vidaPinta(){ const el=$("#hoyPor"); if(!el||$("#hoy").classList.contains("hidden")) return;
+  const h=vidaPortadaHTML(), k=h.replace(/<div class="vcd"[\s\S]*?<\/div>/,""); if(k===VIDA.por) return; VIDA.por=k;
+  const tmp=document.createElement("div"); tmp.innerHTML=h; const nuevo=tmp.firstElementChild, viejo=el.firstElementChild;
+  if(nuevo&&viejo&&viejo.className.replace(/\s*vya/,"")===nuevo.className&&viejo.getAttribute("style")===nuevo.getAttribute("style")&&viejo.querySelector(".vin")&&nuevo.querySelector(".vin")) viejo.querySelector(".vin").replaceWith(nuevo.querySelector(".vin"));
+  else el.innerHTML=h;
+  if(VIDA.entro) el.firstElementChild?.classList.add("vya"); VIDA.entro=1; vidaBote(el); }
 $("#hoyPor")?.addEventListener("click",ev=>{
   const t=ev.target.closest("button"); if(!t) return;
   if(t.dataset.vir){ pzTrack("portada_cierre",{k:t.dataset.vir}); navIr(t.dataset.vir); window.scrollTo(0,0); return; }
@@ -6631,7 +6639,7 @@ async function vidaLogrosCalc(forzar){
     if(nuevos.length){ const L=VIDA_LOGROS.find(x=>x[0]===nuevos[0]);
       setTimeout(()=>pzAviso(prev?"¡Nuevo logro!":`¡Ya tienes ${T.size} ${T.size===1?"logro":"logros"}!`,prev?`${L[2]}${nuevos.length>1?` y ${nuevos.length-1} más`:""}`:"Tócalos en la portada para verlos"),prev?600:2500); }
     VIDA.log={T,racha,Q,G,yo,gen,fan}; VIDA.logT=Date.now(); return VIDA.log;
-  })().finally(()=>{ VIDA.logP=null; VIDA.por=""; vidaPinta(); });
+  })().finally(()=>{ VIDA.logP=null; vidaPinta(); });
   return VIDA.logP;
 }
 function vidaLogrosAbre(){
@@ -7654,7 +7662,7 @@ const favGrupo=k=>"part".includes(k[0])?"jug":"eq";
 function favxPide(k,fn){
   const c=FAVX.d[k]; if(c&&Date.now()-c.t<10*60e3) return c;
   if(!FAVX.p[k]) FAVX.p[k]=Promise.resolve().then(fn).then(d=>{ FAVX.d[k]={t:Date.now(),...(d||{err:1})}; }).catch(()=>{ FAVX.d[k]={t:Date.now(),err:1}; })
-    .finally(()=>{ delete FAVX.p[k]; favRepinta(); if(typeof VIDA!=="undefined"){ VIDA.por=""; vidaPinta(); } });
+    .finally(()=>{ delete FAVX.p[k]; favRepinta(); if(typeof VIDA!=="undefined") vidaPinta(); });
   return c||null;
 }
 const favxHora=iso=>masHora(iso,{weekday:"short",hour:"numeric",minute:"2-digit"}).replace(/\./g,"");
