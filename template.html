@@ -1575,6 +1575,23 @@ button.fvnota{cursor:pointer}.fvnota .utag{align-self:flex-start}.fvnota b{font:
 .ampfin{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:0 6px;margin-top:-48px}.ampfin h2{margin:6px 0 0}
 .ampbtn{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:6px}
 
+/* Duelos (28 oct 2026) */
+#amDu:empty{display:none}
+.dulist{display:flex;flex-direction:column;gap:10px;max-width:680px}
+.duc{position:relative;padding:14px;border-radius:20px;background:linear-gradient(140deg,color-mix(in srgb,var(--dc) 22%,transparent),var(--surface) 60%);border:1px solid color-mix(in srgb,var(--dc) 45%,var(--line));display:flex;flex-direction:column;gap:10px;animation:ventra .4s cubic-bezier(.2,.8,.2,1) both}
+.duc.dunuevo{box-shadow:0 0 0 2px var(--dc)}
+.duh{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}.dut{font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--dc)}
+.dumar{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:8px}
+.dumar>b{font:800 40px/1 var(--display);text-align:center}.dumar>i{font:700 13px var(--body);font-style:normal;color:var(--muted)}
+.duj{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:56px}.duj small{font-size:12px;color:#C9D6CF;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dupie{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:14px;color:#DCE4DE}.dubtn{display:flex;gap:12px;align-items:center}
+.duc.dugana .dupie>span:first-child{color:#9FD3A8;font-weight:700}.duc.dupierde .dupie>span:first-child{color:#FF9C80;font-weight:700}
+.duc.duvivo .dumar>b{color:var(--dc)}
+.duel h2{margin:0 0 6px}#duOps{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.duop{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:14px;border-radius:16px;border:1.5px solid color-mix(in srgb,var(--dc) 55%,var(--line));background:linear-gradient(120deg,color-mix(in srgb,var(--dc) 18%,transparent),var(--bg) 70%);color:var(--ink);cursor:pointer;font:inherit}
+.duop b{font:800 13px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--dc)}.duop span{font:800 20px var(--display)}.duop small{font-size:13px;color:#C9D6CF}
+.duop:disabled{opacity:.5;cursor:default}.duop:not(:disabled):active{transform:scale(.98)}
+
 /* Reto del día (28 oct 2026) */
 #hoyRd:empty{display:none}
 .rdcard{position:relative;overflow:hidden;margin:0 0 18px;padding:16px;border-radius:22px;background:linear-gradient(150deg,rgba(85,37,130,.5),var(--surface) 58%);border:1px solid rgba(201,167,240,.4);display:flex;flex-direction:column;gap:12px}
@@ -6787,9 +6804,10 @@ function vidaAccHTML(){
   const G=VIDA.log||{T:new Set(),racha:0};
   const n=G.T.size, hayRes=VIDA.log?vidaSlides().length>0:false, {d}=vidaParte(), dest=["Mon","Tue"].includes(d);
   const conCta=typeof acctOk==="function"&&acctOk(), sinAv=conCta&&!perfMio(), nv=conCta&&!sinAv?perfNuevos().length:0;
-  const sol=conCta&&typeof amRecibidas==="function"&&AM.L?amRecibidas().length:0;
-  if(!n&&!hayRes&&!sinAv&&!nv&&!sol) return "";
-  if(sol) return `<div class="vacc"><button class="vchip vdest" data-vact="amigos"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.9-5 5.5-5s4.9 1.8 5.5 5"/></svg>${sol} ${sol===1?"solicitud de amistad":"solicitudes de amistad"}</button>${n?`<button class="vchip" data-vact="logros"><span>${n} ${n===1?"logro":"logros"}</span></button>`:""}${hayRes?`<button class="vchip" data-vact="semana">Tu semana</button>`:""}</div>`;
+  const sol=conCta&&typeof amRecibidas==="function"&&AM.L?amRecibidas().length:0, du=conCta&&typeof duRecibidos==="function"?duRecibidos():[];
+  if(!n&&!hayRes&&!sinAv&&!nv&&!sol&&!du.length) return "";
+  const duH=du.length?`<button class="vchip vdest vduc" data-vact="amigos"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l9 9M20 4l-9 9M7 14l-3 3 3 3 3-3M17 14l3 3-3 3-3-3"/></svg>${du.length===1?`${hoyEsc(duNom(du[0]).split(" ")[0])} te retó`:`${du.length} retos de tus amigos`}</button>`:"";
+  if(sol||du.length) return `<div class="vacc">${duH}${sol?`<button class="vchip vdest" data-vact="amigos"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.9-5 5.5-5s4.9 1.8 5.5 5"/></svg>${sol} ${sol===1?"solicitud de amistad":"solicitudes de amistad"}</button>`:""}${n?`<button class="vchip" data-vact="logros"><span>${n} ${n===1?"logro":"logros"}</span></button>`:""}${hayRes?`<button class="vchip" data-vact="semana">Tu semana</button>`:""}</div>`;
   return `<div class="vacc">${sinAv||nv?`<button class="vchip vdest" data-vact="perfil"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M8 4l4 2 4-2 5 3-2 4-2-1v10H7V10l-2 1-2-4z"/></svg>${sinAv?"Arma tu avatar":`${nv} ${nv===1?"cosa nueva":"cosas nuevas"} para tu avatar`}</button>`:""}${n?`<button class="vchip" data-vact="logros">${G.racha>=2?`<span class="vfl">${VIDA_FLAMA}${G.racha}</span>`:""}<span>${n} ${n===1?"logro":"logros"}</span></button>`:""}
     ${hayRes?`<button class="vchip${dest?" vdest":""}" data-vact="semana"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 3v3M15 3v3"/></svg>Tu semana</button>`:""}</div>`;
 }
@@ -7054,7 +7072,7 @@ const PERF_MARCOS=[["no","Sin marco",null,""],["fuego","Racha de fuego","racha3"
 const PERF_X=[["nd","Número dorado","perfecta"],["est","Estrella en el escudo","goles"],["cor","Corona","lider"],["llama","Llamita animada","rd7"],["brillo","Brillo que da la vuelta","rd30"]];
 const PERF_TIT=[["","Sin título",null],["sabe","El que sabe","seis"],["const","Constante","racha3"],["profeta","El Profeta","perfecta"],["halcon","Ojo de halcón","goles"],["lider","El Líder","lider"],["fanta","Fantasista","once"],["fiel","Fiel","fan3"],["presume","El Presumido","comparte"],["imparable","Imparable","rd7"]];
 const PERF_PAL=["#FFFFFF","#1A1A1A","#C8102E","#12305E","#0047BB","#6CABDD","#FFD23F","#F4B400","#00843D","#A50044","#7A3E9D","#E8742C"], PERF_NEON=["#39FF14","#FF2BD6","#00E5FF"];
-const PERF_REQ_PRONTO={rd7:"7 días seguidos en el reto del día (muy pronto)",rd30:"30 días seguidos en el reto del día (muy pronto)"};
+const PERF_REQ_PRONTO={rd7:"7 días seguidos atinándole al reto del día",rd30:"30 días seguidos atinándole al reto del día"};
 const PERF_CAM="M38 20 L50 13 Q60 21 70 13 L82 20 L106 34 L97 55 L85 49 L85 120 L35 120 L35 49 L23 55 L14 34 Z";
 const perfLum=x=>{ const n=parseInt(String(x).slice(1),16); return .299*(n>>16)+.587*(n>>8&255)+.114*(n&255); };
 const perfNomEq=k=>!k?"":k[0]==="n"?(NT[k.slice(1)]?.name||NT[k.slice(1)]?.n||""):+k.slice(1)===16?"México":vidaNomEq(+k.slice(1));
@@ -7180,7 +7198,7 @@ dlg.addEventListener("close",()=>{ PERF.ed=null; });
 // Solo tus amigos leen tus publicaciones (reglas_amigos.txt). Los resultados (aciertos de la jornada, puntos del Fantasy)
 // los publica GitHub cada noche; los picks guardados, logros y cambios los publica la página. Los picks nunca se publican.
 const AM={L:null,lt:0,p:null,feed:null,ft:0,fp:null,posts:{},filtro:"todo",abierto:null,coms:{},bus:[],busq:"",sug:null,inv:null};
-const AM_G={mx:["Liga MX","#F2D466"],nfl:["Quiniela NFL","#7FB8E8"],sv:["Survivor","#FF9C80"],q5:["Quinteta NBA","#E8A33D"],fan:["Fantasy","#9FD3A8"],dia:["Reto del día","#C9A7F0"],logro:["Logros","#F2D466"]};
+const AM_G={mx:["Liga MX","#F2D466"],nfl:["Quiniela NFL","#7FB8E8"],sv:["Survivor","#FF9C80"],q5:["Quinteta NBA","#E8A33D"],fan:["Fantasy","#9FD3A8"],dia:["Reto del día","#C9A7F0"],duelo:["Duelos","#FFB27A"],logro:["Logros","#F2D466"]};
 const AM_R=[["f","Fuego"],["j","Carrilla"],["p","Respeto"]];
 const AM_RAP=["Puro suertudo","Te voy a alcanzar","Respeto","Ni con la tabla","¿Y tus picks?"];
 const amPar=(a,b)=>a<b?`${a}_${b}`:`${b}_${a}`;
@@ -7196,14 +7214,14 @@ async function amCarga(forzar){
   if(AM.p) return AM.p;
   AM.p=(async()=>{ const yo=ACCT.user.uid, q=await ACCT.db.collection("amistades").where("u","array-contains",yo).get();
     AM.L=q.docs.map(d=>{ const x=d.data(); return {id:d.id,otro:(x.u||[]).find(u=>u!==yo),est:x.est,de:x.de,n:x.n||{},t:x.t}; }).filter(a=>a.otro); AM.lt=Date.now();
-    await Promise.all(AM.L.map(a=>perfCargaP(a.otro))); amBadge(); if(typeof vidaPinta==="function") vidaPinta(); return AM.L; })()
+    await Promise.all(AM.L.map(a=>perfCargaP(a.otro))); duCarga().catch(()=>{}); amBadge(); if(typeof vidaPinta==="function") vidaPinta(); return AM.L; })()
     .catch(e=>{ console.warn("Amigos:",e?.code||e); return AM.L||[]; }).finally(()=>{ AM.p=null; });
   return AM.p;
 }
 const amAmigos=()=>(AM.L||[]).filter(a=>a.est==="ok");
 const amRecibidas=()=>(AM.L||[]).filter(a=>a.est==="pend"&&a.de!==ACCT.user?.uid);
-function amBadge(){ const n=amOk()?amRecibidas().length:0; const b=$("#amBtn"); if(!b) return; b.hidden=!(typeof acctOk==="function"&&acctOk());
-  let s=b.querySelector(".vbadge"); if(!n){ s?.remove(); return; } if(!s){ s=document.createElement("b"); s.className="vbadge"; b.append(s); } s.textContent=n; b.setAttribute("aria-label",`Amigos: ${n} ${n===1?"solicitud":"solicitudes"}`); }
+function amBadge(){ const n=amOk()?amRecibidas().length+(typeof duRecibidos==="function"?duRecibidos().length:0):0; const b=$("#amBtn"); if(!b) return; b.hidden=!(typeof acctOk==="function"&&acctOk());
+  let s=b.querySelector(".vbadge"); if(!n){ s?.remove(); return; } if(!s){ s=document.createElement("b"); s.className="vbadge"; b.append(s); } s.textContent=n; b.setAttribute("aria-label",`Amigos: ${n} ${n===1?"pendiente":"pendientes"}`); }
 // ---- solicitudes ----
 async function amSolicita(uid,nombre){
   const yo=ACCT.user.uid; if(!uid||uid===yo) return;
@@ -7281,11 +7299,13 @@ async function amRender(){
     ${Rc.length?`<section class="hsec amsec"><div class="hh"><h3>Solicitudes</h3></div>${Rc.map(a=>`<div class="amsolr">${amAv(a.otro,46,a)}<span><b>${hoyEsc(amNom(a.otro,a))}</b><small>Quiere ser tu amigo</small></span><button class="btn" data-amok="${a.id}">Aceptar</button><button class="q5link" data-amno="${a.id}">Ahora no</button></div>`).join("")}</section>`:""}
     <div class="amfila">${A.map(a=>`<button class="amf" data-amper="${hoyEsc(a.otro)}">${amAv(a.otro,58,a)}<span>${hoyEsc(amNom(a.otro,a).split(" ")[0])}</span></button>`).join("")}<button class="amf amadd" data-amadd="1"><span class="amplus">+</span><span>Agregar</span></button></div>
     <div id="amAgrega" hidden></div>
+    <section class="hsec amsec" id="amDu"></section>
     ${En.length?`<p class="note">Esperando respuesta de ${En.map(a=>`${hoyEsc(amNom(a.otro,a))} <button class="q5link" data-amcan="${a.id}">Cancelar</button>`).join(" · ")}</p>`:""}
     ${A.length?`<div class="hseg amfil" role="group" aria-label="Juego">${[["todo","Todo"],...Object.entries(AM_G).map(([k,v])=>[k,v[0]])].map(([k,n])=>`<button data-amfil="${k}" aria-pressed="${AM.filtro===k}">${n}</button>`).join("")}</div>
       <div class="amfeed">${F.length?F.map(amPost).join(""):`<p class="note">${AM.feed?.length?"Nada de este juego todavía.":"Aquí sale lo que hacen tus amigos: sus picks guardados, sus aciertos, sus logros y más. Los picks de cada quien nunca se publican."}</p>`}</div>`
     :`<div class="amvacio"><b>Agrega a tus amigos</b><span>Búscalos por su apodo, mándales tu link por WhatsApp o escoge a los de tus grupos. Cuando acepten, aquí ves lo que hace cada quien en todos los juegos.</span><button class="btn" data-amadd="1">Agregar amigos</button></div>`}`;
   if(!A.length&&!Rc.length) amAgrega();
+  duPinta();
 }
 async function amAgrega(){
   const el=$("#amAgrega"); if(!el) return; el.hidden=false;
@@ -7303,8 +7323,8 @@ function amPintaBus(){ const el=$("#amBus"); if(!el) return; const ya=new Set((A
 function amPerfil(uid){
   const a=(AM.L||[]).find(x=>x.otro===uid), p=PERF.cache[uid], yo=ACCT.user.uid;
   $("#gbody").innerHTML=`<div class="amperfil">${p?`<div class="ampf" style="--c1:${p.vi&&p.k1?p.k1:p.c1};--c2:${p.vi&&p.k2?p.k2:p.c2}"></div>`:""}<div class="ampfin">${amAv(uid,96,a)}
-    <h2>${hoyEsc(uid===yo?(perfMio()?.a||"Tú"):amNom(uid,a))}</h2>${perfTitulo(p)?`<b class="petit">${hoyEsc(perfTitulo(p))}</b>`:""}${p?.eq?`<span class="note">Le va al ${hoyEsc(perfNomEq(p.eq))}</span>`:""}
-    ${uid===yo?`<button class="btn" data-amedit="1">Editar mi perfil</button>`:a?.est==="ok"?`<div class="ampbtn"><button class="btn" disabled title="Muy pronto">Retar (muy pronto)</button><button class="q5link" data-amdel="${a.id}">Quitar de mis amigos</button></div>`:a?`<p class="note">Solicitud pendiente.</p>`:`<button class="btn" data-amsol="${hoyEsc(uid)}" data-amn="${hoyEsc(p?.a||"")}">Agregar</button>`}
+    <h2>${hoyEsc(uid===yo?(perfMio()?.a||"Tú"):amNom(uid,a))}</h2>${perfTitulo(p)?`<b class="petit">${hoyEsc(perfTitulo(p))}</b>`:""}${p?.eq?`<span class="note">Le va al ${hoyEsc(perfNomEq(p.eq))}</span>`:""}${a?.est==="ok"?(()=>{ const r=duRecord(uid); return r[0]+r[1]+r[2]?`<span class="note">Duelos entre ustedes: ganaste ${r[0]}, perdiste ${r[1]}${r[2]?`, ${r[2]} ${r[2]===1?"empate":"empates"}`:""}</span>`:""; })():""}
+    ${uid===yo?`<button class="btn" data-amedit="1">Editar mi perfil</button>`:a?.est==="ok"?`<div class="ampbtn"><button class="btn" data-duret="${hoyEsc(uid)}">Retar</button><button class="q5link" data-amdel="${a.id}">Quitar de mis amigos</button></div>`:a?`<p class="note">Solicitud pendiente.</p>`:`<button class="btn" data-amsol="${hoyEsc(uid)}" data-amn="${hoyEsc(p?.a||"")}">Agregar</button>`}
     <h3 class="pet">Lo último</h3><div class="amfeed">${Object.values(AM.posts).filter(x=>x.uid===uid).sort((a,b)=>(b.t?.seconds||0)-(a.t?.seconds||0)).slice(0,6).map(amPost).join("")||`<p class="note">Todavía no hay nada.</p>`}</div></div></div>`;
   if(!dlg.open) dlg.showModal(); FICHA.pila=[];
 }
@@ -7325,7 +7345,7 @@ async function amComenta(pid,tx){ tx=String(tx||"").trim().slice(0,140); if(!tx)
 }
 document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) return;
   if(t.closest("#amBtn")){ navIr("amigos"); window.scrollTo(0,0); return; }
-  if(!t.closest("#amigos,#gbody .amperfil,#gbody .ampost")) return;
+  if(!t.closest("#amigos,#gbody .amperfil,#gbody .ampost,#gbody .duel")) return;
   const g=s=>t.closest(s);
   let b;
   if((b=g("[data-amok]"))) return amAcepta(b.dataset.amok);
@@ -7445,6 +7465,132 @@ document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return
   if(t.closest("#hoyRd [data-rdsem]")) return rdSemana();
 });
 setInterval(()=>{ if(!document.hidden&&$("#hoyRd [data-rdcd]")) rdTick(); },1000);
+
+// ---------- Duelos uno contra uno (28 oct 2026) ----------
+// Retas a un amigo en algo que los dos ya juegan: una jornada de la Quiniela Liga MX (más aciertos; desempate: goles más
+// cercanos), una jornada del Fantasy Champions (más puntos) o 7 retos del día seguidos (más aciertos).
+// Firestore duelos/{tipo}-{k}_{uidA}_{uidB} = {u:[uidA, uidB] (ordenados), de, tipo, k, e: nombre del duelo, n:{uid: nombre},
+//   cierre, est: "pend" | "ok", t, res?}. mx: k = jornada (A2026-15) · fan: k = UCL2026-L4 · rd: k = primer día de los 7.
+// Se acepta antes del cierre (lo revisan las reglas). El marcador se calcula aquí con los picks (que se pueden leer en cuanto
+// cierra), datos/qmx_tabla.json, datos/fan_ucl.json y datos/reto_dia.json; al terminar GitHub escribe res = {p:{uid: puntos},
+// g: ganador o "" si empataron} y lo publica en el feed.
+const DU={L:null,lt:0,p:null,fan:null,ft:0,sc:{},rr:{},ops:null,con:null};
+const DU_T={mx:["Quiniela Liga MX","#F2D466"],fan:["Fantasy Champions","#9FD3A8"],rd:["Reto del día","#C9A7F0"]};
+const duTs=x=>x?.toMillis?x.toMillis()/1000:x?.seconds!=null?x.seconds:x instanceof Date?x.getTime()/1000:(+x||0);
+const duCuando=ts=>cap(new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000)));
+const duNom=d=>amNom(d.otro,{n:d.n||{}});
+const duHasta=d=>duCuando(d.tipo==="rd"?d.ci-60:d.ci).toLowerCase();
+async function duCarga(forzar){
+  if(!amOk()) return []; if(!forzar&&DU.L&&Date.now()-DU.lt<60e3) return DU.L; if(DU.p) return DU.p;
+  DU.p=(async()=>{ const yo=ACCT.user.uid, q=await ACCT.db.collection("duelos").where("u","array-contains",yo).get();
+    DU.L=q.docs.map(d=>{ const x=d.data()||{}; return {...x,id:d.id,otro:(x.u||[]).find(u=>u!==yo),ci:duTs(x.cierre)}; }).filter(d=>d.otro); DU.lt=Date.now();
+    await Promise.all([...new Set(DU.L.map(d=>d.otro))].map(perfCargaP)); amBadge(); if(typeof vidaPinta==="function") vidaPinta(); return DU.L; })()
+    .catch(e=>{ console.warn("Duelos:",e?.code||e); return DU.L||[]; }).finally(()=>{ DU.p=null; });
+  return DU.p;
+}
+const duRecibidos=()=>(DU.L||[]).filter(d=>d.est==="pend"&&d.de!==ACCT.user?.uid&&d.ci>Date.now()/1000);
+async function duFanD(){ if(FAN.D) return FAN.D; if(DU.fan&&Date.now()-DU.ft<10*60e3) return DU.fan;
+  DU.fan=await fetch(`datos/fan_ucl.json?v=${Math.floor(Date.now()/6e5)}`).then(r=>r.ok?r.json():null).catch(()=>null); DU.ft=Date.now(); return DU.fan; }
+// Lo que se puede retar ahorita: la siguiente jornada de cada juego que todavía no empieza
+async function duOpciones(){
+  const O=[], now=Date.now()/1000;
+  try{ const Q=qmxD(), j=Q?qmxAbierta():null; if(j!=null&&j>=13) O.push({tipo:"mx",k:qmxJid(j),e:`Jornada ${j}`,cierre:Q.J[j].pr,det:"Gana quien le atine a más partidos. Desempate: los goles más cercanos."}); }catch(e){}
+  try{ const F=await duFanD(); if(F?.j){ const ks=Object.entries(F.j).sort((a,b)=>a[1].pr-b[1].pr).map(([k])=>k), L=ks.filter((k,i)=>i>=Math.max(0,ks.indexOf(F.desde)));
+    const k=L.find(k=>F.j[k].pr>now); if(k) O.push({tipo:"fan",k:`UCL${F.s}-${k}`,e:F.j[k].n||k,cierre:F.j[k].pr,det:"Gana quien haga más puntos con su once en esa jornada."}); } }catch(e){}
+  const m=rdMas(rdHoy(),1), fm=new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",weekday:"long",day:"numeric"}).format(new Date(m+"T12:00:00Z"));
+  O.push({tipo:"rd",k:m,e:`7 retos desde el ${fm}`,cierre:Date.parse(m+"T06:00:00Z")/1000,det:"Gana quien le atine a más retos del día en una semana. Empieza mañana."});
+  return O;
+}
+async function duRdDe(f,uid){ const k=f+"_"+uid; if(DU.rr[k]!==undefined) return DU.rr[k];
+  try{ const s=await ACCT.db.doc(`rd_resp/${k}`).get(); DU.rr[k]=s.exists?s.data().r:null; }catch(e){ DU.rr[k]=null; } return DU.rr[k]; }
+// Marcador: {p:{uid:puntos} | null (todavía no empieza), fin, g: ganador ("" = empate), nota}
+async function duMarcador(d){
+  if(d.res&&d.res.p) return {p:d.res.p,fin:true,g:d.res.g||""};
+  const now=Date.now()/1000, U=d.u||[], [x,y]=U, gana=(p,t)=>p[x]!==p[y]?(p[x]>p[y]?x:y):t?(t[x]!==t[y]?(t[x]<t[y]?x:y):""):"";
+  if(now<d.ci||d.est!=="ok") return {p:null,fin:false};
+  const c=DU.sc[d.id]; if(c&&(c.fin||Date.now()-c.t<60e3)) return c;
+  let M={p:null,fin:false};
+  try{
+    if(d.tipo==="mx"){ const Q=qmxD(), i=d.k.lastIndexOf("-"), s=d.k.slice(0,i), j=d.k.slice(i+1);
+      if(Q&&Q.s===s&&Q.J[j]){ await qmxVivoYa([+j]); const P=Q.J[j].p, R=P.map(r=>qmxRes(r,QMX.vivo)), fin=R.every(z=>z.fin||z.susp), goles=R.reduce((t,z)=>t+(z.fin?(z.gl||0)+(z.gv||0):0),0);
+        const Gen=await qmxTablaGen(), p={}, err={};
+        for(const uid of U){ const pk=await qmxPicksDe(d.k,uid); let a=P.reduce((t,r,i)=>t+(R[i].fin&&pk?.p?.[r[0]]===R[i].r?1:0),0);
+          const gx=Gen&&Gen.s===s?Gen.t?.[await q5Hash(uid)]?.j?.[j]:null; if(gx&&gx[0]>a) a=gx[0];
+          p[uid]=a; const gg=pk?.g??gx?.[1]; err[uid]=gg!=null?Math.abs(gg-goles):99; }
+        M={p,fin,g:fin?gana(p,err):"",nota:`${R.filter(z=>z.fin).length} de ${P.length} partidos`}; } }
+    else if(d.tipo==="fan"){ const F=await duFanD(), i=d.k.indexOf("-"), s=d.k.slice(0,i), k=d.k.slice(i+1);
+      if(F&&`UCL${F.s}`===s&&F.j?.[k]){ const p={}; for(const uid of U) p[uid]=F.tabla?.[await q5Hash(uid)]?.j?.[k]??0;
+        const fin=!!F.j[k].fin; M={p,fin,g:fin?gana(p):"",nota:fin?"":"Los puntos se actualizan varias veces al día"}; } }
+    else if(d.tipo==="rd"){ const R=await rdDatos(), hoy=rdHoy(), dias=[...Array(7)].map((_,i)=>rdMas(d.k,i)), p={};
+      const ok=dias.filter(f=>f<=hoy&&R[f]?.res&&R[f].res!=="x");
+      for(const uid of U){ let a=0; for(const f of ok){ const m=uid===ACCT.user.uid?await rdMiResp(f):await duRdDe(f,uid); if(m&&m===R[f].res) a++; } p[uid]=a; }
+      const fin=dias[6]<hoy||(dias[6]===hoy&&!!R[hoy]?.res); M={p,fin,g:fin?gana(p):"",nota:`${dias.filter(f=>f<=hoy&&R[f]?.res).length} de 7 retos`}; }
+  }catch(e){ console.warn("Duelos: marcador",e?.code||e); }
+  M.t=Date.now(); DU.sc[d.id]=M; return M;
+}
+function duRecord(uid){ const yo=ACCT.user.uid, r=[0,0,0];
+  for(const d of DU.L||[]){ if(d.otro!==uid||d.est!=="ok") continue; const m=d.res?.p?{fin:true,g:d.res.g||""}:DU.sc[d.id]; if(!m?.fin) continue; r[m.g===yo?0:m.g?1:2]++; }
+  return r; }
+function duCard(d,m){
+  const yo=ACCT.user.uid, o=d.otro, T=DU_T[d.tipo]||["Duelo","var(--mark)"], nom=duNom(d).split(" ")[0], now=Date.now()/1000;
+  let est="", btn="", cl="";
+  if(d.est==="pend"){ if(d.de===yo){ est=`Esperando a que ${nom} acepte. Tiene hasta el ${duHasta(d)}`; btn=`<button class="q5link" data-duno="${hoyEsc(d.id)}">Cancelar</button>`; }
+    else { est=`${nom} te retó. Acepta antes del ${duHasta(d)}`; btn=`<button class="btn" data-duok="${hoyEsc(d.id)}">Aceptar</button><button class="q5link" data-duno="${hoyEsc(d.id)}">Ahora no</button>`; cl=" dunuevo"; } }
+  else if(now<d.ci) est=d.tipo==="rd"?"Empieza mañana. Contesta el reto del día cada día.":`Empieza el ${duCuando(d.ci).toLowerCase()}. ${d.tipo==="fan"?"Arma tu once antes":"Haz tus picks antes"}.`;
+  else if(m?.fin){ est=m.g===yo?"¡Ganaste el duelo!":m.g?`Ganó ${nom}`:"Quedaron empatados"; cl=m.g===yo?" dugana":m.g?" dupierde":""; }
+  else if(m?.p){ const a=m.p[yo]||0, b=m.p[o]||0; est=`${a>b?"Vas ganando":a<b?`Va ganando ${nom}`:"Van empatados"}${m.nota?` · ${m.nota}`:""}`; cl=" duvivo"; }
+  const sc=k=>m?.p?String(m.p[k]??0):"–";
+  return `<div class="duc${cl}" style="--dc:${T[1]}"><div class="duh"><span class="dut">${hoyEsc(T[0])}</span><span>${hoyEsc(d.e||"")}</span></div>
+    <div class="dumar"><span class="duj">${amAv(yo,46)}<small>Tú</small></span><b>${sc(yo)}</b><i>vs</i><b>${sc(o)}</b><span class="duj"><button class="amav" data-amper="${hoyEsc(o)}" aria-label="Ver perfil">${amAv(o,46,{n:d.n})}</button><small>${hoyEsc(nom)}</small></span></div>
+    <div class="dupie"><span>${hoyEsc(est)}</span>${btn?`<span class="dubtn">${btn}</span>`:""}</div></div>`;
+}
+// Los duelos que importan ahorita: por aceptar, en juego y los que terminaron en la última semana
+async function duLista(uid){
+  await duCarga(); const now=Date.now()/1000;
+  const L=(DU.L||[]).filter(d=>(!uid||d.otro===uid)&&(d.est==="ok"||d.ci>now)&&(uid||d.est!=="ok"||d.ci>now-10*86400));
+  const M=await Promise.all(L.map(duMarcador)); const X=L.map((d,i)=>({d,m:M[i]})).filter(({d,m})=>uid||!(m?.fin&&d.ci<now-10*86400));
+  const orden=({d,m})=>d.est==="pend"&&d.de!==ACCT.user.uid?0:m?.p&&!m.fin?1:d.est==="pend"?3:!m?.p?2:4;
+  return X.sort((a,b)=>orden(a)-orden(b)||b.d.ci-a.d.ci);
+}
+async function duPinta(){
+  const el=$("#amDu"); if(!el) return; const X=await duLista(); if(!$("#amDu")) return;
+  el.innerHTML=X.length?`<div class="hh"><h3>Duelos</h3></div><div class="dulist">${X.slice(0,8).map(({d,m})=>duCard(d,m)).join("")}</div>`:"";
+}
+async function duElegir(uid){
+  const a=(AM.L||[]).find(x=>x.otro===uid), nom=amNom(uid,a).split(" ")[0];
+  $("#gbody").innerHTML=`<div class="duel"><h2>Retar a ${hoyEsc(nom)}</h2><p class="note">Escoge en qué. Cada quien juega como siempre; aquí solo se comparan sus resultados.</p><div id="duOps">${pzSkel(2)}</div><div id="duCon"></div></div>`;
+  if(!dlg.open) dlg.showModal(); FICHA.pila=[]; DU.con=uid;
+  const [O]=await Promise.all([duOpciones(),duCarga()]), yo=ACCT.user.uid, u=[yo,uid].sort(), ya=new Set((DU.L||[]).map(d=>d.id));
+  DU.ops=O.map(o=>({...o,id:`${o.tipo}-${o.k}_${u[0]}_${u[1]}`}));
+  if(!$("#duOps")) return;
+  $("#duOps").innerHTML=DU.ops.map((o,i)=>{ const T=DU_T[o.tipo]; return `<button class="duop" style="--dc:${T[1]}" data-duop="${i}"${ya.has(o.id)?" disabled":""}><b>${hoyEsc(T[0])}</b><span>${hoyEsc(o.e)}</span><small>${ya.has(o.id)?"Ya tienen este duelo":hoyEsc(o.det)}</small></button>`; }).join("")||`<p class="note">Ahorita no hay nada que retar. Vuelve cuando se abra la siguiente jornada.</p>`;
+  const X=await duLista(uid), r=duRecord(uid); if(!$("#duCon")) return;
+  $("#duCon").innerHTML=X.length?`<h3 class="pet">Contra ${hoyEsc(nom)}${r[0]+r[1]+r[2]?` · ${r[0]}-${r[1]}${r[2]?`-${r[2]}`:""}`:""}</h3><div class="dulist">${X.slice(0,6).map(({d,m})=>duCard(d,m)).join("")}</div>`:"";
+}
+async function duReta(o){
+  const yo=ACCT.user.uid, uid=DU.con, u=[yo,uid].sort(), a=(AM.L||[]).find(x=>x.otro===uid), nom=amNom(uid,a);
+  if(o.cierre<=Date.now()/1000) return pzAviso("Ya cerró","Escoge otra");
+  const ms=o.cierre*1000, ci=firebase.firestore.Timestamp?.fromMillis?firebase.firestore.Timestamp.fromMillis(ms):new Date(ms);
+  try{ await ACCT.db.doc(`duelos/${o.id}`).set({u,de:yo,tipo:o.tipo,k:o.k,e:o.e,n:{[yo]:(perfMio()?.a||q5AliasDef()||"Jugador").slice(0,24),[uid]:String(nom).slice(0,24)},cierre:ci,est:"pend",t:grFV().serverTimestamp()});
+    pzTrack("duelo_reta",{tipo:o.tipo}); pzAviso("¡Reto enviado!",`Si ${nom.split(" ")[0]} acepta antes del cierre, empieza el duelo`); }
+  catch(e){ console.warn("Duelos: retar",e?.code||e); pzAviso("No se pudo mandar","Intenta de nuevo en un momento"); }
+  await duCarga(true); duElegir(uid); duPinta();
+}
+async function duAcepta(id){
+  const d=(DU.L||[]).find(x=>x.id===id); if(!d) return;
+  try{ await ACCT.db.doc(`duelos/${id}`).update({est:"ok"}); pzTrack("duelo_acepta",{tipo:d.tipo}); if(typeof pzConfeti==="function") pzConfeti(); pzAviso("¡Duelo aceptado!","Que gane el que más sabe");
+    amPublica(`du-${id}`,{g:"duelo",tx:`aceptó el duelo de ${duNom(d)}`,big:"VS",det:`${(DU_T[d.tipo]||[""])[0]} · ${d.e||""}`}); }
+  catch(e){ console.warn("Duelos: aceptar",e?.code||e); pzAviso("No se pudo aceptar","¿Ya cerró? Intenta de nuevo"); }
+  await duCarga(true); duRepinta();
+}
+async function duQuita(id){ try{ await ACCT.db.doc(`duelos/${id}`).delete(); }catch(e){ console.warn("Duelos: quitar",e?.code||e); } await duCarga(true); duRepinta(); }
+function duRepinta(){ duPinta(); if(dlg.open&&$("#duCon")&&DU.con) duElegir(DU.con); if(typeof vidaPinta==="function") vidaPinta(); }
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return; let b;
+  if((b=t.closest("[data-duret]"))) return duElegir(b.dataset.duret);
+  if((b=t.closest("[data-duop]"))){ const o=DU.ops?.[+b.dataset.duop]; if(o){ b.disabled=true; duReta(o); } return; }
+  if((b=t.closest("[data-duok]"))){ b.disabled=true; return duAcepta(b.dataset.duok); }
+  if((b=t.closest("[data-duno]"))){ b.disabled=true; return duQuita(b.dataset.duno); }
+});
 
 // ---------- Tu portada (28 oct 2026): escoge qué sale en Hoy y en qué orden ----------
 // localStorage "pz_hoy" = {o: [secciones ocultas], ord: [orden de las de la columna principal]}; viaja con tu cuenta.
@@ -7737,6 +7883,7 @@ async function acctInit(){
     const was=ACCT.user; ACCT.user=u||null; ACCT.ready=true; acctBtn(); acctSlHint(); try{localStorage.setItem("pz_sesion",u?"1":"0");}catch(e){}
     if(u&&(!was||was.uid!==u.uid)){ if(u.emailVerified){ acctPull(); if(adlg.open) adlg.close(); } else if(adlg.open) acctRender(); if(typeof perfCargaYo==="function") perfCargaYo(); }
     if(!u&&typeof PERF!=="undefined") PERF.yo=null;
+    if(typeof DU!=="undefined"){ DU.L=null; DU.sc={}; DU.rr={}; }
     if(typeof RD!=="undefined"){ RD.h=null; RD.mias={}; RD.pt=Date.now(); setTimeout(()=>rdPinta().catch(()=>{}),0); }
     GR.loaded=false; GR.ids=[]; GR.info={}; GR.data={};
     if(u&&acctOk()) grLoadIds().then(()=>{ grReconcile(true).catch(()=>{}); if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });

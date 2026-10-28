@@ -2549,6 +2549,70 @@ try:
 except Exception as ex:
     _pz_err("Reto del día",ex)
 
+# ----- Duelos uno contra uno (28 oct 2026) -----
+# Firestore duelos/{tipo}-{k}_{uidA}_{uidB} = {u, de, tipo: mx | fan | rd, k, e, n:{uid: nombre}, cierre, est, t}. Cuando termina
+# lo que se retó, aquí se escribe res = {p:{uid: puntos}, g: ganador o "" (empate)} y se publica en el feed del ganador
+# (o de quien retó, si empataron). mx: aciertos de la jornada (desempate: goles más cercanos), con datos/qmx_tabla.json;
+# fan: puntos de la jornada del Fantasy (datos/fan_ucl.json); rd: aciertos en 7 retos del día seguidos desde k.
+def _duelos():
+    import hashlib
+    from datetime import timedelta
+    sa=os.environ.get('FIREBASE_SA','').strip()
+    if not sa: return
+    import firebase_admin
+    from firebase_admin import credentials, firestore
+    if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
+    db=firestore.client()
+    lee=lambda n:(lambda r:json.load(open(r,encoding='utf-8')) if os.path.exists(r) else {})(os.path.join(aqui,'docs','datos',n))
+    G,F,R=lee('qmx_tabla.json'),lee('fan_ucl.json'),(lee('reto_dia.json').get("d") or {})
+    hoy=datetime.now(ZoneInfo("America/Mexico_City")).date().isoformat()
+    H=lambda uid:hashlib.sha256(uid.encode()).hexdigest()[:12]
+    TIPO={"mx":"Quiniela Liga MX","fan":"Fantasy Champions","rd":"Reto del día"}
+    hechos=0
+    for doc in db.collection('duelos').where('est','==','ok').stream():
+        try:
+            d=doc.to_dict() or {}
+            if d.get("res") or len(d.get("u") or [])!=2: continue
+            U=d["u"]; k=str(d.get("k") or ""); tipo=d.get("tipo"); p={}; err=None
+            if tipo=="mx":
+                s2,j=k.rsplit("-",1)
+                J=(G.get("j") or {}).get(j)
+                if G.get("s")!=s2 or not J or not J.get("fin"): continue
+                p={u:((G.get("t") or {}).get(H(u),{}).get("j",{}).get(j) or [0,None])[0] for u in U}
+                err={u:(lambda g:abs(g-J.get("goles",0)) if isinstance(g,(int,float)) else 99)(((G.get("t") or {}).get(H(u),{}).get("j",{}).get(j) or [0,None])[1]) for u in U}
+            elif tipo=="fan":
+                s2,c=k.split("-",1)
+                if f"UCL{F.get('s')}"!=s2 or not (F.get("j") or {}).get(c,{}).get("fin"): continue
+                p={u:((F.get("tabla") or {}).get(H(u),{}).get("j") or {}).get(c,0) for u in U}
+            elif tipo=="rd":
+                d0=datetime.strptime(k,"%Y-%m-%d").date(); dias=[(d0+timedelta(days=i)).isoformat() for i in range(7)]
+                if dias[-1]>hoy or any(R.get(f) and not R[f].get("res") for f in dias): continue
+                ok=[f for f in dias if R.get(f) and R[f]["res"]!="x"]
+                for u in U:
+                    a=0
+                    for f in ok:
+                        x=db.collection('rd_resp').document(f"{f}_{u}").get()
+                        if x.exists and (x.to_dict() or {}).get("r")==R[f]["res"]: a+=1
+                    p[u]=a
+            else: continue
+            x,y=U
+            g=(x if p[x]>p[y] else y) if p[x]!=p[y] else ((x if err[x]<err[y] else y) if err and err[x]!=err[y] else "")
+            doc.reference.update({"res":{"p":p,"g":g}})
+            hechos+=1
+            n=d.get("n") or {}; nom=lambda u:(str(n.get(u) or "").split(" ")[0] or "su amigo")
+            if g:
+                o=y if g==x else x
+                _feed_post(db,g,f"duelo-{doc.id}","duelo",f"le ganó el duelo a {nom(o)}"+(" en el desempate" if p[g]==p[o] else ""),f"{p[g]}-{p[o]}",f"{TIPO.get(tipo,'')} · {d.get('e','')}")
+            else:
+                de=d.get("de") or x; o=y if de==x else x
+                _feed_post(db,de,f"duelo-{doc.id}","duelo",f"empató el duelo con {nom(o)}",f"{p[x]}-{p[y]}",f"{TIPO.get(tipo,'')} · {d.get('e','')}")
+        except Exception as ex: _pz_err(f"Duelos: {doc.id}",ex)
+    print(f"Duelos: {hechos} terminados")
+try:
+    _duelos()
+except Exception as ex:
+    _pz_err("Duelos",ex)
+
 # ---------- Página ligera (5 oct 2026) ----------
 # Lo que solo usan algunas secciones sale de la página principal a docs/datos/paq_<nombre>.json; la página lo baja
 # la primera vez que lo necesita (Estadísticas, detalle de un partido NFL, Quiniela, Fantasy, fotos, Historia).
