@@ -2041,6 +2041,22 @@ def _alias_uid(db,uid):
         return (au.email or "").split("@")[0][:14] or "Jugador"
     except Exception: return "Jugador"
 
+_AMIGOS={}
+def _feed_post(db,uid,clave,g,tx,big,det):
+    """Publica en el feed de Amigos (28 oct 2026): posts/{uid_clave} y una copia en feeds/{uid}/i de la persona y de cada amigo.
+    Si ya existe no hace nada (cada resultado se publica una sola vez)."""
+    import re as _re2
+    from firebase_admin import firestore as _fs
+    pid=_re2.sub(r"[^A-Za-z0-9_-]","-",f"{uid}_{clave}")[:140]
+    ref=db.collection('posts').document(pid)
+    if ref.get().exists: return False
+    ref.set(dict(uid=uid,g=g,tx=tx[:160],big=str(big)[:12],det=det[:80],t=_fs.SERVER_TIMESTAMP,r=dict(f=0,j=0,p=0),nc=0))
+    if uid not in _AMIGOS:
+        _AMIGOS[uid]=[next((u for u in (d.to_dict() or {}).get('u',[]) if u!=uid),None) for d in db.collection('amistades').where('u','array_contains',uid).stream() if (d.to_dict() or {}).get('est')=='ok']
+    for u in [uid]+[x for x in _AMIGOS[uid] if x]:
+        db.collection('feeds').document(u).collection('i').document(pid).set(dict(de=uid,t=_fs.SERVER_TIMESTAMP))
+    return True
+
 def _qmx():
     import unicodedata, re as _re
     if 'AF_FX' not in globals() or 'mx' not in AF_FX: print("Quiniela Liga MX: sin partidos de API-Football"); return
@@ -2174,6 +2190,18 @@ def _qmx():
                 pts=sum(1 for t in q if t in R["q"])+3*sum(1 for t in s2 if t in R["s"])+(5 if c is not None and str(c).isdigit() and int(c)==R["c"] else 0)
                 h=hashlib.sha256(uid.encode()).hexdigest()[:12]
                 T.setdefault(h,dict(a=alias(uid),j={}))["ll"]=pts
+        # Feed de Amigos: los aciertos de cada jornada terminada en los últimos 4 días (una vez por persona y jornada)
+        try:
+            pub=0
+            for j in cerr:
+                P=J[str(j)]["p"]; n=sum(1 for r in P if r[6] in FIN)
+                if not JJ[str(j)]["fin"] or not n or ahora-max(r[1] for r in P)>4*86400: continue
+                for uid,M in U.items():
+                    if j not in M: continue
+                    a=sum(1 for r in P if res(r) and (M[j].get("p") or {}).get(str(r[0]))==res(r))
+                    if _feed_post(db,uid,f"qmxr-{slug}-{j}","mx",f"le atinó a {a} de {n} en la jornada {j}",f"{a}/{n}","Quiniela Liga MX"): pub+=1
+            if pub: print(f"Amigos: {pub} resultados de la Quiniela Liga MX publicados")
+        except Exception as ex: _pz_err("Amigos: resultados de la Quiniela Liga MX",ex)
         _r=os.path.join(aqui,'docs','datos','qmx_tabla.json'); os.makedirs(os.path.dirname(_r),exist_ok=True)
         json.dump(dict(s=slug,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j=JJ,t=T,L=LLAVE),open(_r,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
         print(f"Quiniela Liga MX: tabla general con {len(T)} jugadores; jornadas cerradas {cerr}")
@@ -2382,6 +2410,16 @@ def _fan_ucl():
                     d0=max(M.values(),key=lambda x:x.get("j") or ""); tabla[h].update(a=str(d0.get("a") or "Jugador")[:24])
                 if tabla[h]["a"]=="Jugador": tabla[h]["a"]=_alias_uid(db,uid)   # 27 oct 2026: el once no trae nombre → el de su cuenta
             P["tabla"]=tabla
+            try:   # Feed de Amigos: puntos de cada jornada terminada en los últimos 6 días
+                pub=0
+                for uid,M in U.items():
+                    if not uid: continue
+                    h=hashlib.sha256(uid.encode()).hexdigest()[:12]
+                    for k,p in (tabla.get(h,{}).get("j") or {}).items():
+                        if not J[k].get("fin") or ahora-J[k]["pr"]>6*86400: continue
+                        if _feed_post(db,uid,f"fanr-{slug}-{k}","fan",f"hizo {p} puntos en la {str(J[k].get('n') or k).lower()} del Fantasy Champions",f"{p} pts","Fantasy Champions"): pub+=1
+                if pub: print(f"Amigos: {pub} resultados del Fantasy publicados")
+            except Exception as ex: _pz_err("Amigos: resultados del Fantasy",ex)
             print(f"Fantasy Champions: {len(tabla)} equipos en la tabla")
         except Exception as ex: _pz_err("Fantasy Champions: Firebase",ex)
     os.makedirs(os.path.dirname(ruta),exist_ok=True)
