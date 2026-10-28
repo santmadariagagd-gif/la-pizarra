@@ -2027,6 +2027,20 @@ try:   # se empieza limpio en cada corrida
     json.dump({"al":datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),"errores":[]},open(os.path.join(aqui,'docs','datos','estado_build.json'),'w',encoding='utf-8'))
 except Exception: pass
 QMX_DESDE=13   # primera jornada de la quiniela (la página usa lo mismo)
+def _alias_uid(db,uid):
+    """Nombre corto de un usuario para las tablas: alias de La Quinteta, nombre de la cuenta ("Santiago M.") o lo que va antes de la @."""
+    try:
+        u=db.collection('usuarios').document(uid).get().to_dict() or {}
+        for v in (u.get("q5") or {}).values():
+            if isinstance(v,dict) and v.get("a"): return str(v["a"])[:24]
+    except Exception: pass
+    try:
+        from firebase_admin import auth as _fa
+        au=_fa.get_user(uid); p=(au.display_name or "").split()
+        if p: return (p[0]+(f" {p[1][0].upper()}." if len(p)>1 else ""))[:24]
+        return (au.email or "").split("@")[0][:14] or "Jugador"
+    except Exception: return "Jugador"
+
 def _qmx():
     import unicodedata, re as _re
     if 'AF_FX' not in globals() or 'mx' not in AF_FX: print("Quiniela Liga MX: sin partidos de API-Football"); return
@@ -2083,17 +2097,7 @@ def _qmx():
         JJ={}
         for j in cerr:
             P=J[str(j)]["p"]; JJ[str(j)]=dict(fin=all(r[6] in FIN+("PST","CANC","ABD") for r in P),goles=sum((r[4] or 0)+(r[5] or 0) for r in P if r[6] in FIN))
-        def alias(uid):
-            try:
-                u=db.collection('usuarios').document(uid).get().to_dict() or {}
-                for v in (u.get("q5") or {}).values():
-                    if isinstance(v,dict) and v.get("a"): return str(v["a"])[:24]
-            except Exception: pass
-            try:
-                au=_fa.get_user(uid); p=(au.display_name or "").split()
-                if p: return (p[0]+(f" {p[1][0].upper()}." if len(p)>1 else ""))[:24]
-                return (au.email or "").split("@")[0][:14] or "Jugador"
-            except Exception: return "Jugador"
+        alias=lambda uid:_alias_uid(db,uid)
         T={}
         for uid,M in U.items():
             jj={}
@@ -2309,6 +2313,7 @@ def _fan_ucl():
                 tabla[h]=dict(a=alias,t=tot,j=jj,eq=ult[0] if ult else None,c=ult[1] if ult else None,L=LL)
                 if not jj:   # todavía no juega ninguna jornada: aparece con 0
                     d0=max(M.values(),key=lambda x:x.get("j") or ""); tabla[h].update(a=str(d0.get("a") or "Jugador")[:24])
+                if tabla[h]["a"]=="Jugador": tabla[h]["a"]=_alias_uid(db,uid)   # 27 oct 2026: el once no trae nombre → el de su cuenta
             P["tabla"]=tabla
             print(f"Fantasy Champions: {len(tabla)} equipos en la tabla")
         except Exception as ex: _pz_err("Fantasy Champions: Firebase",ex)
