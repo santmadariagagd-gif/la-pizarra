@@ -391,14 +391,24 @@ def escribir(datos, liga_nombre, w, picante="normal"):
     hechos["power_ranking"] = [x["eq"] for x in datos.get("power", [])]
     sistema = REGLAS.replace("{picante}", PICANTE.get(picante, PICANTE["normal"]))
     msg = f"Liga: {liga_nombre}. Semana {w}.\n\nDATOS:\n{json.dumps(hechos, ensure_ascii=False)}\n\n" + FORMATO.replace("{cartas}", ", ".join(LOTERIA))
-    body = dict(model=MODELO, max_tokens=24000, system=sistema, messages=[dict(role="user", content=msg)])
-    req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=json.dumps(body).encode("utf-8"), method="POST",
-                                 headers={"content-type": "application/json", "x-api-key": os.environ["ANTHROPIC_API_KEY"],
-                                          "anthropic-version": "2023-06-01"})
+    # Sonnet 5.5 piensa por default y ese "pensamiento" se come los tokens de salida (la semana 4 se cortó a los 24000).
+    # thinking=between_tools apaga el pensamiento de arranque (aquí no hay herramientas), así todo va a escribir.
+    body = dict(model=MODELO, max_tokens=32000, thinking={"type": "between_tools"}, system=sistema,
+                messages=[dict(role="user", content=msg)])
+    def llamar(b):
+        req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=json.dumps(b).encode("utf-8"), method="POST",
+                                     headers={"content-type": "application/json", "x-api-key": os.environ["ANTHROPIC_API_KEY"],
+                                              "anthropic-version": "2023-06-01"})
+        with urllib.request.urlopen(req, timeout=900) as r: return json.loads(r.read().decode("utf-8"))
     try:
-        with urllib.request.urlopen(req, timeout=600) as r: res = json.loads(r.read().decode("utf-8"))
+        try: res = llamar(body)
+        except urllib.error.HTTPError as e:
+            if e.code != 400: raise
+            print("Periódico: la API no aceptó thinking=between_tools:", e.read().decode("utf-8")[:300], "→ reintento sin él")
+            body.pop("thinking"); body["max_tokens"] = 64000; res = llamar(body)
     except urllib.error.HTTPError as e:
         print("Periódico: la API de Claude respondió con error:", e.code, e.read().decode("utf-8")[:400]); return None, 0
+    print("Periódico: la IA terminó por", res.get("stop_reason"), "· bloques:", [c.get("type") for c in res.get("content", [])])
     u = res.get("usage", {}); costo = u.get("input_tokens", 0) / 1e6 * PRECIO_IN + u.get("output_tokens", 0) / 1e6 * PRECIO_OUT
     print(f"Periódico: IA usó {u.get('input_tokens')} tokens de entrada y {u.get('output_tokens')} de salida ≈ ${costo:.3f} USD")
     txt = "".join(c.get("text", "") for c in res.get("content", []) if c.get("type") == "text").strip()
