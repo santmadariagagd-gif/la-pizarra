@@ -2071,6 +2071,62 @@ def _qmx():
         x["p"].sort(key=lambda r:(r[1],r[0])); vivos=[r[1] for r in x["p"] if r[6] not in ("PST","CANC","ABD")]
         x["pr"]=min(vivos) if vivos else min(r[1] for r in x["p"])
     out['qmx']={"s":slug,"n":f"{torneo} {año}","y":(F[0].get("league") or {}).get("season"),"J":J}
+    # ----- Llave de la Liguilla (28 oct 2026) -----
+    # Se abre cuando termina la fase regular (o ya hay cuartos en API-Football) y se cierra con el primer partido de cuartos.
+    # out['qmx']['L'] = {sem: [ids del 1º al 8º], pr: primer partido de cuartos (o None si no hay horarios), r: {q, s, c}}
+    # r = quién pasó de cuartos (q), quién llegó a la final (s) y el campeón (c). Series a dos partidos: gana el global; en
+    # cuartos y semis, si empatan pasa el mejor de la tabla; en la final cuenta el ganador del partido de vuelta (tiempo extra o penales).
+    LLAVE=None
+    try:
+        FINS=("FT","AET","PEN","AWD","WO")
+        st=lambda f:(f["fixture"].get("status") or {}).get("short")
+        fin_reg=all(st(f) in FINS+("PST","CANC","ABD") for f in F)
+        KO=[f for f in AF_FX['mx'][0] if af_torneo(f)==torneo and not af_regular(f)]
+        rn=lambda f:str((f.get("league") or {}).get("round") or "").lower()
+        QF=[f for f in KO if "quarter" in rn(f)]; SF=[f for f in KO if "semi" in rn(f)]; FI=[f for f in KO if "final" in rn(f) and "semi" not in rn(f) and "quarter" not in rn(f)]
+        if fin_reg or QF:
+            sem=[]
+            try:
+                S=af("standings",league=262,season=out['qmx']['y'])
+                tablas=S[0]["league"]["standings"] if S else []
+                tab=next((t for t in tablas if t and torneo.lower() in str(t[0].get("group","")).lower()),tablas[0] if tablas else [])
+                sem=[r["team"]["id"] for r in sorted(tab,key=lambda r:r["rank"])][:8]
+            except Exception as ex: _pz_err("Llave de la Liguilla: tabla de API-Football",ex)
+            if len(sem)<8:   # respaldo: tabla calculada con los resultados (puntos, diferencia, goles a favor)
+                Tb={}
+                for f in F:
+                    if st(f) not in FINS: continue
+                    h,a=f["teams"]["home"]["id"],f["teams"]["away"]["id"]; G=f.get("goals") or {}; gh,ga=G.get("home") or 0,G.get("away") or 0
+                    for t,gf,gc in ((h,gh,ga),(a,ga,gh)):
+                        x=Tb.setdefault(t,[0,0,0]); x[0]+=3 if gf>gc else 1 if gf==gc else 0; x[1]+=gf-gc; x[2]+=gf
+                sem=[t for t,_ in sorted(Tb.items(),key=lambda kv:(-kv[1][0],-kv[1][1],-kv[1][2]))][:8]
+            pos={t:i for i,t in enumerate(sem)}
+            def gana(fs,final=False):
+                if len(fs)<2 or any(st(f) not in FINS for f in fs): return None
+                ag={}
+                for f in fs:
+                    G=f.get("goals") or {}
+                    for lado in ("home","away"): t=f["teams"][lado]["id"]; ag[t]=ag.get(t,0)+(G.get(lado) or 0)
+                if len(ag)!=2: return None
+                (t1,g1),(t2,g2)=ag.items()
+                if g1!=g2: return t1 if g1>g2 else t2
+                if final:
+                    u=max(fs,key=lambda f:f["fixture"]["timestamp"])
+                    for lado in ("home","away"):
+                        if u["teams"][lado].get("winner"): return u["teams"][lado]["id"]
+                    return None
+                return min((t1,t2),key=lambda t:pos.get(t,99))
+            def series(L):
+                P={}
+                for f in L: P.setdefault(frozenset((f["teams"]["home"]["id"],f["teams"]["away"]["id"])),[]).append(f)
+                return list(P.values())
+            rq=[w for w in (gana(x) for x in series(QF)) if w]; rs=[w for w in (gana(x) for x in series(SF)) if w]
+            rc=next((w for w in (gana(x,True) for x in series(FI)) if w),None)
+            vivos=[f["fixture"]["timestamp"] for f in QF if st(f) not in ("PST","CANC","ABD")]
+            LLAVE={"sem":sem,"pr":min(vivos) if vivos else None,"r":{"q":rq,"s":rs,"c":rc}}
+            out['qmx']['L']=LLAVE
+            print(f"Llave de la Liguilla: {len(sem)} sembrados; cierra {LLAVE['pr']}; resultados {LLAVE['r']}")
+    except Exception as ex: _pz_err("Llave de la Liguilla",ex)
     ahora=time.time(); abiertas=sorted([int(j) for j,x in J.items() if x["pr"]>ahora])
     print(f"Quiniela Liga MX: {torneo} {año}, {len(J)} jornadas; abiertas: {abiertas[:3]}; con momios: {sum(1 for x in J.values() for r in x['p'] if r[7])}")
     sa=os.environ.get('FIREBASE_SA','').strip()
@@ -2082,15 +2138,18 @@ def _qmx():
     for j in abiertas[:3]:
         db.collection('qmx_jornadas').document(f"{slug}-{j}").set(dict(s=slug,j=j,primero=datetime.fromtimestamp(J[str(j)]["pr"],tz=ZoneInfo("UTC"))))
     if abiertas: print(f"Quiniela Liga MX: jornadas {abiertas[:3]} en Firebase")
+    if LLAVE and LLAVE.get("pr") and len(LLAVE.get("sem") or [])==8:   # la llave se guarda como una "jornada" más: qmx_picks/{slug}-llave_{uid}
+        db.collection('qmx_jornadas').document(f"{slug}-llave").set(dict(s=slug,j="llave",primero=datetime.fromtimestamp(LLAVE["pr"],tz=ZoneInfo("UTC"))))
     # Tabla general (27 oct 2026): aciertos de todos los que tienen picks, por jornada cerrada (desde la 13).
     # docs/datos/qmx_tabla.json = {s, al, j:{j:{fin, goles}}, t:{hash12(uid):{a, j:{j:[aciertos, pronóstico de goles]}}}}
     try:
         import hashlib
         from firebase_admin import auth as _fa
         cerr=sorted([int(j) for j,x in J.items() if x["pr"]<=ahora and int(j)>=QMX_DESDE])
-        U={}
+        U={}; ULL={}
         for d in db.collection('qmx_picks').where('s','==',slug).stream():
             x=d.to_dict() or {}
+            if x.get("uid") and x.get("j")=="llave": ULL[x["uid"]]=x; continue
             if x.get("uid") and str(x.get("j")) in J and int(x.get("j"))>=QMX_DESDE: U.setdefault(x["uid"],{})[int(x["j"])]=x
         FIN=("FT","AET","PEN","AWD","WO")
         res=lambda r:None if r[6] not in FIN or r[4] is None else ("L" if r[4]>r[5] else "V" if r[4]<r[5] else "E")
@@ -2107,8 +2166,16 @@ def _qmx():
                 p=x.get("p") or {}
                 jj[str(j)]=[sum(1 for r in J[str(j)]["p"] if res(r) and p.get(str(r[0]))==res(r)),x.get("g")]
             T[hashlib.sha256(uid.encode()).hexdigest()[:12]]=dict(a=alias(uid),j=jj)
+        # Llave: 1 punto por cada equipo que aciertas que pasa a semis, 3 por cada finalista y 5 por el campeón (máximo 15)
+        if LLAVE and LLAVE.get("pr") and ahora>=LLAVE["pr"]:
+            R=LLAVE["r"]
+            for uid,x in ULL.items():
+                p=x.get("p") or {}; q=[int(t) for t in (p.get("q") or []) if str(t).isdigit()][:4]; s2=[int(t) for t in (p.get("s") or []) if str(t).isdigit()][:2]; c=p.get("c")
+                pts=sum(1 for t in q if t in R["q"])+3*sum(1 for t in s2 if t in R["s"])+(5 if c is not None and str(c).isdigit() and int(c)==R["c"] else 0)
+                h=hashlib.sha256(uid.encode()).hexdigest()[:12]
+                T.setdefault(h,dict(a=alias(uid),j={}))["ll"]=pts
         _r=os.path.join(aqui,'docs','datos','qmx_tabla.json'); os.makedirs(os.path.dirname(_r),exist_ok=True)
-        json.dump(dict(s=slug,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j=JJ,t=T),open(_r,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+        json.dump(dict(s=slug,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j=JJ,t=T,L=LLAVE),open(_r,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
         print(f"Quiniela Liga MX: tabla general con {len(T)} jugadores; jornadas cerradas {cerr}")
     except Exception as ex: _pz_err("Quiniela Liga MX: tabla general",ex)
 try:
@@ -2418,7 +2485,8 @@ except Exception as ex:
 Q5_PRECIO={"OKC":61,"SAS":60,"NYK":53,"BOS":52,"PHI":51,"DEN":50,"DET":50,"CLE":49,"HOU":49,"MIN":49,"LAL":47,"MIA":47,"TOR":46,"IND":45,
            "ATL":44,"ORL":44,"POR":44,"PHX":41,"CHA":40,"GSW":40,"UTA":36,"WAS":36,"DAL":35,"CHI":30,"MEM":29,"NOP":28,"LAC":28,"MIL":27,"BKN":25,"SAC":21}
 Q5_TEMP, Q5_INICIO, Q5_PRESUP = "2027", "2026-10-20", 210
-Q5_CIERRE = datetime(2026,10,20,19,0,tzinfo=ZoneInfo("UTC"))   # primer partido según ESPN (1:00 pm CDMX); si se mueve, igual cierra antes
+Q5_CIERRE = datetime(2026,10,20,19,0,tzinfo=ZoneInfo("UTC"))
+Q5_CAMBIOS = "2026-12-01"   # desde aquí, 1 cambio de 1 equipo por mes (el nuevo cuenta desde el día siguiente)   # primer partido según ESPN (1:00 pm CDMX); si se mueve, igual cierra antes
 def _q5():
     import hashlib, re as _re
     ruta=os.path.join(aqui,'docs','datos','q5.json')
@@ -2442,7 +2510,16 @@ def _q5():
         d=str(x.get('d') or hoy)[:10]
         if abierto: e=dict(eq=eq,d=Q5_INICIO)
         elif primera: e=dict(eq=eq,d=max(d,Q5_INICIO))
-        elif congelada: e=dict(eq=E_prev[h]['eq'],d=E_prev[h]['d'])
+        elif congelada:
+            P=E_prev[h]; e={k:P[k] for k in ('eq','d','p','c') if P.get(k)}
+            # Cambio del mes (28 oct 2026): 1 equipo distinto, dentro del presupuesto, desde el 1 de diciembre y uno por mes.
+            # Se guarda el tramo anterior en p = [[equipos, desde, hasta], ...]; la página suma las victorias de cada tramo.
+            mes=hoy[:7]
+            if (hoy>=Q5_CAMBIOS and P.get('c')!=mes and len(eq)==5 and len(set(eq))==5 and sum(Q5_PRECIO[k] for k in eq)<=Q5_PRESUP
+                    and len(set(eq)&set(P['eq']))==4):
+                dn=max(d,hoy)
+                e=dict(eq=eq,d=dn,p=(P.get('p') or [])+[[P['eq'],P['d'],dn]],c=mes)
+                print(f"La Quinteta: cambio de {sorted(set(P['eq'])-set(eq))} por {sorted(set(eq)-set(P['eq']))} desde {dn}")
         else: e=dict(eq=eq,d=max(d,hoy))                                      # nueva: desde hoy
         e['a']=alias; e['g']=sum(Q5_PRECIO[k] for k in e['eq']); E[h]=e
     T={"temp":Q5_TEMP,"cerrado":not abierto,"al":ahora.strftime("%Y-%m-%dT%H:%MZ"),"e":E}

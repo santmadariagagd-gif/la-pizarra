@@ -1528,6 +1528,19 @@ button.fvnota{cursor:pointer}.fvnota .utag{align-self:flex-start}.fvnota b{font:
 .pefalta{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}.pefalta li{display:flex;align-items:center;gap:6px}.pefalta b{color:#C9D6CF;font-weight:600}
 .penov{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:linear-gradient(120deg,rgba(242,212,102,.25),var(--surface) 70%);border:1px solid rgba(242,212,102,.5);display:flex;flex-direction:column;gap:2px;animation:ventra .5s cubic-bezier(.2,.8,.2,1) both}
 .penov b{color:var(--mark)}.penov span{font-size:13px;color:#DCE4DE}
+
+/* Llave de la Liguilla (28 oct 2026) */
+.llave{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start;margin:12px 0}
+.llcol h4{margin:0 0 8px;font:700 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.llser{display:flex;flex-direction:column;gap:4px;padding:6px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-bottom:10px}
+.llser button{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;border-radius:10px;border:1.5px solid transparent;background:var(--bg);color:var(--ink);font:600 15px var(--body);text-align:left;cursor:pointer}
+.llser button i{font:700 12px var(--body);font-style:normal;color:var(--muted);min-width:14px}.llser button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.llser button[aria-pressed="true"]{border-color:var(--mark);background:#2F4A41}
+.llser button.ok{border-color:#9FD3A8;background:rgba(159,211,168,.18)}.llser button.mal{border-color:#FF9C80;background:rgba(255,156,128,.12)}.llser button.res{box-shadow:inset 0 0 0 1.5px #9FD3A8}
+.llser button:disabled{cursor:default}
+.llcamp{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:linear-gradient(120deg,rgba(242,212,102,.3),var(--surface));border:1px solid var(--mark)}
+.llcamp span{display:flex;flex-direction:column}.llcamp small{font-size:12px;color:var(--muted)}.llcamp b{font:800 20px var(--display)}
+@media (max-width:720px){.llave{grid-template-columns:1fr}}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -5436,23 +5449,32 @@ const Q5={K:"pz_q5",
   ids(){ return (this.todo().g||[]).filter(x=>typeof x==="string"); },
   setIds(L){ const T=this.todo(); T.g=[...new Set(L)]; try{localStorage.setItem(this.K,JSON.stringify(T));}catch(e){} if(typeof acctPush==="function") acctPush(); }};
 const q5Gasto=L=>L.reduce((s,k)=>s+(NBA_PRECIO[k]||0),0);
+// Cambios mensuales (28 oct 2026): desde el 1 de diciembre, 1 equipo por mes. El que entra cuenta desde el día siguiente y los
+// puntos de antes se quedan: la quinteta guarda sus tramos en p = [[equipos, desde, hasta], ...] y el mes del último cambio en c.
+const Q5_CAMBIOS="2026-12-01", q5Mes=()=>nbaHoy().slice(0,7);
+const q5PuedeCambiar=q=>nbaHoy()>=Q5_CAMBIOS&&q.c!==q5Mes();
+const q5Tramos=e=>[...(e.p||[]).map(([eq,d,h])=>({eq,d,h})),{eq:e.eq,d:e.d,h:null}];
+const q5PtsDe=(e,H)=>q5Tramos(e).reduce((s,t)=>s+t.eq.reduce((s2,k)=>s2+(H[k]||[]).filter(x=>x.fin&&x.gano&&x.f>=t.d&&(!t.h||x.f<t.h)).length,0),0);
+const q5MesTxt=m=>new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",month:"long"}).format(new Date(m+"-15T12:00:00Z"));
 async function q5Render(){
   const box=$("#q5Body"); q5JoinRender(); await Promise.race([nbaEquipos(),new Promise(r=>setTimeout(r,2500))]);
   const lock=await Promise.race([nbaLock(),new Promise(r=>setTimeout(()=>r(+new Date("2026-10-20T23:00:00Z")),2500))]);
   const q=Q5.lee(), cerrado=Date.now()>=lock;
   if(q.eq?.length===5&&!Q5.edit) return q5Mia(q,cerrado,lock);
   if(!Q5.sel) Q5.sel=(q.eq||[]).slice();
-  const sel=Q5.sel, gasto=q5Gasto(sel), resta=NBA_PRESUP-gasto, lleno=sel.length>=5, ok=sel.length===5&&gasto<=NBA_PRESUP;
+  const sel=Q5.sel, gasto=q5Gasto(sel), resta=NBA_PRESUP-gasto, lleno=sel.length>=5, quedan=Q5.cambio?sel.filter(k=>(q.eq||[]).includes(k)).length:5;
+  const ok=sel.length===5&&gasto<=NBA_PRESUP&&(!Q5.cambio||quedan===4);
   const T=Object.keys(NBA_PRECIO).sort((a,b)=>NBA_PRECIO[b]-NBA_PRECIO[a]||NBA_N[a].localeCompare(NBA_N[b]));
   const nombre=k=>NBA.eq?.[k]?.n||NBA_N[k];
-  box.innerHTML=`<p class="note" style="max-width:640px">Escoge 5 equipos sin pasarte de ${NBA_PRESUP}. Cada victoria de tus equipos es un punto, toda la temporada. El precio de cada equipo son las victorias que esperan las casas de apuestas: gana quien encuentre a los que van a superar lo esperado.${cerrado?` <b>La temporada ya empezó:</b> tus equipos cuentan las victorias desde mañana.`:""}</p>
+  box.innerHTML=`<p class="note" style="max-width:640px">Escoge 5 equipos sin pasarte de ${NBA_PRESUP}. Cada victoria de tus equipos es un punto, toda la temporada. El precio de cada equipo son las victorias que esperan las casas de apuestas: gana quien encuentre a los que van a superar lo esperado.${Q5.cambio?"":cerrado?` <b>La temporada ya empezó:</b> tus equipos cuentan las victorias desde mañana.`:""}</p>
+    ${Q5.cambio?`<div class="qgate" style="max-width:640px"><b>Tu cambio de ${q5MesTxt(q5Mes())}</b><span>Quita 1 de tus equipos y pon otro sin pasarte del presupuesto. El nuevo cuenta desde mañana y los puntos que ya llevas se quedan. El siguiente cambio se abre el 1 del próximo mes.</span></div>`:""}
     <div class="q5res"><div class="q5slots">${[0,1,2,3,4].map(i=>sel[i]?`<div class="on"><b>${sel[i]}</b><span>${NBA_PRECIO[sel[i]]}</span></div>`:`<div><b>+</b><span>libre</span></div>`).join("")}</div>
       <div class="q5row"><span>Presupuesto usado</span><b style="color:var(--mark)">${gasto} de ${NBA_PRESUP}</b></div>
       <div class="q5bar"><i style="width:${Math.min(100,gasto/NBA_PRESUP*100)}%"></i></div>
       <p class="note">${sel.length<5?`Te faltan ${5-sel.length} equipo${5-sel.length>1?"s":""} · te quedan ${resta}`:`Lista · te sobran ${resta}`}</p></div>
     <div class="q5eqs">${T.map(k=>{ const on=sel.includes(k), cabe=on||(!lleno&&NBA_PRECIO[k]<=resta);
       return `<button data-q5="${k}" aria-pressed="${on}"${cabe?"":' class="no"'} aria-label="${hoyEsc(nombre(k))}, precio ${NBA_PRECIO[k]}">${nbaLogo(k)}<span>${hoyEsc(nombre(k))}</span><b>${NBA_PRECIO[k]}</b></button>`; }).join("")}</div>
-    <div class="q5acc"><button class="q5save" id="q5Save"${ok?"":" disabled"}>${ok?"Guardar mi quinteta":`Escoge ${Math.max(0,5-sel.length)} más`}</button>${q.eq?.length===5?`<button class="q5link" id="q5Cancel">Cancelar</button>`:""}</div>
+    <div class="q5acc"><button class="q5save" id="q5Save"${ok?"":" disabled"}>${ok?(Q5.cambio?"Hacer mi cambio":"Guardar mi quinteta"):Q5.cambio&&sel.length===5&&quedan<4?"Solo puedes cambiar 1 equipo":Q5.cambio&&sel.length===5&&quedan===5?"Cambia 1 equipo":`Escoge ${Math.max(0,5-sel.length)} más`}</button>${q.eq?.length===5?`<button class="q5link" id="q5Cancel">Cancelar</button>`:""}</div>
     ${acctOk&&acctOk()?`<label class="q5alias">Tu nombre en la tabla <input id="q5Alias" maxlength="24" value="${hoyEsc(q.a||q5AliasDef())}"></label>`:""}
     ${q5Cuenta()}
     ${cerrado?`<h3 style="margin:22px 0 6px">Tabla</h3><div id="q5Tabla"></div>`:""}`;
@@ -5479,11 +5501,15 @@ $("#q5Body").addEventListener("click",ev=>{
   if(ev.target.closest("#q5Save")){
     nbaLock().then(lock=>{ const sel=(Q5.sel||[]).slice(); if(sel.length!==5||q5Gasto(sel)>NBA_PRESUP) return;
       const antes=Q5.lee(), cerrado=Date.now()>=lock;
+      if(Q5.cambio){ if(!q5PuedeCambiar(antes)||sel.filter(k=>antes.eq.includes(k)).length!==4) return;
+        const dn=nbaMas(nbaHoy(),1); Q5.guarda({...antes,eq:sel,d:dn,p:[...(antes.p||[]),[antes.eq,antes.d,dn]],c:q5Mes(),t:Date.now()});
+        Q5.edit=false; Q5.cambio=false; Q5.sel=null; pzTrack("q5_cambio",{}); vidaAct?.("p"); q5Render(); window.scrollTo(0,0); pzAviso("Cambio hecho","Tu nuevo equipo cuenta desde mañana"); return; }
       const d=!cerrado?NBA_INICIO:(antes.eq?.length===5&&JSON.stringify(antes.eq.slice().sort())===JSON.stringify(sel.slice().sort())?antes.d:nbaMas(nbaHoy(),1));
       const a=($("#q5Alias")?.value||antes.a||q5AliasDef()).replace(/[<>"&]/g,"").trim().slice(0,24);
       Q5.guarda({eq:sel,d,t:Date.now(),...(a?{a}:{})}); Q5.edit=false; Q5.sel=null; pzTrack("q5_guardar",{tarde:cerrado?1:0}); q5Render(); window.scrollTo(0,0); });
     return; }
-  if(ev.target.closest("#q5Cancel")){ Q5.edit=false; Q5.sel=null; q5Render(); return; }
+  if(ev.target.closest("#q5Cancel")){ Q5.edit=false; Q5.cambio=false; Q5.sel=null; q5Render(); return; }
+  if(ev.target.closest("#q5Cambio")){ const q=Q5.lee(); if(!q5PuedeCambiar(q)) return; Q5.edit=true; Q5.cambio=true; Q5.sel=(q.eq||[]).slice(); q5Render(); window.scrollTo(0,0); return; }
   if(ev.target.closest("#q5NomBtn")){ const q=Q5.lee(); $("#q5Nom").innerHTML=`<label class="q5alias">Tu nombre en la tabla <input id="q5Alias2" maxlength="24" value="${hoyEsc(q.a||q5AliasDef())}"></label> <button class="q5link" id="q5NomOk">Guardar</button>`; $("#q5Alias2").focus(); return; }
   if(ev.target.closest("#q5NomOk")){ const q=Q5.lee(), a=($("#q5Alias2").value||"").replace(/[<>"&]/g,"").trim().slice(0,24); if(a) Q5.guarda({...q,a}); q5Render(); return; }
   if(ev.target.closest("[data-q5t]")){ Q5.tab=ev.target.closest("[data-q5t]").dataset.q5t; q5Tabla(); return; }
@@ -5501,10 +5527,12 @@ function nbaHorario(k){   // partidos de un equipo en la temporada (ESPN), para 
 async function q5Mia(q,cerrado,lock){
   const box=$("#q5Body"), nombre=k=>NBA.eq?.[k]?.n||NBA_N[k];
   const pend=!cerrado?`Puedes cambiarla hasta el primer partido (${nbaDiaTxt(NBA_INICIO).toLowerCase()}, ${nbaHora(new Date(lock).toISOString())}).`:
-    `Cuentan las victorias desde el ${nbaDiaTxt(q.d).toLowerCase()}. Los cambios (1 por mes) llegan el 1 de diciembre.`;
+    `Cuentan las victorias desde el ${nbaDiaTxt(q.d).toLowerCase()}. ${nbaHoy()<Q5_CAMBIOS?"Tu primer cambio se abre el 1 de diciembre: cada mes puedes cambiar 1 equipo.":q5PuedeCambiar(q)?"Este mes puedes cambiar 1 equipo.":`Ya hiciste tu cambio de ${q5MesTxt(q5Mes())}; el siguiente se abre el 1 del próximo mes.`}`;
   box.innerHTML=`<p class="note">Cargando tus equipos…</p>`;
   const H=await Promise.all(q.eq.map(k=>nbaHorario(k)));
-  let pts=0, esperado=0, hayDatos=H.every(Boolean);
+  const pasados=q.p||[], HP={}; await Promise.all([...new Set(pasados.flatMap(t=>t[0]))].map(async k=>{ HP[k]=await nbaHorario(k)||[]; }));
+  const ptsAntes=pasados.reduce((s,[eq,d,h])=>s+eq.reduce((s2,k)=>s2+(HP[k]||[]).filter(x=>x.fin&&x.gano&&x.f>=d&&x.f<h).length,0),0);
+  let pts=ptsAntes, esperado=0, hayDatos=H.every(Boolean);
   const filas=q.eq.map((k,i)=>{ const P=H[i]||[], jug=P.filter(x=>x.fin), w=jug.filter(x=>x.gano).length, l=jug.length-w, cuenta=P.filter(x=>x.fin&&x.gano&&x.f>=q.d).length;
     pts+=cuenta; const ritmo=jug.length?Math.round(w/jug.length*82):null, lin=NBA_LINEA[k]; if(ritmo!=null) esperado+=ritmo-lin;
     const txt=ritmo==null?`Línea ${lin} victorias`:`Va para ${ritmo} victorias · línea ${lin}`, cls=ritmo==null?"":ritmo>lin?"arr":"abj";
@@ -5513,7 +5541,8 @@ async function q5Mia(q,cerrado,lock){
   box.innerHTML=`<div class="q5top"><div><b class="y"${hayDatos?' data-pzc="q5pts"':""}>${hayDatos?pts:"–"}</b><span>Puntos</span></div><div><b>${q5Gasto(q.eq)}</b><span>Presupuesto usado</span></div><div><b>${algun?(esperado>=0?"+":"")+Math.round(esperado):"–"}</b><span>Ritmo vs lo esperado</span></div></div>
     <p class="note" style="max-width:640px">${pend}</p>
     <div class="q5mis">${filas}</div>
-    ${!cerrado?`<p><button class="q5link" id="q5Edit">Cambiar mi quinteta</button></p>`:""}
+    ${pasados.length?`<p class="note" style="max-width:640px">Incluye <b>${ptsAntes}</b> ${ptsAntes===1?"punto":"puntos"} de tus equipos anteriores: ${pasados.map(([eq,d,h])=>{ const fuera=eq.filter(k=>!q.eq.includes(k)); return `${fuera.map(k=>hoyEsc(nombre(k))).join(", ")} (hasta el ${nbaDiaTxt(nbaMas(h,-1)).toLowerCase()})`; }).join(" · ")}.</p>`:""}
+    ${!cerrado?`<p><button class="q5link" id="q5Edit">Cambiar mi quinteta</button></p>`:q5PuedeCambiar(q)?`<p><button class="q5save" id="q5Cambio">Hacer mi cambio del mes</button></p>`:""}
     ${hayDatos?"":`<p class="note">ESPN no respondió para algún equipo; los puntos se completan al recargar.</p>`}
     ${acctOk&&acctOk()?`<p class="note" id="q5Nom">Apareces en la tabla como <b>${hoyEsc(q.a||q5AliasDef()||"Jugador")}</b> · <button class="q5link" id="q5NomBtn">Cambiar nombre</button></p>`:""}
     <h3 style="margin:22px 0 6px">Tabla</h3><div id="q5Tabla"></div>
@@ -5544,9 +5573,9 @@ async function q5Tabla(){
   const E=Object.entries(J?.e||{});
   if(!J||!E.length){ box.innerHTML=`<p class="note" style="max-width:640px">${J?"Todavía no hay quintetas en la tabla. Las nuevas aparecen a la mañana siguiente de guardarse (con tu cuenta).":"No pudimos cargar la tabla. Intenta en un momento."}</p>`; return; }
   const W={};
-  const tarde=new Set(E.flatMap(([,e])=>e.eq));
+  const tarde=new Set(E.flatMap(([,e])=>q5Tramos(e).flatMap(t=>t.eq)));
   const H={}; await Promise.all([...tarde].map(async k=>{ H[k]=await nbaHorario(k)||[]; }));
-  const pts=e=>e.eq.reduce((s,k)=>s+(H[k]||[]).filter(x=>x.fin&&x.gano&&x.f>=e.d).length,0);
+  const pts=e=>q5PtsDe(e,H);
   const yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null, G=await q5Grupos();
   if(!$("#q5Tabla")) return;
   if(Q5.tab&&Q5.tab!=="gen"&&!G.some(g=>g.id===Q5.tab)) Q5.tab="gen";
@@ -5663,7 +5692,7 @@ function qmxRender(sinRed){
   if(!qmxD()){ box.innerHTML=`<p class="note">La quiniela de la Liga MX aparece en la próxima actualización.</p>`; return; }
   if(QMX.vista==="grupos") return qmxGrRender();
   if(QMX.vista==="general") return qmxGeneral();
-  if(QMX.vista==="llave") { box.innerHTML=`<div class="qmxllave"><b>Llave de la Liguilla</b><span>Se abre al terminar la jornada 17 (domingo 22 de noviembre) y se cierra con el primer partido de cuartos. Escoges quién pasa en cada serie hasta el campeón: cuartos 1 punto, semis 2, finalista 3 y campeón 5.</span></div>`; return; }
+  if(QMX.vista==="llave") return qmxLlave(sinRed);
   const L=qmxJornadas(); if(QMX.j==null||!L.includes(QMX.j)) QMX.j=qmxDefault();
   const j=QMX.j, J=qmxD().J[j], now=Date.now()/1000, cerrada=J.pr<=now, mios=qmxMios(j), V=QMX.vivo;
   if(!sinRed){ qmxNube(j); if(cerrada) qmxVivo(j); }
@@ -5717,6 +5746,45 @@ document.addEventListener("click",ev=>{
 document.addEventListener("change",ev=>{ if(ev.target.id!=="qmxG") return; const j=QMX.j, x=qmxMios(j), n=parseInt(ev.target.value,10);
   if(qmxD().J[j].pr<=Date.now()/1000) return; x.g=Number.isFinite(n)&&n>=0&&n<=60?n:null; qmxGuarda(j,x); });
 
+// ----- Llave de la Liguilla (28 oct 2026) -----
+// qmxD().L (lo arma build_site.py) = {sem: [ids del 1º al 8º], pr: cierre = primer partido de cuartos, r: {q, s, c}}.
+// Tus picks van como una "jornada" más: qmx_picks/{s}-llave_{uid} con p = {q: [quién pasa en cada serie de cuartos],
+// s: [los dos finalistas], c: campeón}. Semis como en la Liga MX: el mejor de la tabla que quede contra el peor y los otros dos.
+// Puntos (los cuenta GitHub después del cierre): 1 por cada semifinalista, 3 por cada finalista y 5 por el campeón (máximo 15).
+const LLAVE_QF=[[0,7],[3,4],[1,6],[2,5]];
+function qmxLlaveSemis(sem,q){ if(q.filter(x=>x!=null).length<4) return null; const S=q.slice().sort((a,b)=>sem.indexOf(a)-sem.indexOf(b)); return [[S[0],S[3]],[S[1],S[2]]]; }
+function qmxLlavePts(p,r){ if(!r) return 0; return (p.q||[]).filter(t=>r.q.includes(t)).length+3*(p.s||[]).filter(t=>r.s.includes(t)).length+(p.c!=null&&p.c===r.c?5:0); }
+async function qmxLlave(sinRed){
+  const box=$("#qmxBody"), L=qmxD().L, now=Date.now()/1000;
+  const reglas=`<p class="note">1 punto por cada equipo que aciertas que pasa a semifinales, 3 por cada finalista y 5 por el campeón (hasta 15). Se suman a la tabla general y a la de tus grupos.</p>`;
+  if(!L||(L.sem||[]).length<8){ box.innerHTML=`<div class="qmxllave"><b>Llave de la Liguilla</b><span>Se abre al terminar la jornada 17 (domingo 22 de noviembre) con los 8 primeros de la tabla y se cierra con el primer partido de cuartos. Escoges quién pasa en cada serie hasta el campeón.</span></div>${reglas}`; return; }
+  if(!sinRed&&typeof acctOk==="function"&&acctOk()){ QMX.cache["n"+qmxJid("llave")]=0; qmxNube("llave").then(()=>{ if(QMX.vista==="llave") qmxLlave(true); }); }
+  const sem=L.sem, cerrada=!!L.pr&&L.pr<=now, sinHora=!L.pr, R=L.r||{q:[],s:[],c:null}, x=qmxMios("llave"), P=x.p&&!Array.isArray(x.p)?x.p:{};
+  const q=[0,1,2,3].map(i=>Array.isArray(P.q)&&P.q[i]!=null?+P.q[i]:null), s=[0,1].map(i=>Array.isArray(P.s)&&P.s[i]!=null?+P.s[i]:null), c=P.c!=null?+P.c:null;
+  const semis=qmxLlaveSemis(sem,q), bloq=cerrada||sinHora;
+  const eq=(id,grupo,i,elegido,decidido,gano)=>{ const E=qmxEq(id), on=elegido===id, ok=decidido&&on&&gano===id, mal=decidido&&on&&gano!==id, res=decidido&&gano===id;
+    return `<button data-ll="${grupo}:${i}:${id}" aria-pressed="${on}"${bloq?" disabled":""} class="${ok?"ok":mal?"mal":res?"res":""}"><i>${sem.indexOf(id)+1}</i>${hoyLogo(E.logo,"qmxl")}<span>${hoyEsc(E.n)}</span></button>`; };
+  const qfDec=pair=>pair.find(t=>R.q.includes(t))??null, sfDec=pair=>pair.find(t=>R.s.includes(t))??null;
+  const cuartos=LLAVE_QF.map(([a,b],i)=>{ const pair=[sem[a],sem[b]], g=qfDec(pair); return `<div class="llser">${eq(pair[0],"q",i,q[i],g!=null,g)}${eq(pair[1],"q",i,q[i],g!=null,g)}</div>`; }).join("");
+  const semisH=semis?semis.map((pair,i)=>{ const g=sfDec(pair); return `<div class="llser">${eq(pair[0],"s",i,s[i],g!=null||!!R.s.length&&R.s.length===2,g)}${eq(pair[1],"s",i,s[i],g!=null||R.s.length===2,g)}</div>`; }).join(""):`<p class="note">Escoge los cuatro de cuartos.</p>`;
+  const finalH=semis&&s[0]!=null&&s[1]!=null?`<div class="llser">${eq(s[0],"c",0,c,R.c!=null,R.c)}${eq(s[1],"c",0,c,R.c!=null,R.c)}</div>`:`<p class="note">Escoge a tus dos finalistas.</p>`;
+  const hechos=q.filter(t=>t!=null).length+s.filter(t=>t!=null).length+(c!=null?1:0), pts=qmxLlavePts({q,s,c},R);
+  box.innerHTML=`<div class="qmxj"><span></span><div><b>Llave de la Liguilla</b><small>${cerrada?(R.c!=null?"Terminada":"Cerrada · en juego"):sinHora?"Se abre en cuanto haya horarios de cuartos":`Cierra ${qmxHora(L.pr).toLowerCase()}`}</small></div>
+      <div class="qmxc">${cerrada?`<b>${pts}</b><span>puntos</span>`:`<b>${hechos}/7</b><span>picks</span>`}</div><span></span></div>
+    ${sinHora?`<p class="note">Ya están los 8 de la Liguilla. Podrás escoger en cuanto se publiquen los horarios de cuartos (normalmente un día después de la jornada 17).</p>`:""}
+    ${cerrada&&!hechos?`<p class="note">No llenaste tu llave a tiempo.</p>`:""}
+    <div class="llave"><div class="llcol"><h4>Cuartos</h4>${cuartos}</div><div class="llcol"><h4>Semifinales</h4>${semisH}</div><div class="llcol"><h4>Final</h4>${finalH}${c!=null?`<div class="llcamp">${hoyLogo(qmxEq(c).logo,"qmxl")}<span><small>Tu campeón</small><b>${hoyEsc(qmxEq(c).n)}</b></span></div>`:""}</div></div>
+    <p class="note" id="qmxGuardo"></p>${reglas}`;
+}
+document.addEventListener("click",ev=>{ const b=ev.target.closest?.("[data-ll]"); if(!b||b.disabled) return;
+  const L=qmxD()?.L; if(!L?.pr||L.pr<=Date.now()/1000){ qmxLlave(true); return; }
+  const [g,i,id]=b.dataset.ll.split(":"), x=qmxMios("llave"), P=x.p&&!Array.isArray(x.p)?x.p:{};
+  let q=[0,1,2,3].map(k=>Array.isArray(P.q)&&P.q[k]!=null?+P.q[k]:null), s=[0,1].map(k=>Array.isArray(P.s)&&P.s[k]!=null?+P.s[k]:null), c=P.c!=null?+P.c:null;
+  if(g==="q") q[+i]=q[+i]===+id?null:+id; else if(g==="s") s[+i]=s[+i]===+id?null:+id; else c=c===+id?null:+id;
+  const se=qmxLlaveSemis(L.sem,q); s=s.map((t,k)=>se&&t!=null&&se[k].includes(t)?t:null); if(c!=null&&!s.includes(c)) c=null;
+  qmxGuarda("llave",{p:{q,s,c},g:null}); pzTrack("qmx_llave",{g}); vidaAct?.("p"); const y=window.scrollY; qmxLlave(true); window.scrollTo(0,y);
+});
+
 // ----- Grupos de la Quiniela Liga MX -----
 const qmxLink=id=>`https://lapizarra.mx/?qmxg=${id}`;
 async function qmxPicksDe(jid,uid){   // picks de otro (o tuyos) de una jornada ya cerrada; las cerradas y terminadas se guardan en el navegador
@@ -5742,9 +5810,10 @@ async function qmxGeneral(){
     const mx=Math.max(...E.map(([,x])=>x.j[j][0])); if(mx<=0) continue; const d=x=>x.j[j][1]==null?99:Math.abs(x.j[j][1]-G.j[j].goles);
     const b=E.filter(([,x])=>x.j[j][0]===mx).sort((a,b)=>d(a[1])-d(b[1]))[0]; gan[b[0]]=(gan[b[0]]||0)+1; }
   const racha=x=>{ let n=0; for(const j of js.slice().reverse()){ if(x.j[j]) n++; else break; } return n; };
-  const F=Object.entries(G.t).map(([h,x])=>({h,a:x.a,pts:js.reduce((s,j)=>s+(x.j[j]?.[0]||0),0),u:x.j[ult]?.[0],g:gan[h]||0,r:racha(x)})).sort((a,b)=>b.pts-a.pts||b.g-a.g);
+  const hayLl=Object.values(G.t).some(x=>x.ll!=null);
+  const F=Object.entries(G.t).map(([h,x])=>({h,a:x.a,pts:js.reduce((s,j)=>s+(x.j[j]?.[0]||0),0)+(x.ll||0),ll:x.ll,u:x.j[ult]?.[0],g:gan[h]||0,r:racha(x)})).sort((a,b)=>b.pts-a.pts||b.g-a.g);
   const al=new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"long",hour:"numeric",minute:"2-digit"}).format(new Date(G.al.replace("Z",":00Z")));
-  box.innerHTML=`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ult}</th><th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map((x,i)=>`<tr${x.h===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${x.h===yo?" (tú)":""}${vidaFlama(x.r)}</td><td><b>${x.pts}</b></td><td>${x.u??"–"}</td><td>${x.g}</td></tr>`).join("")}</tbody></table></div>
+  box.innerHTML=`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ult}</th>${hayLl?"<th>Llave</th>":""}<th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map((x,i)=>`<tr${x.h===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${x.h===yo?" (tú)":""}${vidaFlama(x.r)}</td><td><b>${x.pts}</b></td><td>${x.u??"–"}</td>${hayLl?`<td>${x.ll??"–"}</td>`:""}<td>${x.g}</td></tr>`).join("")}</tbody></table></div>
     <p class="note">${F.length} jugadores. Cuentan las jornadas desde la ${js[0]}. Se actualiza cada mañana (última vez: ${al}); los puntos de la jornada en juego los ves en tus grupos y en Mis picks.</p>`;
 }
 async function qmxGrRender(){
@@ -5782,6 +5851,7 @@ async function qmxTabla(g){
     if(term){ const mx=Math.max(...M.map(m=>S[m.uid].a)); const top=M.filter(m=>S[m.uid].a===mx);
       const best=top.sort((a,b)=>(S[a.uid].pk?.g!=null?Math.abs(S[a.uid].pk.g-goles):99)-(S[b.uid].pk?.g!=null?Math.abs(S[b.uid].pk.g-goles):99))[0]; if(best&&mx>0) T[best.uid].gan++; }
     ultJ=j; ultP=S; }
+  if(Gen&&Gen.s===qmxD().s) for(const m of M){ const ll=Gen.t?.[m.h]?.ll; if(ll) T[m.uid].pts+=ll; }   // puntos de la llave de la Liguilla (los cuenta GitHub)
   const F=Object.entries(T).sort((a,b)=>b[1].pts-a[1].pts||b[1].gan-a[1].gan||a[1].err-b[1].err), yo=ACCT.user.uid, mv=pzMov("qmx_"+g.id,String(ultJ),F.map(([u])=>u));
   const P=ultJ!=null?J[ultJ].p:[];
   box.innerHTML=Ls.length?`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ultJ}</th><th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map(([u,x],i)=>`<tr${u===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.n)}${u===yo?" (tú)":""}${mv(u)}</td><td><b>${x.pts}</b></td><td>${x.ult??"–"}</td><td>${x.gan}</td></tr>`).join("")}</tbody></table></div>
@@ -6611,6 +6681,8 @@ function vidaCierreDatos(){
   const R=[], now=Date.now()/1000;
   if(D.qmx){ const j=qmxAbierta(); if(j!=null){ const J=qmxD().J[j], m=qmxMios(j), ids=new Set(J.p.map(r=>String(r[0]))), hechos=Object.keys(m.p||{}).filter(f=>ids.has(String(f))).length;
     R.push({k:"qmx",nom:"Quiniela Liga MX",j:`Jornada ${j}`,id:qmxJid(j),pr:J.pr,falta:J.pr-now,hechos,tot:J.p.length,pend:J.p.length-hechos,juega:Object.keys(qmxLs()).length>0}); } }
+  const LL=D.qmx?.L; if(LL?.pr&&LL.pr>now&&(LL.sem||[]).length===8){ const P=qmxMios("llave").p||{}, h=(P.q||[]).filter(x=>x!=null).length+(P.s||[]).filter(x=>x!=null).length+(P.c!=null?1:0);
+    R.push({k:"llave",nom:"Llave de la Liguilla",j:"Liguilla",id:qmxJid("llave"),pr:LL.pr,falta:LL.pr-now,hechos:h,tot:7,pend:7-h,juega:Object.keys(qmxLs()).length>0}); }
   if(FAN.D&&Object.keys(fanLs()).length){ const k=fanAbierta(); if(k){ const m=fanMio(k), baja=(m?.eq||[]).filter(id=>FAN.D.baja?.[id]).length, J=FAN.D.j[k];
     R.push({k:"fan",nom:"Fantasy Champions",j:J.n||k,id:"fan-"+k,pr:J.pr,falta:J.pr-now,hechos:m?1:0,tot:1,pend:m?0:1,baja,juega:true}); } }
   return R;
@@ -6619,20 +6691,20 @@ const vidaNivel=f=>f<=900?3:f<=7200?2:f<=86400?1:0;
 const VIDA_NIV_COL=["#9FD3A8","#F2D466","#FF9C80","#E8826A"];
 function vidaFalta(f){ if(f>=86400){ const d=Math.round(f/86400); return [d,d===1?"día":"días"]; } if(f>=7200){ const h=Math.floor(f/3600); return [h,"horas"]; } return [Math.max(1,Math.ceil(f/60)),"min"]; }
 function vidaCierreHTML(){
-  const L=vidaCierreDatos().filter(x=>x.k==="qmx"?x.falta<4*86400:(x.falta<2*86400&&(x.baja||x.pend)));
+  const L=vidaCierreDatos().filter(x=>x.k==="qmx"||x.k==="llave"?x.falta<4*86400:(x.falta<2*86400&&(x.baja||x.pend)));
   return L.map(x=>{ const nv=vidaNivel(x.falta), [n,u]=vidaFalta(x.falta), p=Math.max(.04,Math.min(1,1-x.falta/(7*86400)));
     const msg=x.k==="fan"?(x.baja?`Tienes ${x.baja} ${x.baja===1?"jugador":"jugadores"} de baja: considera cambiarlo`:"Todavía no armas tu once")
       :!x.juega&&!x.hechos?"Ya está abierta: escoge quién gana cada partido":x.pend?(nv>=2?`¡Ya casi cierra! Te faltan ${x.pend} picks`:`Te faltan ${x.pend} de ${x.tot} picks`):"Ya tienes todos tus picks";
     const cls=(x.pend||x.baja)&&x.juega?(nv===3?" late tiembla":nv===2?" late":""):"";
     return `<button class="vcie${cls}" data-vir="${x.k}" style="--vc:${VIDA_NIV_COL[nv]};--p:${p.toFixed(3)}"><span class="vani"><span><b>${n}</b><small>${u}</small></span></span>
-      <span class="vct"><b>${x.nom} · ${hoyEsc(x.j)}</b><span>${msg}</span><small>${x.k==="qmx"?`${x.hechos}/${x.tot} picks · `:""}cierra ${hoyEsc(qmxHora(x.pr).toLowerCase())}</small></span></button>`; }).join("");
+      <span class="vct"><b>${x.nom} · ${hoyEsc(x.j)}</b><span>${msg}</span><small>${x.k!=="fan"?`${x.hechos}/${x.tot} picks · `:""}cierra ${hoyEsc(qmxHora(x.pr).toLowerCase())}</small></span></button>`; }).join("");
 }
 function vidaCierreTick(){
   const L=vidaCierreDatos(); let badge=0;
   for(const x of L){ if(!x.juega) continue; const nv=vidaNivel(x.falta), falta=x.k==="qmx"?x.pend:(x.pend||x.baja);
-    if(x.falta>0&&x.falta<86400&&falta) badge+=x.k==="qmx"?x.pend:1;
+    if(x.falta>0&&x.falta<86400&&falta) badge+=x.k==="fan"?1:x.pend;
     if(falta&&nv>=2&&x.falta>0){ const key=`pz_cie_${x.id}_${nv}`; let ya=null; try{ ya=localStorage.getItem(key); localStorage.setItem(key,"1"); }catch(e){ ya="1"; }
-      if(!ya) pzAviso(nv===3?"Cierra en 15 minutos":"Faltan 2 horas para cerrar",x.k==="qmx"?`Te faltan ${x.pend} picks de la ${x.nom}`:x.baja?`Tienes jugadores de baja en tu ${x.nom}`:`Arma tu once del ${x.nom}`); } }
+      if(!ya) pzAviso(nv===3?"Cierra en 15 minutos":"Faltan 2 horas para cerrar",x.k!=="fan"?`Te faltan ${x.pend} picks de la ${x.nom}`:x.baja?`Tienes jugadores de baja en tu ${x.nom}`:`Arma tu once del ${x.nom}`); } }
   document.querySelectorAll('[data-sport="qn"]').forEach(b=>{ let s=b.querySelector(".vbadge"); if(!badge){ s?.remove(); return; }
     if(!s){ s=document.createElement("b"); s.className="vbadge"; b.append(s); } if(s.textContent!==String(badge)){ s.textContent=badge; s.classList.remove("vpop"); void s.offsetWidth; s.classList.add("vpop"); }
     s.setAttribute("aria-label",`Te faltan ${badge} picks`); });
@@ -6682,7 +6754,7 @@ function vidaPinta(){ const el=$("#hoyPor"); if(!el||$("#hoy").classList.contain
   if(VIDA.entro) el.firstElementChild?.classList.add("vya"); VIDA.entro=1; vidaBote(el); }
 $("#hoyPor")?.addEventListener("click",ev=>{
   const t=ev.target.closest("button"); if(!t) return;
-  if(t.dataset.vir){ pzTrack("portada_cierre",{k:t.dataset.vir}); navIr(t.dataset.vir); window.scrollTo(0,0); return; }
+  if(t.dataset.vir){ pzTrack("portada_cierre",{k:t.dataset.vir}); if(t.dataset.vir==="llave"){ QMX.vista="llave"; navIr("qmx"); } else navIr(t.dataset.vir); window.scrollTo(0,0); return; }
   if(t.dataset.vact==="logros") return vidaLogrosAbre();
   if(t.dataset.vact==="semana") return vidaHistoria();
   if(t.dataset.vact==="perfil") return perfAbre();
