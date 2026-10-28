@@ -7400,7 +7400,7 @@ async function rdPinta(){
   const [cnt,am]=mi||cerr?await Promise.all([rdCnt(f),rdAmigosResp(f)]):[{},[]];
   const tot=T.ops.reduce((s,[k])=>s+(cnt[k]||0),0)||0;
   const res=c.res, acierto=res&&mi?mi===res:null;
-  const opsH=!mi&&!cerr?`<div class="rdops n${T.ops.length}">${T.ops.map(([k,t],i)=>`<button class="rdop o${i}" data-rd="${k}"${cuenta?"":" data-acct"}>${hoyEsc(t)}</button>`).join("")}</div>
+  const opsH=!mi&&!cerr?`<div class="rdops n${T.ops.length}">${T.ops.map(([k,t],i)=>`<button class="rdop o${i}" data-rd="${k}">${hoyEsc(t)}</button>`).join("")}</div>
       ${cuenta?`<span class="rdnota">Contesta antes de que empiece el partido. Si le atinas, tu racha sube.</span>`:`<span class="rdnota">Entra con tu cuenta para contestar y llevar tu racha.</span>`}`
     :`<div class="rdbar">${T.ops.map(([k,t],i)=>{ const n=cnt[k]||0, pc=tot?Math.round(n/tot*100):0, tuya=mi===k, ok=res&&res===k;
       return `<div class="rdb${tuya?" tuya":""}${ok?" ok":""}${res&&tuya&&!ok?" mal":""}"><i class="o${i}" style="width:${pc}%"></i><b>${hoyEsc(t)}${tuya?" · tu respuesta":""}${ok?" ✓":""}</b><span>${tot?pc+"%":""}</span></div>`; }).join("")}</div>
@@ -7441,7 +7441,7 @@ async function rdSemana(){
   if(!dlg.open) dlg.showModal(); FICHA.pila=[];
 }
 document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
-  const b=t.closest("#hoyRd [data-rd]"); if(b&&!b.hasAttribute("data-acct")){ b.classList.add("pzllena"); return rdResponde(b.dataset.rd); }
+  const b=t.closest("#hoyRd [data-rd]"); if(b){ if(!amOk()) return acctOpen(); b.classList.add("pzllena"); return rdResponde(b.dataset.rd); }
   if(t.closest("#hoyRd [data-rdsem]")) return rdSemana();
 });
 setInterval(()=>{ if(!document.hidden&&$("#hoyRd [data-rdcd]")) rdTick(); },1000);
@@ -7737,7 +7737,7 @@ async function acctInit(){
     const was=ACCT.user; ACCT.user=u||null; ACCT.ready=true; acctBtn(); acctSlHint(); try{localStorage.setItem("pz_sesion",u?"1":"0");}catch(e){}
     if(u&&(!was||was.uid!==u.uid)){ if(u.emailVerified){ acctPull(); if(adlg.open) adlg.close(); } else if(adlg.open) acctRender(); if(typeof perfCargaYo==="function") perfCargaYo(); }
     if(!u&&typeof PERF!=="undefined") PERF.yo=null;
-    if(typeof RD!=="undefined"){ RD.h=null; RD.mias={}; RD.pt=0; }
+    if(typeof RD!=="undefined"){ RD.h=null; RD.mias={}; RD.pt=Date.now(); setTimeout(()=>rdPinta().catch(()=>{}),0); }
     GR.loaded=false; GR.ids=[]; GR.info={}; GR.data={};
     if(u&&acctOk()) grLoadIds().then(()=>{ grReconcile(true).catch(()=>{}); if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
     if(acctOnQ()) loadQuiniela();
