@@ -1189,6 +1189,22 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 button,.btn{transition:transform .12s}button:active:not(:disabled){transform:scale(.97)}
 @media (min-width:721px){header.top nav.tabs{background:rgba(38,61,54,.55);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);border-color:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.pzsharebtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;margin:6px 0 10px;border-radius:22px;border:1px solid var(--mark);background:none;color:var(--mark);font:700 16px var(--display);cursor:pointer}
+.pzshare{display:flex;flex-direction:column;gap:12px;align-items:center}.pzshare h2{align-self:flex-start;margin:0}.pzshare img{width:min(100%,380px);border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:pzsube .5s ease-out}
+.pzsb{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}.pzsb a.q5save{display:inline-flex;align-items:center;text-decoration:none}
+.pzgseg{display:inline-flex;margin:0 0 10px}
+.pzchat{max-width:640px;display:flex;flex-direction:column;gap:8px}
+.pzchat-l{height:min(56vh,460px);overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:16px;background:var(--surface);border:1px solid var(--line);overscroll-behavior:contain}
+.pzchat-l>:first-child{margin-top:auto}
+.pzc-sis{align-self:center;max-width:90%;padding:8px 12px;border-radius:12px;background:rgba(242,212,102,.12);border:1px solid rgba(242,212,102,.35);font-size:13px;text-align:center;color:#F5E3A0}
+.pzc-m{display:flex;gap:8px;align-items:flex-end;max-width:85%;animation:pzsube .3s ease-out both}.pzc-m>i{flex:none;width:28px;height:28px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font:700 12px var(--body);font-style:normal;color:#fff}
+.pzc-m>div{display:flex;flex-direction:column;gap:2px}.pzc-m span{padding:8px 12px;border-radius:16px 16px 16px 4px;background:#2E4A41;font-size:15px;line-height:1.35;overflow-wrap:anywhere}
+.pzc-m small{font-size:11px;color:var(--muted)}.pzc-m small button{border:0;background:none;color:var(--muted);font:inherit;text-decoration:underline;cursor:pointer;padding:0}
+.pzc-m.mio{align-self:flex-end;flex-direction:column;align-items:flex-end;gap:2px}.pzc-m.mio span{background:var(--mark);color:#1d2a26;border-radius:16px 16px 4px 16px}
+.pzchat-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}.pzchat-chips button{flex:none;min-height:34px;padding:0 12px;border-radius:17px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:400 13px var(--body);cursor:pointer;white-space:nowrap}
+.pzchat-f{display:flex;gap:8px;align-items:center}.pzchat-f label{flex:1;display:flex;min-height:44px;padding:0 14px;border-radius:22px;background:var(--surface);border:1px solid var(--line)}
+.pzchat-f input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font:400 16px var(--body);outline:none}
+.pzchat-send{width:44px;height:44px;border-radius:22px;border:0;background:var(--mark);color:#1d2a26;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 /* Barra principal (27 oct 2026): Hoy, Retas, Favoritos y Deportes (menú) */
 nav.tabs button .depch{vertical-align:-2px;margin-left:2px;transition:transform .15s}nav.tabs button[aria-expanded="true"] .depch{transform:rotate(180deg)}
 .bnav button svg{display:block}
@@ -1718,7 +1734,7 @@ function paqCarga(n,fn,donde){
     .catch(()=>txt("No pudimos cargar esta sección. Revisa tu conexión y recarga la página."));
 }
 function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||id==="favs"||RETAS.includes(id)||MAS_TABS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
-  const spSel=sportOf(id); PZ_SP=spSel; const grp=["hoy","qn","favs"].includes(spSel)?spSel:"dep"; document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===grp)); depCierra(); PZ_CASC=Date.now()+2500; if(typeof pzLente==="function") pzLente();
+  const spSel=sportOf(id); PZ_SP=spSel; const grp=["hoy","qn","favs"].includes(spSel)?spSel:"dep"; document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===grp)); depCierra(); if(typeof chatCierra==="function") chatCierra(); PZ_CASC=Date.now()+2500; if(typeof pzLente==="function") pzLente();
   if(id==="hoy") hoyRender();
   if(typeof navPush==="function") navPush(id);
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
@@ -5380,6 +5396,7 @@ function qmxRender(sinRed){
     <div class="qmxdes"><div><b>Desempate: goles de la jornada</b><span>${cerrada?`Tu pronóstico: ${mios.g??"–"} · van ${goles} goles`:"¿Cuántos goles se meten en los partidos de la jornada?"}</span></div>
       <input id="qmxG" type="number" inputmode="numeric" min="0" max="60" value="${mios.g??""}"${cerrada?" disabled":""} aria-label="Goles de la jornada"></div>
     <p class="note" id="qmxGuardo"></p>
+    ${cerrada&&todos&&fin&&hechos?`<button class="pzsharebtn" id="qmxShare"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>Compartir mi jornada</button>`:""}
     ${cerrada&&abierta!=null&&abierta!==j?`<p class="note"><button class="q5link" data-qmxj="${abierta}">Ir a la jornada ${abierta}, que está abierta</button></p>`:""}
     ${cuenta}
     <p class="note">El % es la probabilidad según las casas de apuestas. 1 punto por acierto. Todos los picks se cierran con el primer partido de la jornada, como en el Progol.</p>`;
@@ -5393,6 +5410,14 @@ document.addEventListener("click",ev=>{
   const b=t.closest("[data-qmx]"); if(b&&!b.disabled){ const j=QMX.j, x=qmxMios(j), f=b.dataset.qmx;
     if(qmxD().J[j].pr<=Date.now()/1000){ qmxRender(); return; }
     x.p={...x.p}; if(x.p[f]===b.dataset.k) delete x.p[f]; else x.p[f]=b.dataset.k; qmxGuarda(j,x); pzTrack("qmx_pick",{}); const y=window.scrollY; qmxRender(true); window.scrollTo(0,y); return; }
+  if(t.closest("#qmxShare")){ (async()=>{ const j=QMX.j, J=qmxD().J[j], mios=qmxMios(j), R=J.p.map(r=>qmxRes(r,QMX.vivo));
+      const celdas=J.p.map((r,i)=>R[i].susp?null:mios.p[r[0]]?mios.p[r[0]]===R[i].r:false), ac=celdas.filter(x=>x===true).length, n=J.p.filter((r,i)=>!R[i].susp).length;
+      const G=await qmxTablaGen(), yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null, st=[];
+      if(G&&yo&&G.t?.[yo]){ const L=Object.entries(G.t).map(([h,x])=>[h,Object.values(x.j).reduce((s,v)=>s+(v[0]||0),0)]).sort((a,b)=>b[1]-a[1]); st.push([`${L.findIndex(x=>x[0]===yo)+1}º`,`de ${L.length} en la general`]); }
+      const gl=R.reduce((s,x)=>s+(x.fin?(x.gl||0)+(x.gv||0):0),0); st.push([mios.g!=null?`${mios.g}`:"–",`goles que dijiste (fueron ${gl})`]);
+      const ab=id=>qmxEq(id).ab||qmxEq(id).n.slice(0,3).toUpperCase();
+      const etq=J.p.map((r,i)=>[R[i].gl!=null?`${R[i].gl}-${R[i].gv}`:"–",ab(r[2]),ab(r[3])]);
+      pzCompartir({titulo:`Quiniela Liga MX · Jornada ${j}`,grande:`${ac}/${n}`,sub:"aciertos",celdas,etq,stats:st},`liga-mx-j${j}`); })(); return; }
   if(t.closest("#qmxCopia")){ const j=QMX.j, x=qmxMios(j); x.p={...x.p}; for(const r of qmxD().J[j].p){ const l=qmxLpz(r[7]); if(l) x.p[r[0]]=l; } qmxGuarda(j,x); qmxRender(true); return; }
   const ql=t.closest("[data-ql]"); if(ql){ try{localStorage.setItem("pz_qliga",ql.dataset.ql);}catch(e){} showSport("qn"); window.scrollTo(0,0); return; }
 });
@@ -5435,10 +5460,17 @@ async function qmxGrRender(){
   if(QMX.tab&&!G.some(g=>g.id===QMX.tab)) QMX.tab=null; if(!QMX.tab&&G.length) QMX.tab=G[0].id;
   const g=G.find(x=>x.id===QMX.tab);
   box.innerHTML=`${G.length?`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px">${G.map(x=>`<button data-qmxt="${x.id}" aria-pressed="${x.id===QMX.tab}">${acctEsc(x.nombre)}</button>`).join("")}</div>`:`<p class="note">Todavía no estás en ningún grupo de la Liga MX.</p>`}
-    <div id="qmxTabla">${g?pzSkel(2):""}</div>
+    ${g?chatSeg(QMX.gv||"tabla","data-qmxgv"):""}<div id="qmxTabla">${g?pzSkel(2):""}</div>
     ${g?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» de la Quiniela Liga MX en La Pizarra: ${qmxLink(g.id)}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-qmxcopy="${g.id}">Copiar link</button> · <button class="q5link" data-qmxsalir="${g.id}">Salir</button></p>`:""}
     <div class="q5new"><input id="qmxGrNom" maxlength="40" placeholder="Nombre del grupo (ej. La quiniela de la oficina)" aria-label="Nombre del grupo"><button class="q5save" id="qmxGrCrear">Crear grupo</button></div><p class="note" id="qmxGrMsg"></p>`;
-  if(g) qmxTabla(g);
+  if(!g) return;
+  if((QMX.gv||"tabla")!=="chat"){ chatCierra(); return qmxTabla(g); }
+  const sis=[]; try{ const [Gen,ms]=await Promise.all([qmxTablaGen(),ACCT.db.collection(`grupos/${g.id}/miembros`).get()]);
+    const js=Gen&&Gen.s===qmxD().s?Object.keys(Gen.j).filter(j=>Gen.j[j].fin).map(Number).sort((a,b)=>a-b):[], j=js[js.length-1];
+    if(j!=null){ const R=await Promise.all(ms.docs.map(async d=>({n:(d.data().nombre||"Jugador").split(" ")[0],x:Gen.t?.[await q5Hash(d.id)]?.j?.[j]})));
+      const V=R.filter(r=>r.x); if(V.length){ const mx=Math.max(...V.map(r=>r.x[0])), gl=Gen.j[j].goles, w=V.filter(r=>r.x[0]===mx).sort((a,b)=>(a.x[1]==null?99:Math.abs(a.x[1]-gl))-(b.x[1]==null?99:Math.abs(b.x[1]-gl)))[0];
+        sis.push(`Jornada ${j}: ganó <b>${acctEsc(w.n)}</b> con ${mx} aciertos.`); } } }catch(e){}
+  chatAbre($("#qmxTabla"),g,sis);
 }
 async function qmxTabla(g){
   const box=$("#qmxTabla"); const ms=await ACCT.db.collection(`grupos/${g.id}/miembros`).get().catch(()=>null); if(!ms) { box.innerHTML=`<p class="note">No pudimos cargar el grupo.</p>`; return; }
@@ -5477,6 +5509,7 @@ async function qmxJoinRender(){
 document.addEventListener("click",async ev=>{
   const t=ev.target; if(!t.closest) return;
   const tb=t.closest("[data-qmxt]"); if(tb){ QMX.tab=tb.dataset.qmxt; qmxGrRender(); return; }
+  const gv=t.closest("[data-qmxgv]"); if(gv){ QMX.gv=gv.dataset.qmxgv; qmxGrRender(); return; }
   if(t.closest("#qmxGrCrear")){ const n=($("#qmxGrNom").value||"").trim().slice(0,40); if(!n){ $("#qmxGrNom").focus(); return; } t.disabled=true; $("#qmxGrMsg").textContent="Creando…";
     try{ const uid=ACCT.user.uid, ref=ACCT.db.collection("grupos").doc(), b=ACCT.db.batch();
       b.set(ref,{nombre:n,dueno:uid,creado:grFV().serverTimestamp(),temporada:D.season,modos:["mx"]});
@@ -5660,7 +5693,9 @@ async function fanPuntos(sinRed){
       return `<tr><td class="l">${fanEsc(J?.n||id)}${m.c===id?" <b>(C)</b>":""}<br><small style="color:var(--muted)">${FAN_POSN[J?.pos]||""} · ${fanEsc(fanEq(J?.tid)[0])}</small></td><td>${v[1]||"–"}</td><td>${v[2]||""}</td><td>${v[3]||""}</td><td><b>${pts(id)}</b></td></tr>`; }).join("")}</tbody></table></div>
       ${oficial!=null&&total!=null&&oficial<total?`<p class="note">Incluye −${total-oficial} por cambios extra.</p>`:""}`
       :`<p class="note">${practica?"Arma tu once en «Mi once» para ver cómo le habría ido.":"No tenías once en esta jornada."}</p>`}
-    ${practica?`<p class="note">El fantasy empieza a contar en la ${fanEsc(FAN.D.j[FAN.D.desde].n.toLowerCase())}.</p>`:""}`;
+    ${practica?`<p class="note">El fantasy empieza a contar en la ${fanEsc(FAN.D.j[FAN.D.desde].n.toLowerCase())}.</p>`:""}
+    ${m&&!practica&&FAN.D.j[k].ok?`<button class="pzsharebtn" id="fanShare" data-k="${k}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>Compartir mi jornada</button>`:""}`;
+  FAN.share={k,total:oficial??total,m,pts};
   fanVivoTimer();
 }
 // Mano a mano: emparejamientos por jornada con el método del círculo (sobre los hashes ordenados)
@@ -5681,10 +5716,15 @@ async function fanGrupos(){
   if(FAN.tab&&!G.some(g=>g.id===FAN.tab)) FAN.tab=null; if(!FAN.tab&&G.length) FAN.tab=G[0].id;
   const g=G.find(x=>x.id===FAN.tab);
   box.innerHTML=`${G.length?`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px">${G.map(x=>`<button data-fant="${x.id}" aria-pressed="${x.id===FAN.tab}">${acctEsc(x.nombre)}</button>`).join("")}</div>`:`<p class="note">Todavía no estás en ningún grupo de Fantasy.</p>`}
-    <div id="fanGrTabla">${g?pzSkel(2):""}</div>
+    ${g?chatSeg(FAN.gv||"tabla","data-fangv"):""}<div id="fanGrTabla">${g?pzSkel(2):""}</div>
     ${g?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» del Fantasy Champions en La Pizarra: https://lapizarra.mx/?fang=${g.id}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-fancopy="${g.id}">Copiar link</button> · <button class="q5link" data-fansalir="${g.id}">Salir</button></p>`:""}
     <div class="q5new"><input id="fanGrNom" maxlength="40" placeholder="Nombre del grupo" aria-label="Nombre del grupo"><button class="q5save" id="fanGrCrear">Crear grupo</button></div><p class="note" id="fanGrMsg"></p>`;
   if(!g) return;
+  if((FAN.gv||"tabla")==="chat"){ const C=fanCerradas().filter(k=>FAN.D.j[k].ok), u=C[C.length-1], T=FAN.D.tabla||{}, sis=[];
+    if(u){ const ms0=await ACCT.db.collection(`grupos/${g.id}/miembros`).get().catch(()=>null); if(ms0){ const H=await Promise.all(ms0.docs.map(d=>q5Hash(d.id))), NM=Object.fromEntries(ms0.docs.map((d,i)=>[H[i],(d.data().nombre||"").split(" ")[0]]));
+      const best=H.filter(h=>T[h]?.j?.[u]!=null).sort((a,b)=>T[b].j[u]-T[a].j[u])[0]; if(best) sis.push(`${fanEsc(FAN.D.j[u].n)}: el mejor del grupo fue <b>${acctEsc(T[best].a||NM[best]||"Jugador")}</b> con ${T[best].j[u]} puntos.`); } }
+    return chatAbre($("#fanGrTabla"),g,sis); }
+  chatCierra();
   const ms=await ACCT.db.collection(`grupos/${g.id}/miembros`).get().catch(()=>null);
   const el=$("#fanGrTabla"); if(!ms||!el){ if(el) el.innerHTML=`<p class="note">No pudimos cargar el grupo.</p>`; return; }
   const H=await Promise.all(ms.docs.map(d=>q5Hash(d.id))), NM=Object.fromEntries(ms.docs.map((d,i)=>[H[i],(d.data().nombre||"").split(" ")[0]])), F=fanTablaGrupo(H,NM), C=fanCerradas().filter(k=>FAN.D.j[k].ok), T=FAN.D.tabla||{};
@@ -5741,8 +5781,12 @@ document.addEventListener("click",async ev=>{
     if(FAN.cambiar){ FAN.eq=FAN.eq.map(x=>x===FAN.cambiar?id:x); if(FAN.c===FAN.cambiar) FAN.c=id; } else FAN.eq=[...FAN.eq,id];
     FAN.pick=null; FAN.cambiar=null; fanOnce(); return; }
   if(t.closest("#fanSave")){ fanGuarda(); return; }
+  if(t.closest("#fanShare")&&FAN.share){ const {k,total,m,pts}=FAN.share, best=[...m.eq].sort((a,b)=>pts(b)-pts(a))[0], J=fanJug(best), T=Object.entries(FAN.D.tabla||{}).sort((a,b)=>b[1].t-a[1].t), i=T.findIndex(([h])=>h===FAN.hash);
+    pzCompartir({titulo:`Fantasy Champions · ${FAN.D.j[k].n}`,grande:String(total??0),sub:"puntos",tema:"#3b5f8a",gx:1080,
+      lineas:[`Mi figura: ${J?J.n:""}${m.c===best?" (capitán)":""} · ${pts(best)} pts`],stats:[i>=0?[`${i+1}º`,`de ${T.length} en la general`]:null,[String(FAN.D.tabla?.[FAN.hash]?.t??total??0),"puntos en total"]].filter(Boolean)},`fantasy-${k}`); return; }
   if(t.closest("#fanPrev")||t.closest("#fanNext")){ const C=fanTodas().filter(k=>FAN.D.j[k].pr<=Date.now()/1000); const i=C.indexOf(FAN.vj)+(t.closest("#fanPrev")?-1:1); FAN.vj=C[Math.max(0,Math.min(C.length-1,i))]; fanPuntos(); return; }
   const tb=t.closest("[data-fant]"); if(tb){ FAN.tab=tb.dataset.fant; fanGrupos(); return; }
+  const gv=t.closest("[data-fangv]"); if(gv){ FAN.gv=gv.dataset.fangv; fanGrupos(); return; }
   if(t.closest("#fanGrCrear")){ const n=($("#fanGrNom").value||"").trim().slice(0,40); if(!n){ $("#fanGrNom").focus(); return; } t.disabled=true; $("#fanGrMsg").textContent="Creando…";
     try{ const uid=ACCT.user.uid, ref=ACCT.db.collection("grupos").doc(), b=ACCT.db.batch();
       b.set(ref,{nombre:n,dueno:uid,creado:grFV().serverTimestamp(),temporada:D.season,modos:["fan"]});
@@ -6002,6 +6046,97 @@ function pzLente(){ const n=$(".bnav"); if(!n) return; let l=n.querySelector(".p
   const B=[...n.querySelectorAll("button")], i=Math.max(0,B.findIndex(b=>b.getAttribute("aria-selected")==="true")); l.style.transform=`translateX(${i*100}%)`; }
 
 pzObserva();
+// ---------- Foto para compartir (27 oct 2026) ----------
+// Se dibuja en el navegador (canvas 1080×1350, formato de historias e Instagram) y se comparte con el menú del teléfono
+// (WhatsApp, Instagram…) o se descarga. No sube nada a ningún servidor.
+async function pzImagen(o){
+  const W=1080,H=1350,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  try{ await Promise.all(['700 100px "Barlow Condensed"','600 40px "Barlow"','400 40px "Barlow"'].map(f=>document.fonts.load(f))); }catch(e){}
+  const F=(w,s,fam="Barlow Condensed")=>`${w} ${s}px "${fam}", "Arial Narrow", Arial, sans-serif`;
+  const g=x.createRadialGradient(o.gx??0,0,40,o.gx??0,0,1400); g.addColorStop(0,o.tema||"#3d6b5a"); g.addColorStop(.62,"#1F332D"); g.addColorStop(1,"#17261f");
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.fillStyle="rgba(242,212,102,.10)"; x.beginPath(); x.arc(W-60,40,300,0,Math.PI*2); x.fill();
+  const P=72; let y=130;
+  x.font=F(700,64); x.fillStyle="#ECEFE7"; x.fillText("La",P,y); const wLa=x.measureText("La ").width; x.fillStyle="#F2D466"; x.fillText("Pizarra",P+wLa,y);
+  y+=70; x.font=F(400,40,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(o.titulo||"",P,y);
+  y+=270; x.font=F(700,300); x.fillStyle="#F2D466"; x.fillText(o.grande,P-6,y); const wg=x.measureText(o.grande).width;
+  x.font=F(600,52,"Barlow"); x.fillStyle="#ECEFE7"; x.fillText(o.sub||"",P+wg+24,y-10);
+  y+=50;
+  if(o.celdas?.length){ const n=o.celdas.length, gap=12, cw=Math.min(100,(W-2*P-gap*(n-1))/n), ch=86;
+    o.celdas.forEach((ok,i)=>{ const cx=P+i*(cw+gap); x.fillStyle=ok==null?"rgba(255,255,255,.12)":ok?"#9FD3A8":"#FF9C80"; x.beginPath(); x.roundRect(cx,y,cw,ch,18); x.fill();
+      x.strokeStyle="#1d2a26"; x.lineWidth=9; x.lineCap="round"; x.lineJoin="round"; x.beginPath(); const mx=cx+cw/2, my=y+ch/2;
+      if(ok===true){ x.moveTo(mx-20,my); x.lineTo(mx-6,my+15); x.lineTo(mx+22,my-16); } else if(ok===false){ x.moveTo(mx-16,my-16); x.lineTo(mx+16,my+16); x.moveTo(mx+16,my-16); x.lineTo(mx-16,my+16); }
+      x.stroke();
+      if(o.etq?.[i]){ x.textAlign="center"; x.font=F(700,30); x.fillStyle="#ECEFE7"; x.fillText(o.etq[i][0],mx,y+ch+44); x.font=F(400,26,"Barlow"); x.fillStyle="#A8B8AF"; x.fillText(o.etq[i][1],mx,y+ch+80); x.fillText(o.etq[i][2]||"",mx,y+ch+112); x.textAlign="left"; } });
+    y+=ch+(o.etq?150:40); }
+  if(o.lineas?.length){ x.font=F(400,40,"Barlow"); x.fillStyle="#ECEFE7"; for(const l of o.lineas){ x.fillText(l,P,y+40); y+=60; } y+=20; }
+  const S=o.stats||[], bh=200, by=H-150-bh, bw=(W-2*P-24*(S.length-1))/Math.max(1,S.length);
+  S.forEach(([a,b],i)=>{ const bx=P+i*(bw+24); x.fillStyle="rgba(255,255,255,.08)"; x.strokeStyle="rgba(255,255,255,.16)"; x.lineWidth=2; x.beginPath(); x.roundRect(bx,by,bw,bh,32); x.fill(); x.stroke();
+    x.font=F(700,a.length>6?66:88); x.fillStyle="#ECEFE7"; x.fillText(a,bx+32,by+108); x.font=F(400,34,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(b,bx+32,by+160); });
+  x.font=F(400,36,"Barlow"); x.fillStyle="#A8B8AF"; x.fillText("¿Me ganas? lapizarra.mx",P,H-80);
+  return await new Promise(r=>c.toBlob(r,"image/png"));
+}
+async function pzCompartir(o,nombre){
+  $("#gbody").innerHTML=pzSkel(2); if(!dlg.open) dlg.showModal(); pzTrack("compartir_abre",{t:nombre});
+  const b=await pzImagen(o); if(!b){ $("#gbody").innerHTML=`<p class="note">No se pudo hacer la imagen en este navegador.</p>`; return; }
+  const f=new File([b],`la-pizarra-${nombre}.png`,{type:"image/png"}), url=URL.createObjectURL(b), puede=!!(navigator.canShare&&navigator.canShare({files:[f]}));
+  $("#gbody").innerHTML=`<div class="pzshare"><h2>Comparte tu jornada</h2><img src="${url}" alt="Imagen para compartir con tu resultado"><div class="pzsb">
+    ${puede?`<button class="q5save" id="pzShareGo">Compartir</button>`:""}<a class="${puede?"q5link":"q5save"}" href="${url}" download="la-pizarra-${nombre}.png" id="pzShareDl">Descargar imagen</a></div>
+    <p class="note">${puede?"Elige WhatsApp, Instagram o donde quieras.":"Descárgala y mándala por WhatsApp o súbela a tus historias."}</p></div>`;
+  $("#pzShareGo")?.addEventListener("click",async()=>{ try{ await navigator.share({files:[f],text:"¿Me ganas? https://lapizarra.mx"}); pzTrack("compartir",{t:nombre}); }catch(e){} });
+  $("#pzShareDl")?.addEventListener("click",()=>pzTrack("compartir_descarga",{t:nombre}));
+}
+
+// ---------- Chat de los grupos (27 oct 2026) ----------
+// grupos/{g}/chat/{id} = {uid, n, t (≤280), ts}. Lo leen y escriben solo los miembros (reglas de Firebase);
+// cada quien borra los suyos y el dueño del grupo puede borrar cualquiera. "Ocultar" esconde un mensaje solo para ti.
+const CHAT={g:null,unsub:null,ult:0,msgs:[],dueno:null,sis:[]};
+const chatOcultos=()=>{ try{ return new Set(JSON.parse(localStorage.getItem("pz_chat_oc")||"[]")); }catch(e){ return new Set(); } };
+function chatCierra(){ try{ CHAT.unsub&&CHAT.unsub(); }catch(e){} CHAT.unsub=null; CHAT.g=null; }
+const CHAT_CHIPS=["Tabla, por favor","¿Y tus picks?","Nadie me alcanza","Suerte de principiante","Ya veremos el domingo"];
+function chatAbre(el,g,sis=[]){
+  chatCierra(); CHAT.g=g.id; CHAT.dueno=g.dueno; CHAT.sis=sis; CHAT.msgs=[];
+  el.innerHTML=`<div class="pzchat"><div class="pzchat-l" id="chatL">${pzSkel(2)}</div>
+    <div class="pzchat-chips">${CHAT_CHIPS.map(t=>`<button data-chatchip="${hoyEsc(t)}">${hoyEsc(t)}</button>`).join("")}</div>
+    <form class="pzchat-f" id="chatF"><label><input id="chatT" maxlength="280" autocomplete="off" placeholder="Mete carrilla…" aria-label="Escribe un mensaje"></label>
+    <button class="pzchat-send" aria-label="Enviar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button></form>
+    <p class="note" id="chatMsg"></p></div>`;
+  const gid=g.id;
+  try{
+    CHAT.unsub=ACCT.db.collection(`grupos/${gid}/chat`).orderBy("ts","desc").limit(60).onSnapshot(s=>{
+      if(CHAT.g!==gid) return; CHAT.msgs=s.docs.map(d=>({id:d.id,...d.data()})).reverse(); chatPinta();
+      try{ localStorage.setItem("pz_chat_visto_"+gid,String(Date.now())); }catch(e){} },
+      e=>{ const L=$("#chatL"); if(L) L.innerHTML=`<p class="note">No se pudo abrir el chat${e?.code==="permission-denied"?" (faltan las reglas del chat en Firebase o no eres miembro)":""}.</p>`; });
+  }catch(e){ $("#chatL").innerHTML=`<p class="note">No se pudo abrir el chat.</p>`; }
+}
+function chatPinta(){
+  const L=$("#chatL"); if(!L) return; const yo=ACCT.user?.uid, oc=chatOcultos(), abajo=L.scrollHeight-L.scrollTop-L.clientHeight<60;
+  const hora=ts=>{ const d=ts?.toDate?ts.toDate():ts?new Date(ts):null; return d?new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",hour:"numeric",minute:"2-digit"}).format(d):""; };
+  const color=uid=>["#E07A3F","#4F7BB5","#8A63B8","#3E9C7A","#C2507A","#B58A2E"][[...String(uid)].reduce((s,c)=>s+c.charCodeAt(0),0)%6];
+  const M=CHAT.msgs.filter(m=>!oc.has(m.id));
+  L.innerHTML=CHAT.sis.map(t=>`<div class="pzc-sis">${t}</div>`).join("")
+    +(M.length?M.map(m=>{ const mio=m.uid===yo, puedo=mio||CHAT.dueno===yo;
+      return mio?`<div class="pzc-m mio" data-cid="${m.id}"><span>${acctEsc(m.t)}</span><small>${hora(m.ts)} · <button data-chatdel="${m.id}">Borrar</button></small></div>`
+        :`<div class="pzc-m" data-cid="${m.id}"><i style="background:${color(m.uid)}">${acctEsc((m.n||"?")[0].toUpperCase())}</i><div><small>${acctEsc(m.n||"Jugador")}</small><span>${acctEsc(m.t)}</span>
+          <small>${hora(m.ts)} · ${puedo?`<button data-chatdel="${m.id}">Borrar</button> · `:""}<button data-chatoc="${m.id}">Ocultar</button></small></div></div>`; }).join("")
+      :`<p class="note" style="text-align:center">Todavía no hay mensajes. Rompe el hielo.</p>`);
+  if(abajo||!CHAT.pintado){ L.scrollTop=L.scrollHeight; } CHAT.pintado=1;
+}
+async function chatManda(t){
+  t=(t||"").trim().slice(0,280); if(!t||!CHAT.g) return; const msg=$("#chatMsg");
+  if(Date.now()-CHAT.ult<1500){ if(msg) msg.textContent="Más despacio."; return; } CHAT.ult=Date.now();
+  try{ await ACCT.db.collection(`grupos/${CHAT.g}/chat`).add({uid:ACCT.user.uid,n:grName().split(" ")[0].slice(0,40),t,ts:grFV().serverTimestamp()}); if(msg) msg.textContent=""; pzTrack("chat_mensaje",{}); }
+  catch(e){ if(msg) msg.textContent=`No se mandó${e?.code?` (${e.code})`:""}.`; }
+}
+document.addEventListener("submit",ev=>{ if(ev.target.id!=="chatF") return; ev.preventDefault(); const i=$("#chatT"); chatManda(i.value); i.value=""; });
+document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) return;
+  const c=t.closest("[data-chatchip]"); if(c){ chatManda(c.dataset.chatchip); return; }
+  const d=t.closest("[data-chatdel]"); if(d){ if(!confirm("¿Borrar este mensaje?")) return; try{ await ACCT.db.doc(`grupos/${CHAT.g}/chat/${d.dataset.chatdel}`).delete(); }catch(e){ $("#chatMsg").textContent="No se pudo borrar."; } return; }
+  const o=t.closest("[data-chatoc]"); if(o){ const S=chatOcultos(); S.add(o.dataset.chatoc); try{ localStorage.setItem("pz_chat_oc",JSON.stringify([...S].slice(-500))); }catch(e){} chatPinta(); return; }
+});
+// Pestañas "Tabla | Chat" dentro de un grupo
+const chatSeg=(v,attr)=>`<div class="hseg pzgseg">${[["tabla","Tabla"],["chat","Chat"]].map(([k,l])=>`<button ${attr}="${k}" aria-pressed="${v===k}">${l}</button>`).join("")}</div>`;
+
 function fanRepinta(){ FAN.nube=0; FAN.eq=null; FAN.hash=null; if(!$("#fan").classList.contains("hidden")) fanRender(); }
 
 const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio"];
