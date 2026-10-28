@@ -1665,6 +1665,31 @@ button.fvnota{cursor:pointer}.fvnota .utag{align-self:flex-start}.fvnota b{font:
 .fvvbola{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#E7F25A;box-shadow:0 0 10px #E7F25A;animation:fvrally 3s ease-in-out both}
 @keyframes fvrally{0%{left:12%;top:70%}20%{left:86%;top:28%}40%{left:20%;top:38%}60%{left:80%;top:66%}80%{left:30%;top:50%}100%{left:84%;top:46%;opacity:0}}
 
+/* NBA: estadísticas y detalle del partido (28 oct 2026) */
+button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:pointer}button.nbag:hover{border-color:var(--mark)}
+.nbslid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.nbsc{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:20px;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 30%,var(--surface)) 0,var(--surface) 55%);border:1px solid var(--line)}
+.nbsch{display:flex;justify-content:space-between;align-items:baseline}.nbsch b{font:800 18px var(--display)}.nbsch small{font-size:11px;color:var(--muted)}
+.nbsft{position:relative;flex:none;border-radius:50%;overflow:hidden;background:var(--c);display:inline-flex;align-items:flex-end;justify-content:center;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+.nbsft img{position:relative;z-index:1;width:118%;height:auto;margin-bottom:-4%}.nbsft b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 15px var(--display);color:#fff}
+.nbsl1,.nbsl,.nbstj{display:flex;align-items:center;gap:10px;width:100%;padding:0;border:0;background:none;color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.nbsl1{padding:4px 0 8px;border-bottom:1px solid var(--line)}.nbsl1>span:not(.nbsft){flex:1;display:flex;flex-direction:column;min-width:0}.nbsl1 b{font:800 19px/1.1 var(--display)}.nbsl1 small{font-size:12px;color:var(--muted)}
+.nbsl1 strong{font:800 38px/1 var(--display);color:var(--mark)}
+.nbsl{min-height:30px}.nbsl i{width:18px;font-style:normal;font:700 13px var(--display);color:var(--muted)}.nbsl>span{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.nbsl small{color:var(--muted)}.nbsl b{font:700 16px var(--display)}
+.nbsfil{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 10px}.nbsfil .gobus{flex:1 1 220px}
+.nbsfil select{min-height:42px;border-radius:21px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 14px;font:500 15px var(--body)}
+.nbscal{display:flex;align-items:center;gap:6px;font-size:14px;color:#C9D6CF}
+.nbst td,.nbst th{white-space:nowrap}.nbst th button{padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer}.nbst th button[aria-pressed="true"]{color:var(--mark);text-decoration:underline}
+.nbst td.on{color:var(--mark);font-weight:700}.nbstj>span:not(.nbsft){display:flex;flex-direction:column;min-width:0}.nbstj b{font-size:14px}.nbstj small{font-size:11px;color:var(--muted)}
+.nbsmas{margin-top:8px}
+.nbsfh{display:flex;align-items:center;gap:14px;padding:16px;margin:-6px -4px 10px;border-radius:20px;background:linear-gradient(120deg,var(--c1),var(--c2))}.nbsfh h2{margin:0}.nbsfh .sub{margin:2px 0 0;color:#fff;opacity:.85}
+.nbsfg>div small{display:block;font-size:11px;color:var(--mark);margin-top:2px}
+.nbsbh{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px;text-align:center}.nbsbh>div{display:flex;flex-direction:column;align-items:center;gap:4px}
+.nbsbh img{width:52px;height:52px;object-fit:contain}.nbsbh b{font:800 17px var(--display)}.nbsbh strong{font:800 44px/1 var(--display)}.nbsbh strong i{font-style:normal;opacity:.6}
+.nbsbe{text-align:center;margin:6px 0 12px;color:var(--muted)}
+.nbsq td,.nbsq th,.nbsbx td,.nbsbx th{white-space:nowrap}.nbsbx tr.tit td:first-child{font-weight:700}.nbsbx small{color:var(--muted)}.nbsbx td.on{font-weight:700;color:var(--mark)}
+.nbsduela{height:auto;aspect-ratio:50/47;max-width:520px}.nbsley{margin:6px 0 0}.nbscmp{max-width:560px}
+
 /* desbloqueables del avatar (28 oct 2026) */
 .pzcor{position:absolute;z-index:2;top:-24%;left:50%;width:46%;transform:translateX(-50%) rotate(-8deg);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
 .pzllama{position:absolute;z-index:2;right:-6%;bottom:-4%;width:36%;transform-origin:50% 90%;animation:vllama .9s ease-in-out infinite;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
@@ -1828,7 +1853,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <button aria-current="page" data-tab="f1">Fórmula 1</button><button data-tab="tenis">Tenis</button>
 </nav>
 <nav class="subnav" data-for="nba" aria-label="Secciones NBA" hidden>
-  <button aria-current="page" data-tab="nbagames">Partidos</button><button data-tab="nbatable">Tabla</button>
+  <button aria-current="page" data-tab="nbagames">Partidos</button><button data-tab="nbatable">Tabla</button><button data-tab="nbastats">Estadísticas</button>
 </nav>
 <nav class="subnav" data-for="ff" aria-label="Secciones Fantasy" hidden>
   <span class="league">Fantasy Football</span><button aria-current="page" data-tab="fmatch">Matchup</button><button data-tab="froster">Roster</button><button data-tab="fliga">Mi liga</button><button data-tab="fwaivers">Waivers</button><button data-tab="ftrade">Intercambios</button>
@@ -2019,6 +2044,10 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <h2>Tabla</h2>
   <div class="hseg" id="nbaConf" role="group" aria-label="Conferencia" style="display:inline-flex;margin:0 0 12px"><button data-conf="East" aria-pressed="true">Este</button><button data-conf="West" aria-pressed="false">Oeste</button></div>
   <div id="nbaTabla"></div>
+</section>
+<section class="panel hidden" id="nbastats">
+  <h2>Estadísticas</h2>
+  <div id="nbsBody"></div>
 </section>
 <section class="panel hidden" id="nbaq5">
   <h2>La Quinteta · NBA</h2>
@@ -2245,7 +2274,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbaq5","qmx","fan","f1","tenis","favs","amigos"];
+const SECTIONS=["hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbastats","nbaq5","qmx","fan","f1","tenis","favs","amigos"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -2294,7 +2323,7 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
   if(id==="favs") favsRender(); if(id==="amigos") amRender();
   if(id==="qmx") qmxAbre(); if(id==="fan") fanRender(); if(id==="f1") f1Render(); if(id==="tenis") tenRender();
-  if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbaq5") q5Render();
+  if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbastats") nbaStats(); if(id==="nbaq5") q5Render();
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
   if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",fantasyInit,id==="fwaivers"?"#notes":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
 function showSport(sp,tab){
@@ -5692,7 +5721,7 @@ function nbaJuegoHTML(e){
     const sub=[rec&&rec!=="0-0"&&!pret?rec:"",NBA_LINEA[k]!=null?`línea ${NBA_LINEA[k]}`:""].filter(Boolean).join(" · ");
     const mia=(Q5.lee().eq||[]).includes(k)?`<svg class="fav" viewBox="0 0 24 24" fill="#F2D466" aria-label="En tu quinteta"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>`:"";
     return `<div class="eq${pierde?" pierde":""}">${x.team?.logo?`<img src="${x.team.logo}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:""}<span class="n">${hoyEsc(x.team?.shortDisplayName||NBA_N[k]||k)} ${mia}<small>${hoyEsc(sub)}</small></span>${pre?"":`<span class="p">${x.score??""}</span>`}</div>`; };
-  return `<div class="nbag"><div class="st"><span>${est}</span><span>${hoyEsc(tv)}</span></div>${fila(A)}${fila(H)}</div>`;
+  return `<button class="nbag" data-nbabox="${hoyEsc(e.id)}" aria-label="Ver el detalle del partido"><div class="st"><span>${est}</span><span>${hoyEsc(tv)}</span></div>${fila(A)}${fila(H)}</button>`;
 }
 async function nbaPartidos(){
   if(!NBA.dia){ const h=nbaHoy(); NBA.dia=h<NBA_INICIO?NBA_INICIO:h; }
@@ -5712,6 +5741,103 @@ function nbaInvHTML(){
   const q=Q5.lee(); if(q.eq?.length===5) return "";
   return `<div class="nbainv"><div><b>Arma tu quinteta${Date.now()<+new Date(NBA_INICIO+"T23:00:00Z")?" antes del arranque":""}</b><span>Escoge 5 equipos con ${NBA_PRESUP} de presupuesto. Cada victoria es un punto, toda la temporada.</span></div><button data-nbaq5>Jugar</button></div>`;
 }
+// ---------- NBA: estadísticas de jugadores y detalle de cada partido (28 oct 2026) ----------
+// Estadísticas: líderes por categoría y la tabla de todos los jugadores (promedios por partido de la temporada regular),
+// de ESPN (statistics/byathlete), la misma fuente del resto de la NBA del sitio. Detalle del partido: marcador por cuarto,
+// mapa de tiros, comparación de equipos y la estadística de cada jugador (ESPN summary).
+const NBS={L:null,t:0,p:null,orden:"pts",q:"",eq:"",cal:true,n:40,box:{}};
+const NBS_URL=pg=>`https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/statistics/byathlete?region=us&lang=es&contentorigin=espn&isqualified=false&page=${pg}&limit=200&sort=offensive.avgPoints:desc&season=${NBA_TEMP}&seasontype=2`;
+async function nbsCarga(){
+  if(NBS.L&&Date.now()-NBS.t<15*60e3) return NBS.L; if(NBS.p) return NBS.p;
+  NBS.p=(async()=>{ const j1=await fetch(NBS_URL(1)).then(r=>r.json()), pags=Math.min(5,j1.pagination?.pages||1);
+    const J=[j1,...(await Promise.all([...Array(pags-1)].map((_,i)=>fetch(NBS_URL(i+2)).then(r=>r.json()).catch(()=>null))))].filter(Boolean), C=j1.categories||[];
+    const pos=(c,n)=>C.find(x=>x.name===c)?.names?.indexOf(n)??-1, L=[];
+    for(const j of J) for(const a of j.athletes||[]){ const V={}; for(const c of a.categories||[]) V[c.name]=c.values||[]; const g=(c,n)=>{ const i=pos(c,n); return i>=0?+V[c]?.[i]||0:0; }, A=a.athlete||{};
+      L.push({id:String(A.id),n:A.displayName||"",sn:A.shortName||A.displayName||"",ab:nbaAb(A.teamShortName||""),eq:A.teamName||"",pos:A.position?.abbreviation||"",foto:A.headshot?.href||"",
+        pj:g("general","gamesPlayed"),min:g("general","avgMinutes"),pts:g("offensive","avgPoints"),reb:g("general","avgRebounds"),ast:g("offensive","avgAssists"),rob:g("defensive","avgSteals"),tap:g("defensive","avgBlocks"),
+        fg:g("offensive","fieldGoalPct"),fga:g("offensive","avgFieldGoalsAttempted"),t3:g("offensive","threePointFieldGoalPct"),t3m:g("offensive","avgThreePointFieldGoalsMade"),t3a:g("offensive","avgThreePointFieldGoalsAttempted"),
+        tl:g("offensive","freeThrowPct"),fta:g("offensive","avgFreeThrowsAttempted"),pe:g("offensive","avgTurnovers"),dd:g("general","doubleDouble"),td:g("general","tripleDouble")}); }
+    NBS.L=L; NBS.t=Date.now(); return L; })().finally(()=>{ NBS.p=null; });
+  return NBS.p;
+}
+// Para los líderes: al menos el 70% de los partidos del que más ha jugado y 10 minutos; en porcentajes, un mínimo de intentos
+const nbsMinPJ=L=>Math.max(1,Math.round(.7*Math.max(0,...L.map(x=>x.pj))));
+const NBS_CAT=[["pts","Puntos","por partido"],["reb","Rebotes","por partido"],["ast","Asistencias","por partido"],["rob","Robos","por partido"],["tap","Tapones","por partido"],
+  ["t3m","Triples","por partido"],["fg","% de campo","5 tiros por partido o más","fga",5],["t3","% de triples","3 intentos por partido o más","t3a",3],["tl","% de tiros libres","2 intentos por partido o más","fta",2],["dd","Dobles-dobles","en la temporada"]];
+const NBS_COL=[["pj","J",0],["min","MIN",1],["pts","PTS",1],["reb","REB",1],["ast","AST",1],["rob","ROB",1],["tap","TAP",1],["fg","FG%",1],["t3","3P%",1],["tl","TL%",1]];
+const nbsV=(x,k)=>{ const v=x[k]; return ["pj","dd","td"].includes(k)?String(v):(v||0).toFixed(1); };
+const nbsFoto=(x,tam)=>`<span class="nbsft" style="width:${tam}px;height:${tam}px;--c:${FAVS_NBA_COL[x.ab]||"#3A554C"}">${x.foto&&SM_ESCUDOS?`<img src="${hoyEsc(x.foto)}" alt="" loading="lazy" onerror="this.remove()">`:""}<b>${hoyEsc(favIni(x.n))}</b></span>`;
+function nbsLideres(L){
+  const mpj=nbsMinPJ(L), base=L.filter(x=>x.pj>=mpj&&x.min>=10);
+  return `<div class="nbslid">${NBS_CAT.map(([k,n,sub,att,mn])=>{ const T=(att?base.filter(x=>x[att]>=mn):base).slice().sort((a,b)=>b[k]-a[k]).slice(0,5); if(!T.length) return ""; const p=T[0];
+    return `<div class="nbsc" style="--c:${FAVS_NBA_COL[p.ab]||"#3A554C"}"><div class="nbsch"><b>${n}</b><small>${hoyEsc(sub)}</small></div>
+      <button class="nbsl1" data-nbsj="${p.id}">${nbsFoto(p,64)}<span><b>${hoyEsc(p.n)}</b><small>${hoyEsc(NBA_N[p.ab]||p.eq)}</small></span><strong>${nbsV(p,k)}</strong></button>
+      ${T.slice(1).map((x,i)=>`<button class="nbsl" data-nbsj="${x.id}"><i>${i+2}</i><span>${hoyEsc(x.n)} <small>${hoyEsc(x.ab)}</small></span><b>${nbsV(x,k)}</b></button>`).join("")}</div>`; }).join("")}</div>`;
+}
+function nbsTabla(L){
+  const mpj=nbsMinPJ(L), q=goNorm(NBS.q.trim());
+  let F=L.filter(x=>(!NBS.cal||x.pj>=mpj)&&(!NBS.eq||x.ab===NBS.eq)&&(!q||goNorm(x.n).includes(q)));
+  F.sort((a,b)=>b[NBS.orden]-a[NBS.orden]||b.pts-a.pts);
+  const eqs=[...new Set(L.map(x=>x.ab).filter(Boolean))].sort((a,b)=>(NBA_N[a]||a).localeCompare(NBA_N[b]||b,"es"));
+  return `<div class="nbsfil"><label class="gobus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="nbsQ" type="search" placeholder="Busca un jugador" value="${hoyEsc(NBS.q)}" aria-label="Buscar jugador" autocomplete="off"></label>
+      <select id="nbsEq" aria-label="Equipo"><option value="">Todos los equipos</option>${eqs.map(a=>`<option value="${a}"${a===NBS.eq?" selected":""}>${hoyEsc(NBA_N[a]||a)}</option>`).join("")}</select>
+      <label class="nbscal"><input type="checkbox" id="nbsCal"${NBS.cal?" checked":""}> Solo con ${mpj}+ partidos</label></div>
+    <div class="tbl nbst"><table><thead><tr><th>#</th><th class="l">Jugador</th>${NBS_COL.map(([k,n])=>`<th><button data-nbso="${k}" aria-pressed="${NBS.orden===k}">${n}</button></th>`).join("")}</tr></thead><tbody>
+      ${F.slice(0,NBS.n).map((x,i)=>`<tr><td>${i+1}</td><td class="l"><button class="nbstj" data-nbsj="${x.id}">${nbsFoto(x,30)}<span><b>${hoyEsc(x.n)}</b><small>${hoyEsc(NBA_N[x.ab]||x.eq)}${x.pos?` · ${hoyEsc(x.pos)}`:""}</small></span></button></td>${NBS_COL.map(([k])=>`<td${k===NBS.orden?' class="on"':""}>${nbsV(x,k)}</td>`).join("")}</tr>`).join("")||`<tr><td colspan="${NBS_COL.length+2}" class="l">No hay jugadores con esos filtros.</td></tr>`}
+    </tbody></table></div>${F.length>NBS.n?`<button class="q5link nbsmas" data-nbsmas="1">Ver más (${F.length-NBS.n})</button>`:""}`;
+}
+async function nbaStats(){
+  const box=$("#nbsBody"); if(!box) return; if(!NBS.L) box.innerHTML=pzSkel(3);
+  let L; try{ L=await nbsCarga(); }catch(e){ box.innerHTML=`<p class="note">ESPN no respondió. Intenta en un momento.</p>`; return; }
+  if(!L.length){ box.innerHTML=`<p class="note">Todavía no hay estadísticas de esta temporada.</p>`; return; }
+  box.innerHTML=`<section class="hsec"><div class="hh"><h3>Líderes</h3></div>${nbsLideres(L)}</section><section class="hsec"><div class="hh"><h3>Todos los jugadores</h3></div><div id="nbsTab">${nbsTabla(L)}</div></section>
+    <p class="note">Promedios por partido de la temporada regular ${NBA_TEMP-1}-${String(NBA_TEMP).slice(2)}. Toca un jugador para ver su ficha. Datos: ESPN.</p>`;
+}
+const nbsRepinta=()=>{ const el=$("#nbsTab"); if(el&&NBS.L){ const f=document.activeElement?.id; el.innerHTML=nbsTabla(NBS.L); if(f==="nbsQ"){ const i=$("#nbsQ"); i.focus(); i.setSelectionRange(i.value.length,i.value.length); } } };
+function nbsFicha(id){
+  const L=NBS.L||[], x=L.find(z=>z.id===id); if(!x) return; const mpj=nbsMinPJ(L), base=L.filter(z=>z.pj>=mpj&&z.min>=10);
+  const lugar=k=>{ const i=base.slice().sort((a,b)=>b[k]-a[k]).findIndex(z=>z.id===id); return i>=0&&i<30?`${i+1}º de la NBA`:""; }, c1=FAVS_NBA_COL[x.ab]||"#3A554C", c2=FAVS_NBA_COL2[x.ab]||"#1F332D";
+  const v=(k,n,sub)=>`<div><b>${nbsV(x,k)}</b><span>${n}</span>${sub?`<small>${sub}</small>`:""}</div>`;
+  $("#gbody").innerHTML=`<div class="nbsfi"><div class="nbsfh" style="--c1:${c1};--c2:${c2}">${nbsFoto(x,96)}<div><h2>${hoyEsc(x.n)}</h2><p class="sub">${hoyEsc(NBA_N[x.ab]||x.eq)}${x.pos?` · ${hoyEsc(x.pos)}`:""} · ${x.pj} partidos</p></div></div>
+    ${fichaStar("a"+x.id,{n:x.n,tm:x.ab,club:NBA_N[x.ab]||x.eq,pos:x.pos,lg:"nba"},"al jugador")}
+    <div class="jfg nbsfg">${v("pts","Puntos",lugar("pts"))}${v("reb","Rebotes",lugar("reb"))}${v("ast","Asistencias",lugar("ast"))}${v("rob","Robos",lugar("rob"))}${v("tap","Tapones",lugar("tap"))}${v("min","Minutos")}
+      ${v("fg","% de campo")}${v("t3","% de triples")}${v("tl","% de tiros libres")}${v("t3m","Triples por partido")}${v("pe","Pérdidas")}${v("dd","Dobles-dobles")}</div>
+    <p class="note">Promedios por partido de la temporada regular. Datos: ESPN.</p></div>`;
+  if(!dlg.open) dlg.showModal(); FICHA.pila=[]; pzTrack("nba_jugador",{});
+}
+// ---- Detalle del partido ----
+const NBS_TST=[["fieldGoalPct","% de campo",1],["threePointFieldGoalPct","% de triples",1],["freeThrowPct","% de tiros libres",1],["totalRebounds","Rebotes"],["assists","Asistencias"],["steals","Robos"],["blocks","Tapones"],["totalTurnovers","Pérdidas"],["pointsInPaint","Puntos en la pintura"],["fastBreakPoints","Puntos de contragolpe"]];
+async function nbaBox(eid){
+  $("#gbody").innerHTML=`<div class="nbsbox">${pzSkel(3)}</div>`; if(!dlg.open) dlg.showModal(); FICHA.pila=[]; pzTrack("nba_partido",{});
+  const S=await fetch(`${NBA_API}/summary?event=${eid}`).then(r=>r.json()).catch(()=>null); if(!S){ $("#gbody").innerHTML=`<p class="note">ESPN no respondió. Intenta en un momento.</p>`; return; }
+  const C=S.header?.competitions?.[0]||{}, cs=C.competitors||[], H=cs.find(c=>c.homeAway==="home")||{}, A=cs.find(c=>c.homeAway==="away")||{}, st=C.status?.type||{};
+  const ab=c=>nbaAb(c.team?.abbreviation||""), col=c=>FAVS_NBA_COL[ab(c)]||"#4E7A6C", nm=c=>NBA_N[ab(c)]||c.team?.shortDisplayName||"";
+  const est=st.state==="post"?"Final":st.state==="in"?`En vivo · ${C.status?.type?.shortDetail||""}`:nbaHora(S.header?.competitions?.[0]?.date||"");
+  const Q=Math.max((H.linescores||[]).length,(A.linescores||[]).length), qn=i=>i<4?`${i+1}º`:`TE${i>4?i-3:""}`;
+  const lin=Q?`<div class="tbl nbsq"><table><thead><tr><th class="l">Equipo</th>${[...Array(Q)].map((_,i)=>`<th>${qn(i)}</th>`).join("")}<th>Total</th></tr></thead><tbody>${[A,H].map(c=>`<tr><td class="l">${hoyEsc(nm(c))}</td>${[...Array(Q)].map((_,i)=>`<td>${c.linescores?.[i]?.displayValue??""}</td>`).join("")}<td><b>${c.score??""}</b></td></tr>`).join("")}</tbody></table></div>`:"";
+  const T=S.boxscore?.teams||[], tv=(c,n)=>{ const t=T.find(x=>String(x.team?.id)===String(c.id)); return parseFloat(t?.statistics?.find(s=>s.name===n)?.displayValue)||0; };
+  const comp=T.length?`<div class="fvvst nbscmp" style="--ch:${col(H)};--ca:${col(A)}">${NBS_TST.map(([n,l,pc])=>{ const a=tv(A,n), h=tv(H,n), t=(a+h)||1;
+    return `<span class="fvvsr"><b>${pc?a+"%":a}</b><span><small>${l}</small><span class="fvvbar"><i class="a" style="width:${a/t*100}%;background:${col(A)}"></i><i class="h" style="width:${h/t*100}%;background:${col(H)}"></i></span></span><b>${pc?h+"%":h}</b></span>`; }).join("")}</div>`:"";
+  const P=(S.plays||[]).filter(p=>p.shootingPlay&&p.coordinate&&p.coordinate.x>=0&&p.coordinate.x<=50&&p.coordinate.y>=0);
+  const tiros=P.length?`<div class="fvvduela nbsduela"><s class="pin"></s><s class="llave"></s><s class="aro"></s><s class="tab"></s>${P.map(p=>`<i class="fvvtiro${p.scoringPlay?" ok":""}" style="left:${p.coordinate.x/50*100}%;top:${Math.min(47,p.coordinate.y)/47*100}%;--ch:${String(p.team?.id)===String(H.id)?col(H):col(A)};--ca:${String(p.team?.id)===String(H.id)?col(H):col(A)};${p.scoringPlay?`background:${String(p.team?.id)===String(H.id)?col(H):col(A)}`:""}"></i>`).join("")}
+    <span class="fvvley"><span><i class="ok"></i>Anotó</span><span><i></i>Falló</span></span></div><p class="note nbsley"><b style="color:${col(A)}">●</b> ${hoyEsc(nm(A))} · <b style="color:${col(H)}">●</b> ${hoyEsc(nm(H))}</p>`:"";
+  const IDX={MIN:"MIN",PTS:"PTS",REB:"REB",AST:"AST",STL:"ROB",BLK:"TAP",FG:"TC",["3PT"]:"3P",FT:"TL",["+/-"]:"+/-"}, cols=["MIN","PTS","REB","AST","STL","BLK","FG","3PT","FT","+/-"];
+  const jug=(S.boxscore?.players||[]).map(bp=>{ const s=bp.statistics?.[0]; if(!s) return ""; const ix=cols.map(c=>s.labels.indexOf(c));
+    const filas=(s.athletes||[]).filter(a=>!a.didNotPlay&&(a.stats||[]).length);
+    return `<h4 class="stat-cat">${hoyEsc(NBA_N[nbaAb(bp.team?.abbreviation||"")]||bp.team?.displayName||"")}</h4><div class="tbl nbsbx"><table><thead><tr><th class="l">Jugador</th>${cols.map(c=>`<th>${IDX[c]}</th>`).join("")}</tr></thead><tbody>
+      ${filas.map(a=>`<tr${a.starter?' class="tit"':""}><td class="l">${hoyEsc(a.athlete?.shortName||a.athlete?.displayName||"")}${a.starter?" <small>T</small>":""}</td>${ix.map((i,k)=>`<td${cols[k]==="PTS"?' class="on"':""}>${i>=0?hoyEsc(a.stats[i]??""):""}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`; }).join("");
+  $("#gbody").innerHTML=`<div class="nbsbox"><div class="nbsbh"><div>${nbaLogo(ab(A))}<b>${hoyEsc(nm(A))}</b></div><strong>${A.score??""} <i>–</i> ${H.score??""}</strong><div>${nbaLogo(ab(H))}<b>${hoyEsc(nm(H))}</b></div></div>
+    <p class="nbsbe">${hoyEsc(est)}</p>${lin}${tiros?`<h4 class="stat-cat">Mapa de tiros</h4>${tiros}`:""}${comp?`<h4 class="stat-cat">Los equipos</h4>${comp}`:""}${jug}
+    <p class="note">T = titular. TC, 3P y TL: anotados-intentados. Datos: ESPN.</p></div>`;
+}
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return; let b;
+  if((b=t.closest("[data-nbabox]"))) return nbaBox(b.dataset.nbabox);
+  if((b=t.closest("[data-nbsj]"))) return nbsFicha(b.dataset.nbsj);
+  if((b=t.closest("[data-nbso]"))){ NBS.orden=b.dataset.nbso; NBS.n=40; return nbsRepinta(); }
+  if(t.closest("[data-nbsmas]")){ NBS.n+=40; return nbsRepinta(); }
+});
+document.addEventListener("input",ev=>{ if(ev.target.id==="nbsQ"){ NBS.q=ev.target.value; NBS.n=40; clearTimeout(NBS.qt); NBS.qt=setTimeout(nbsRepinta,250); } });
+document.addEventListener("change",ev=>{ if(ev.target.id==="nbsEq"){ NBS.eq=ev.target.value; NBS.n=40; nbsRepinta(); } if(ev.target.id==="nbsCal"){ NBS.cal=ev.target.checked; NBS.n=40; nbsRepinta(); } });
 $("#nbaPrev").onclick=()=>{NBA.dia=nbaMas(NBA.dia,-1); nbaPartidos();};
 $("#nbaNext").onclick=()=>{NBA.dia=nbaMas(NBA.dia,1); nbaPartidos();};
 document.addEventListener("click",ev=>{ if(ev.target.closest?.("[data-nbaq5]")){ showSport("qn","nbaq5"); window.scrollTo(0,0); } });
