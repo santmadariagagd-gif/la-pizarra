@@ -2430,6 +2430,125 @@ try:
 except Exception as ex:
     _pz_err("Fantasy Champions: no se pudo preparar",ex)
 
+# ----- Reto del día (28 oct 2026) -----
+# Cada día una pregunta sobre el partido más atractivo (Champions, Liga MX, grandes de Europa o la NFL): quién gana, si habrá
+# más de 2.5 goles, si anotan los dos, el spread o el total de la NFL. Se arma sola en la mañana (y la de mañana desde las
+# 6 pm), se cierra cuando empieza el partido y se califica en cuanto termina. docs/datos/reto_dia.json = {d: {fecha: reto}}
+# con reto = {tipo, q, k|id, fid, ts, h, a, hn, an, sp, tot, res: None|"a"|"b"|"c"|"x" (anulado)}. Las respuestas van en
+# Firestore rd_resp/{fecha}_{uid} = {uid, f, r, t} y solo se aceptan antes de retos_dia/{fecha}.cierre (reglas).
+# docs/datos/rd_tabla.json = {s: lunes de esta semana, t: {hash: {a, r: racha actual, m: mejor racha, w: [aciertos, respondidas]}}}.
+RD_BIG={2287,2278,2295,2286,2279,2282,541,529,530,33,40,50,42,49,47,505,489,496,157,165,85}
+RD_PESO={"ucl":10,"mx":8,"esp":7,"eng":7,"ita":6,"ger":6,"fra":5,"sup":6,"uel":5,"lib":5,"ccc":5,"lgc":5,"cdr":4,"fac":4,"efl":3,"cit":3,"dfb":3,"cdf":3,"por":3,"arg":3,"uecl":3,"sau":2}
+def _reto_dia():
+    import hashlib
+    from datetime import timedelta
+    tz=ZoneInfo("America/Mexico_City"); ahora=datetime.now(tz); ruta=os.path.join(aqui,'docs','datos','reto_dia.json')
+    try: R=json.load(open(ruta,encoding='utf-8'))
+    except Exception: R={}
+    Dd=R.get("d") or {}
+    FX={}
+    for k,(F,_) in (AF_FX.items() if 'AF_FX' in globals() else []):
+        for f in F: FX[f["fixture"]["id"]]=(k,f)
+    def nfl_ts(s): return datetime.strptime(s['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=ZoneInfo("UTC")).timestamp()
+    def candidatos(dia):
+        C=[]
+        for fid,(k,f) in FX.items():
+            ts=f["fixture"]["timestamp"]
+            if datetime.fromtimestamp(ts,tz).date()!=dia or (f["fixture"].get("status") or {}).get("short") not in ("NS","TBD") or ts<time.time()+1800: continue
+            h,a=f["teams"]["home"],f["teams"]["away"]
+            C.append(dict(tipo="fut",k=k,fid=fid,ts=ts,h=h["id"],a=a["id"],hn=h["name"],an=a["name"],p=RD_PESO.get(k,1)+4*(h["id"] in RD_BIG)+4*(a["id"] in RD_BIG)))
+        for x in out.get('sched') or []:
+            if not x.get('ko') or x.get('hs') is not None: continue
+            ts=nfl_ts(x)
+            if datetime.fromtimestamp(ts,tz).date()!=dia or ts<time.time()+1800: continue
+            C.append(dict(tipo="nfl",id=x['id'],ts=ts,h=x['h'],a=x['a'],sp=x.get('sp'),tot=x.get('tot'),p=9+(2 if datetime.fromtimestamp(ts,tz).hour>=18 else 0)))
+        return sorted(C,key=lambda c:(-c['p'],c['ts']))
+    def arma(dia):
+        C=candidatos(dia)
+        if not C: return None
+        c=C[0]; n=dia.toordinal()
+        if c["tipo"]=="fut": c["q"]=["gana","goles","ambos"][n%3]
+        else:
+            c["q"]=["spread","total"][n%2]
+            if c["q"]=="spread" and not c.get("sp"): c["q"]="gana" if not c.get("tot") else "total"
+            if c["q"]=="total" and not c.get("tot"): c["q"]="gana"
+        c.pop("p",None); c["res"]=None; return c
+    nuevos=[]
+    for dia in [ahora.date()]+([ahora.date()+timedelta(days=1)] if ahora.hour>=18 else []):
+        f=dia.isoformat()
+        if f not in Dd:
+            c=arma(dia)
+            if c: Dd[f]=c; nuevos.append(f)
+    # calificar
+    FIN=("FT","AET","PEN","AWD","WO"); NULO=("PST","CANC","ABD","SUSP","INT")
+    for f,c in Dd.items():
+        if c.get("res") is not None: continue
+        if c["tipo"]=="fut":
+            k,fx=FX.get(c["fid"],(None,None))
+            if not fx: continue
+            st=(fx["fixture"].get("status") or {}).get("short")
+            if st in NULO and time.time()-c["ts"]>86400: c["res"]="x"; continue
+            if st not in FIN: continue
+            ft=((fx.get("score") or {}).get("fulltime") or {}); G=fx.get("goals") or {}
+            gh=ft.get("home") if ft.get("home") is not None else G.get("home"); ga=ft.get("away") if ft.get("away") is not None else G.get("away")
+            if gh is None or ga is None: continue
+            c["gh"],c["ga"]=gh,ga
+            c["res"]={"gana":"a" if gh>ga else "b" if gh==ga else "c","goles":"a" if gh+ga>2.5 else "b","ambos":"a" if gh>0 and ga>0 else "b"}[c["q"]]
+        else:
+            x=next((s for s in out.get('sched') or [] if s.get('id')==c["id"]),None)
+            if not x or x.get('hs') is None: continue
+            hs,as_=x['hs'],x['as_']; c["gh"],c["ga"]=hs,as_
+            if c["q"]=="spread":
+                fav_h=c["sp"]>0; dif=(hs-as_) if fav_h else (as_-hs); ln=abs(c["sp"])
+                c["res"]="a" if dif>ln else "b" if dif<ln else "x"
+            elif c["q"]=="total": c["res"]="a" if hs+as_>c["tot"] else "b" if hs+as_<c["tot"] else "x"
+            else: c["res"]="a" if hs>as_ else "c" if as_>hs else "x"
+    desde=(ahora.date()-timedelta(days=35)).isoformat()
+    Dd={f:c for f,c in Dd.items() if f>=desde}
+    os.makedirs(os.path.dirname(ruta),exist_ok=True)
+    json.dump({"al":ahora.strftime("%Y-%m-%dT%H:%M"),"d":Dd},open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+    print(f"Reto del día: {len(Dd)} días; nuevos {nuevos}; hoy: {Dd.get(ahora.date().isoformat(),{}).get('q')}")
+    sa=os.environ.get('FIREBASE_SA','').strip()
+    if not sa: return
+    import firebase_admin
+    from firebase_admin import credentials, firestore
+    if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
+    db=firestore.client()
+    for f,c in Dd.items():
+        if f>=ahora.date().isoformat(): db.collection('retos_dia').document(f).set(dict(cierre=datetime.fromtimestamp(c["ts"],tz=ZoneInfo("UTC"))))
+    # rachas y tabla de la semana
+    U={}
+    for d in db.collection('rd_resp').where('f','>=',desde).stream():
+        x=d.to_dict() or {}
+        if x.get("uid") and x.get("f") in Dd: U.setdefault(x["uid"],{})[x["f"]]=x.get("r")
+    resueltos=sorted([f for f,c in Dd.items() if c.get("res")],reverse=True)
+    lunes=(ahora.date()-timedelta(days=ahora.weekday())).isoformat()
+    T={}; pub=0
+    for uid,M in U.items():
+        r=0; corta=False; m=0; cur=0
+        for f in resueltos:
+            if Dd[f]["res"]=="x": continue
+            ok=M.get(f)==Dd[f]["res"]
+            if not corta:
+                if ok: r+=1
+                else: corta=True
+        for f in sorted(resueltos):
+            if Dd[f]["res"]=="x": continue
+            cur=cur+1 if M.get(f)==Dd[f]["res"] else 0; m=max(m,cur)
+        sem=[f for f in resueltos if f>=lunes and Dd[f]["res"]!="x"]
+        h=hashlib.sha256(uid.encode()).hexdigest()[:12]
+        T[h]=dict(a=_alias_uid(db,uid),r=r,m=m,w=[sum(1 for f in sem if M.get(f)==Dd[f]["res"]),sum(1 for f in sem if f in M)])
+        if r in (3,7,14,30) and resueltos:
+            try:
+                if _feed_post(db,uid,f"rd-racha-{r}-{resueltos[0]}","dia",f"lleva {r} días seguidos atinándole al reto del día",str(r),"Reto del día"): pub+=1
+            except Exception as ex: _pz_err("Reto del día: feed",ex)
+    json.dump({"s":lunes,"al":ahora.strftime("%Y-%m-%dT%H:%M"),"t":T},open(os.path.join(aqui,'docs','datos','rd_tabla.json'),'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+    print(f"Reto del día: {len(T)} jugadores en la tabla; {pub} rachas publicadas")
+try:
+    _reto_dia()
+except Exception as ex:
+    _pz_err("Reto del día",ex)
+
 # ---------- Página ligera (5 oct 2026) ----------
 # Lo que solo usan algunas secciones sale de la página principal a docs/datos/paq_<nombre>.json; la página lo baja
 # la primera vez que lo necesita (Estadísticas, detalle de un partido NFL, Quiniela, Fantasy, fotos, Historia).

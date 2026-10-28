@@ -1574,6 +1574,33 @@ button.fvnota{cursor:pointer}.fvnota .utag{align-self:flex-start}.fvnota b{font:
 .amperfil{position:relative;margin:-8px -4px 0}.ampf{height:90px;border-radius:18px;background:linear-gradient(120deg,var(--c1),var(--c2))}
 .ampfin{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:0 6px;margin-top:-48px}.ampfin h2{margin:6px 0 0}
 .ampbtn{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:6px}
+
+/* Reto del día (28 oct 2026) */
+#hoyRd:empty{display:none}
+.rdcard{position:relative;overflow:hidden;margin:0 0 18px;padding:16px;border-radius:22px;background:linear-gradient(150deg,rgba(85,37,130,.5),var(--surface) 58%);border:1px solid rgba(201,167,240,.4);display:flex;flex-direction:column;gap:12px}
+.rdcard.rdre{animation:ventra .45s cubic-bezier(.2,.8,.2,1) both}
+.rdnada{flex-direction:column;gap:6px;font-size:14px;color:#DCE4DE}
+.rdh{display:flex;align-items:center;gap:10px}.rdtag{font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:#C9A7F0}.rdmeta{font-size:12px;color:var(--muted)}.rdfl{margin-left:auto}
+.rdq{font:800 26px/1.08 var(--display)}
+.rdops{display:grid;gap:8px}.rdops.n2{grid-template-columns:1fr 1fr}.rdops.n3{grid-template-columns:1fr 1fr 1fr}
+.rdop{min-height:56px;padding:6px 8px;border-radius:16px;border:0;color:#1d2a26;font:800 18px/1.1 var(--display);cursor:pointer;transition:transform .12s}.rdop:active{transform:scale(.95)}
+.rdop.o0{background:#9FD3A8}.rdop.o1{background:#F2D466}.rdop.o2{background:#FF9C80}.rdops.n2 .rdop.o1{background:#FF9C80}
+.rdnota{font-size:13px;color:#C9D6CF}
+.rdbar{display:flex;flex-direction:column;gap:6px}
+.rdb{position:relative;overflow:hidden;min-height:46px;border-radius:14px;background:var(--bg);border:2px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 14px}
+.rdb i{position:absolute;left:0;top:0;bottom:0;opacity:.3;transition:width .9s cubic-bezier(.3,1.2,.5,1)}.rdb i.o0{background:#9FD3A8}.rdb i.o1{background:#F2D466}.rdb i.o2{background:#FF9C80}
+.rdb b,.rdb span{position:relative;font-size:15px}.rdb span{font:800 20px var(--display)}
+.rdb.tuya{border-color:#C9A7F0}.rdb.ok{border-color:#9FD3A8}.rdb.mal{border-color:#FF9C80}
+.rdam{display:flex;align-items:center;gap:4px;font-size:13px;color:#C9D6CF;flex-wrap:wrap}.rdam>span:last-child{margin-left:6px}
+.rdres{padding:10px 12px;border-radius:12px;font-weight:700;font-size:15px;color:#1d2a26}.rdres.si{background:#9FD3A8}.rdres.no{background:#FF9C80}.rdres.x{background:#C9D6CF}
+.rdpie{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted)}.rdcd{font:700 15px var(--display);color:#C9A7F0}.rdayer{font-size:13px}
+.rdsem h2{margin:0 0 12px}
+.rdsd{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.rdsd span{display:flex;flex-direction:column;align-items:center;gap:4px}.rdsd i{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font:800 15px var(--body);font-style:normal}
+.rdsd .ok i{background:#9FD3A8;border-color:#9FD3A8;color:#1d2a26}.rdsd .mal i,.rdsd .no i{background:#FF9C80;border-color:#FF9C80;color:#1d2a26}.rdsd .hoy i{border-color:#C9A7F0;color:#C9A7F0}.rdsd small{font-size:11px;color:var(--muted)}
+.rdtab{display:flex;flex-direction:column;gap:6px}.rdtab>div{display:grid;grid-template-columns:18px 30px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--surface)}
+.rdtab b{color:var(--muted)}.rdtab strong{font:800 18px var(--display)}
+.rdman{margin-top:14px;padding:12px;border-radius:14px;border:1px dashed var(--line);display:flex;flex-direction:column;gap:2px}.rdman b{font-size:13px;color:#C9A7F0}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -1672,6 +1699,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <section class="panel" id="hoy">
   <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hoyacc"><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div><button class="hcfgbtn" id="hoyCfg" aria-label="Personalizar tu portada" title="Personalizar tu portada"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div></div>
   <div id="hoyPor"></div>
+  <div id="hoyRd"></div>
   <div id="hoyVivo"></div>
   <div class="hoygrid">
     <div class="hoymain"><div id="hoyFav"></div><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyUlt"></div><div id="hoyNfl"></div></div>
@@ -6841,7 +6869,8 @@ async function vidaLogrosCalc(forzar){
     let gen=null; if(G&&yo){ const L=Object.entries(G.t).map(([k,x])=>[k,Object.values(x.j).reduce((s,v)=>s+(v[0]||0),0)]).sort((a,b)=>b[1]-a[1]);
       gen={pos:L.findIndex(x=>x[0]===h)+1,de:L.length,pts:L.find(x=>x[0]===h)?.[1]||0}; if(gen.pos===1&&gen.de>=2&&gen.pts>0) T.add("lider"); }
     if(Object.keys(fanLs()).length||yoF) T.add("once"); if(yoF&&Object.values(yoF.j||{}).some(v=>v>=50)) T.add("cincuenta");
-    if(Object.keys(FAV.eq).length>=3) T.add("fan3"); try{ if(localStorage.getItem("pz_compartio")) T.add("comparte"); }catch(e){}
+    if(Object.keys(FAV.eq).length>=3) T.add("fan3");
+    if(h){ try{ await rdDatos(); const RT=RD.t?.t?.[h]; if(RT?.m>=7) T.add("rd7"); if(RT?.m>=30) T.add("rd30"); }catch(e){} } try{ if(localStorage.getItem("pz_compartio")) T.add("comparte"); }catch(e){}
     let fan=null; if(yoF&&F){ const ks=Object.keys(yoF.j||{}).sort((a,b)=>F.j[a].pr-F.j[b].pr), k=ks[ks.length-1];
       if(k){ const L=Object.entries(F.tabla).sort((a,b)=>(b[1].t||0)-(a[1].t||0)); fan={k,n:F.j[k]?.n||k,pts:yoF.j[k],tot:yoF.t||0,pos:L.findIndex(x=>x[0]===h)+1,de:L.length}; } }
     // nuevos: aviso de vidrio
@@ -7151,7 +7180,7 @@ dlg.addEventListener("close",()=>{ PERF.ed=null; });
 // Solo tus amigos leen tus publicaciones (reglas_amigos.txt). Los resultados (aciertos de la jornada, puntos del Fantasy)
 // los publica GitHub cada noche; los picks guardados, logros y cambios los publica la página. Los picks nunca se publican.
 const AM={L:null,lt:0,p:null,feed:null,ft:0,fp:null,posts:{},filtro:"todo",abierto:null,coms:{},bus:[],busq:"",sug:null,inv:null};
-const AM_G={mx:["Liga MX","#F2D466"],nfl:["Quiniela NFL","#7FB8E8"],sv:["Survivor","#FF9C80"],q5:["Quinteta NBA","#E8A33D"],fan:["Fantasy","#9FD3A8"],logro:["Logros","#C9A7F0"]};
+const AM_G={mx:["Liga MX","#F2D466"],nfl:["Quiniela NFL","#7FB8E8"],sv:["Survivor","#FF9C80"],q5:["Quinteta NBA","#E8A33D"],fan:["Fantasy","#9FD3A8"],dia:["Reto del día","#C9A7F0"],logro:["Logros","#F2D466"]};
 const AM_R=[["f","Fuego"],["j","Carrilla"],["p","Respeto"]];
 const AM_RAP=["Puro suertudo","Te voy a alcanzar","Respeto","Ni con la tabla","¿Y tus picks?"];
 const amPar=(a,b)=>a<b?`${a}_${b}`:`${b}_${a}`;
@@ -7322,19 +7351,114 @@ document.addEventListener("input",ev=>{ if(ev.target.id!=="amQ") return; clearTi
 (()=>{ try{ const g=new URLSearchParams(location.search).get("amigo"); if(g&&/^[A-Za-z0-9]{20,40}$/.test(g)){ AM.inv=pzInv("amigo",g); history.replaceState(null,"",location.pathname+"#amigos"); }
   else { const v=localStorage.getItem("pz_inv_amigo"); if(v) AM.inv=v; } }catch(e){} })();
 
+// ---------- Reto del día (28 oct 2026) ----------
+// La pregunta la arma GitHub (datos/reto_dia.json) y la califica en cuanto termina el partido; las rachas y la tabla de la
+// semana salen en datos/rd_tabla.json. Tu respuesta: Firestore rd_resp/{fecha}_{uid} (solo antes de que empiece el partido,
+// lo revisan las reglas) y en el navegador (pz_rd). Conteo de respuestas: rd_cnt/{fecha} = {a, b, c}. Para contestar hay que
+// tener cuenta. Las respuestas de tus amigos se ven en cuanto contestas tú.
+const RD={d:null,t:null,dt:0,mias:{},cnt:{},am:{},k:0};
+const rdHoy=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Mexico_City"}).format(new Date());
+const rdMas=(f,n)=>{ const d=new Date(f+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); };
+const rdLs=()=>{ try{ return JSON.parse(localStorage.getItem("pz_rd")||"{}")||{}; }catch(e){ return {}; } };
+async function rdDatos(forzar){
+  if(!forzar&&RD.d&&Date.now()-RD.dt<5*60e3) return RD.d;
+  const v=Math.floor(Date.now()/3e5);
+  const [d,t]=await Promise.all([fetch(`datos/reto_dia.json?v=${v}`).then(r=>r.ok?r.json():null).catch(()=>null),fetch(`datos/rd_tabla.json?v=${v}`).then(r=>r.ok?r.json():null).catch(()=>null)]);
+  RD.d=d?.d||{}; RD.t=t; RD.dt=Date.now(); return RD.d;
+}
+function rdTexto(c){
+  const nm=(id,n)=>AF_EQ[id]?qmxEq(id).n:esTeam(afNombre({id,name:n}));
+  const fut=c.tipo==="fut", H=fut?nm(c.h,c.hn):(NT[c.h]?.n||c.h), A=fut?nm(c.a,c.an):(NT[c.a]?.n||c.a);
+  const liga=fut?(LEAGUES[c.k]?.label||""):"NFL", hora=new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",hour:"numeric",minute:"2-digit"}).format(new Date(c.ts*1000));
+  let q,ops;
+  if(fut&&c.q==="gana"){ q=`¿Quién gana el ${H} vs ${A}?`; ops=[["a",H],["b","Empate"],["c",A]]; }
+  else if(fut&&c.q==="goles"){ q=`¿Habrá 3 goles o más en el ${H} vs ${A}?`; ops=[["a","Sí, 3 o más"],["b","No, 2 o menos"]]; }
+  else if(fut){ q=`¿Anotan los dos en el ${H} vs ${A}?`; ops=[["a","Sí, los dos"],["b","No"]]; }
+  else if(c.q==="spread"){ const fav=c.sp>0?H:A, otro=c.sp>0?A:H; q=`¿Los ${fav} le ganan a los ${otro} por más de ${String(Math.abs(c.sp)).replace(".",",")} puntos?`; ops=[["a","Sí"],["b","No"]]; }
+  else if(c.q==="total"){ q=`¿Habrá más de ${String(c.tot).replace(".",",")} puntos en ${A} en ${H}?`; ops=[["a","Más"],["b","Menos"]]; }
+  else { q=`¿Quién gana ${A} en ${H}?`; ops=[["a",H],["c",A]]; }
+  return {q,ops,liga,hora,H,A};
+}
+async function rdMiResp(f){
+  const L=rdLs(); if(L[f]) return L[f];
+  if(!amOk()) return null; if(RD.mias[f]!==undefined) return RD.mias[f];
+  try{ const s=await ACCT.db.doc(`rd_resp/${f}_${ACCT.user.uid}`).get(); RD.mias[f]=s.exists?s.data().r:null; if(RD.mias[f]){ L[f]=RD.mias[f]; try{ localStorage.setItem("pz_rd",JSON.stringify(L)); }catch(e){} } }catch(e){ RD.mias[f]=null; }
+  return RD.mias[f];
+}
+async function rdCnt(f){ try{ const s=await ACCT.db?.doc(`rd_cnt/${f}`).get(); RD.cnt[f]=s?.exists?s.data():{}; }catch(e){ RD.cnt[f]=RD.cnt[f]||{}; } return RD.cnt[f]; }
+async function rdAmigosResp(f){
+  if(!amOk()) return []; await amCarga(); const A=amAmigos();
+  const R=await Promise.all(A.map(async a=>{ try{ const s=await ACCT.db.doc(`rd_resp/${f}_${a.otro}`).get(); return s.exists?{uid:a.otro,r:s.data().r,a}:null; }catch(e){ return null; } }));
+  return RD.am[f]=R.filter(Boolean);
+}
+async function rdMiHash(){ if(!amOk()) return null; return RD.h||(RD.h=await q5Hash(ACCT.user.uid)); }
+async function rdPinta(){
+  const el=$("#hoyRd"); if(!el||$("#hoy").classList.contains("hidden")) return;
+  const D_=await rdDatos(), f=rdHoy(), c=D_[f], ayer=D_[rdMas(f,-1)], man=D_[rdMas(f,1)];
+  if(!c){ el.innerHTML=man?`<section class="rdcard rdnada"><div class="rdh"><span class="rdtag">Reto del día</span></div><span>Hoy no hay reto. Mañana: <b>${hoyEsc(rdTexto(man).q)}</b></span></section>`:""; return; }
+  const T=rdTexto(c), cerr=c.ts<=Date.now()/1000, mi=await rdMiResp(f), h=await rdMiHash(), yo=h&&RD.t?.t?.[h], cuenta=amOk();
+  const [cnt,am]=mi||cerr?await Promise.all([rdCnt(f),rdAmigosResp(f)]):[{},[]];
+  const tot=T.ops.reduce((s,[k])=>s+(cnt[k]||0),0)||0;
+  const res=c.res, acierto=res&&mi?mi===res:null;
+  const opsH=!mi&&!cerr?`<div class="rdops n${T.ops.length}">${T.ops.map(([k,t],i)=>`<button class="rdop o${i}" data-rd="${k}"${cuenta?"":" data-acct"}>${hoyEsc(t)}</button>`).join("")}</div>
+      ${cuenta?`<span class="rdnota">Contesta antes de que empiece el partido. Si le atinas, tu racha sube.</span>`:`<span class="rdnota">Entra con tu cuenta para contestar y llevar tu racha.</span>`}`
+    :`<div class="rdbar">${T.ops.map(([k,t],i)=>{ const n=cnt[k]||0, pc=tot?Math.round(n/tot*100):0, tuya=mi===k, ok=res&&res===k;
+      return `<div class="rdb${tuya?" tuya":""}${ok?" ok":""}${res&&tuya&&!ok?" mal":""}"><i class="o${i}" style="width:${pc}%"></i><b>${hoyEsc(t)}${tuya?" · tu respuesta":""}${ok?" ✓":""}</b><span>${tot?pc+"%":""}</span></div>`; }).join("")}</div>
+      ${am.length?`<span class="rdam">${am.slice(0,6).map(x=>amAv(x.uid,24,x.a)).join("")}<span>${am.slice(0,3).map(x=>`${hoyEsc(amNom(x.uid,x.a).split(" ")[0])}: ${hoyEsc((T.ops.find(o=>o[0]===x.r)||["",""])[1])}`).join(" · ")}${am.length>3?` y ${am.length-3} más`:""}</span></span>`:""}`;
+  const estado=res==="x"?`<div class="rdres x">Se anuló: no cuenta para tu racha.</div>`:res?`<div class="rdres ${acierto?"si":"no"}">${mi?(acierto?`¡Le atinaste! Quedó ${c.gh}-${c.ga}.`:`Esta vez no. Quedó ${c.gh}-${c.ga}.`):`Quedó ${c.gh}-${c.ga}. No contestaste.`}</div>`
+    :cerr?`<span class="rdnota">${mi?"Ya está en juego. La respuesta sale cuando termine.":"Ya cerró. Mañana hay otro."}</span>`:"";
+  const ayerH=ayer&&ayer.res&&ayer.res!=="x"?(()=>{ const m=rdLs()[rdMas(f,-1)]; return `<span class="rdayer">Ayer: ${m?(m===ayer.res?"le atinaste":"no le atinaste"):"no contestaste"} · ${hoyEsc(rdTexto(ayer).ops.find(o=>o[0]===ayer.res)?.[1]||"")}</span>`; })():"";
+  el.innerHTML=`<section class="rdcard${RD.k?" rdre":""}"><div class="rdh"><span class="rdtag">Reto del día</span><span class="rdmeta">${hoyEsc(T.liga)} · ${hoyEsc(T.hora)}</span>
+      ${yo?.r?`<span class="vfl rdfl">${VIDA_FLAMA}${yo.r}</span>`:""}</div>
+    <b class="rdq">${hoyEsc(T.q)}</b>${opsH}${estado}
+    <div class="rdpie">${!cerr?`<span class="rdcd" data-rdcd="${c.ts}"></span>`:ayerH||"<span></span>"}<button class="q5link" data-rdsem="1">Tu semana</button></div></section>`;
+  RD.k=0; rdTick();
+}
+function rdTick(){ for(const e of document.querySelectorAll("[data-rdcd]")){ let s=Math.max(0,Math.round(+e.dataset.rdcd-Date.now()/1000)); if(!s){ rdPinta(); return; }
+  const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; e.textContent=`Cierra en ${h?h+":":""}${String(m).padStart(h?2:1,"0")}:${String(x).padStart(2,"0")}`; } }
+async function rdResponde(r){
+  if(!amOk()){ acctOpen(); return; }
+  const f=rdHoy(), c=RD.d?.[f]; if(!c||c.ts<=Date.now()/1000) return rdPinta();
+  try{ await ACCT.db.doc(`rd_resp/${f}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,f,r,t:grFV().serverTimestamp()}); }
+  catch(e){ console.warn("Reto del día:",e?.code||e); pzAviso("No se guardó","¿Ya empezó el partido? Intenta de nuevo"); return rdPinta(); }
+  const L=rdLs(); L[f]=r; try{ localStorage.setItem("pz_rd",JSON.stringify(L)); }catch(e){} RD.mias[f]=r;
+  ACCT.db.doc(`rd_cnt/${f}`).set({[r]:grFV().increment(1)},{merge:true}).catch(()=>{});
+  pzTrack("reto_dia",{q:c.q}); vidaAct?.("p"); RD.k=1; await rdPinta(); pzAviso("¡Listo!","Mañana sale la respuesta");
+}
+async function rdSemana(){
+  const D_=await rdDatos(), f=rdHoy(), lun=rdMas(f,-((new Date(f+"T12:00:00Z").getUTCDay()+6)%7)), h=await rdMiHash();
+  const dias=[...Array(7)].map((_,i)=>rdMas(lun,i)), mias=await Promise.all(dias.map(d=>d<=f?rdMiResp(d):null));
+  await amCarga(); const A=amAmigos(), H=await Promise.all(A.map(a=>q5Hash(a.otro)));
+  const filas=[...(h&&RD.t?.t?.[h]?[["Tú",h,ACCT.user.uid]]:[]),...A.map((a,i)=>[amNom(a.otro,a),H[i],a.otro]).filter(([,x])=>RD.t?.t?.[x])].map(([n,x,uid])=>({n,uid,...RD.t.t[x]})).sort((a,b)=>b.w[0]-a.w[0]||b.r-a.r);
+  const man=D_[rdMas(f,1)];
+  $("#gbody").innerHTML=`<div class="rdsem"><h2>Reto del día</h2>
+    <div class="rdsd">${dias.map((d,i)=>{ const c=D_[d], m=mias[i], st=!c?"":c.res==="x"?"x":c.res?(m?(m===c.res?"ok":"mal"):"no"):d===f?"hoy":"";
+      return `<span class="${st}"><i>${st==="ok"?"✓":st==="mal"||st==="no"?"×":st==="x"?"–":st==="hoy"?"?":""}</i><small>${"LMMJVSD"[i]}</small></span>`; }).join("")}</div>
+    <h3 class="pet">Tus amigos esta semana</h3>
+    ${filas.length?`<div class="rdtab">${filas.map((x,i)=>`<div><b>${i+1}</b>${x.uid?amAv(x.uid,30):""}<span>${hoyEsc(x.n)}</span>${x.r?`<span class="vfl">${VIDA_FLAMA}${x.r}</span>`:"<span></span>"}<strong>${x.w[0]}/${x.w[1]}</strong></div>`).join("")}</div>`:`<p class="note">Cuando tú y tus amigos contesten, aquí sale quién va mejor. La tabla se actualiza en la mañana y en la noche.</p>`}
+    ${man?`<div class="rdman"><b>Mañana</b><span>${hoyEsc(rdTexto(man).q)}</span></div>`:""}
+    <p class="note">Cada día un deporte distinto. Tu racha cuenta los días seguidos que le atinas; si no contestas o fallas, empieza de nuevo. Con 7 y 30 días ganas cosas para tu avatar.</p></div>`;
+  if(!dlg.open) dlg.showModal(); FICHA.pila=[];
+}
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
+  const b=t.closest("#hoyRd [data-rd]"); if(b&&!b.hasAttribute("data-acct")){ b.classList.add("pzllena"); return rdResponde(b.dataset.rd); }
+  if(t.closest("#hoyRd [data-rdsem]")) return rdSemana();
+});
+setInterval(()=>{ if(!document.hidden&&$("#hoyRd [data-rdcd]")) rdTick(); },1000);
+
 // ---------- Tu portada (28 oct 2026): escoge qué sale en Hoy y en qué orden ----------
 // localStorage "pz_hoy" = {o: [secciones ocultas], ord: [orden de las de la columna principal]}; viaja con tu cuenta.
-const HOY_SEC=[["hoyPor","Saludo y tus pendientes","Tu equipo de hoy, el cierre de tus picks y tu semana",0],["hoyVivo","En vivo","Los partidos que se están jugando",0],
+const HOY_SEC=[["hoyPor","Saludo y tus pendientes","Tu equipo de hoy, el cierre de tus picks y tu semana",0],["hoyRd","Reto del día","Una pregunta al día; si le atinas, tu racha sube",0],["hoyVivo","En vivo","Los partidos que se están jugando",0],
   ["hoyFav","Mis equipos","Tarjetas de tus equipos y atletas",1],["hoySem","Partidos de la semana","Los dos partidos grandes y la votación",1],["hoyMarc","Partidos de hoy","Todos los marcadores del día por liga",1],
   ["hoyUlt","Lo último","Lesiones, rachas, fichajes y notas",1],["hoyNfl","NFL de la semana","Juegos y momios de la semana",1],["hoyLpz","Lo de La Pizarra","Datos, Power Ranking y tablas",0]];
-const HOY_ESENCIAL=["hoyPor","hoyVivo","hoyFav","hoyMarc"];
+const HOY_ESENCIAL=["hoyPor","hoyRd","hoyVivo","hoyFav","hoyMarc"];
 function hoyConf(){ try{ return JSON.parse(localStorage.getItem("pz_hoy")||"{}")||{}; }catch(e){ return {}; } }
 function hoyConfGuarda(C){ try{ localStorage.setItem("pz_hoy",JSON.stringify(C)); }catch(e){} if(typeof acctPush==="function") acctPush(); hoyConfAplica(); }
 function hoyConfAplica(){ const C=hoyConf(), oc=new Set(C.o||[]), ord=C.ord||[];
   for(const [id,,,mov] of HOY_SEC){ const el=$("#"+id); if(!el) continue; el.hidden=oc.has(id); if(mov){ const i=ord.indexOf(id); el.style.order=i>=0?String(i):""; } }
   const b=$("#hoyCfg"); if(b) b.classList.toggle("on",oc.size>0); }
 function hoyConfLista(){ const ord=hoyConf().ord||[], mov=HOY_SEC.filter(x=>x[3]); const M=mov.slice().sort((a,b)=>{ const i=ord.indexOf(a[0]), j=ord.indexOf(b[0]); return (i<0?99+mov.indexOf(a):i)-(j<0?99+mov.indexOf(b):j); });
-  return [HOY_SEC[0],HOY_SEC[1],...M,HOY_SEC[7]]; }
+  return [...HOY_SEC.filter(x=>!x[3]&&x[0]!=="hoyLpz"),...M,HOY_SEC.find(x=>x[0]==="hoyLpz")]; }
 function hoyConfAbre(){
   const oc=new Set(hoyConf().o||[]), L=hoyConfLista(), M=L.filter(x=>x[3]);
   $("#gbody").innerHTML=`<div class="hcfg"><h2>Tu portada</h2><p class="note">Escoge qué quieres ver en Hoy y en qué orden. ${typeof acctOk==="function"&&acctOk()?"Se guarda en tu cuenta.":"Se guarda en este navegador."}</p>
@@ -7613,6 +7737,7 @@ async function acctInit(){
     const was=ACCT.user; ACCT.user=u||null; ACCT.ready=true; acctBtn(); acctSlHint(); try{localStorage.setItem("pz_sesion",u?"1":"0");}catch(e){}
     if(u&&(!was||was.uid!==u.uid)){ if(u.emailVerified){ acctPull(); if(adlg.open) adlg.close(); } else if(adlg.open) acctRender(); if(typeof perfCargaYo==="function") perfCargaYo(); }
     if(!u&&typeof PERF!=="undefined") PERF.yo=null;
+    if(typeof RD!=="undefined"){ RD.h=null; RD.mias={}; RD.pt=0; }
     GR.loaded=false; GR.ids=[]; GR.info={}; GR.data={};
     if(u&&acctOk()) grLoadIds().then(()=>{ grReconcile(true).catch(()=>{}); if(acctOnQ()) loadQuiniela(); Promise.all(GR.ids.map(id=>grInfo(id).catch(()=>null))).then(()=>{ if(acctOnQ()) loadQuiniela(); }); });
     if(acctOnQ()) loadQuiniela();
@@ -8697,6 +8822,7 @@ function hoyPaint(){
   if(typeof votosPinta==="function") votosPinta();
   if(typeof vidaPinta==="function") vidaPinta();
   if(typeof hoyConfAplica==="function") hoyConfAplica();
+  if(typeof rdPinta==="function"&&Date.now()-(RD.pt||0)>60e3){ RD.pt=Date.now(); rdPinta(); }
 }
 function hoyRender(){
   hoyPaint(); hoyMx(); votosCarga();
