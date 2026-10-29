@@ -2928,6 +2928,25 @@ except Exception as ex:
 # OJO: 'out' no se toca (más abajo se sigue usando out['ffw'] para El Pizarrón); D es una copia sin esas claves.
 PAQUETES={"stats":["qb","rec","rush","def","teams"],"box":["box"],"previa":["h2h","starters"],
           "fantasy":["fantasy","sleeper","ffw"],"fotos":["wd_photos","wd_photos_q"],"historia":["historia"],"goleo":["bota"]}
+# Respaldo de lo que sale de API-Football (29 oct 2026): el 28 oct se acabaron los pedidos y la quiniela de Liga MX, la portada
+# de fútbol y el goleo se quedaron vacíos varias corridas seguidas (cada una copiaba de la anterior, que ya estaba vacía).
+# Ahora cada corrida buena guarda esas claves en docs/datos/respaldo_af.json; si una corrida sale sin API-Football (o con
+# mucho menos de lo normal), las toma de ahí. "hoy" solo si el respaldo es del mismo día.
+AF_CLAVES=["qmx","eq_info","fav_eq","goleo","inter_on","sel_conv","sel_plantel","hoy"]
+try:
+    _rr=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos','respaldo_af.json')
+    _hoy=datetime.now(ZoneInfo("America/Mexico_City")).date().isoformat()
+    _degr=AF_AGOTADO[0] or ('AF_FX' in globals() and not AF_FX.get('mx'))
+    if _degr:
+        _R=json.load(open(_rr,encoding='utf-8')); _rec=[]
+        for k in AF_CLAVES:
+            if k not in _R or (k=="hoy" and _R.get("_f")!=_hoy): continue
+            if not out.get(k) or len(json.dumps(out[k]))<0.3*len(json.dumps(_R[k])): out[k]=_R[k]; _rec.append(k)
+        print(f"API-Football incompleto: se tomaron del respaldo {_rec}")
+    else:
+        _R={k:out[k] for k in AF_CLAVES if out.get(k)}; _R["_f"]=_hoy
+        json.dump(_R,open(_rr,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+except Exception as ex: _pz_err("Respaldo de API-Football",ex)
 # Si API-Football se quedó sin pedidos, lo que no se pudo armar se toma de la página anterior (y de sus paquetes)
 if AF_AGOTADO[0]:
     try:
