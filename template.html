@@ -1775,6 +1775,20 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .amperfil{position:relative;margin:-8px -4px 0}.ampf{height:90px;border-radius:18px;background:linear-gradient(120deg,var(--c1),var(--c2))}
 .ampfin{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:0 6px;margin-top:-48px}.ampfin h2{margin:6px 0 0}
 .ampbtn{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:6px}
+/* Avisos (28 oct 2026) */
+#ntBtn.ring svg{animation:ntring 1.2s ease 2;transform-origin:50% 8%}@keyframes ntring{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}30%{transform:rotate(-12deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-4deg)}}
+.ntx{display:flex;flex-direction:column;gap:10px}.ntcab{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-right:52px}.ntcab h2{margin:0}
+.ntfil{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.ntfil::-webkit-scrollbar{display:none}.ntfil button{min-height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 13px var(--body);cursor:pointer;flex-shrink:0}
+.ntfil button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}
+.ntg{font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:6px 2px 0}
+.nti{display:flex;gap:12px;align-items:flex-start;padding:10px 10px;border-radius:14px;border:0;background:transparent;color:var(--ink);text-align:left;width:100%;cursor:pointer;font:inherit;animation:ntin .3s ease both}
+.nti.nuevo{background:rgba(242,212,102,.07)}@keyframes ntin{from{opacity:0;transform:translateY(4px)}}
+.ntic{position:relative;width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--c,#263D36);color:#ECEFE7}
+.ntic .fvlogo,.ntic>span{width:42px!important;height:42px!important}.ntic>span:not(.fvlogo):not([class]){display:flex;align-items:center;justify-content:center}
+.ntt{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}.ntt>span{font-size:15px;line-height:1.3}.ntt small{color:var(--muted);font-size:12px}
+.ntt .ntacc{display:flex;gap:8px;margin-top:4px}.ntt .ntacc .btn{min-height:34px;padding:0 14px}
+.ntdot{width:9px;height:9px;border-radius:50%;background:var(--mark);margin-top:6px;flex-shrink:0}.nti:not(.nuevo) .ntdot{visibility:hidden}
+@media(prefers-reduced-motion:reduce){#ntBtn.ring svg,.nti{animation:none}}
 /* Perfil completo (28 oct 2026) */
 .pfx{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
 .pfban{position:relative;height:120px;border-radius:18px;overflow:hidden;background:linear-gradient(120deg,var(--c1) 0 54%,var(--c2) 54% 61%,var(--c1) 61%)}
@@ -1894,6 +1908,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
     <button aria-selected="false" data-sport="ff">Fantasy NFL</button>
     <button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false">Deportes <svg class="depch" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
   </nav>
+  <button class="ambtn" id="ntBtn" aria-label="Avisos" title="Avisos" hidden><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></button>
   <button class="ambtn" id="amBtn" aria-label="Amigos" title="Amigos" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.9-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6-.4 4.6 1.2 5 4.3"/></svg></button>
   <button class="acct" id="acctBtn" aria-label="Tu cuenta" hidden>Entrar</button>
 </header>
@@ -7627,7 +7642,7 @@ async function perfCargaYo(){
     else { const p=perfMio()||perfDef(); PERF.yo=p; try{ localStorage.setItem("pz_perfil",JSON.stringify(p)); }catch(e){} await perfEscribe(p); }   // todos tienen perfil: así los encuentran sus amigos
     if(s.exists&&!s.data().al&&PERF.yo){ await perfEscribe(PERF.yo); } }catch(e){ console.warn("Perfil:",e?.code||e); }
   acctBtn(); if(typeof vidaPinta==="function") vidaPinta();
-  if(typeof amCarga==="function") amCarga(true).then(()=>{ Promise.all([duCarga().catch(()=>{}),vidaLogrosCalc().catch(()=>{})]).then(()=>setTimeout(perfSync,1500)); if(AM.inv&&!$("#amigos").classList.contains("hidden")) amRender(); else if(AM.inv) navIr("amigos"); });
+  if(typeof amCarga==="function") amCarga(true).then(()=>{ Promise.all([duCarga().catch(()=>{}),vidaLogrosCalc().catch(()=>{})]).then(()=>{ setTimeout(perfSync,1500); ntCalcula(true).catch(()=>{}); }); if(AM.inv&&!$("#amigos").classList.contains("hidden")) amRender(); else if(AM.inv) navIr("amigos"); });
 }
 async function perfEscribe(p){
   const ref=ACCT.db.doc(`perfiles/${ACCT.user.uid}`);
@@ -7897,7 +7912,7 @@ async function amComenta(pid,tx){ tx=String(tx||"").trim().slice(0,140); if(!tx)
 }
 document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) return;
   if(t.closest("#amBtn")){ navIr("amigos"); window.scrollTo(0,0); return; }
-  if(!t.closest("#amigos,#gbody .amperfil,#gbody .ampost,#gbody .duel")) return;
+  if(!t.closest("#amigos,#gbody .amperfil,#gbody .ampost,#gbody .duel,#gbody .ntx")) return;
   const g=s=>t.closest(s);
   let b;
   if((b=g("[data-amok]"))) return amAcepta(b.dataset.amok);
@@ -10018,6 +10033,102 @@ function navPush(id){
   if(NAV.listo&&!NAV.restaurando&&!igual){ const n=(history.state?.n||0)+1; history.pushState({tab:id,liga,n},"",navHash(id)); }
   navBtn();
 }
+// ---------- Avisos (28 oct 2026): la campanita ----------
+// Se arman en el navegador con lo que ya carga la página: solicitudes de amistad (y quién aceptó la tuya), retos a duelo y
+// resultados, comentarios y reacciones nuevas en tus posts (posts/{pid}: r y nc contra lo último visto), el reto del día y
+// los resultados de tus equipos (favsItems). Lo leído y la base de reacciones viven en localStorage pz_nt.
+const AV={L:[],f:"todo",p:null,t:0};
+const ntLs=()=>{ try{ return JSON.parse(localStorage.getItem("pz_nt")||"{}")||{}; }catch(e){ return {}; } };
+const ntGuarda=o=>{ try{ localStorage.setItem("pz_nt",JSON.stringify(o)); }catch(e){} };
+const NT_K={social:"Social",retos:"Retos",partidos:"Partidos"};
+const ntTs=x=>x?.toMillis?x.toMillis()/1000:x?.seconds!=null?x.seconds:+x||0;
+const NT_IC={dia:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`,
+  com:`<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>`,
+  du:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/></svg>`};
+async function ntCalcula(forzar){
+  if(!amOk()) return []; if(!forzar&&AV.L.length&&Date.now()-AV.t<90e3) return AV.L; if(AV.p) return AV.p;
+  AV.p=(async()=>{
+    const yo=ACCT.user.uid, now=Date.now()/1000, S=ntLs(), base=S.b||{}, primera=!S.b, L=[];
+    await Promise.all([amCarga(),duCarga().catch(()=>[]),amFeed().catch(()=>[]),rdDatos().catch(()=>null)]);
+    // amistad
+    for(const a of AM.L||[]){ const ts=ntTs(a.t)||now;
+      if(a.est==="pend"&&a.de!==yo) L.push({id:`am-${a.id}`,k:"social",ts,uid:a.otro,tx:`<b>${hoyEsc(amNom(a.otro,a))}</b> quiere ser tu amigo`,acc:`<button class="btn" data-amok="${hoyEsc(a.id)}">Aceptar</button><button class="q5link" data-amno="${hoyEsc(a.id)}">Ahora no</button>`,fijo:1});
+      else if(a.est==="ok"&&a.de===yo&&ts>now-7*86400) L.push({id:`ama-${a.id}`,k:"social",ts,uid:a.otro,tx:`<b>${hoyEsc(amNom(a.otro,a))}</b> aceptó tu solicitud. Ya son amigos`,abre:`data-ntper="${hoyEsc(a.otro)}"`}); }
+    // duelos
+    for(const d of DU.L||[]){ const nom=hoyEsc(duNom(d)), T=(DU_T[d.tipo]||["duelo"])[0];
+      if(d.est==="pend"&&d.de!==yo&&d.ci>now) L.push({id:`du-${d.id}`,k:"retos",ts:ntTs(d.t)||now,uid:d.otro,tx:`<b>${nom}</b> te retó a un duelo: ${hoyEsc(T)} · ${hoyEsc(d.e||"")}`,acc:`<button class="btn" data-duok="${hoyEsc(d.id)}">Aceptar</button>`,fijo:1});
+      if(d.est==="ok"&&d.res?.p&&d.ci>now-7*86400){ const g=d.res.g, m=`${d.res.p[yo]??0}-${d.res.p[d.otro]??0}`;
+        L.push({id:`dur-${d.id}`,k:"retos",ts:d.ci,ic:"du",c:g===yo?"#2F5A3F":g?"#5A2F2F":"#3A4A44",tx:g===yo?`Le ganaste a <b>${nom}</b> ${m} en ${hoyEsc(T)}`:g?`<b>${nom}</b> te ganó ${m} en ${hoyEsc(T)}`:`Empataste ${m} con <b>${nom}</b> en ${hoyEsc(T)}`,abre:`data-ntper="${hoyEsc(d.otro)}" data-ntab="du"`}); } }
+    // tus posts: comentarios y reacciones nuevas (se vuelven a leer para ver lo último)
+    const mios=Object.values(AM.posts).filter(x=>x.uid===yo).sort((a,b)=>ntTs(b.t)-ntTs(a.t)).slice(0,8), nb={};
+    await Promise.all(mios.map(async x=>{ try{ const sn=await ACCT.db.doc(`posts/${x.id}`).get(); if(sn.exists) Object.assign(x,sn.data()); }catch(e){} }));
+    for(const x of mios){ const r=(x.r?.f||0)+(x.r?.j||0)+(x.r?.p||0), nc=x.nc||0, b=base[x.id]||{r:0,nc:0}; nb[x.id]={r,nc};
+      const cita=`«${String(x.tx||"").slice(0,48)}${String(x.tx||"").length>48?"…":""}»`;
+      if(primera) continue;
+      if(nc>b.nc){ let C=[]; try{ const q=await ACCT.db.collection(`posts/${x.id}/com`).orderBy("ts","desc").limit(Math.min(5,nc-b.nc)).get(); C=q.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.uid!==yo); }catch(e){}
+        for(const c of C) L.push({id:`co-${x.id}-${c.id}`,k:"social",ts:ntTs(c.ts)||now,uid:c.uid,ic:C.length?null:"com",tx:`<b>${hoyEsc(c.n||amNom(c.uid))}</b> comentó tu post: “${hoyEsc(c.tx)}”`,abre:`data-ntpost="${hoyEsc(x.id)}"`}); }
+      if(r>b.r) L.push({id:`re-${x.id}-${r}`,k:"social",ts:now,ic:"fuego",c:"#4A3E12",tx:`${r-b.r===1?"Una reacción nueva":`${r-b.r} reacciones nuevas`} a tu post ${hoyEsc(cita)}`,abre:`data-ntpost="${hoyEsc(x.id)}"`}); }
+    if(!S.b) S.b=nb;   // la primera vez solo se toma la base (no se avisa de lo viejo)
+    else for(const [k,v] of Object.entries(nb)) if(!S.b[k]) S.b[k]={r:0,nc:0};
+    // reto del día
+    const h=await rdMiHash().catch(()=>null);
+    for(const f of [rdMas(rdHoy(),-1),rdHoy()]){ const R=RD.d?.[f]; if(!R?.res||R.res==="x") continue; const m=await rdMiResp(f).catch(()=>null); if(!m) continue;
+      const ok=m===R.res, rt=h&&RD.t?.t?.[h];
+      L.push({id:`rd-${f}`,k:"retos",ts:R.ts||now,ic:"dia",c:ok?"#2F5A3F":"#5A2F2F",tx:ok?`Le atinaste al reto del día${rt?.r>=2?`. Llevas <b>${rt.r} seguidas</b>`:""}`:"Fallaste el reto del día. Mañana hay otro",abre:`data-ntir="hoy"`}); }
+    // tus equipos
+    try{ const dep=FAVS.dep; FAVS.dep="todo"; const {R}=favsItems(); FAVS.dep=dep;
+      for(const x of R.filter(x=>x.ts>now-2*86400&&x.ts<now)) L.push({id:`eq-${x.k}-${Math.round(x.ts)}`,k:"partidos",ts:x.ts+2*3600,eq:x.k,tx:`${x.r==="G"?"Ganó":x.r==="P"?"Perdió":"Empató"} <b>${hoyEsc(x.t.split(" ")[0])}</b>: ${hoyEsc(x.t)}`,sub:x.s,abre:x.abre}); }catch(e){}
+    // historial: lo que ya salió se queda (como leído) aunque ya no se calcule, 14 días y máximo 40
+    const ids=new Set(L.map(x=>x.id)), lim=now-14*86400, H=(S.h||[]).filter(x=>x.ts>lim&&!ids.has(x.id));
+    S.h=[...L.filter(x=>!x.fijo).map(({acc,fijo,...x})=>x),...H].filter((x,i,A)=>A.findIndex(y=>y.id===x.id)===i).sort((a,b)=>b.ts-a.ts).slice(0,40);
+    ntGuarda(S); AV.L=[...L,...H].sort((a,b)=>(b.fijo||0)-(a.fijo||0)||b.ts-a.ts); AV.t=Date.now(); ntBadge(); return AV.L;
+  })().catch(e=>{ console.warn("Avisos:",e?.code||e); return AV.L; }).finally(()=>{ AV.p=null; });
+  return AV.p;
+}
+const ntLeido=(S,x)=>!!S.l?.[x.id];
+function ntBadge(){ const b=$("#ntBtn"); if(!b) return; b.hidden=!amOk(); const S=ntLs(), n=AV.L.filter(x=>!ntLeido(S,x)).length;
+  let s=b.querySelector(".vbadge"); if(!n){ s?.remove(); b.setAttribute("aria-label","Avisos"); return; }
+  if(!s){ s=document.createElement("b"); s.className="vbadge"; b.append(s); } const ant=+s.textContent||0; s.textContent=n>9?"9+":n; b.setAttribute("aria-label",`Avisos: ${n} sin leer`);
+  if(n>ant&&!PZ_RM()){ b.classList.remove("ring"); void b.offsetWidth; b.classList.add("ring"); } }
+function ntMarca(ids){ const S=ntLs(); S.l=S.l||{}; for(const id of ids) S.l[id]=Math.round(Date.now()/1000);
+  const lim=Date.now()/1000-30*86400; for(const [k,v] of Object.entries(S.l)) if(v<lim) delete S.l[k];
+  // al leer un aviso de un post, la base de reacciones/comentarios de ese post queda en lo de ahora
+  const pids=new Set(ids.map(id=>(/^(co|re)-(.+?)-[^-]+$/.exec(id)||[])[2]).filter(Boolean));
+  for(const x of Object.values(AM.posts).filter(x=>x.uid===ACCT.user?.uid&&pids.has(x.id))){ S.b=S.b||{}; S.b[x.id]={r:(x.r?.f||0)+(x.r?.j||0)+(x.r?.p||0),nc:x.nc||0}; }
+  ntGuarda(S); ntBadge(); }
+function ntItem(x,S){
+  const ic=x.eq?favsLogo(x.eq,42):x.uid?amAv(x.uid,42):`<span>${x.ic==="fuego"?VIDA_FLAMA:NT_IC[x.ic]||NT_IC.dia}</span>`;
+  return `<${x.acc?"div":"button"} class="nti${ntLeido(S,x)?"":" nuevo"}" data-ntid="${hoyEsc(x.id)}" ${x.abre||""}><span class="ntic" style="--c:${x.c||"#263D36"}">${ic}</span>
+    <span class="ntt"><span>${x.tx}</span><small>${hoyEsc(amHace({seconds:x.ts}))}${x.sub?` · ${hoyEsc(x.sub)}`:""}</small>${x.acc?`<span class="ntacc">${x.acc}</span>`:""}</span><i class="ntdot"></i></${x.acc?"div":"button"}>`;
+}
+async function ntAbre(){
+  if(!amOk()) return acctOpen?.(); pzTrack("avisos_abre",{});
+  if(!dlg.open){ $("#gbody").innerHTML=pzSkel(3); dlg.showModal(); FICHA.pila=[]; }
+  await ntCalcula(true); ntPinta();
+}
+function ntPinta(){
+  const S=ntLs(), L=AV.L.filter(x=>AV.f==="todo"||x.k===AV.f), hoy0=new Date(rdHoy()+"T00:00:00-06:00").getTime()/1000;
+  const G=[["Hoy",L.filter(x=>x.ts>=hoy0)],["Antes",L.filter(x=>x.ts<hoy0)]].filter(g=>g[1].length);
+  $("#gbody").innerHTML=`<div class="ntx"><div class="ntcab"><h2>Avisos</h2>${AV.L.some(x=>!ntLeido(S,x))?`<button class="q5link" data-ntleer="1">Marcar leídas</button>`:""}</div>
+    <div class="ntfil" role="group" aria-label="Tipo de aviso">${[["todo","Todo"],...Object.entries(NT_K)].map(([k,n])=>`<button data-ntf="${k}" aria-pressed="${AV.f===k}">${n}</button>`).join("")}</div>
+    ${G.length?G.map(([n,X])=>`<h3 class="ntg">${n}</h3>${X.map(x=>ntItem(x,S)).join("")}`).join(""):`<p class="note">${AV.L.length?"Nada de este tipo por ahora.":"Aquí te avisamos cuando te reten, te comenten, acepten tu solicitud o jueguen tus equipos."}</p>`}</div>`;
+}
+document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) return; let b;
+  if(t.closest("#ntBtn")) return ntAbre();
+  if(!t.closest("#gbody .ntx")) return;
+  if((b=t.closest("[data-ntf]"))){ AV.f=b.dataset.ntf; return ntPinta(); }
+  if(t.closest("[data-ntleer]")){ ntMarca(AV.L.map(x=>x.id)); return ntPinta(); }
+  const it=t.closest("[data-ntid]"); if(!it) return; ntMarca([it.dataset.ntid]);
+  if(t.closest("[data-amok],[data-amno],[data-duok]")){ setTimeout(()=>ntCalcula(true).then(()=>{ if($("#gbody .ntx")) ntPinta(); }),1500); return; }   // los aceptan sus propios manejadores
+  if(it.dataset.ntper) return amPerfil(it.dataset.ntper,it.dataset.ntab||"pub");
+  if(it.dataset.ntpost){ const pid=it.dataset.ntpost; dlg.close(); setTimeout(()=>{ navIr("amigos"); window.scrollTo(0,0); AM.abierto=pid; amRender().then(()=>{ amComs(pid); document.querySelector(`.ampost[data-pid="${CSS.escape(pid)}"]`)?.scrollIntoView({block:"center"}); }); },350); return; }
+  if(it.dataset.ntir){ dlg.close(); setTimeout(()=>{ navIr(it.dataset.ntir); window.scrollTo(0,0); },350); return; }
+  if(it.dataset.nid||it.dataset.hid||it.dataset.eqf||it.dataset.hact){ dlg.close(); setTimeout(()=>{ navIr("favs"); window.scrollTo(0,0); },350); return; }
+  ntPinta();
+});
+setInterval(()=>{ if(amOk()&&!document.hidden) ntCalcula().catch(()=>{}); },120e3);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&amOk()) ntCalcula().catch(()=>{}); });
+
 function navIr(tab,liga){
   if(liga&&LEAGUES[liga]&&liga!==FLIG) selectLeague(liga,true);
   const sp=sportOf(tab); if(sp==="hoy") showSport("hoy");
