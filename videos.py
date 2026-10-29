@@ -13,15 +13,17 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
 # liga: (@ del canal o ids posibles, palabras que debe traer el título para que sea resumen o jugada)
+# Candidatos: id del canal (UC…), "user:" nombre viejo de usuario (RSS ?user=) o "@" del canal (se busca su id en la página)
 CANALES = {
-    "mx":  (["@LIGABBVAMX", "@ligabbvamx", "@LigaMX"], ["resumen", "goles", "gol ", "highlights"]),
-    "ucl": (["@ChampionsLeague", "@championsleague", "@UEFA"], ["highlights", "goals", "resumen"]),
-    "eng": (["@premierleague", "UCG5qGWdu8nIRZqJ_GgDwQ-w"], ["highlights", "goals"]),
-    "nba": (["@NBA", "UCWJ2lWNubArHWmf3FIHbfcQ"], ["highlights", "game recap", "full game"]),
-    "nfl": (["@NFL", "UCDVYQ4Zhbm3S2dlz7P1GBDg"], ["highlights", "game recap"]),
-    "f1":  (["@Formula1", "UCB_qr75-ydFVKSF9Dmo6izg"], ["highlights", "race", "qualifying"]),
+    "mx":  (["@LIGABBVAMX", "@ligabbvamx", "user:LIGABBVAMX", "user:ligamx", "@LigaMXoficial"], ["resumen", "goles", "gol ", "highlights"]),
+    "ucl": (["user:UEFAchampionsleague", "@ChampionsLeague", "user:UEFA", "@UEFA"], ["highlights", "goals", "resumen"]),
+    "eng": (["UCG5qGWdu8nIRZqJ_GgDwQ-w", "user:premierleague", "@premierleague"], ["highlights", "goals"]),
+    "nba": (["UCWJ2lWNubArHWmf3FIHbfcQ", "user:NBA", "@NBA"], ["highlights", "game recap", "full game"]),
+    "nfl": (["user:NFL", "@NFL", "UCDVYQ4Zhbm3S2dlz7P1GBDg"], ["highlights", "game recap"]),
+    "f1":  (["user:Formula1", "@Formula1", "UCB_qr75-ydFVKSF9Dmo6izg"], ["highlights", "race", "qualifying"]),
 }
-UA = {"User-Agent": "Mozilla/5.0 (compatible; LaPizarra/1.0; +https://lapizarra.mx)", "Accept-Language": "es-MX,es;q=0.9,en;q=0.8"}
+UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+      "Accept-Language": "es-MX,es;q=0.9,en;q=0.8", "Cookie": "CONSENT=YES+1; SOCS=CAI"}
 NS = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015", "m": "http://search.yahoo.com/mrss/"}
 
 def pide(url):
@@ -29,7 +31,7 @@ def pide(url):
         return r.read().decode("utf-8", "replace")
 
 def canal_id(c, cache):
-    if c.startswith("UC") and len(c) == 24: return c
+    if (c.startswith("UC") and len(c) == 24) or c.startswith("user:"): return c
     if c in cache: return cache[c]
     try:
         h = pide(f"https://www.youtube.com/{c}")
@@ -40,7 +42,8 @@ def canal_id(c, cache):
     return None
 
 def feed(cid):
-    x = ET.fromstring(pide(f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}"))
+    q = f"user={cid[5:]}" if cid.startswith("user:") else f"channel_id={cid}"
+    x = ET.fromstring(pide(f"https://www.youtube.com/feeds/videos.xml?{q}"))
     nombre = (x.findtext("a:title", default="", namespaces=NS) or "").strip()
     V = []
     for e in x.findall("a:entry", NS):
@@ -60,25 +63,26 @@ def generar(ruta_prev=None):
     cache = {}
     for k, v in (prev.get("can") or {}).items():
         if v.get("h"): cache[v["h"]] = v["id"]
-    ahora = time.time(); salida = []; can = {}
+    ahora = time.time(); salida = []; can = {}; dbg = {}
     for liga, (cands, palabras) in CANALES.items():
         ok = False
         for c in cands:
             cid = canal_id(c, cache)
-            if not cid: continue
+            if not cid: dbg.setdefault(liga, []).append([c, "sin id"]); continue
             try: nombre, V = feed(cid)
-            except Exception as e: print("Videos:", liga, c, e); continue
+            except Exception as e: print("Videos:", liga, c, e); dbg.setdefault(liga, []).append([c, str(e)[:80]]); continue
             can[liga] = {"id": cid, "n": nombre, "h": c if c.startswith("@") else ""}
             buenos = [x for x in V if ahora - x["ts"] < 5 * 86400 and any(p in x["t"].lower() for p in palabras)
                       and "#shorts" not in x["t"].lower()]
             for x in buenos[:8]: salida.append({**x, "c": liga, "n": nombre})
             print(f"Videos: {liga} → {nombre} ({cid}): {len(buenos)} de {len(V)}")
+            dbg.setdefault(liga, []).append([c, f"ok {nombre}: {len(buenos)} de {len(V)}"])
             ok = True; break
         if not ok:   # si un canal falla, se quedan sus videos de la vez anterior
             salida += [x for x in prev.get("v") or [] if x.get("c") == liga and ahora - x.get("ts", 0) < 5 * 86400]
             if liga in (prev.get("can") or {}): can[liga] = prev["can"][liga]
     salida.sort(key=lambda x: -x["ts"])
-    return {"al": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "v": salida, "can": can}
+    return {"al": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "v": salida, "can": can, "dbg": dbg}
 
 if __name__ == "__main__":
     r = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "datos", "videos.json")
