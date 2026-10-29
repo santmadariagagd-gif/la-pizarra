@@ -1560,7 +1560,10 @@ button.fvnota{cursor:pointer}.fvnota .utag{align-self:flex-start}.fvnota b{font:
 .fvsmed b{font:800 34px/1 var(--display)}.fvsmed b small{font-size:16px}.fvsmed span{font-size:11px;color:var(--muted);text-align:center;max-width:70px;line-height:1.1}
 .fvsv{display:flex;flex-direction:column;gap:4px;min-width:0}.fvsv b{font:800 24px/1.05 var(--display)}.fvsv span{font-size:14px;color:#C9D6CF}
 .fvsl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.fvsmod{align-self:flex-start;margin-bottom:10px}
+.fvsmod{align-self:flex-start;margin-bottom:10px}.fvsmod2{align-self:flex-start;margin:-2px 0 10px}.fvsmod2 button{font-size:13px}
+.fvhb.fvhbe{position:relative;height:56px;align-items:stretch}.fvhb.fvhbe::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed rgba(255,255,255,.3)}
+.fvhb.fvhbe i{height:calc(var(--h)/2);align-self:flex-end;margin-bottom:28px;border-radius:2px 2px 0 0}.fvhb.fvhbe i.dn{align-self:flex-start;margin:28px 0 0;border-radius:0 0 2px 2px;transform-origin:top}
+.fvhdet{display:block;margin-top:4px;color:var(--muted);font-size:12px}
 .fvslh li{display:flex!important;flex-direction:column;align-items:stretch!important;gap:6px;padding:10px!important}.fvslh .fvst small,.fvslh .fvst b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 .fvhrow{display:grid;grid-template-columns:18px auto minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;padding:0;border:0;background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}
 .fvhrow em{font:800 18px var(--display);font-style:normal}
@@ -6905,6 +6908,7 @@ document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return
 // ---------- Favoritos (27 oct 2026): tus equipos y jugadores en su propia pestaña ----------
 // favsRender: ver "Favoritos v2" (28 oct 2026)
 $("#favs").addEventListener("click",ev=>{ const fs=ev.target.closest("[data-fvsuf]"); if(fs){ FAVS.sufH=fs.dataset.fvsuf==="h"; pzTrack("sufrometro_modo",{h:FAVS.sufH?1:0}); return favsRender(); }
+  const fe=ev.target.closest("[data-fvsexp]"); if(fe){ FAVS.sufE=fe.dataset.fvsexp==="1"; pzTrack("sufrometro_esperado",{e:FAVS.sufE?1:0}); return favsRender(); }
   const fa=ev.target.closest("[data-fvsab]"); if(fa){ SUFH.ab=SUFH.ab===fa.dataset.fvsab?null:fa.dataset.fvsab; return favsRender(); }
   const dp=ev.target.closest("[data-fvdep]"); if(dp){ FAVS.dep=dp.dataset.fvdep; pzTrack("favs_deporte",{d:FAVS.dep}); return favsRender(); }
   const a=ev.target.closest("[data-hact]");
@@ -8481,7 +8485,7 @@ const SUFH_EU={39:"Premier League",140:"LaLiga",135:"Serie A",78:"Bundesliga",61
 function sufhEquipo(k){
   const H=SUFH.d||{}, t=k[0], id=k.slice(1);
   if(t==="f"){
-    const MX=(H.mx||[]).filter(([,E])=>E[id]);
+    const MX=(H.mx||[]).filter(([n,E])=>E[id]&&n!=="Clausura 2020");   // Clausura 2020: se canceló por la pandemia
     if(MX.length){ const T=MX.map(([n,E])=>{ const [pos,et]=E[id], v=et===4?1:et===3?.8:et===2?.65:et===1?.5:.45*Math.max(0,1-(pos-1)/17); return {n,pos,et,v}; });
       const tt=H.mxt?.[id]||["",0,[]], fl=(tt[2]||[]).filter(f=>/\d{4}/.test(f[0])&&+f[0].match(/\d{4}/)[0]>=2011);
       const camp=T.filter(x=>x.et===4).length, fin=T.filter(x=>x.et===3).length, lig=T.filter(x=>x.et>=1).length;
@@ -8564,22 +8568,55 @@ async function sufTenWiki(nom){
   if(rr){ const v=[...rr.cells].slice(1).map(txt); yi.forEach(([,y],k)=>{ const n=parseInt((v[k]||"").replace(/\D/g,""),10); if(n>0&&n<3000) (Y[y]=Y[y]||{gs:[]}).rk=n; }); }
   return Y;
 }
+// ---- Contra lo esperado (28 oct 2026) ----
+// A cada equipo se le exige según su grandeza (títulos de toda su historia en Liga MX y Super Bowls; en lo demás, su nivel en
+// todo el periodo) y lo que venía haciendo (promedio de las 3 temporadas anteriores): esperado = 40% grandeza + 60% forma.
+// Cada temporada sufres según cuánto quedó abajo de lo esperado (y gozas si quedó arriba). Castigos: perder una final siendo
+// favorito y quedar fuera de la liguilla/playoffs siendo grande.
+function sufhBase(k,z){ const H=SUFH.d||{}, t=k[0], id=k.slice(1), media=z.T.reduce((a,x)=>a+x.v,0)/z.T.length;
+  if(t==="f"&&z.lab==="torneos"){ const n=H.mxt?.[id]?.[1]||0; return n>=10?.72:n>=6?.62:n>=3?.52:n>=1?.42:.32; }
+  if(t==="n"){ const n=H.nflt?.[id]?.[1]||0; return Math.max(n>=4?.62:n>=2?.56:n>=1?.5:.45,media*.9); }
+  return Math.max(.15,media); }
+function sufhRes(k,z,x){ const t=k[0];
+  if(t==="f"&&z.lab==="torneos") return x.et===4?"campeón":x.et===3?"perdió la final":x.et===2?"semifinal":x.et===1?"liguilla":`${x.pos}º sin liguilla`;
+  if(t==="f"){ const c=(x.cups||[]).slice().sort((a,b)=>b[1]-a[1])[0], ce=c?({6:`ganó la ${c[0]}`,5:`final de ${c[0]}`,4:`semis de ${c[0]}`,3:`cuartos de ${c[0]}`,2:`octavos de ${c[0]}`,1:`fase de grupos de ${c[0]}`})[c[1]]:""; return `${x.pos}º en la liga${ce?` · ${ce}`:""}`; }
+  if(t==="n") return x.et===4?"campeón":x.et===3?"perdió el Super Bowl":x.et===2?`${x.g}-${x.p}, llegó lejos en playoffs`:x.et===1?`${x.g}-${x.p}, comodines`:`${x.g}-${x.p}, sin playoffs`;
+  if(t==="b") return x.et===4?"campeón":x.et===3?"perdió las Finales":x.et===2?"semis o final de conferencia":x.et===1?"primera ronda":"sin playoffs";
+  if(t==="e"||t==="r") return `${x.pos}º`;
+  if(t==="t") return x.et===4?"ganó un Grand Slam":x.et===3?"final de Grand Slam":x.et===2?"semis de Grand Slam":x.et===1?"cuartos de Grand Slam":`#${x.rk||"?"} del mundo`;
+  return ""; }
+const sufhEspTxt=(k,z,e)=>{ const t=k[0], liga=t==="f"&&z.lab==="torneos", po=liga?"liguilla":t==="f"?"Europa":t==="t"?"segunda semana de los Grand Slams":t==="e"||t==="r"?"el podio":"playoffs";
+  return e>=.9?(t==="t"?"ganar Grand Slams":"ser campeón"):e>=.76?(t==="e"||t==="r"?"pelear el campeonato":t==="t"?"llegar a finales":"llegar a la final"):e>=.62?(t==="e"||t==="r"?"el podio":t==="t"?"semifinales de Grand Slam":t==="f"&&!liga?"pelear arriba":t==="n"||t==="b"?"final de conferencia":"semifinales"):e>=.48?po:"no pasar penas"; };
+function sufhExp(k,z){
+  const base=sufhBase(k,z), D=[]; let suf=0, cumple=0;
+  z.T.forEach((x,i)=>{ const prev=z.T.slice(Math.max(0,i-3),i).map(y=>y.v), forma=prev.length?prev.reduce((a,b)=>a+b,0)/prev.length:base;
+    const e=.4*base+.6*forma, d=x.v-e; let s=Math.max(0,Math.min(1,.4-d*1.6)), extra="";
+    if(x.et===3&&e>=.6){ s=Math.min(1,s+.15); extra="perdió la final siendo favorito"; }
+    if(x.et===0&&base>=.6&&!(k[0]==="e"||k[0]==="r")){ s=Math.min(1,s+.15); extra=extra||`siendo grande, ${k[0]==="f"&&z.lab==="torneos"?"se quedó fuera de la liguilla":k[0]==="f"?"no figuró":"se quedó fuera de playoffs"}`; }
+    if(d>=-.05) cumple++; suf+=s; D.push({n:x.n,d,e,s,res:sufhRes(k,z,x),extra}); });
+  const peores=D.slice().sort((a,b)=>a.d-b.d).filter(x=>x.d<-.08).slice(0,3);
+  return {suf:Math.round(100*suf/D.length),D,cumple,base,exige:sufhEspTxt(k,z,base),peores}; }
 function favsSufreH(){
   if(!SUFH.d){ sufhCarga(); return `<div class="fvsuf"><p class="note">Cargando la historia de tus equipos…</p></div>`; }
   const todos=[...Object.entries(FAV.eq).filter(([k])=>/^[fnbe]/.test(k)),...Object.entries(FAV.jug).filter(([k])=>"rt".includes(k[0]))];
   const L=todos.map(([k,x])=>{ const h=sufhEquipo(k); return h?{k,x,...h,n:Math.round(h.v*100)}:null; }).filter(Boolean);
   const sin=todos.length-L.length, carga=todos.some(([k])=>k[0]==="t"&&SUFT[FAV.jug[k]?.n]===null);
   if(!L.length) return `<div class="fvsuf"><p class="note">${carga?"Cargando la historia de tus favoritos…":"Todavía no tenemos la historia de tus favoritos."}</p></div>`;
+  const esp=FAVS.sufE!==false;
+  if(esp) for(const z of L){ z.X=sufhExp(z.k,z); z.n=100-z.X.suf; }
   L.sort((a,b)=>a.n-b.n); const prom=L.reduce((s,z)=>s+z.n,0)/L.length, suf=Math.round(100-prom), V=FAVS_VER.find(([m])=>prom>=m);
+  const sub=`<div class="hseg fvsmod2" role="group" aria-label="Cómo medir"><button data-fvsexp="1" aria-pressed="${esp}">Contra lo esperado</button><button data-fvsexp="0" aria-pressed="${!esp}">Solo resultados</button></div>`;
   const nom=(k,x)=>k[0]==="n"?(NT[k.slice(1)]?.n||x.n):k[0]==="b"?(NBA_N[k.slice(1)]||x.n):x.n;
+  const barrasE=z=>`<span class="fvhb fvhbe" aria-hidden="true">${z.X.D.map(x=>{ const h=Math.round(Math.min(1,Math.abs(x.d)/.45)*100); return `<i class="${x.d>=0?"up":"dn"}" style="--h:${Math.max(6,h)}%;background:${x.d>=.05?"#9FD3A8":x.d>-.05?"rgba(255,255,255,.35)":x.d>-.2?"#FFB27A":"#FF7A6B"}" title="${hoyEsc(x.n)}"></i>`; }).join("")}</span>`;
   const barras=z=>`<span class="fvhb" aria-hidden="true">${z.T.map(x=>`<i style="height:${Math.round(18+82*x.v)}%;background:${x.et>=4?"#F2D466":x.et===3?"#FFB27A":x.et>=1?"#9FD3A8":"rgba(255,255,255,.28)"}" title="${hoyEsc(x.n)}"></i>`).join("")}</span>`;
-  return `<div class="fvsuf"><div class="fvsg"><div class="fvsmed" style="--p:${suf}"><b>${suf}<small>%</small></b><span>de sufrimiento</span></div>
-      <div class="fvsv"><b>${hoyEsc(V[1])}</b><span>${hoyEsc(V[2])}</span></div></div>
+  return `${sub}<div class="fvsuf"><div class="fvsg"><div class="fvsmed" style="--p:${suf}"><b>${suf}<small>%</small></b><span>de sufrimiento</span></div>
+      <div class="fvsv"><b>${hoyEsc(V[1])}</b><span>${hoyEsc(esp?"Medido contra lo que se le exige a cada uno.":V[2])}</span></div></div>
     <ol class="fvsl fvslh">${L.map((z,i)=>{ const T=FAVS_SUF.find(([m])=>z.n>=m), ab=SUFH.ab===z.k;
-      return `<li><button class="fvhrow" data-fvsab="${hoyEsc(z.k)}" aria-expanded="${ab}"><span class="fvsn">${i+1}</span>${favsLogo(z.k,32)}<span class="fvst"><b>${hoyEsc(nom(z.k,z.x))}</b><small>${hoyEsc(z.det)}</small></span><em style="color:${T[2]}">${100-z.n}%</em></button>
-        ${barras(z)}<span class="fvhlab"><span>${hoyEsc(z.desde)}</span><span>${z.T.length} ${z.lab}</span><span>hoy</span></span>
-        ${ab?`<div class="fvhdolor">${z.dolor.length?`<b>Las que más dolieron</b>${z.dolor.map(([a,t,m])=>`<span><em>${hoyEsc(a)}</em>${hoyEsc(t)}${m?` · ${hoyEsc(m)}`:""}</span>`).join("")}`:`<b>Ni de qué quejarse</b><span>No hay finales perdidas en este periodo.</span>`}</div>`:""}</li>`; }).join("")}</ol>
-    <p class="note">Del que más te ha hecho sufrir al que menos. Verde: liguilla, playoffs o buena copa europea · naranja: final perdida · amarillo: campeón.${carga?" Cargando tenis…":sin>0?` ${sin===1?"Uno de tus favoritos todavía no tiene":`${sin} de tus favoritos todavía no tienen`} historia.`:""}${L.some(z=>z.wiki)?` Historia de NBA, F1 y tenis: <a href="https://es.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a> (CC BY-SA).`:""}</p></div>`;
+      return `<li><button class="fvhrow" data-fvsab="${hoyEsc(z.k)}" aria-expanded="${ab}"><span class="fvsn">${i+1}</span>${favsLogo(z.k,32)}<span class="fvst"><b>${hoyEsc(nom(z.k,z.x))}</b><small>${hoyEsc(esp?`Se le exige: ${z.X.exige} · cumplió ${z.X.cumple} de ${z.T.length}`:z.det)}</small></span><em style="color:${T[2]}">${100-z.n}%</em></button>
+        ${esp?barrasE(z):barras(z)}<span class="fvhlab"><span>${hoyEsc(z.desde)}</span><span>${z.T.length} ${z.lab}</span><span>hoy</span></span>
+        ${ab&&esp?`<div class="fvhdolor">${z.X.peores.length?`<b>Las peores decepciones</b>${z.X.peores.map(x=>`<span><em>${hoyEsc(x.n)}</em>Se esperaba ${hoyEsc(sufhEspTxt(z.k,z,x.e))} y quedó: ${hoyEsc(x.res)}${x.extra?` · ${hoyEsc(x.extra)}`:""}</span>`).join("")}`:`<b>Cumple lo que se le pide</b><span>No ha tenido decepciones grandes en este periodo.</span>`}<small class="fvhdet">${hoyEsc(z.det)}</small></div>`:""}
+        ${ab&&!esp?`<div class="fvhdolor">${z.dolor.length?`<b>Las que más dolieron</b>${z.dolor.map(([a,t,m])=>`<span><em>${hoyEsc(a)}</em>${hoyEsc(t)}${m?` · ${hoyEsc(m)}`:""}</span>`).join("")}`:`<b>Ni de qué quejarse</b><span>No hay finales perdidas en este periodo.</span>`}</div>`:""}</li>`; }).join("")}</ol>
+    <p class="note">Del que más te ha hecho sufrir al que menos. ${esp?"Cada barra es una temporada: para arriba (verde) le fue mejor de lo esperado, para abajo (naranja y rojo) peor. Toca un equipo para ver sus peores decepciones.":"Verde: liguilla, playoffs o buena copa europea · naranja: final perdida · amarillo: campeón."}${carga?" Cargando tenis…":sin>0?` ${sin===1?"Uno de tus favoritos todavía no tiene":`${sin} de tus favoritos todavía no tienen`} historia.`:""}${L.some(z=>z.wiki)?` Historia de NBA, F1 y tenis: <a href="https://es.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a> (CC BY-SA).`:""}</p></div>`;
 }
 // ---- Favoritos: tu equipo en vivo en todos los deportes (28 oct 2026) ----
 // Cuando lo que sigue de "Lo que sigue" ya empezó, la tarjeta grande se vuelve su marcador en vivo, con el estilo de cada deporte:
