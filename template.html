@@ -1449,7 +1449,16 @@ html.vsinscroll{overflow:hidden}
 @keyframes pzavgira{to{transform:rotate(360deg)}}
 .pzavin{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
 .pzavin svg{display:block}
-.acct.in.conav{border:0;background:none;padding:0;width:40px;height:40px;overflow:visible}
+.acct.in.conav{border:0;background:none;padding:0;width:40px;height:40px;overflow:visible;position:relative}
+/* 29 oct 2026: en el celular la barra de arriba ya no se parte en dos (la playera se iba a otra línea) */
+@media (max-width:720px){header.top{flex-wrap:nowrap!important;gap:8px}header.top .logo{min-width:0;white-space:nowrap;overflow:hidden}header.top .ambtn{margin-right:0}}
+@media (max-width:400px){header.top .logo{font-size:24px}header.top .logo svg{width:26px;height:26px}}
+/* Invitación a editar tu perfil mientras sigue como venía */
+.pfdot{position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:#FF9C80;border:2px solid var(--bg);animation:pfdot 1.6s ease-in-out infinite}@keyframes pfdot{50%{transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){.pfdot{animation:none}}
+.pfnudge{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:linear-gradient(120deg,#3E5A3A,var(--surface));border:1px solid var(--mark);margin:0 0 14px;position:relative;flex-wrap:wrap;max-width:640px}
+.pfnudge>span:not(.pzav){flex:1;min-width:170px;display:flex;flex-direction:column;gap:2px}.pfnudge>.pzav{flex:none}.pfnudge b{font:800 19px/1.1 var(--display)}.pfnudge small{color:var(--muted);font-size:13px}
+.pfnx{position:absolute;top:6px;right:8px;width:30px;height:30px;border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer}
 .aperf{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--line);margin:0 0 16px}
 .aperf>span:nth-child(2){flex:1;display:flex;flex-direction:column}.aperf b{font-size:16px}.aperf small{color:var(--muted);font-size:13px}
 .aperfv{width:56px;height:56px;border-radius:50%;border:1.5px dashed var(--mark);color:var(--mark);display:inline-flex;align-items:center;justify-content:center;font:700 22px var(--display);flex:none}
@@ -1813,8 +1822,8 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .smxfila.yo{border-color:var(--mark)}.smxfila.muerto{opacity:.65}.smxn{flex:1;display:flex;flex-direction:column;min-width:120px}.smxn small{color:var(--muted);font-size:12px}
 .fanliga{display:flex;gap:6px;margin:0 0 10px}.fanliga button{min-height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 14px var(--body);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .fanliga button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}.fanliga i{font:800 10px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;background:#FF9C80;color:#1d2a26;font-style:normal}
-.rdamL{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rdamc{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid var(--line)}
-.rdamc>span{display:flex;flex-direction:column;line-height:1.1}.rdamc b{font-size:13px}.rdamc small{font-size:12px;color:var(--muted)}.rdamc.ok{border-color:#9FD3A8}.rdamc.ok small{color:#9FD3A8}.rdamc.mal small{color:#FF9C80}
+.rdopc{display:flex;flex-direction:column;gap:5px}.rdb span small{display:block;font:600 11px var(--body);color:var(--muted);text-align:right}
+.rdamL{display:flex;flex-wrap:wrap;gap:5px;padding-left:6px}.rdamc{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid var(--line)}.rdamc b{font-size:13px}
 .pushc{padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
 .pushh{display:flex;align-items:center;gap:12px}.pushh>span,.pushp>span{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.pushh small,.pushp small{color:var(--muted);font-size:12px}
 .pushsw{width:52px;height:30px;border-radius:15px;border:0;background:var(--line);position:relative;padding:0;flex-shrink:0;cursor:pointer}.pushsw:disabled{opacity:.6}
@@ -2057,6 +2066,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <section class="panel" id="hoy">
   <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hoyacc"><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div><button class="hcfgbtn" id="hoyCfg" aria-label="Personalizar tu portada" title="Personalizar tu portada"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div></div>
   <div id="hoyPor"></div>
+  <div id="hoyPf"></div>
   <div id="hoyRd"></div>
   <div id="hoyVivo"></div>
   <div class="hoygrid">
@@ -6631,7 +6641,9 @@ async function smxRender(){
   else est=`<div class="smxest"><b>${C.n?`Sigues vivo · ${C.n} ${C.n===1?"jornada":"jornadas"}`:"Estás en la pelea"}</b><span>Escoge un equipo que gane. Si empata o pierde, quedas fuera. No puedes repetir equipo.</span></div>`;
   let pick="";
   if(ab!=null&&C.vivo&&!(empezo&&nunca)){ const yo=smxMio(ab);
-    pick=`<h3 class="smxh">Jornada ${ab} · cierra ${hoyEsc(qmxHora(J[ab].pr).toLowerCase())}</h3>
+    const dia=ts=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"short"}).format(new Date(ts*1000)).replace(".","");
+    const t0=Math.min(...J[ab].p.map(r=>r[1])), t1=Math.max(...J[ab].p.map(r=>r[1])), rango=dia(t0)===dia(t1)?dia(t0):`${dia(t0).split(" ")[0]} al ${dia(t1)}`;
+    pick=`<h3 class="smxh">Jornada ${ab} · del ${hoyEsc(rango)} · cierra ${hoyEsc(qmxHora(J[ab].pr).toLowerCase())}</h3>
       ${cuenta?"":`<div class="qgate"><b>El survivor necesita cuenta</b><span>Entra para que tu pick cuente y para verte en la tabla.</span><button class="btn" data-acct>Entrar</button></div>`}
       <div class="smxlista">${J[ab].p.map(r=>{ const pr=r[7]; return `<div class="smxpar">${[2,3].map(i=>{ const e=r[i], Q=qmxEq(e), usado=usados.has(e)&&yo!==e, sel=yo===e, p=pr?pr[i===2?0:2]:null;
         return `<button class="smxeq${sel?" sel":""}" data-smx="${ab}:${e}"${usado||!cuenta?" disabled":""} aria-pressed="${sel}"><img src="${Q.logo}" alt="" loading="lazy"><span><b>${hoyEsc(Q.n)}</b><small>${usado?"Ya lo usaste":p!=null?`${p}% de ganar`:i===2?"Local":"Visita"}</small></span></button>`; }).join(`<i class="smxvs">vs</i>`)}</div>`; }).join("")}</div>
@@ -7823,6 +7835,17 @@ function perfDef(){
   const c=k?vidaColEq(k):["#3d6b5a","#F2D466"];
   return perfLimpia({a:(typeof q5AliasDef==="function"?q5AliasDef():"").slice(0,24),eq:k,c1:c[0],c2:c[1],c3:c[1],d:k?PERF_PRESET[k.slice(1)]||"liso":"liso",n:10,f:0,m:"no",k1:c[1],k2:c[0]});
 }
+// 29 oct 2026: nadie editaba su perfil. Mientras siga como venía (número 10, sin frase, colores de fábrica) se le invita:
+// puntito en tu playera de arriba y una tarjeta en Hoy y en Amigos (se puede cerrar con la ×).
+function perfSinTocar(){ const p=perfMio(); if(!p) return false; let d; try{ d=perfDef(); }catch(e){ return false; }
+  return p.n===10&&!p.bi&&p.d===d.d&&p.c1===d.c1&&p.c2===d.c2&&(p.m||"no")==="no"&&!(p.x||[]).length; }
+const perfNudgeOff=()=>{ try{ return localStorage.getItem("pz_perfnudge")==="1"; }catch(e){ return false; } };
+function perfNudgeHTML(){ if(!(typeof amOk==="function"&&amOk())||!perfSinTocar()||perfNudgeOff()) return "";
+  return `<div class="pfnudge">${perfAvatar(perfMio(),56)}<span><b>Haz tuya tu playera</b><small>Escoge tus colores, el diseño, tu número y una frase. Así te reconocen tus amigos.</small></span><button class="btn" data-pfnudge="1">Editar mi perfil</button><button class="pfnx" data-pfnudgex="1" aria-label="Ahora no">×</button></div>`; }
+function perfNudgePinta(){ const el=$("#hoyPf"); if(el) el.innerHTML=perfNudgeHTML(); }
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
+  if(t.closest("[data-pfnudge]")){ pzTrack("perfil_nudge",{}); return perfAbre(); }
+  if(t.closest("[data-pfnudgex]")){ try{ localStorage.setItem("pz_perfnudge","1"); }catch(e){} document.querySelectorAll(".pfnudge").forEach(x=>x.remove()); } });
 function perfMio(){ if(PERF.yo) return PERF.yo; try{ const x=JSON.parse(localStorage.getItem("pz_perfil")||"null"); if(x) PERF.yo=perfLimpia(x); }catch(e){} return PERF.yo; }
 const perfTitulo=p=>PERF_TIT.find(t=>t[0]===p?.ti&&t[0])?.[1]||"";
 // La forma de la camiseta se define una sola vez en la página (así todos los avatares la comparten)
@@ -7863,6 +7886,7 @@ async function perfSync(){
   const p=perfLimpia({...PERF.yo,fv,lg,s:{a:amAmigos().length,g:r[0],p:r[1],e:r[2]}}), k=JSON.stringify(p);
   let ant=""; try{ ant=localStorage.getItem("pz_perf_sync")||""; }catch(e){}
   PERF.yo=p; try{ localStorage.setItem("pz_perfil",k); }catch(e){}
+  try{ if(!perfSinTocar()){ document.querySelectorAll(".pfnudge").forEach(x=>x.remove()); } if(typeof acctBtn==="function") acctBtn(); }catch(e){}
   if(k===ant) return; try{ await perfEscribe(p); localStorage.setItem("pz_perf_sync",k); }catch(e){ console.warn("Perfil: sync",e?.code||e); }
 }
 function perfCarga(uid){   // perfil de otro (para el chat)
@@ -8101,6 +8125,7 @@ async function amRender(){
   const inv=AM.inv&&AM.inv!==yo&&!(AM.L||[]).some(a=>a.otro===AM.inv)?AM.inv:null; if(inv) perfCargaP(inv).then(p=>{ if(p&&!$("#amInv b")?.textContent) amRender(); });
   box.innerHTML=`${inv?`<div class="aminv" id="amInv">${amAv(inv,52)}<span><b>${hoyEsc(PERF.cache[inv]?.a||"")}</b><small>Te invitó a ser su amigo en La Pizarra</small></span><button class="btn" data-amsol="${hoyEsc(inv)}">Agregar</button><button class="q5link" data-aminvno="1">Ahora no</button></div>`:""}
     ${Rc.length?`<section class="hsec amsec"><div class="hh"><h3>Solicitudes</h3></div>${Rc.map(a=>`<div class="amsolr">${amAv(a.otro,46,a)}<span><b>${hoyEsc(amNom(a.otro,a))}</b><small>Quiere ser tu amigo</small></span><button class="btn" data-amok="${a.id}">Aceptar</button><button class="q5link" data-amno="${a.id}">Ahora no</button></div>`).join("")}</section>`:""}
+    ${perfNudgeHTML()}
     <div class="amfila">${A.map(a=>`<button class="amf" data-amper="${hoyEsc(a.otro)}">${amAv(a.otro,58,a)}<span>${hoyEsc(amNom(a.otro,a).split(" ")[0])}</span></button>`).join("")}<button class="amf amadd" data-amadd="1"><span class="amplus">+</span><span>Agregar</span></button></div>
     <div id="amAgrega" hidden></div>
     <div id="amCmp">${amCmpHTML()}</div>
@@ -8332,6 +8357,7 @@ async function rdAmigosResp(f){
 }
 async function rdMiHash(){ if(!amOk()) return null; return RD.h||(RD.h=await q5Hash(ACCT.user.uid)); }
 async function rdPinta(){
+  perfNudgePinta();
   const el=$("#hoyRd"); if(!el||$("#hoy").classList.contains("hidden")) return;
   const D_=await rdDatos(), f=rdHoy(), c=D_[f], ayer=D_[rdMas(f,-1)], man=D_[rdMas(f,1)];
   if(!c){ el.innerHTML=man?`<section class="rdcard rdnada"><div class="rdh"><span class="rdtag">Reto del día</span></div><span>Hoy no hay reto. Mañana: <b>${hoyEsc(rdTexto(man).q)}</b></span></section>`:""; return; }
@@ -8345,9 +8371,10 @@ async function rdPinta(){
   const opsH=!mi&&!cerr?`<div class="rdops n${T.ops.length}">${T.ops.map(([k,t],i)=>`<button class="rdop o${i}" data-rd="${k}">${hoyEsc(t)}</button>`).join("")}</div>
       ${cuenta?`<span class="rdnota">Contesta antes de que empiece el partido. Si le atinas, tu racha sube.</span>${yaCont}`:`<span class="rdnota">Entra con tu cuenta para contestar y llevar tu racha.</span>`}`
     :`<div class="rdbar">${T.ops.map(([k,t],i)=>{ const n=cnt[k]||0, pc=tot?Math.round(n/tot*100):0, tuya=mi===k, ok=res&&res===k;
-      return `<div class="rdb${tuya?" tuya":""}${ok?" ok":""}${res&&tuya&&!ok?" mal":""}"><i class="o${i}" style="width:${pc}%"></i><b>${hoyEsc(t)}${tuya?" · tu respuesta":""}${ok?" ✓":""}</b><span>${tot?pc+"%":""}</span></div>`; }).join("")}</div>
-      ${am.length?`<div class="rdamL" aria-label="Lo que contestaron tus amigos">${am.map(x=>{ const ok=res&&res!=="x"?(x.r===res?" ok":" mal"):"";
-        return `<span class="rdamc${ok}">${amAv(x.uid,24,x.a)}<span><b>${nom1(x)}</b><small>${hoyEsc((T.ops.find(o=>o[0]===x.r)||["",""])[1])}${ok===" ok"?" ✓":ok?" ✗":""}</small></span></span>`; }).join("")}</div>`:""}`;
+      const ams=am.filter(x=>x.r===k);   // 29 oct 2026: debajo de cada opción, tus amigos que la escogieron (foto y nombre) y los votos
+      return `<div class="rdopc"><div class="rdb${tuya?" tuya":""}${ok?" ok":""}${res&&tuya&&!ok?" mal":""}"><i class="o${i}" style="width:${pc}%"></i><b>${hoyEsc(t)}${tuya?" · tu respuesta":""}${ok?" ✓":""}</b><span>${tot?pc+"%":""}<small>${tot?`${n} ${n===1?"voto":"votos"}`:""}</small></span></div>
+        ${ams.length?`<div class="rdamL">${ams.map(x=>`<span class="rdamc">${amAv(x.uid,22,x.a)}<b>${nom1(x)}</b></span>`).join("")}</div>`:""}</div>`; }).join("")}</div>
+      ${tot?`<span class="rdnota">${tot} ${tot===1?"persona contestó":"personas contestaron"}${am.length?` · ${am.length} ${am.length===1?"amigo":"amigos"}`:""}</span>`:""}`;
   const estado=res==="x"?`<div class="rdres x">Se anuló: no cuenta para tu racha.</div>`:res?`<div class="rdres ${acierto?"si":"no"}">${mi?(acierto?`¡Le atinaste! Quedó ${c.gh}-${c.ga}.`:`Esta vez no. Quedó ${c.gh}-${c.ga}.`):`Quedó ${c.gh}-${c.ga}. No contestaste.`}</div>`
     :cerr?`<span class="rdnota">${mi?"Ya está en juego. La respuesta sale cuando termine.":"Ya cerró. Mañana hay otro."}</span>`:"";
   const ayerH=ayer&&ayer.res&&ayer.res!=="x"?(()=>{ const m=rdLs()[rdMas(f,-1)]; return `<span class="rdayer">Ayer: ${m?(m===ayer.res?"le atinaste":"no le atinaste"):"no contestaste"} · ${hoyEsc(rdTexto(ayer).ops.find(o=>o[0]===ayer.res)?.[1]||"")}</span>`; })():"";
@@ -9289,7 +9316,7 @@ function acctBtn(){
   const b=$("#acctBtn"), u=ACCT.user; b.hidden=!(ACCT.ready||(D.fb?.apiKey&&!ACCT_INI)); b.classList.toggle("in",!!u); if(typeof amBadge==="function") amBadge();
   if(!u){b.textContent="Entrar"; b.setAttribute("aria-label","Entrar a tu cuenta"); return;}
   const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase(), pf=typeof perfMio==="function"&&perfMio();
-  b.classList.toggle("conav",!!pf); if(pf){ b.innerHTML=perfAvatar(pf,36); b.setAttribute("aria-label","Tu cuenta"); return; }
+  b.classList.toggle("conav",!!pf); if(pf){ const sin=typeof perfSinTocar==="function"&&perfSinTocar(); b.innerHTML=perfAvatar(pf,36)+(sin?`<i class="pfdot" aria-hidden="true"></i>`:""); b.setAttribute("aria-label",sin?"Tu cuenta: personaliza tu perfil":"Tu cuenta"); return; }
   b.innerHTML=u.photoURL?`<img src="${acctEsc(u.photoURL)}" alt="" referrerpolicy="no-referrer">`:acctEsc(ini);
   b.setAttribute("aria-label","Tu cuenta");
 }
