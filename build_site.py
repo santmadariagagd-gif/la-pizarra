@@ -2715,6 +2715,41 @@ def _historia_eq():
                 if not g: continue
                 L.append([t,{str(r["team"]["id"]):r["rank"] for r in g},len(g)])
             L.sort(key=lambda x:x[0])
+    # --- Copas internacionales (28 oct 2026): Champions (2), Europa League (3), Conference League (848), Concachampions (16)
+    # int: {liga: {temporada: {id: etapa}}}; etapa 1 fase de grupos/liga o playoff, 2 octavos, 3 cuartos, 4 semis,
+    # 5 final perdida, 6 campeón. Solo temporadas con la final ya jugada. UEFA "2011-12"; Concacaf por año de la final.
+    if AFK:
+        I=H.setdefault('int',{})
+        for lid,desde in ((2,2011),(3,2014),(848,2021),(16,2016)):
+            C=I.setdefault(str(lid),{}); hechos=set(H.setdefault('int_ok',{}).setdefault(str(lid),[]))
+            for Y in range(desde,hoy.year+1):
+                if Y in hechos: continue
+                try: fx=af("fixtures",league=lid,season=Y)
+                except Exception as ex: print("Historia copas",lid,Y,ex); continue
+                fin=[f for f in fx if re.fullmatch(r"Finals?",str(f["league"]["round"]),re.I)]
+                if not fin or not all(f["fixture"]["status"]["short"] in AF_FIN for f in fin): continue
+                E={}
+                def pon(k,et): E[k]=max(E.get(k,0),et)
+                for f in fx:
+                    rd=str(f["league"]["round"])
+                    if re.search(r"qualif|preliminary",rd,re.I) or (re.fullmatch(r"Play-offs",rd,re.I) and lid!=16): continue
+                    et=4 if re.search(r"semi",rd,re.I) else 3 if re.search(r"quarter",rd,re.I) else 2 if re.search(r"8th|round of 16",rd,re.I) else 5 if re.fullmatch(r"Finals?",rd,re.I) else 1
+                    for lado in ("home","away"): pon(str(f["teams"][lado]["id"]),et)
+                # campeón: final a un partido (winner) o a dos (global y penales)
+                a={}
+                for f in fin:
+                    for lado in ("home","away"): a[str(f["teams"][lado]["id"])]=a.get(str(f["teams"][lado]["id"]),0)+(f["goals"][lado] or 0)
+                gana=None
+                if len(fin)==1:
+                    f=fin[0]; gana=str(f["teams"]["home"]["id"]) if f["teams"]["home"].get("winner") else str(f["teams"]["away"]["id"]) if f["teams"]["away"].get("winner") else None
+                elif len(a)==2:
+                    x,y=list(a); gana=x if a[x]>a[y] else y if a[y]>a[x] else None
+                    if gana is None:
+                        u=max(fin,key=lambda f:f["fixture"]["timestamp"]); gana=str(u["teams"]["home"]["id"]) if u["teams"]["home"].get("winner") else str(u["teams"]["away"]["id"]) if u["teams"]["away"].get("winner") else None
+                if gana: E[gana]=6
+                anio=datetime.fromtimestamp(max(f["fixture"]["timestamp"] for f in fin)).year
+                C[f"{Y}-{str(Y+1)[2:]}" if lid!=16 else str(anio)]=E
+                H['int_ok'][str(lid)].append(Y)
     # --- títulos de la Liga MX con HIST_MX (toda la historia) ---
     nid={v[0]:str(k) for k,v in AF_EQ.items()}; mxt={}
     for (t,c,sub,fin,*_r) in HIST_MX:
