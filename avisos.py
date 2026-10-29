@@ -8,6 +8,7 @@ sus equipos favoritos (usuarios/{uid}.fav) y lo nuevo en Firebase, y manda notif
   · Goles (p.gol): cada gol de un partido de tus equipos de fútbol.
   · Amigos (p.soc): solicitudes de amistad, solicitudes aceptadas y comentarios en tus posts.
   · Retos (p.ret): cuando un amigo te reta a un duelo.
+  · Recordatorios de cierre (p.cie): la quiniela de Liga MX, el Survivor o el reto del día cierran pronto y no has jugado.
   · Sufrimiento ajeno (p.riv): cuando pierde el rival de toda la vida de tu equipo (América-Pumas, Real Madrid-Barça…).
 Los textos cambian según cómo va el partido (remontadas, goles al final, goleadas, penales).
 
@@ -212,6 +213,51 @@ class Avisos:
             if k not in vivos: del nc[k]
         self.E["soc_t"] = hasta
 
+    # ---------- recordatorios de cierre (29 oct 2026) ----------
+    # Si algo cierra en la próxima hora y media y no has hecho tus picks, te avisa una vez. Solo a quien ya juega:
+    # quiniela Liga MX (hizo picks la jornada anterior), Survivor (sigue vivo) y reto del día (contestó ayer: cuida su racha).
+    def cierres(self):
+        lo, hi = self.now, self.now + 90 * 60
+        sha = lambda u: hashlib.sha256(u.encode()).hexdigest()[:12]
+        lee = lambda n: json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "datos", n), encoding="utf-8"))
+        def falta(ts):
+            m = max(5, int(round((ts - self.now) / 300.0)) * 5)
+            return f"{m} min" if m < 60 else "una hora" if m <= 65 else f"{m // 60} h {m % 60} min"
+        for jd in self.db.rango("qmx_jornadas", "primero", lo, hi):
+            jid, sl, j, ts = jd["_id"], jd.get("s"), jd.get("j"), jd["_ts"]
+            if not isinstance(j, int): continue
+            prev = f"{sl}-{j - 1}"
+            Q = self.db.donde("qmx_picks", "jid", "in", [jid, prev])
+            jug = {d.get("uid") for d in Q if d.get("jid") == prev}
+            hechos = {d.get("uid") for d in Q if d.get("jid") == jid and (d.get("p") or {})}
+            for uid in (jug - hechos) & set(self.subs):
+                t = elige(f"{jid}{uid}", [f"⏰ La jornada {j} cierra en {falta(ts)}", f"⏰ ¡Ojo! Quedan {falta(ts)} para tus picks", f"⏰ Se te va la jornada {j}"])
+                self.manda(uid, "cie", t, "Todavía no haces tus picks de la Quiniela Liga MX.", "/#quinielamx", f"cie-q-{jid}-{uid[:8]}")
+            S = self.db.donde("smx_picks", "jid", "in", [jid, prev])
+            try: TS = lee("smx_tabla.json"); TS = TS.get("t") if TS.get("s") == sl else {}
+            except Exception: TS = {}
+            jug = {d.get("uid") for d in S if d.get("jid") == prev}
+            hechos = {d.get("uid") for d in S if d.get("jid") == jid}
+            for uid in (jug - hechos) & set(self.subs):
+                if (TS.get(sha(uid)) or {}).get("c") is not None: continue   # ya está fuera
+                self.manda(uid, "cie", "🛡️ Te puedes quedar fuera del Survivor", f"La jornada {j} cierra en {falta(ts)} y no has escogido equipo. Si no escoges, quedas eliminado.", "/#quinielamx", f"cie-s-{jid}-{uid[:8]}")
+        for rd in self.db.rango("retos_dia", "cierre", lo, hi):
+            f, ts = rd["_id"], rd["_ts"]
+            ayer = (datetime.fromisoformat(f) - timedelta(days=1)).date().isoformat()
+            R = self.db.donde("rd_resp", "f", "in", [ayer, f])
+            jug = {d.get("uid") for d in R if d.get("f") == ayer}
+            hechos = {d.get("uid") for d in R if d.get("f") == f}
+            try: RT = lee("rd_tabla.json").get("t") or {}
+            except Exception: RT = {}
+            try:
+                x = (lee("reto_dia.json").get("d") or {}).get(f) or {}
+                q = f"Hoy: {x.get('hn') or x.get('h')} vs {x.get('an') or x.get('a')}. Contesta antes de que empiece." if (x.get("hn") or x.get("h")) else ""
+            except Exception: q = ""
+            for uid in (jug - hechos) & set(self.subs):
+                r = int((RT.get(sha(uid)) or {}).get("r") or 0)   # racha de aciertos según la última tabla
+                t = f"🔥 Cuida tu racha de {r}: el reto cierra en {falta(ts)}" if r >= 2 else f"⏰ El reto del día cierra en {falta(ts)}"
+                self.manda(uid, "cie", t, corta(q, 110) or "Contesta antes de que empiece el partido.", "/#hoy", f"cie-rd-{f}-{uid[:8]}")
+
     # ---------- partidos ----------
     def favoritos(self):
         """F: {"f2286": {uid: "Pumas"}, "nKC": {...}} de quienes quieren avisos de partidos o goles.
@@ -370,6 +416,8 @@ class Avisos:
         self.bienvenida()
         try: self.social()
         except Exception as e: print("Amigos/retos:", e)
+        try: self.cierres()
+        except Exception as e: print("Cierres:", e)
         F = self.favoritos()
         inicio = time.time()
         while True:
@@ -409,6 +457,15 @@ class DBFirebase:
     def nuevos(self, col, campo, desde):
         dt = datetime.fromtimestamp(desde, timezone.utc)
         return [{"_id": d.id, **(d.to_dict() or {})} for d in self.c.collection(col).where(campo, ">", dt).stream()]
+    def rango(self, col, campo, lo, hi):
+        a, b = datetime.fromtimestamp(lo, timezone.utc), datetime.fromtimestamp(hi, timezone.utc)
+        R = []
+        for d in self.c.collection(col).where(campo, ">", a).where(campo, "<=", b).stream():
+            x = d.to_dict() or {}; v = x.get(campo)
+            R.append({"_id": d.id, "_ts": v.timestamp() if hasattr(v, "timestamp") else 0, **x})
+        return R
+    def donde(self, col, campo, op, valor):
+        return [{"_id": d.id, **(d.to_dict() or {})} for d in self.c.collection(col).where(campo, op, valor).stream()]
     def comentarios(self, pid, n):
         q = self.c.collection(f"posts/{pid}/com").order_by("ts", direction=self.fs.Query.DESCENDING).limit(n)
         return [{"_id": d.id, **(d.to_dict() or {})} for d in q.stream()]
