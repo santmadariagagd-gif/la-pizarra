@@ -460,6 +460,7 @@ button.hfc{cursor:pointer}
 .qview{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:4px 0 18px}
 .qview button{white-space:nowrap;font:600 18px var(--display);background:none;border:0;padding:8px 0;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
 .qview button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--mark)}
+@media (max-width:480px){.qview{gap:14px;overflow-x:auto;scrollbar-width:none}.qview::-webkit-scrollbar{display:none}.qview button{font-size:17px}}   /* 29 oct 2026: que quepan las 5 pestañas de la Liga MX */
 
 .grbar{align-items:center}
 .grbar select{font:600 16px var(--display);padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
@@ -1798,6 +1799,18 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .ntfil{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.ntfil::-webkit-scrollbar{display:none}.ntfil button{min-height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 13px var(--body);cursor:pointer;flex-shrink:0}
 .ntfil button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}
 /* Avisos al teléfono (29 oct 2026) */
+/* Survivor Liga MX (29 oct 2026) */
+.smx{display:flex;flex-direction:column;gap:10px;max-width:640px}.smxh{margin:12px 0 0;font:700 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.smxest{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#2F5A3F,var(--surface));border:1px solid var(--line)}.smxest b{font:800 22px/1.1 var(--display,inherit)}.smxest span{color:var(--muted);font-size:14px}
+.smxest.fuera{background:linear-gradient(135deg,#5A2F2F,var(--surface))}
+.smxlista{display:flex;flex-direction:column;gap:8px}.smxpar{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:stretch}.smxvs{align-self:center;font-style:normal;color:var(--muted);font-size:12px}
+.smxeq{display:flex;align-items:center;gap:8px;min-height:56px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:inherit;text-align:left;cursor:pointer;min-width:0}
+.smxeq img{width:30px;height:30px;object-fit:contain;flex-shrink:0}.smxeq span{display:flex;flex-direction:column;min-width:0}.smxeq b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.smxeq small{color:var(--muted);font-size:11px}
+.smxeq.sel{border:2px solid var(--mark);background:#3E5A3A}.smxeq:disabled{opacity:.4;cursor:default}
+.smxcam{display:flex;gap:6px;flex-wrap:wrap}.smxc{display:inline-flex;flex-direction:column;align-items:center;gap:1px;padding:4px 6px;border-radius:10px;background:var(--surface);border:1px solid var(--line);min-width:42px}
+.smxc img{width:22px;height:22px;object-fit:contain}.smxc b{font-size:12px}.smxc small{font-size:10px;color:var(--muted)}.smxc.ok{border-color:#9FD3A8}.smxc.ok b{color:#9FD3A8}.smxc.mal{border-color:#E8826A}.smxc.mal b{color:#FF9C80}.smxc.vivo b{color:var(--mark)}
+.smxtab{display:flex;flex-direction:column;gap:6px}.smxfila{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--surface);border:1px solid var(--line);flex-wrap:wrap}
+.smxfila.yo{border-color:var(--mark)}.smxfila.muerto{opacity:.65}.smxn{flex:1;display:flex;flex-direction:column;min-width:120px}.smxn small{color:var(--muted);font-size:12px}
 .fanliga{display:flex;gap:6px;margin:0 0 10px}.fanliga button{min-height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 14px var(--body);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .fanliga button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}.fanliga i{font:800 10px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;background:#FF9C80;color:#1d2a26;font-style:normal}
 .pushc{padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
@@ -2139,7 +2152,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </section>
 <section class="panel hidden" id="qmx">
   <div class="headrow"><h2>Quiniela Liga MX</h2></div>
-  <div class="qview" id="qmxView" role="tablist"><button role="tab" aria-selected="true" data-qv="picks">Mis picks</button><button role="tab" aria-selected="false" data-qv="grupos">Grupos</button><button role="tab" aria-selected="false" data-qv="general">General</button><button role="tab" aria-selected="false" data-qv="llave">Llave</button></div>
+  <div class="qview" id="qmxView" role="tablist"><button role="tab" aria-selected="true" data-qv="picks">Picks</button><button role="tab" aria-selected="false" data-qv="grupos">Grupos</button><button role="tab" aria-selected="false" data-qv="general">General</button><button role="tab" aria-selected="false" data-qv="llave">Llave</button><button role="tab" aria-selected="false" data-qv="surv">Survivor</button></div>
   <div id="qmxBody"></div>
 </section>
 <section class="panel hidden" id="fan">
@@ -6370,6 +6383,7 @@ function qmxRender(sinRed){
   if(!qmxD()){ box.innerHTML=`<p class="note">La quiniela de la Liga MX aparece en la próxima actualización.</p>`; return; }
   if(QMX.vista==="grupos") return qmxGrRender();
   if(QMX.vista==="general") return qmxGeneral();
+  if(QMX.vista==="surv") return smxRender();
   if(QMX.vista==="llave") return qmxLlave(sinRed);
   const L=qmxJornadas(); if(QMX.j==null||!L.includes(QMX.j)) QMX.j=qmxDefault();
   const j=QMX.j, J=qmxD().J[j], now=Date.now()/1000, cerrada=J.pr<=now, mios=qmxMios(j), V=QMX.vivo;
@@ -6571,6 +6585,95 @@ document.addEventListener("click",async ev=>{
   if(t.closest("#qmxNoUnir")){ QMX.join=pzInv('qmx',null); qmxJoinRender(); return; }
 });
 function qmxAbre(){ qmxJoinRender(); qmxRender(); }
+// ---------- Survivor Liga MX (29 oct 2026) ----------
+// Cada jornada escoges un equipo que GANE; si empata o pierde, quedas fuera. No puedes repetir equipo y si no escoges, quedas fuera.
+// Partido pospuesto: sigues vivo. Cierra con el primer partido de la jornada (como la quiniela). En el Apertura 2026 es de prueba
+// (jornadas 16 y 17); desde el Clausura 2027 empieza en la jornada 1. Tu pick: smx_picks/{s}-{j}_{uid} = {uid, jid, j, s, e, t}
+// (+ pz_smx en el navegador). Tabla general: datos/smx_tabla.json (GitHub). Grupos: los de la Quiniela Liga MX.
+const SMX_DESDE={A2026:16}, SMX={tab:"gen",nube:null,gen:null,genT:0};
+const smxDesde=()=>SMX_DESDE[qmxD().s]??1;
+const smxJs=()=>qmxJornadas().filter(j=>j>=smxDesde()&&j<=17);
+const smxLs=()=>{ try{ return JSON.parse(localStorage.getItem("pz_smx")||"{}")||{}; }catch(e){ return {}; } };
+const smxLsSet=o=>{ try{ localStorage.setItem("pz_smx",JSON.stringify(o)); }catch(e){} };
+const smxMio=j=>{ const v=smxLs()[qmxJid(j)]; return v==null?null:+v; };
+async function smxNube(){ if(!(typeof acctOk==="function"&&acctOk())||SMX.nube===qmxD().s) return; SMX.nube=qmxD().s;
+  try{ const q=await ACCT.db.collection("smx_picks").where("uid","==",ACCT.user.uid).get(); const L=smxLs(); let c=0;
+    q.docs.forEach(d=>{ const x=d.data(); if(x.s===qmxD().s&&L[x.jid]!==x.e){ L[x.jid]=x.e; c=1; } }); if(c){ smxLsSet(L); if(QMX.vista==="surv") smxRender(); } }
+  catch(e){ console.warn("Survivor MX: no se leyeron tus picks",e?.code||e); } }
+function smxRes(j,e){ const r=qmxD().J[j]?.p.find(r=>r[2]===e||r[3]===e); if(!r) return {st:"?"}; const R=qmxRes(r,QMX.vivo);
+  if(R.susp) return {st:"S",r,R}; if(!R.fin) return {st:R.vivo?"V":"-",r,R};
+  const gy=r[2]===e?R.gl:R.gv, gr=r[2]===e?R.gv:R.gl; return {st:gy>gr?"G":gy<gr?"P":"E",r,R}; }
+function smxCamino(pk){   // pk(j) → id del equipo o null. {vivo, cae, mot, n: jornadas sobrevividas, L:[{j,e,st}]}
+  const now=Date.now()/1000, J=qmxD().J, us=new Set(), L=[]; let n=0;
+  for(const j of smxJs()){ if(J[j].pr>now) break; const e=pk(j);
+    if(e==null){ L.push({j,e:null,st:"X"}); return {vivo:false,cae:j,mot:"no hizo pick",n,L}; }
+    if(us.has(e)){ L.push({j,e,st:"P"}); return {vivo:false,cae:j,mot:"repitió equipo",n,L}; } us.add(e);
+    const x=smxRes(j,e); L.push({j,e,st:x.st});
+    if(x.st==="E"||x.st==="P") return {vivo:false,cae:j,mot:x.st==="E"?"empató":"perdió",n,L};
+    if(x.st==="S") n++; else if(x.st==="G") n++; else return {vivo:true,pend:j,n,L}; }
+  return {vivo:true,n,L}; }
+const SMX_IC={G:["✓","ok"],E:["=","mal"],P:["✗","mal"],S:["P","pos"],"-":["…","pen"],V:["●","vivo"],X:["–","mal"],"?":["?","pen"]};
+function smxChip(j,e,st){ const E=e!=null?qmxEq(e):null, I=SMX_IC[st]||SMX_IC["?"];
+  return `<span class="smxc ${I[1]}" title="Jornada ${j}${E?` · ${hoyEsc(E.n)}`:""}">${E?`<img src="${E.logo}" alt="" loading="lazy">`:`<i>–</i>`}<b>${I[0]}</b><small>J${j}</small></span>`; }
+async function smxRender(){
+  const box=$("#qmxBody"); const J=qmxD().J, js=smxJs(), now=Date.now()/1000;
+  if(!js.length){ box.innerHTML=`<p class="note">El Survivor de Liga MX arranca con el Clausura 2027.</p>`; return; }
+  smxNube();
+  await qmxVivoYa(js.filter(j=>J[j].pr<=now).slice(-2)).catch(()=>{});
+  if(QMX.vista!=="surv") return;
+  const ab=js.find(j=>J[j].pr>now)??null, C=smxCamino(smxMio), usados=new Set(C.L.map(x=>x.e).filter(x=>x!=null)), cuenta=typeof acctOk==="function"&&acctOk();
+  const empezo=J[js[0]].pr<=now, nunca=!js.some(j=>smxMio(j)!=null);
+  let est;
+  if(empezo&&nunca) est=`<div class="smxest fuera"><b>Este survivor ya empezó</b><span>Arrancó en la jornada ${js[0]}. ${qmxD().s==="A2026"?"Es de prueba: el bueno empieza en la jornada 1 del Clausura 2027.":"Espera al próximo torneo."}</span></div>`;
+  else if(!C.vivo){ const x=C.L[C.L.length-1], E=x.e!=null?qmxEq(x.e).n:""; est=`<div class="smxest fuera"><b>Quedaste fuera en la jornada ${C.cae}</b><span>${E?`${hoyEsc(E)} ${C.mot}`:"No escogiste equipo"}. Aguantaste ${C.n} ${C.n===1?"jornada":"jornadas"}.</span></div>`; }
+  else est=`<div class="smxest"><b>${C.n?`Sigues vivo · ${C.n} ${C.n===1?"jornada":"jornadas"}`:"Estás en la pelea"}</b><span>Escoge un equipo que gane. Si empata o pierde, quedas fuera. No puedes repetir equipo.</span></div>`;
+  let pick="";
+  if(ab!=null&&C.vivo&&!(empezo&&nunca)){ const yo=smxMio(ab);
+    pick=`<h3 class="smxh">Jornada ${ab} · cierra ${hoyEsc(qmxHora(J[ab].pr).toLowerCase())}</h3>
+      ${cuenta?"":`<div class="qgate"><b>El survivor necesita cuenta</b><span>Entra para que tu pick cuente y para verte en la tabla.</span><button class="btn" data-acct>Entrar</button></div>`}
+      <div class="smxlista">${J[ab].p.map(r=>{ const pr=r[7]; return `<div class="smxpar">${[2,3].map(i=>{ const e=r[i], Q=qmxEq(e), usado=usados.has(e)&&yo!==e, sel=yo===e, p=pr?pr[i===2?0:2]:null;
+        return `<button class="smxeq${sel?" sel":""}" data-smx="${ab}:${e}"${usado||!cuenta?" disabled":""} aria-pressed="${sel}"><img src="${Q.logo}" alt="" loading="lazy"><span><b>${hoyEsc(Q.n)}</b><small>${usado?"Ya lo usaste":p!=null?`${p}% de ganar`:i===2?"Local":"Visita"}</small></span></button>`; }).join(`<i class="smxvs">vs</i>`)}</div>`; }).join("")}</div>
+      <p class="note" id="smxMsg">${yo!=null?pzOk(`Vas con ${hoyEsc(qmxEq(yo).n)}. Lo puedes cambiar hasta que cierre.`):"Toca el equipo que crees que va a ganar."}</p>`; }
+  const camino=C.L.length?`<h3 class="smxh">Tu camino</h3><div class="smxcam">${C.L.map(x=>smxChip(x.j,x.e,x.st)).join("")}</div>`:"";
+  const G=[]; if(cuenta) for(const id of qmxIds()){ const I=await grInfo(id).catch(()=>null); if(I) G.push(I); }
+  if(SMX.tab!=="gen"&&!G.some(g=>g.id===SMX.tab)) SMX.tab="gen";
+  box.innerHTML=`<div class="smx">${est}${pick}${camino}<h3 class="smxh">Quién sigue vivo</h3>
+    <div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px"><button data-smxt="gen" aria-pressed="${SMX.tab==="gen"}">General</button>${G.map(g=>`<button data-smxt="${g.id}" aria-pressed="${SMX.tab===g.id}">${acctEsc(g.nombre)}</button>`).join("")}</div>
+    <div id="smxTabla">${pzSkel(2)}</div>
+    <details class="fanreglas"><summary>Reglas</summary><p class="note">Cada jornada escoges un equipo que gane su partido. Si gana, sigues; si empata o pierde, quedas fuera. No puedes repetir equipo en todo el torneo, y si no escoges, quedas fuera. Si el partido se pospone, sigues vivo. Se cierra con el primer partido de la jornada. Gana quien aguante más; si caen juntos, comparten el título.</p></details></div>`;
+  smxTabla(G.find(g=>g.id===SMX.tab)||null);
+}
+async function smxTabla(g){
+  const box=$("#smxTabla"); if(!box) return; const J=qmxD().J, now=Date.now()/1000, cerr=smxJs().filter(j=>J[j].pr<=now);
+  let F=[];
+  if(!g){ if(!SMX.gen||Date.now()-SMX.genT>5*60e3){ SMX.gen=await fetch(`datos/smx_tabla.json?v=${Math.floor(Date.now()/3e5)}`).then(r=>r.ok?r.json():null).catch(()=>null); SMX.genT=Date.now(); }
+    const T=SMX.gen&&SMX.gen.s===qmxD().s?SMX.gen.t:null;
+    if(!T||!Object.keys(T).length){ box.innerHTML=`<p class="note">La tabla general aparece la mañana después de que cierre la primera jornada del survivor.</p>`; return; }
+    const yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null;
+    F=Object.entries(T).map(([h,x])=>({n:x.a,yo:h===yo,vivo:x.c==null,cae:x.c,mot:x.m,nj:x.n,L:Object.entries(x.p||{}).map(([j,[e,st]])=>({j:+j,e,st}))})); }
+  else { const ms=await ACCT.db.collection(`grupos/${g.id}/miembros`).get().catch(()=>null); if(!ms){ box.innerHTML=`<p class="note">No pudimos cargar el grupo.</p>`; return; }
+    F=await Promise.all(ms.docs.map(async d=>{ const uid=d.id, P={};
+      for(const j of cerr){ const jid=qmxJid(j), k=`pz_smxp_${jid}_${uid}`; let e=null; try{ e=localStorage.getItem(k); }catch(x){}
+        if(e==null){ try{ const s=await ACCT.db.doc(`smx_picks/${jid}_${uid}`).get(); e=s.exists?s.data().e:""; }catch(x){ e=uid===ACCT.user.uid?(smxMio(j)??""):""; }
+          if(J[j].p.every(r=>qmxRes(r,QMX.vivo).fin||qmxRes(r).susp)){ try{ localStorage.setItem(k,String(e)); }catch(x){} } }
+        P[j]=e===""||e==null?null:+e; }
+      const C=smxCamino(j=>P[j]); return {n:d.data().nombre||"Jugador",yo:uid===ACCT.user.uid,vivo:C.vivo,cae:C.cae,mot:C.mot,nj:C.n,L:C.L}; })); }
+  F.sort((a,b)=>(b.vivo-a.vivo)||((b.cae||99)-(a.cae||99))||(b.nj-a.nj)||a.n.localeCompare(b.n));
+  const vivos=F.filter(x=>x.vivo).length;
+  box.innerHTML=!cerr.length?`<p class="note">Todavía no cierra la primera jornada (la ${smxJs()[0]}). ${g?"Aquí vas a ver quién sigue vivo en tu grupo.":""}</p>`
+    :`<p class="note">${vivos} de ${F.length} siguen vivos.</p><div class="smxtab">${F.map(x=>`<div class="smxfila${x.yo?" yo":""}${x.vivo?"":" muerto"}"><span class="smxn"><b>${acctEsc(x.n)}${x.yo?" (tú)":""}</b><small>${x.vivo?`Vivo · ${x.nj} ${x.nj===1?"jornada":"jornadas"}`:`Fuera en la J${x.cae} · ${hoyEsc(x.mot||"")}`}</small></span><span class="smxcam">${x.L.map(y=>smxChip(y.j,y.e,y.st)).join("")}</span></div>`).join("")}</div>`;
+}
+async function smxGuarda(j,e){
+  const jid=qmxJid(j), L=smxLs(); L[jid]=e; smxLsSet(L); await smxRender();
+  if(!(typeof acctOk==="function"&&acctOk())) return;
+  try{ await ACCT.db.doc(`smx_picks/${jid}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,jid,j,s:qmxD().s,e,t:grFV().serverTimestamp()});
+    $("#smxMsg")&&($("#smxMsg").innerHTML=pzOk(`Vas con ${hoyEsc(qmxEq(e).n)}. Guardado en tu cuenta.`)); pzTrack("smx_pick",{j});
+    if(typeof amPublica==="function") amPublica(`smx-${jid}`,{g:"mx",tx:`ya escogió su equipo del survivor para la jornada ${j}`,big:"🛡️",det:"Survivor Liga MX · se ve cuando cierre"}); }
+  catch(x){ console.warn("Survivor MX: no se guardó",x?.code||x); $("#smxMsg")&&($("#smxMsg").textContent=x?.code==="permission-denied"?"No se pudo guardar: ya cerró la jornada o faltan los permisos nuevos de Firebase.":"No se pudo guardar en tu cuenta. Intenta de nuevo."); }
+}
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest||!t.closest("#qmxBody .smx")) return; let b;
+  if((b=t.closest("[data-smx]"))){ const [j,e]=b.dataset.smx.split(":").map(Number); return smxGuarda(j,e); }
+  if((b=t.closest("[data-smxt]"))){ SMX.tab=b.dataset.smxt; document.querySelectorAll("#qmxBody [data-smxt]").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); $("#smxTabla").innerHTML=pzSkel(2); smxTabla(SMX.tab==="gen"?null:{id:SMX.tab}); } });
 function qmxRepinta(){ QMX.cache={}; if(!$("#qmx").classList.contains("hidden")) qmxAbre(); }
 
 // ---------- Fantasy Champions (19 oct 2026) ----------
@@ -7377,6 +7480,8 @@ function vidaCierreDatos(){
     R.push({k:"qmx",nom:"Quiniela Liga MX",j:`Jornada ${j}`,id:qmxJid(j),pr:J.pr,falta:J.pr-now,hechos,tot:J.p.length,pend:J.p.length-hechos,juega:Object.keys(qmxLs()).length>0}); } }
   const LL=D.qmx?.L; if(LL?.pr&&LL.pr>now&&(LL.sem||[]).length===8){ const P=qmxMios("llave").p||{}, h=(P.q||[]).filter(x=>x!=null).length+(P.s||[]).filter(x=>x!=null).length+(P.c!=null?1:0);
     R.push({k:"llave",nom:"Llave de la Liguilla",j:"Liguilla",id:qmxJid("llave"),pr:LL.pr,falta:LL.pr-now,hechos:h,tot:7,pend:7-h,juega:Object.keys(qmxLs()).length>0}); }
+  if(D.qmx&&Object.keys(smxLs()).length){ const js=smxJs(), j=js.find(j=>qmxD().J[j].pr>now); if(j!=null&&smxCamino(smxMio).vivo){ const J=qmxD().J[j], m=smxMio(j)!=null;
+    R.push({k:"smx",nom:"Survivor Liga MX",j:`Jornada ${j}`,id:"smx-"+qmxJid(j),pr:J.pr,falta:J.pr-now,hechos:m?1:0,tot:1,pend:m?0:1,juega:true}); } }
   if(FAN.D&&Object.keys(fanLs()).length){ const k=fanAbierta(); if(k){ const m=fanMio(k), baja=(m?.eq||[]).filter(id=>FAN.D.baja?.[id]).length, J=FAN.D.j[k];
     R.push({k:"fan",nom:fanNom(),j:J.n||k,id:"fan-"+k,pr:J.pr,falta:J.pr-now,hechos:m?1:0,tot:1,pend:m?0:1,baja,juega:true}); } }
   return R;
@@ -7387,11 +7492,11 @@ function vidaFalta(f){ if(f>=86400){ const d=Math.round(f/86400); return [d,d===
 function vidaCierreHTML(){
   const L=vidaCierreDatos().filter(x=>x.k==="qmx"||x.k==="llave"?x.falta<4*86400:(x.falta<2*86400&&(x.baja||x.pend)));
   return L.map(x=>{ const nv=vidaNivel(x.falta), [n,u]=vidaFalta(x.falta), p=Math.max(.04,Math.min(1,1-x.falta/(7*86400)));
-    const msg=x.k==="fan"?(x.baja?`Tienes ${x.baja} ${x.baja===1?"jugador":"jugadores"} de baja: considera cambiarlo`:"Todavía no armas tu once")
+    const msg=x.k==="smx"?(x.pend?"Todavía no escoges tu equipo":"Ya tienes tu equipo"):x.k==="fan"?(x.baja?`Tienes ${x.baja} ${x.baja===1?"jugador":"jugadores"} de baja: considera cambiarlo`:"Todavía no armas tu once")
       :!x.juega&&!x.hechos?"Ya está abierta: escoge quién gana cada partido":x.pend?(nv>=2?`¡Ya casi cierra! Te faltan ${x.pend} picks`:`Te faltan ${x.pend} de ${x.tot} picks`):"Ya tienes todos tus picks";
     const cls=(x.pend||x.baja)&&x.juega?(nv===3?" late tiembla":nv===2?" late":""):"";
     return `<button class="vcie${cls}" data-vir="${x.k}" style="--vc:${VIDA_NIV_COL[nv]};--p:${p.toFixed(3)}"><span class="vani"><span><b>${n}</b><small>${u}</small></span></span>
-      <span class="vct"><b>${x.nom} · ${hoyEsc(x.j)}</b><span>${msg}</span><small>${x.k!=="fan"?`${x.hechos}/${x.tot} picks · `:""}cierra ${hoyEsc(qmxHora(x.pr).toLowerCase())}</small></span></button>`; }).join("");
+      <span class="vct"><b>${x.nom} · ${hoyEsc(x.j)}</b><span>${msg}</span><small>${x.k!=="fan"&&x.k!=="smx"?`${x.hechos}/${x.tot} picks · `:""}cierra ${hoyEsc(qmxHora(x.pr).toLowerCase())}</small></span></button>`; }).join("");
 }
 function vidaCierreTick(){
   const L=vidaCierreDatos(); let badge=0;
@@ -7451,7 +7556,7 @@ function vidaPinta(){ const el=$("#hoyPor"); if(!el||$("#hoy").classList.contain
   if(VIDA.entro) el.firstElementChild?.classList.add("vya"); VIDA.entro=1; vidaBote(el); }
 $("#hoyPor")?.addEventListener("click",ev=>{
   const t=ev.target.closest("button"); if(!t) return;
-  if(t.dataset.vir){ pzTrack("portada_cierre",{k:t.dataset.vir}); if(t.dataset.vir==="llave"){ QMX.vista="llave"; navIr("qmx"); } else navIr(t.dataset.vir); window.scrollTo(0,0); return; }
+  if(t.dataset.vir){ pzTrack("portada_cierre",{k:t.dataset.vir}); if(t.dataset.vir==="llave"){ QMX.vista="llave"; navIr("qmx"); } else if(t.dataset.vir==="smx"){ QMX.vista="surv"; navIr("qmx"); } else navIr(t.dataset.vir); window.scrollTo(0,0); return; }
   if(t.dataset.vact==="logros") return vidaLogrosAbre();
   if(t.dataset.vact==="semana") return vidaHistoria();
   if(t.dataset.vact==="perfil") return perfAbre();

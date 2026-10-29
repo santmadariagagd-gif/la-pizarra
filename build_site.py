@@ -2102,6 +2102,7 @@ def _feed_post(db,uid,clave,g,tx,big,det):
         db.collection('feeds').document(u).collection('i').document(pid).set(dict(de=uid,t=_fs.SERVER_TIMESTAMP))
     return True
 
+SMX_DESDE={"A2026":16}   # Survivor Liga MX: en el Apertura 2026 es de prueba (jornadas 16 y 17); desde el Clausura 2027, jornada 1
 def _qmx():
     import unicodedata, re as _re
     if 'AF_FX' not in globals() or 'mx' not in AF_FX: print("Quiniela Liga MX: sin partidos de API-Football"); return
@@ -2251,6 +2252,41 @@ def _qmx():
         json.dump(dict(s=slug,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j=JJ,t=T,L=LLAVE),open(_r,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
         print(f"Quiniela Liga MX: tabla general con {len(T)} jugadores; jornadas cerradas {cerr}")
     except Exception as ex: _pz_err("Quiniela Liga MX: tabla general",ex)
+    # ----- Survivor Liga MX (29 oct 2026) -----
+    # Cada jornada escoges un equipo que GANE; si empata o pierde, quedas fuera. No se repite equipo. Si no haces pick, fuera.
+    # Partido pospuesto o cancelado: sigues vivo. Se cierra con el primer partido de la jornada (qmx_jornadas, igual que la quiniela).
+    # Firestore smx_picks/{s}-{j}_{uid} = {uid, jid, j, s, e: id del equipo, t}. Tabla: docs/datos/smx_tabla.json =
+    # {s, desde, al, t: {hash12(uid): {a, c: jornada en que cayó o None, m: motivo, n: jornadas sobrevividas, p: {j: [equipo, G|E|P|S|-]}}}}
+    try:
+        import hashlib
+        desde=SMX_DESDE.get(slug,1)
+        cerrS=sorted([int(j) for j,x in J.items() if x["pr"]<=ahora and desde<=int(j)<=17])
+        US={}
+        for d in db.collection('smx_picks').where('s','==',slug).stream():
+            x=d.to_dict() or {}
+            if x.get("uid") and str(x.get("j")) in J: US.setdefault(x["uid"],{})[int(x["j"])]=x.get("e")
+        FIN=("FT","AET","PEN","AWD","WO")
+        TS={}
+        for uid,M in US.items():
+            usados=set(); pp={}; c=None; mot=""; n=0
+            for j in cerrS:
+                e=M.get(j)
+                if e is None: c=j; mot="no hizo pick"; break
+                if e in usados: pp[str(j)]=[e,"P"]; c=j; mot="repitió equipo"; break
+                usados.add(e)
+                r=next((r for r in J[str(j)]["p"] if e in (r[2],r[3])),None)
+                if not r: c=j; mot="equipo sin partido"; break
+                if r[6] in ("PST","CANC","ABD"): pp[str(j)]=[e,"S"]; n+=1; continue
+                if r[6] not in FIN or r[4] is None: pp[str(j)]=[e,"-"]; break
+                gy,gr=(r[4],r[5]) if r[2]==e else (r[5],r[4])
+                st="G" if gy>gr else "P" if gy<gr else "E"; pp[str(j)]=[e,st]
+                if st!="G": c=j; mot="empató" if st=="E" else "perdió"; break
+                n+=1
+            TS[hashlib.sha256(uid.encode()).hexdigest()[:12]]=dict(a=_alias_uid(db,uid),c=c,m=mot,n=n,p=pp)
+        _r=os.path.join(aqui,'docs','datos','smx_tabla.json')
+        json.dump(dict(s=slug,desde=desde,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),t=TS),open(_r,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+        print(f"Survivor Liga MX: {len(TS)} jugadores, {sum(1 for x in TS.values() if x['c'] is None)} vivos; jornadas cerradas {cerrS}")
+    except Exception as ex: _pz_err("Survivor Liga MX: tabla",ex)
 try:
     _qmx()
 except Exception as ex:
