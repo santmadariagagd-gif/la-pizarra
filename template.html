@@ -1789,6 +1789,30 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .ntt .ntacc{display:flex;gap:8px;margin-top:4px}.ntt .ntacc .btn{min-height:34px;padding:0 14px}
 .ntdot{width:9px;height:9px;border-radius:50%;background:var(--mark);margin-top:6px;flex-shrink:0}.nti:not(.nuevo) .ntdot{visibility:hidden}
 @media(prefers-reduced-motion:reduce){#ntBtn.ring svg,.nti{animation:none}}
+/* Feed más vivo (28 oct 2026) */
+.amcmp{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:18px;background:var(--surface);border:1px solid var(--line);margin:12px 0}
+.amcmpt{display:flex;gap:10px;align-items:flex-start}.amcmpt textarea{flex:1;min-width:0;min-height:40px;max-height:160px;resize:none;border:0;border-radius:20px;background:var(--bg);color:var(--ink);padding:10px 14px;font:500 16px/1.35 var(--body)}
+.amctip{display:flex;gap:6px}.amctip button{flex:1;min-height:36px;border-radius:10px;border:1px solid transparent;background:var(--bg);color:var(--muted);font:600 13px var(--body);cursor:pointer}
+.amctip button[aria-pressed="true"]{border-color:var(--mark);color:var(--mark)}
+.amcop{display:flex;flex-direction:column;gap:6px}.amcop input{min-height:40px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 12px;font:500 16px var(--body)}.amcop .q5link{align-self:flex-start}
+.amcfoto{display:flex;align-items:center;justify-content:center;min-height:110px;border-radius:14px;border:2px dashed var(--line);color:var(--muted);cursor:pointer;overflow:hidden}.amcfoto img{display:block;max-width:100%;max-height:260px}
+.amcpts{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto}.amcpts button{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.amcpts button[aria-pressed="true"]{border-color:var(--mark)}.amcpts span{display:flex;flex-direction:column;min-width:0}.amcpts b{font-size:14px}.amcpts small{font-size:12px;color:var(--muted)}
+.amcpie{display:flex;align-items:center;justify-content:space-between;gap:10px}.amcpie .btn{min-height:40px}
+.amtx{margin:0;font-size:16px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}.amtx.amq{font:700 21px/1.15 var(--display)}
+.amborra{margin-left:auto;font-size:13px}
+.amenc{display:flex;flex-direction:column;gap:6px}.amenc small{font-size:12px;color:var(--muted)}
+.amop{position:relative;overflow:hidden;min-height:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font:600 15px var(--body);cursor:pointer;text-align:left}
+.amop:disabled{cursor:default;opacity:1}.amop i{position:absolute;inset:0 auto 0 0;background:rgba(156,199,230,.18);animation:amllena .6s ease-out both}.amop.mia{border-color:var(--mark)}.amop.mia i{background:rgba(242,212,102,.32)}
+.amop span,.amop b{position:relative}.amop b{font:800 16px var(--display)}@keyframes amllena{from{width:0}}
+.ampt2{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;border:0;color:#fff;text-align:left;cursor:pointer;font:inherit;background:linear-gradient(135deg,color-mix(in srgb,var(--c1) 75%,#000),color-mix(in srgb,var(--c2) 60%,#0d1714))}
+.ampt2top{display:flex;justify-content:space-between;gap:8px;font:700 11px var(--body);letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.ampt2tag{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:8px;background:rgba(0,0,0,.3)}.ampt2tag.vivo{background:#FF6B4A}
+.ampt2 b{font:800 22px/1.1 var(--display)}.ampt2 small{font-size:12px;opacity:.85}
+.amfoto{border-radius:14px;overflow:hidden;background:var(--bg);min-height:80px;display:flex;align-items:center;justify-content:center}.amfoto img{display:block;width:100%;height:auto;max-height:520px;object-fit:cover}
+.amfcar{font-size:13px;color:var(--muted);padding:20px}
+.amacc{flex-wrap:wrap}.amacc .amre{font-size:16px;line-height:1}.amacc button[aria-pressed="true"] .amre{animation:amreac .35s cubic-bezier(.2,1.6,.4,1)}@keyframes amreac{40%{transform:scale(1.4)}}
+@media(prefers-reduced-motion:reduce){.amop i,.amacc button .amre{animation:none}}
 /* Perfil completo (28 oct 2026) */
 .pfx{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
 .pfban{position:relative;height:120px;border-radius:18px;overflow:hidden;background:linear-gradient(120deg,var(--c1) 0 54%,var(--c2) 54% 61%,var(--c1) 61%)}
@@ -7729,8 +7753,9 @@ dlg.addEventListener("close",()=>{ PERF.ed=null; });
 // Solo tus amigos leen tus publicaciones (reglas_amigos.txt). Los resultados (aciertos de la jornada, puntos del Fantasy)
 // los publica GitHub cada noche; los picks guardados, logros y cambios los publica la página. Los picks nunca se publican.
 const AM={L:null,lt:0,p:null,feed:null,ft:0,fp:null,posts:{},filtro:"todo",abierto:null,coms:{},bus:[],busq:"",sug:null,inv:null};
-const AM_G={mx:["Liga MX","#F2D466"],nfl:["Quiniela NFL","#7FB8E8"],sv:["Survivor","#FF9C80"],q5:["Quinteta NBA","#E8A33D"],fan:["Fantasy","#9FD3A8"],dia:["Reto del día","#C9A7F0"],duelo:["Duelos","#FFB27A"],logro:["Logros","#F2D466"]};
-const AM_R=[["f","Fuego"],["j","Carrilla"],["p","Respeto"]];
+const AM_G={yo:["Publicaciones","#ECEFE7"],mx:["Liga MX","#F2D466"],nfl:["Quiniela NFL","#7FB8E8"],sv:["Survivor","#FF9C80"],q5:["Quinteta NBA","#E8A33D"],fan:["Fantasy","#9FD3A8"],dia:["Reto del día","#C9A7F0"],duelo:["Duelos","#FFB27A"],logro:["Logros","#F2D466"]};
+const AM_R=[["f","Fuego","🔥"],["g","Golazo","⚽"],["p","El GOAT","🐐"],["l","Dolor","😭"],["j","Payaso","🤡"]];   // 28 oct 2026: reacciones deportivas (j/p eran Carrilla/Respeto)
+const AM_MAN=new Set(["yo","enc","pt","foto"]), AM_MANT={enc:"Encuesta",pt:"Partido",foto:"Foto"};
 const AM_RAP=["Puro suertudo","Te voy a alcanzar","Respeto","Ni con la tabla","¿Y tus picks?"];
 const amPar=(a,b)=>a<b?`${a}_${b}`:`${b}_${a}`;
 const amOk=()=>typeof acctOk==="function"&&acctOk()&&!!ACCT.db;
@@ -7738,7 +7763,7 @@ const amNom=(uid,a)=>PERF.cache[uid]?.a||a?.n?.[uid]||"Amigo";
 const amMio=()=>{ try{ return JSON.parse(localStorage.getItem("pz_am_r")||"{}")||{}; }catch(e){ return {}; } };
 function perfCargaP(uid){ if(PERF.cache[uid]) return Promise.resolve(PERF.cache[uid]); if(!ACCT.db) return Promise.resolve(null);
   return ACCT.db.doc(`perfiles/${uid}`).get().then(s=>{ PERF.cache[uid]=s.exists?perfLimpia(s.data()):false; return PERF.cache[uid]; }).catch(()=>{ PERF.cache[uid]=false; return null; }); }
-const amAv=(uid,tam,a)=>{ const p=PERF.cache[uid]; return p?perfAvatar(p,tam):`<span class="amini" style="width:${tam}px;height:${tam}px">${hoyEsc(favIni(amNom(uid,a)))}</span>`; };
+const amAv=(uid,tam,a)=>{ const p=PERF.cache[uid]||(uid&&uid===ACCT.user?.uid?perfMio():null); return p?perfAvatar(p,tam):`<span class="amini" style="width:${tam}px;height:${tam}px">${hoyEsc(favIni(amNom(uid,a)))}</span>`; };
 async function amCarga(forzar){
   if(!amOk()) return [];
   if(!forzar&&AM.L&&Date.now()-AM.lt<60e3) return AM.L;
@@ -7807,15 +7832,77 @@ function amHace(t){ const ms=t?.toDate?t.toDate().getTime():t?.seconds?t.seconds
   if(s<60) return "Ahora"; if(s<3600) return `Hace ${Math.floor(s/60)} min`; if(s<86400) return `Hace ${Math.floor(s/3600)} h`; if(s<172800) return "Ayer";
   return cap(new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"long",day:"numeric",month:"short"}).format(new Date(ms))); }
 function amPost(p){
-  const yo=ACCT.user.uid, mio=amMio()[p.id]||{}, G=AM_G[p.g]||["",""], ab=AM.abierto===p.id, C=AM.coms[p.id];
-  return `<div class="ampost" data-pid="${hoyEsc(p.id)}"><div class="amph"><button class="amav" data-amper="${hoyEsc(p.uid)}" aria-label="Ver perfil">${amAv(p.uid,40)}</button>
-      <span class="ampt"><span><b>${hoyEsc(p.uid===yo?"Tú":amNom(p.uid))}</b> ${hoyEsc(p.tx)}</span><small>${hoyEsc(amHace(p.t))}</small></span>${G[0]?`<span class="amg" style="color:${G[1]}">${hoyEsc(G[0])}</span>`:""}</div>
+  const yo=ACCT.user.uid, mio=amMio()[p.id]||{}, man=AM_MAN.has(p.g), G=man?[AM_MANT[p.g]||"","#C9D6CF"]:AM_G[p.g]||["",""], ab=AM.abierto===p.id, C=AM.coms[p.id];
+  return `<div class="ampost${man?" amman":""}" data-pid="${hoyEsc(p.id)}"><div class="amph"><button class="amav" data-amper="${hoyEsc(p.uid)}" aria-label="Ver perfil">${amAv(p.uid,40)}</button>
+      <span class="ampt"><span><b>${hoyEsc(p.uid===yo?"Tú":amNom(p.uid))}</b>${man?"":` ${hoyEsc(p.tx)}`}</span><small>${hoyEsc(amHace(p.t))}</small></span>${G[0]?`<span class="amg" style="color:${G[1]}">${hoyEsc(G[0])}</span>`:""}${p.uid===yo&&man?`<button class="q5link amborra" data-amborra="1" aria-label="Borrar publicación">Borrar</button>`:""}</div>
+    ${man&&p.tx?`<p class="amtx${p.g==="enc"?" amq":""}">${hoyEsc(p.tx)}</p>`:""}
+    ${p.g==="enc"?amEncHTML(p):""}${p.g==="pt"?amPtHTML(p):""}${p.g==="foto"?`<div class="amfoto" data-amfoto="${hoyEsc(p.id)}">${AM.fotos?.[p.id]?`<img src="${AM.fotos[p.id]}" alt="Foto de ${hoyEsc(amNom(p.uid))}">`:`<span class="amfcar">Cargando foto…</span>`}</div>`:""}
     ${p.big?`<div class="ambig"><b style="color:${G[1]||"var(--mark)"}">${hoyEsc(p.big)}</b><span>${hoyEsc(p.det||"")}</span></div>`:""}
-    <div class="amacc">${AM_R.map(([k,n])=>`<button data-amr="${k}" aria-pressed="${!!mio[k]}" aria-label="${n}">${k==="f"?VIDA_FLAMA:k==="j"?`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 14c1 2 2.4 3 4 3s3-1 4-3M8.5 9.5h.01M15.5 9.5h.01"/></svg>`:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11v9H4v-9zM7 11l4-8c1.5 0 2.5 1 2.5 2.5V9h5a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.3 20H7"/></svg>`}<span>${(p.r?.[k]||0)||""}</span></button>`).join("")}
-      <button class="amcom" data-amc="1"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>${p.nc||""}</button></div>
+    <div class="amacc">${AM_R.map(([k,n,e])=>`<button data-amr="${k}" aria-pressed="${!!mio[k]}" aria-label="${n}"><span class="amre">${e}</span><span>${(p.r?.[k]||0)||""}</span></button>`).join("")}
+      <button class="amcom" data-amc="1" aria-label="Comentarios"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>${p.nc||""}</button></div>
     ${ab?`<div class="amcoms">${C?(C.length?C.map(c=>`<p><b>${hoyEsc(c.uid===yo?"Tú":c.n||amNom(c.uid))}</b> ${hoyEsc(c.tx)}${c.uid===yo||p.uid===yo?` <button class="q5link" data-amcdel="${hoyEsc(c.id)}">Borrar</button>`:""}</p>`).join(""):`<p class="note">Sé el primero en comentar.</p>`):`<p class="note">Cargando…</p>`}
       <div class="amrap">${AM_RAP.map(t=>`<button data-amrap="${hoyEsc(t)}">${hoyEsc(t)}</button>`).join("")}</div>
       <form class="amcf" data-amcf="1"><input maxlength="140" placeholder="Escribe un comentario" aria-label="Comentario" autocomplete="off"><button class="btn">Mandar</button></form></div>`:""}</div>`;
+}
+// ---- Feed más vivo (28 oct 2026): escribir, encuestas, compartir partidos y fotos ----
+// posts/{pid} con g "yo" (texto), "enc" (o: opciones, v: votos por opción), "pt" (pt: el partido) o "foto" (img: true; la foto
+// va aparte en fotos/{pid}.d, JPEG chico, para no hacer pesado el feed). Tu voto: posts/{pid}/votos/{uid} = {o, t}.
+const amVotos=()=>{ try{ return JSON.parse(localStorage.getItem("pz_am_v")||"{}")||{}; }catch(e){ return {}; } };
+function amEncHTML(p){
+  const O=(Array.isArray(p.o)?p.o:[]).slice(0,4), V=O.map((_,i)=>+(p.v?.[i]||0)), tot=V.reduce((a,b)=>a+b,0), mi=amVotos()[p.id];
+  const ya=mi!=null||p.uid===ACCT.user.uid;
+  return `<div class="amenc">${O.map((o,i)=>{ const pc=tot?Math.round(100*V[i]/tot):0;
+    return `<button class="amop${mi===i?" mia":""}" data-amvo="${i}"${ya?" disabled":""}>${ya?`<i style="width:${pc}%"></i>`:""}<span>${mi===i?"✓ ":""}${hoyEsc(o)}</span>${ya?`<b>${pc}%</b>`:""}</button>`; }).join("")}
+    <small>${ya?`${tot} ${tot===1?"voto":"votos"}`:"Vota para ver cómo va"}</small></div>`;
+}
+const amPtAbre=x=>x?.n?` data-ptn="${hoyEsc(String(x.n).replace(/[^A-Za-z0-9_]/g,""))}"`:x?.l&&x?.h?` data-ptl="${hoyEsc(String(x.l).replace(/[^a-z0-9_]/gi,""))}" data-pth="${hoyEsc(String(x.h).replace(/[^0-9]/g,""))}"`:x?.e?` data-pte="${hoyEsc(String(x.e).replace(/[^0-9]/g,""))}"`:"";
+function amPtHTML(p){ const x=p.pt||{}, [c1,c2]=x.k?favsCol(String(x.k)):["#3d6b5a","#14284A"];
+  const est=x.r==="G"?"Ganó":x.r==="P"?"Perdió":x.r==="E"?"Empate":x.vivo?"En vivo":"Próximo";
+  return `<button class="ampt2" style="--c1:${c1};--c2:${c2}"${amPtAbre(x)}><span class="ampt2top"><span class="ampt2tag${x.vivo?" vivo":""}">${x.vivo?`<i class="fvpulse"></i>`:""}${hoyEsc(est)}</span><span>${hoyEsc(String(x.s||"").slice(0,40))}</span></span>
+    <b>${hoyEsc(String(x.t||"").slice(0,80))}</b><small>${x.ts?hoyEsc(amHace({seconds:x.ts})):""} · Toca para ver el partido</small></button>`; }
+async function amFotoCarga(pid){ if(!AM.fotos) AM.fotos={}; if(AM.fotos[pid]!==undefined) return; AM.fotos[pid]=null;
+  try{ const s=await ACCT.db.doc(`fotos/${pid}`).get(); const d=s.exists?s.data().d:""; AM.fotos[pid]=/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(d||"")?d:""; }catch(e){ AM.fotos[pid]=""; }
+  document.querySelectorAll(`.amfoto[data-amfoto="${CSS.escape(pid)}"]`).forEach(el=>el.innerHTML=AM.fotos[pid]?`<img src="${AM.fotos[pid]}" alt="Foto">`:`<span class="amfcar">No se pudo cargar la foto</span>`); }
+function amFotosVisibles(){ for(const el of document.querySelectorAll(".amfoto[data-amfoto]")) if(!AM.fotos?.[el.dataset.amfoto]) amFotoCarga(el.dataset.amfoto); }
+function amComprime(file){ return new Promise((ok,no)=>{ const fr=new FileReader(); fr.onerror=no; fr.onload=()=>{ const im=new Image(); im.onerror=no; im.onload=()=>{
+  let q=.72, lado=1080, url=""; for(let i=0;i<5;i++){ const k=Math.min(1,lado/Math.max(im.width,im.height)), c=document.createElement("canvas"); c.width=Math.round(im.width*k); c.height=Math.round(im.height*k);
+    c.getContext("2d").drawImage(im,0,0,c.width,c.height); url=c.toDataURL("image/jpeg",q); if(url.length<600000) break; lado*=.8; q=Math.max(.5,q-.08); }
+  url.length<700000?ok(url):no(new Error("grande")); }; im.src=fr.result; }; fr.readAsDataURL(file); }); }
+// el que escribe
+AM.cmp={tipo:"tx",o:["",""],pt:null,foto:null,env:false};
+function amCmpHTML(){ const c=AM.cmp, yo=perfMio(), nom=(yo?.a||"").split(" ")[0];
+  const tipos=[["tx","Texto"],["foto","Foto"],["enc","Encuesta"],["pt","Partido"]];
+  let extra="";
+  if(c.tipo==="enc") extra=`<div class="amcop">${c.o.map((o,i)=>`<input data-amco="${i}" maxlength="40" placeholder="Opción ${i+1}" value="${hoyEsc(o)}" aria-label="Opción ${i+1}">`).join("")}${c.o.length<4?`<button class="q5link" data-amcomas="1">+ Otra opción</button>`:""}</div>`;
+  if(c.tipo==="foto") extra=`<label class="amcfoto">${c.foto?`<img src="${c.foto}" alt="Tu foto">`:`<span>Escoge una foto</span>`}<input type="file" accept="image/*" data-amcfile="1" hidden></label>`;
+  if(c.tipo==="pt"){ let L=[]; try{ const dep=FAVS.dep; FAVS.dep="todo"; const {V,R}=favsItems(); FAVS.dep=dep; L=[...V.slice(0,6),...R.slice(0,6)]; }catch(e){}
+    AM.cmpL=L; extra=L.length?`<div class="amcpts">${L.map((x,i)=>`<button data-amcpt="${i}" aria-pressed="${c.pt===i}">${favsLogo(x.k,30)}<span><b>${hoyEsc(x.t)}</b><small>${x.vivo?"En vivo":x.r?(x.r==="G"?"Ganó":x.r==="P"?"Perdió":"Empate"):hoyEsc(favsCuando(x.ts)[0])} · ${hoyEsc(x.s||"")}</small></span></button>`).join("")}</div>`:`<p class="note">Sigue a tus equipos en Favoritos para compartir sus partidos.</p>`; }
+  return `<div class="amcmp"><div class="amcmpt">${perfAvatar(yo||perfDef(),36)}<textarea id="amCmpTx" maxlength="160" rows="1" placeholder="${c.tipo==="enc"?"Escribe tu pregunta":c.tipo==="pt"?"¿Qué opinas del partido?":c.tipo==="foto"?"Ponle algo a tu foto":`¿Qué opinas${nom?`, ${hoyEsc(nom)}`:""}?`}" aria-label="Escribe tu publicación">${hoyEsc(c.tx||"")}</textarea></div>
+    <div class="amctip" role="group" aria-label="Tipo de publicación">${tipos.map(([k,n])=>`<button data-amct="${k}" aria-pressed="${c.tipo===k}">${n}</button>`).join("")}</div>${extra}
+    <div class="amcpie"><span class="note" id="amCmpMsg"></span><button class="btn" data-amcpub="1"${c.env?" disabled":""}>${c.env?"Publicando…":"Publicar"}</button></div></div>`;
+}
+function amCmpPinta(){ const el=$("#amCmp"); if(!el) return; const tx=$("#amCmpTx")?.value; if(tx!=null) AM.cmp.tx=tx; el.innerHTML=amCmpHTML(); }
+async function amCmpPublica(){
+  const c=AM.cmp, yo=ACCT.user.uid, tx=String($("#amCmpTx")?.value||"").trim().slice(0,160), msg=t=>{ const m=$("#amCmpMsg"); if(m) m.textContent=t; };
+  const d={uid:yo,g:c.tipo==="tx"?"yo":c.tipo,tx,big:"",det:"",t:grFV().serverTimestamp(),r:{f:0,j:0,p:0},nc:0};
+  if(c.tipo==="tx"&&!tx) return msg("Escribe algo primero.");
+  if(c.tipo==="enc"){ const O=c.o.map(o=>String(o).trim().slice(0,40)).filter(Boolean); if(!tx) return msg("Escribe la pregunta."); if(O.length<2) return msg("Pon al menos dos opciones."); d.o=O; d.v={}; }
+  if(c.tipo==="pt"){ const x=AM.cmpL?.[c.pt]; if(!x) return msg("Escoge un partido."); const at=x.abre||"", g=(re)=>(re.exec(at)||[])[1]||"";
+    d.pt={t:String(x.t).slice(0,80),s:String(x.s||"").slice(0,40),k:x.k,ts:Math.round(x.ts||0),...(x.r?{r:x.r}:{}),...(x.vivo?{vivo:true}:{}),...(g(/data-nid="([A-Za-z0-9_]+)"/)?{n:g(/data-nid="([A-Za-z0-9_]+)"/)}:{}),...(g(/data-hk="([a-z0-9_]+)"/)?{l:g(/data-hk="([a-z0-9_]+)"/),h:g(/data-hid="(\d+)"/)}:{}),...(g(/data-eqf="(\d+)"/)?{e:g(/data-eqf="(\d+)"/)}:{})}; }
+  if(c.tipo==="foto"){ if(!c.foto) return msg("Escoge una foto."); d.img=true; }
+  c.env=true; amCmpPinta(); const pid=`${yo}_m${Date.now().toString(36)}`;
+  try{ await ACCT.db.doc(`posts/${pid}`).set(d); if(c.tipo==="foto") await ACCT.db.doc(`fotos/${pid}`).set({uid:yo,d:c.foto});
+    for(const u of [yo,...amAmigos().map(a=>a.otro)]) ACCT.db.doc(`feeds/${u}/i/${pid}`).set({de:yo,t:grFV().serverTimestamp()}).catch(()=>{});
+    if(c.tipo==="foto"){ AM.fotos=AM.fotos||{}; AM.fotos[pid]=c.foto; }
+    AM.posts[pid]={id:pid,...d,t:{seconds:Date.now()/1000}}; AM.feed=[AM.posts[pid],...(AM.feed||[])]; pzTrack("post_crea",{g:d.g}); vidaAct?.("c");
+    AM.cmp={tipo:c.tipo==="foto"?"tx":c.tipo,o:["",""],pt:null,foto:null,env:false,tx:""}; await amRender(); if(typeof pzChispas==="function") pzChispas($("#amCmp .btn")||document.body); }
+  catch(e){ console.warn("Feed: publicar",e?.code||e); c.env=false; amCmpPinta(); msg(e?.code==="permission-denied"?"Falta actualizar las reglas de Firebase para publicar esto.":"No se pudo publicar. Intenta de nuevo."); if(c.tipo==="foto") ACCT.db.doc(`posts/${pid}`).delete().catch(()=>{}); }
+}
+async function amVota(pid,i){
+  const M=amVotos(); if(M[pid]!=null) return; const p=AM.posts[pid]; if(!p) return;
+  M[pid]=i; try{ localStorage.setItem("pz_am_v",JSON.stringify(M)); }catch(e){} p.v={...(p.v||{}),[i]:(+(p.v?.[i]||0))+1}; amRePost(pid);
+  try{ await ACCT.db.doc(`posts/${pid}/votos/${ACCT.user.uid}`).set({o:i,t:grFV().serverTimestamp()}); await ACCT.db.doc(`posts/${pid}`).update({[`v.${i}`]:grFV().increment(1)}); pzTrack("encuesta_vota",{}); }
+  catch(e){ console.warn("Feed: votar",e?.code||e); }
 }
 // ---- la sección ----
 async function amRender(){
@@ -7824,19 +7911,20 @@ async function amRender(){
   if(!AM.L) box.innerHTML=pzSkel(3);
   const [L]=await Promise.all([amCarga(),amFeed()]); if($("#amigos").classList.contains("hidden")) return;
   const yo=ACCT.user.uid, A=amAmigos(), Rc=amRecibidas(), En=(AM.L||[]).filter(a=>a.est==="pend"&&a.de===yo);
-  const F=(AM.feed||[]).filter(p=>AM.filtro==="todo"||p.g===AM.filtro);
+  const F=(AM.feed||[]).filter(p=>AM.filtro==="todo"||(AM_MAN.has(p.g)?"yo":p.g)===AM.filtro);
   const inv=AM.inv&&AM.inv!==yo&&!(AM.L||[]).some(a=>a.otro===AM.inv)?AM.inv:null; if(inv) perfCargaP(inv).then(p=>{ if(p&&!$("#amInv b")?.textContent) amRender(); });
   box.innerHTML=`${inv?`<div class="aminv" id="amInv">${amAv(inv,52)}<span><b>${hoyEsc(PERF.cache[inv]?.a||"")}</b><small>Te invitó a ser su amigo en La Pizarra</small></span><button class="btn" data-amsol="${hoyEsc(inv)}">Agregar</button><button class="q5link" data-aminvno="1">Ahora no</button></div>`:""}
     ${Rc.length?`<section class="hsec amsec"><div class="hh"><h3>Solicitudes</h3></div>${Rc.map(a=>`<div class="amsolr">${amAv(a.otro,46,a)}<span><b>${hoyEsc(amNom(a.otro,a))}</b><small>Quiere ser tu amigo</small></span><button class="btn" data-amok="${a.id}">Aceptar</button><button class="q5link" data-amno="${a.id}">Ahora no</button></div>`).join("")}</section>`:""}
     <div class="amfila">${A.map(a=>`<button class="amf" data-amper="${hoyEsc(a.otro)}">${amAv(a.otro,58,a)}<span>${hoyEsc(amNom(a.otro,a).split(" ")[0])}</span></button>`).join("")}<button class="amf amadd" data-amadd="1"><span class="amplus">+</span><span>Agregar</span></button></div>
     <div id="amAgrega" hidden></div>
+    ${A.length?`<div id="amCmp">${amCmpHTML()}</div>`:""}
     <section class="hsec amsec" id="amDu"></section>
     ${En.length?`<p class="note">Esperando respuesta de ${En.map(a=>`${hoyEsc(amNom(a.otro,a))} <button class="q5link" data-amcan="${a.id}">Cancelar</button>`).join(" · ")}</p>`:""}
     ${A.length?`<div class="hseg amfil" role="group" aria-label="Juego">${[["todo","Todo"],...Object.entries(AM_G).map(([k,v])=>[k,v[0]])].map(([k,n])=>`<button data-amfil="${k}" aria-pressed="${AM.filtro===k}">${n}</button>`).join("")}</div>
       <div class="amfeed">${F.length?F.map(amPost).join(""):`<p class="note">${AM.feed?.length?"Nada de este juego todavía.":"Aquí sale lo que hacen tus amigos: sus picks guardados, sus aciertos, sus logros y más. Los picks de cada quien nunca se publican."}</p>`}</div>`
     :`<div class="amvacio"><b>Agrega a tus amigos</b><span>Búscalos por su apodo, mándales tu link por WhatsApp o escoge a los de tus grupos. Cuando acepten, aquí ves lo que hace cada quien en todos los juegos.</span><button class="btn" data-amadd="1">Agregar amigos</button></div>`}`;
   if(!A.length&&!Rc.length) amAgrega();
-  duPinta();
+  duPinta(); amFotosVisibles();
 }
 async function amAgrega(){
   const el=$("#amAgrega"); if(!el) return; el.hidden=false;
@@ -7895,6 +7983,7 @@ async function amPerfilPinta(uid){
     ${fv.length?`<div class="pfeq">${fv.map(v=>`<span class="pfeqc">${perfEqLogo(v,24)}<span>${hoyEsc(v.split("|")[1]||"")}</span></span>`).join("")}</div>`:""}
     <div class="pftabs" role="tablist">${tabs.map(([k,n])=>`<button role="tab" data-pftab="${k}" aria-selected="${PFL.tab===k}">${n}</button>`).join("")}</div>
     <div class="pfbody">${cuerpo}</div></div>`;
+  amFotosVisibles();
 }
 // ---- reacciones y comentarios ----
 async function amReacciona(pid,k){
@@ -7904,7 +7993,7 @@ async function amReacciona(pid,k){
   try{ await ACCT.db.doc(`posts/${pid}`).update({[`r.${k}`]:grFV().increment(on?1:-1)}); if(on) vidaAct?.("r"); }catch(e){ console.warn("Amigos: reacción",e?.code||e); }
 }
 async function amComs(pid){ try{ const q=await ACCT.db.collection(`posts/${pid}/com`).orderBy("ts","asc").limit(40).get(); AM.coms[pid]=q.docs.map(d=>({id:d.id,...d.data()})); }catch(e){ AM.coms[pid]=[]; } amRePost(pid); }
-function amRePost(pid){ const p=AM.posts[pid]; if(!p) return; document.querySelectorAll(`.ampost[data-pid="${CSS.escape(pid)}"]`).forEach(el=>el.outerHTML=amPost(p)); }
+function amRePost(pid){ const p=AM.posts[pid]; if(!p) return; document.querySelectorAll(`.ampost[data-pid="${CSS.escape(pid)}"]`).forEach(el=>el.outerHTML=amPost(p)); amFotosVisibles(); }
 async function amComenta(pid,tx){ tx=String(tx||"").trim().slice(0,140); if(!tx) return; const yo=ACCT.user.uid;
   try{ await ACCT.db.collection(`posts/${pid}/com`).add({uid:yo,n:(perfMio()?.a||q5AliasDef()||"Jugador").slice(0,24),tx,ts:grFV().serverTimestamp()});
     await ACCT.db.doc(`posts/${pid}`).update({nc:grFV().increment(1)}).catch(()=>{}); if(AM.posts[pid]) AM.posts[pid].nc=(AM.posts[pid].nc||0)+1; vidaAct?.("c"); pzTrack("amigo_comenta",{}); }
@@ -7930,13 +8019,25 @@ document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) 
   if(g("[data-pfcomp]")){ const u=amLink(), tx=`Agrégame en La Pizarra: ${u}`; try{ if(navigator.share){ await navigator.share({title:"La Pizarra",text:tx,url:u}); return; } await navigator.clipboard.writeText(u); g("[data-pfcomp]").textContent="¡Link copiado!"; }catch(e){} return; }
   if(g("[data-amedit]")) return perfAbre();   // sin cerrar: cerrar hace history.back() y su popstate cerraría el editor
   if((b=g("[data-amfil]"))){ AM.filtro=b.dataset.amfil; return amRender(); }
+  if((b=g("[data-amct]"))){ AM.cmp.tipo=b.dataset.amct; AM.cmp.pt=null; return amCmpPinta(); }
+  if(g("[data-amcomas]")){ if(AM.cmp.o.length<4) AM.cmp.o.push(""); return amCmpPinta(); }
+  if((b=g("[data-amcpt]"))){ AM.cmp.pt=+b.dataset.amcpt; return amCmpPinta(); }
+  if(g("[data-amcpub]")) return amCmpPublica();
+  if((b=g("[data-ptn],[data-ptl],[data-pte]"))){ pzTrack("post_partido_abre",{}); if(b.dataset.ptn){ DLG_CUR={k:"nfl",id:b.dataset.ptn}; return openNfl(b.dataset.ptn); } if(b.dataset.ptl&&b.dataset.pth&&LEAGUES[b.dataset.ptl]) return hoyAbrir(b.dataset.ptl,b.dataset.pth); if(b.dataset.pte) return eqFicha(b.dataset.pte); return; }
   const post=g(".ampost"); if(!post) return; const pid=post.dataset.pid;
+  if((b=g("[data-amvo]"))) return amVota(pid,+b.dataset.amvo);
+  if(g("[data-amborra]")){ if(!confirm("¿Borrar esta publicación?")) return; try{ await ACCT.db.doc(`posts/${pid}`).delete(); ACCT.db.doc(`fotos/${pid}`).delete().catch(()=>{}); ACCT.db.doc(`feeds/${ACCT.user.uid}/i/${pid}`).delete().catch(()=>{}); }catch(e){ console.warn("Feed: borrar",e?.code||e); return; } delete AM.posts[pid]; AM.feed=(AM.feed||[]).filter(x=>x.id!==pid); post.remove(); return; }
   if((b=g("[data-amr]"))) return amReacciona(pid,b.dataset.amr);
   if(g("[data-amc]")){ AM.abierto=AM.abierto===pid?null:pid; amRePost(pid); if(AM.abierto) amComs(pid); return; }
   if((b=g("[data-amrap]"))) return amComenta(pid,b.dataset.amrap);
   if((b=g("[data-amcdel]"))){ try{ await ACCT.db.doc(`posts/${pid}/com/${b.dataset.amcdel}`).delete(); await ACCT.db.doc(`posts/${pid}`).update({nc:grFV().increment(-1)}).catch(()=>{}); if(AM.posts[pid]) AM.posts[pid].nc=Math.max(0,(AM.posts[pid].nc||1)-1); }catch(e){} return amComs(pid); }
 });
 document.addEventListener("submit",ev=>{ const f=ev.target.closest?.("[data-amcf]"); if(!f) return; ev.preventDefault(); const i=f.querySelector("input"), pid=f.closest(".ampost")?.dataset.pid; if(pid) amComenta(pid,i.value); i.value=""; });
+document.addEventListener("input",ev=>{ const co=ev.target.closest?.("[data-amco]"); if(co){ AM.cmp.o[+co.dataset.amco]=co.value.slice(0,40); return; }
+  if(ev.target.id==="amCmpTx"){ AM.cmp.tx=ev.target.value; ev.target.style.height="auto"; ev.target.style.height=Math.min(160,ev.target.scrollHeight)+"px"; } });
+document.addEventListener("change",async ev=>{ const f=ev.target.closest?.("[data-amcfile]"); if(!f||!f.files?.[0]) return;
+  const m=$("#amCmpMsg"); if(m) m.textContent="Preparando la foto…";
+  try{ AM.cmp.foto=await amComprime(f.files[0]); amCmpPinta(); }catch(e){ if(m) m.textContent="No se pudo usar esa foto. Prueba con otra."; } });
 document.addEventListener("input",ev=>{ if(ev.target.id!=="amQ") return; clearTimeout(AM.bt); const v=ev.target.value; AM.busq=v; AM.bt=setTimeout(()=>amBusca(v),350); });
 // Invitación de amistad: lapizarra.mx/?amigo=UID
 (()=>{ try{ const g=new URLSearchParams(location.search).get("amigo"); if(g&&/^[A-Za-z0-9]{20,40}$/.test(g)){ AM.inv=pzInv("amigo",g); history.replaceState(null,"",location.pathname+"#amigos"); }
