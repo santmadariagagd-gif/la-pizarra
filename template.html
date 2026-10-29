@@ -8055,13 +8055,52 @@ function amSufPinta(){
   const yo=ACCT.user.uid, mioFv=Object.entries(FAV.eq).filter(([k])=>/^[fnb]/.test(k)).map(([k,x])=>`${k}|${x.n||""}`);
   const F=[{uid:yo,n:"Tú",r:sufDeEquipos(mioFv)},...A.map(a=>({uid:a.otro,n:amNom(a.otro,a),r:sufDeEquipos(PERF.cache[a.otro]?.fv)}))].filter(x=>x.r).sort((a,b)=>b.r.suf-a.r.suf);
   if(F.length<2){ el.innerHTML=""; return; }
+  AM.sufF=F.map(x=>({...x,p:x.uid===yo?perfMio():PERF.cache[x.uid]}));
   const top=F[0], CARR=["Mándenle un abrazo","Que le manden un pésame","Ya no le pregunten por su equipo","Sufre más que en final de telenovela","Le urge terapia deportiva"];
   const c=CARR[(top.uid.charCodeAt(0)+top.r.suf)%CARR.length];
   el.innerHTML=`<div class="hh"><h3>¿Quién sufre más?</h3></div>
     <div class="amsuf"><div class="amsuft">${amAv(top.uid,46)}<span><b>${top.uid===yo?"Tú sufres":`${hoyEsc(top.n.split(" ")[0])} sufre`} más que todos: ${top.r.suf}%</b><small>Culpa de ${hoyEsc(top.r.peor.n)}. ${top.uid===yo?"Ánimo, campeón del sufrimiento":hoyEsc(c)}.</small></span></div>
       <ol class="amsufl">${F.slice(0,8).map((x,i)=>`<li class="${x.uid===yo?"yo":""}"><span class="amsn">${i+1}</span><button class="amsav" data-amper="${hoyEsc(x.uid)}" aria-label="Ver perfil de ${hoyEsc(x.n)}">${amAv(x.uid,30)}</button><span class="amsnm"><b>${hoyEsc(x.n)}</b><small>Le duele: ${hoyEsc(x.r.peor.n)}</small></span><span class="amsbar"><i style="width:${Math.max(4,x.r.suf)}%;background:${x.r.suf>=55?"#FF9C80":x.r.suf>=40?"#F2D466":"#9FD3A8"}"></i></span><em>${x.r.suf}%</em></li>`).join("")}</ol>
-      <p class="note">Con los equipos que sigue cada quien, contra lo que se les exige en los últimos años. ${F.length<A.length+1?"Los que no salen todavía no siguen equipos o no han actualizado su perfil.":""}</p></div>`;
+      <p class="note">Con los equipos que sigue cada quien, contra lo que se les exige en los últimos años. ${F.length<A.length+1?"Los que no salen todavía no siguen equipos o no han actualizado su perfil.":""}</p>
+      <button class="btn fvscomp" data-amsufcomp="1">${PZ_WA_ICO}Mandar al grupo</button></div>`;
 }
+async function amSufImagen(F){
+  const W=1080,H=1920,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  try{ await Promise.all(['800 100px "Barlow Condensed"','700 40px "Barlow Condensed"','400 40px "Barlow"'].map(f=>document.fonts.load(f))); }catch(e){}
+  const Fn=(w,s,fam="Barlow Condensed")=>`${w} ${s}px "${fam}", "Arial Narrow", Arial, sans-serif`;
+  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,"#3a1f1a"); g.addColorStop(.45,"#1F332D"); g.addColorStop(1,"#14221d"); x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.fillStyle="rgba(255,156,128,.10)"; x.beginPath(); x.arc(W-60,90,300,0,Math.PI*2); x.fill();
+  const P=70; let y=118;
+  x.font=Fn(700,54); x.fillStyle="#ECEFE7"; x.fillText("La",P,y); x.fillStyle="#F2D466"; x.fillText("Pizarra",P+x.measureText("La ").width,y);
+  const ajusta=(t,w,s0,fam)=>{ let s=s0; do{ x.font=Fn(w,s,fam); s-=2; }while(x.measureText(t).width>W-2*P&&s>20); };
+  y+=110; ajusta("¿QUIÉN SUFRE MÁS?",800,112); x.fillStyle="#ECEFE7"; x.fillText("¿QUIÉN SUFRE MÁS?",P,y);
+  y+=52; ajusta("El Sufrómetro de mi grupo de amigos",400,34,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("El Sufrómetro de mi grupo de amigos",P,y);
+  const top=F[0]; y+=70;
+  // el campeón del sufrimiento
+  x.fillStyle="rgba(255,156,128,.16)"; x.beginPath(); x.roundRect(P,y,W-2*P,250,32); x.fill(); x.strokeStyle="rgba(255,156,128,.5)"; x.lineWidth=3; x.stroke();
+  const av=(p,cx,cy,r)=>{ const c1=p?(p.vi&&p.k1?p.k1:p.c1):"#3d6b5a", c2=p?(p.vi&&p.k2?p.k2:p.c2):"#F2D466"; x.fillStyle=c1; x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.fill(); x.lineWidth=Math.max(4,r*.12); x.strokeStyle=c2; x.stroke(); return [c1,c2]; };
+  const [t1]=av(top.p,P+120,y+125,80); x.font=Fn(800,62); x.fillStyle=perfLum(t1)>150?"#13201B":"#fff"; x.textAlign="center"; x.fillText(top.p?.n?String(top.p.n):favIni(top.n),P+120,y+147); x.textAlign="left";
+  x.font=Fn(700,34); x.fillStyle="#FF9C80"; x.fillText("EL TROFEO DEL SUFRIMIENTO ES PARA",P+240,y+70);
+  x.font=Fn(800,72); x.fillStyle="#ECEFE7"; x.fillText(top.uid===ACCT.user.uid?(perfMio()?.a||"Yo"):top.n,P+240,y+145);
+  x.font=Fn(400,34,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(`${top.r.suf}% de sufrimiento · culpa de ${top.r.peor.n}`,P+240,y+195);
+  y+=290;
+  const L=F.slice(0,10), n=L.length, abajo=H-190, gap=12, hc=Math.max(86,Math.min(n<=4?170:130,Math.floor((abajo-y-gap*(n-1))/Math.max(1,n))));
+  if(n<=4) y+=Math.max(0,Math.floor((abajo-y-(hc+gap)*n)/3));   // con pocos amigos, la lista va más al centro
+  const recorta=(t,max)=>{ let s=t; while(x.measureText(s).width>max&&s.length>3) s=s.slice(0,-2); return s===t?s:s.trim()+"…"; };
+  L.forEach((z,i)=>{ if(y+hc>abajo+4) return; const yo=z.uid===ACCT.user.uid;
+    x.fillStyle=yo?"rgba(242,212,102,.12)":"rgba(255,255,255,.07)"; x.beginPath(); x.roundRect(P,y,W-2*P,hc,22); x.fill(); if(yo){ x.strokeStyle="#F2D466"; x.lineWidth=3; x.stroke(); }
+    x.font=Fn(800,44); x.fillStyle="#A8B8AF"; x.fillText(String(i+1),P+24,y+hc/2+15);
+    const r=Math.min(34,hc*.32), cx=P+100, cy=y+hc/2, [c1]=av(z.p,cx,cy,r); x.font=Fn(800,Math.round(r*.9)); x.fillStyle=perfLum(c1)>150?"#13201B":"#fff"; x.textAlign="center"; x.fillText(z.p?.n?String(z.p.n):favIni(z.n),cx,cy+r*.32); x.textAlign="left";
+    const tx=cx+r+22; x.font=Fn(700,Math.min(44,hc*.38)); x.fillStyle="#ECEFE7"; x.fillText(recorta(yo?(perfMio()?.a||"Yo"):z.n,W-P-tx-190),tx,y+hc*.46);
+    x.font=Fn(400,Math.min(26,hc*.22),"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(recorta(`Le duele: ${z.r.peor.n}`,W-P-tx-190),tx,y+hc*.78);
+    x.textAlign="right"; x.font=Fn(800,Math.min(64,hc*.52)); x.fillStyle=z.r.suf>=55?"#FF9C80":z.r.suf>=40?"#F2D466":"#9FD3A8"; x.fillText(`${z.r.suf}%`,W-P-24,y+hc/2+Math.min(22,hc*.18)); x.textAlign="left";
+    y+=hc+gap; });
+  x.font=Fn(700,44); x.fillStyle="#F2D466"; x.textAlign="center"; x.fillText("¿Y tú cuánto sufres?",W/2,H-100); x.font=Fn(400,34,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("lapizarra.mx · Amigos",W/2,H-52);
+  return await new Promise(r=>c.toBlob(r,"image/png"));
+}
+async function amSufCompartir(){ const F=AM.sufF; if(!F?.length) return; pzTrack("amigos_sufrometro_compartir",{n:F.length});
+  const top=F[0], nom=top.uid===ACCT.user.uid?"yo":top.n.split(" ")[0];
+  return pzCompartir(null,"sufrometro",{blob:await amSufImagen(F),titulo:"Manda el Sufrómetro al grupo",texto:`¿Quién sufre más? En el grupo ${nom==="yo"?"el que más sufre soy yo":`${nom} sufre más que todos`} (${top.r.suf}%). Revisa el tuyo: https://lapizarra.mx`}); }
 // ---- reacciones y comentarios ----
 async function amReacciona(pid,k){
   const M=amMio(), on=!(M[pid]?.[k]); M[pid]={...(M[pid]||{}),[k]:on}; try{ localStorage.setItem("pz_am_r",JSON.stringify(M)); }catch(e){}
@@ -8094,6 +8133,7 @@ document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) 
   if((b=g("[data-pftab]"))){ PFL.tab=b.dataset.pftab; return amPerfilPinta(PFL.uid); }
   if((b=g("[data-pfmas]"))){ const m=$("#gbody .pfmas"); if(m){ m.hidden=!m.hidden; b.setAttribute("aria-expanded",String(!m.hidden)); } return; }
   if(g("[data-pfcomp]")){ const u=amLink(), tx=`Agrégame en La Pizarra: ${u}`; try{ if(navigator.share){ await navigator.share({title:"La Pizarra",text:tx,url:u}); return; } await navigator.clipboard.writeText(u); g("[data-pfcomp]").textContent="¡Link copiado!"; }catch(e){} return; }
+  if(g("[data-amsufcomp]")) return amSufCompartir();
   if(g("[data-amedit]")) return perfAbre();   // sin cerrar: cerrar hace history.back() y su popstate cerraría el editor
   if((b=g("[data-amfil]"))){ AM.filtro=b.dataset.amfil; return amRender(); }
   if((b=g("[data-amct]"))){ AM.cmp.tipo=b.dataset.amct; AM.cmp.pt=null; return amCmpPinta(); }
