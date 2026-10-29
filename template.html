@@ -298,10 +298,10 @@ input[type=search].hq{width:100%;max-width:440px}
 .arrow:disabled{opacity:.35;cursor:default}
 .game.click{cursor:pointer;transition:border-color .15s}
 .game.click:hover,.game.click:focus-visible{border-color:var(--mark)}
-dialog#gdlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(960px,96vw);max-height:92vh}
+dialog#gdlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(960px,96vw);max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 40px)}
 dialog#gdlg::backdrop{background:rgba(0,0,0,.55)}
 .dlg{padding:22px 22px 28px;position:relative}
-.dlg .x{position:sticky;top:0;float:right;font:700 28px/1 var(--display);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:50%;width:40px;height:40px;cursor:pointer;z-index:2}
+.dlg .x{position:sticky;top:6px;float:right;box-shadow:0 4px 14px rgba(0,0,0,.45);font:700 28px/1 var(--display);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:50%;width:44px;height:44px;cursor:pointer;z-index:40}
 .dlg h3{margin:26px 0 10px}
 .mhead{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;text-align:center;margin:8px 0 6px}
 .mhead .tm2{display:flex;flex-direction:column;align-items:center;gap:6px;font:700 20px/1.1 var(--display)}
@@ -374,10 +374,10 @@ dialog#gdlg::backdrop{background:rgba(0,0,0,.55)}
 .acct[hidden]{display:none}
 .acct.in{padding:0;width:40px;height:40px;border-color:var(--mark);background:var(--surface);color:var(--mark);font-size:18px;overflow:hidden}
 .acct.in img{width:100%;height:100%;object-fit:cover}
-dialog#adlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(420px,94vw);max-height:92vh}
+dialog#adlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(420px,94vw);max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 40px)}
 dialog#adlg::backdrop{background:rgba(0,0,0,.55)}
 /* Mis equipos (8 oct 2026) */
-dialog#fdlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(620px,96vw);max-height:92vh}
+dialog#fdlg{padding:0;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);width:min(620px,96vw);max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 40px)}
 dialog#fdlg::backdrop{background:rgba(0,0,0,.55)}
 #fdlg h2{margin:4px 0 6px;font:700 30px/1 var(--display)}#fdlg .note{margin:0 0 12px}
 #fdlg .ftabs{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;margin:0 0 10px;-webkit-overflow-scrolling:touch}#fdlg .ftabs::-webkit-scrollbar{display:none}#fdlg .ftabs button{flex:0 0 auto;padding:0 12px;font-size:14px;white-space:nowrap}
