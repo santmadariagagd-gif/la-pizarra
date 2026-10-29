@@ -1205,7 +1205,7 @@ button,.btn{transition:transform .12s}button:active:not(:disabled){transform:sca
 @media (min-width:721px){header.top nav.tabs{background:rgba(38,61,54,.55);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);border-color:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 .pzsharebtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;margin:6px 0 10px;border-radius:22px;border:1px solid var(--mark);background:none;color:var(--mark);font:700 16px var(--display);cursor:pointer}
-.pzshare{display:flex;flex-direction:column;gap:12px;align-items:center}.pzshare h2{align-self:flex-start;margin:0}.pzshare img{width:min(100%,380px);border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:pzsube .5s ease-out}
+.pzshare{display:flex;flex-direction:column;gap:12px;align-items:center;padding-top:4px}.pzshare h2{align-self:flex-start;margin:0;padding-right:56px;font-size:clamp(24px,7vw,32px);line-height:1.05}.pzshare img{width:min(100%,380px);border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.4);animation:pzsube .5s ease-out}
 .pzsb{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}.pzsb a.q5save{display:inline-flex;align-items:center;text-decoration:none}
 .pzgseg{display:inline-flex;margin:0 0 10px}
 .pzchat{max-width:640px;display:flex;flex-direction:column;gap:8px}
@@ -1561,11 +1561,12 @@ button.fvnota{cursor:pointer}.fvnota .utag{align-self:flex-start}.fvnota b{font:
 .fvsv{display:flex;flex-direction:column;gap:4px;min-width:0}.fvsv b{font:800 24px/1.05 var(--display)}.fvsv span{font-size:14px;color:#C9D6CF}
 .fvsl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .fvsmod{align-self:flex-start;margin-bottom:10px}.fvscomp{align-self:center;display:inline-flex;align-items:center;gap:8px;margin-top:4px}.pzstory img{max-height:62vh;width:auto!important;margin:0 auto;display:block}.fvsmod2{align-self:flex-start;margin:-2px 0 10px}.fvsmod2 button{font-size:13px}
-.fvhb.fvhbe{position:relative;height:56px;align-items:stretch}.fvhb.fvhbe::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed rgba(255,255,255,.3)}
-.fvhb.fvhbe i{height:calc(var(--h)/2);align-self:flex-end;margin-bottom:28px;border-radius:2px 2px 0 0}.fvhb.fvhbe i.dn{align-self:flex-start;margin:28px 0 0;border-radius:0 0 2px 2px;transform-origin:top}
+.fvhb.fvhbe{position:relative;height:48px;align-items:stretch}.fvhb.fvhbe::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed rgba(255,255,255,.3)}
+.fvhb.fvhbe i{height:calc(var(--h)/2);align-self:flex-end;margin-bottom:24px;border-radius:2px 2px 0 0}.fvhb.fvhbe i.dn{align-self:flex-start;margin:24px 0 0;border-radius:0 0 2px 2px;transform-origin:top}
 .fvhdet{display:block;margin-top:4px;color:var(--muted);font-size:12px}
 .fvslh li{display:flex!important;flex-direction:column;align-items:stretch!important;gap:6px;padding:10px!important}.fvslh .fvst small,.fvslh .fvst b{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
-.fvhrow{display:grid;grid-template-columns:18px auto minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;padding:0;border:0;background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}
+.fvhrow{display:grid;grid-template-columns:16px 34px minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:2px;width:100%;padding:0;border:0;background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}
+.fvhrow .fvhn{font:700 18px/1.15 var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fvhrow .fvhlin{grid-column:3/5;font-size:12.5px;line-height:1.3;color:var(--muted)}
 .fvhrow em{font:800 18px var(--display);font-style:normal}
 .fvhb{display:flex;align-items:flex-end;gap:2px;height:40px}.fvhb i{flex:1;min-width:2px;border-radius:2px 2px 0 0;animation:fvhb .6s ease-out both;transform-origin:bottom}
 @keyframes fvhb{from{transform:scaleY(0)}}
@@ -1704,7 +1705,7 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .nbsbh img{width:52px;height:52px;object-fit:contain}.nbsbh b{font:800 17px var(--display)}.nbsbh strong{font:800 44px/1 var(--display)}.nbsbh strong i{font-style:normal;opacity:.6}
 .nbsbe{text-align:center;margin:6px 0 12px;color:var(--muted)}
 .nbsq td,.nbsq th,.nbsbx td,.nbsbx th{white-space:nowrap}.nbsbx tr.tit td:first-child{font-weight:700}.nbsbx small{color:var(--muted)}.nbsbx td.on{font-weight:700;color:var(--mark)}
-.nbsduela{height:auto;aspect-ratio:50/47;max-width:520px}.nbsley{margin:6px 0 0}.nbscmp{max-width:560px}
+.nbsduela{height:auto;aspect-ratio:50/47;max-width:520px}.nbsley{margin:8px 0 0;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}.nbsleq{display:inline-flex;align-items:center;gap:6px}.nbsleq i{width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 2px var(--muted);background:transparent}.nbsleq i.ok{background:var(--muted)}.nbsleq i[style]{box-shadow:none}.nbscmp{max-width:560px}
 
 /* Fantasy NFL: rankings de la semana y sugerencias de intercambio (28 oct 2026) */
 .frkh h2{margin:0}.frkpos,.frkver{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%;margin:10px 0 0}.frkpos::-webkit-scrollbar{display:none}.frkpos button,.frkver button{flex:none}
@@ -6035,16 +6036,21 @@ async function nbaBox(eid){
   $("#gbody").innerHTML=`<div class="nbsbox">${pzSkel(3)}</div>`; if(!dlg.open) dlg.showModal(); FICHA.pila=[]; pzTrack("nba_partido",{});
   const S=await fetch(`${NBA_API}/summary?event=${eid}`).then(r=>r.json()).catch(()=>null); if(!S){ $("#gbody").innerHTML=`<p class="note">ESPN no respondió. Intenta en un momento.</p>`; return; }
   const C=S.header?.competitions?.[0]||{}, cs=C.competitors||[], H=cs.find(c=>c.homeAway==="home")||{}, A=cs.find(c=>c.homeAway==="away")||{}, st=C.status?.type||{};
-  const ab=c=>nbaAb(c.team?.abbreviation||""), col=c=>FAVS_NBA_COL[ab(c)]||"#4E7A6C", nm=c=>NBA_N[ab(c)]||c.team?.shortDisplayName||"";
+  const ab=c=>nbaAb(c.team?.abbreviation||""), col0=c=>FAVS_NBA_COL[ab(c)]||"#4E7A6C", nm=c=>NBA_N[ab(c)]||c.team?.shortDisplayName||"";
+  // si los dos equipos tienen colores parecidos (76ers y Pacers, los dos azules), el de casa usa su segundo color o amarillo
+  const rgb=h=>[1,3,5].map(i=>parseInt(String(h).slice(i,i+2),16)||0), dist=(a,b)=>{ const x=rgb(a),y=rgb(b); return Math.hypot(x[0]-y[0],x[1]-y[1],x[2]-y[2]); };
+  const cA0=col0(A), cH0=col0(H), alt=FAVS_NBA_COL2?.[ab(H)], cH1=dist(cA0,cH0)>=120?cH0:alt&&dist(cA0,alt)>=120&&perfLum(alt)>40?alt:"#F2D466";
+  const col=c=>c===H?cH1:c===A?cA0:col0(c);
   const est=st.state==="post"?"Final":st.state==="in"?`En vivo · ${C.status?.type?.shortDetail||""}`:nbaHora(S.header?.competitions?.[0]?.date||"");
   const Q=Math.max((H.linescores||[]).length,(A.linescores||[]).length), qn=i=>i<4?`${i+1}º`:`TE${i>4?i-3:""}`;
   const lin=Q?`<div class="tbl nbsq"><table><thead><tr><th class="l">Equipo</th>${[...Array(Q)].map((_,i)=>`<th>${qn(i)}</th>`).join("")}<th>Total</th></tr></thead><tbody>${[A,H].map(c=>`<tr><td class="l">${hoyEsc(nm(c))}</td>${[...Array(Q)].map((_,i)=>`<td>${c.linescores?.[i]?.displayValue??""}</td>`).join("")}<td><b>${c.score??""}</b></td></tr>`).join("")}</tbody></table></div>`:"";
   const T=S.boxscore?.teams||[], tv=(c,n)=>{ const t=T.find(x=>String(x.team?.id)===String(c.id)); return parseFloat(t?.statistics?.find(s=>s.name===n)?.displayValue)||0; };
   const comp=T.length?`<div class="fvvst nbscmp" style="--ch:${col(H)};--ca:${col(A)}">${NBS_TST.map(([n,l,pc])=>{ const a=tv(A,n), h=tv(H,n), t=(a+h)||1;
     return `<span class="fvvsr"><b>${pc?a+"%":a}</b><span><small>${l}</small><span class="fvvbar"><i class="a" style="width:${a/t*100}%;background:${col(A)}"></i><i class="h" style="width:${h/t*100}%;background:${col(H)}"></i></span></span><b>${pc?h+"%":h}</b></span>`; }).join("")}</div>`:"";
-  const P=(S.plays||[]).filter(p=>p.shootingPlay&&p.coordinate&&p.coordinate.x>=0&&p.coordinate.x<=50&&p.coordinate.y>=0);
-  const tiros=P.length?`<div class="fvvduela nbsduela"><s class="pin"></s><s class="llave"></s><s class="aro"></s><s class="tab"></s>${P.map(p=>`<i class="fvvtiro${p.scoringPlay?" ok":""}" style="left:${p.coordinate.x/50*100}%;top:${Math.min(47,p.coordinate.y)/47*100}%;--ch:${String(p.team?.id)===String(H.id)?col(H):col(A)};--ca:${String(p.team?.id)===String(H.id)?col(H):col(A)};${p.scoringPlay?`background:${String(p.team?.id)===String(H.id)?col(H):col(A)}`:""}"></i>`).join("")}
-    <span class="fvvley"><span><i class="ok"></i>Anotó</span><span><i></i>Falló</span></span></div><p class="note nbsley"><b style="color:${col(A)}">●</b> ${hoyEsc(nm(A))} · <b style="color:${col(H)}">●</b> ${hoyEsc(nm(H))}</p>`:"";
+  // tiros de campo dentro de media cancha (sin tiros libres ni tiros desde el otro lado); se dejan dentro de la duela
+  const P=(S.plays||[]).filter(p=>p.shootingPlay&&p.coordinate&&!/free throw/i.test(p.type?.text||p.text||"")&&p.coordinate.x>=0&&p.coordinate.x<=50&&p.coordinate.y>=0&&p.coordinate.y<=45);
+  const tiros=P.length?`<div class="fvvduela nbsduela"><s class="pin"></s><s class="llave"></s><s class="aro"></s><s class="tab"></s>${P.map(p=>`<i class="fvvtiro${p.scoringPlay?" ok":""}" style="left:${3+p.coordinate.x/50*94}%;top:${3+Math.min(45,p.coordinate.y)/47*93}%;--ch:${String(p.team?.id)===String(H.id)?col(H):col(A)};--ca:${String(p.team?.id)===String(H.id)?col(H):col(A)};${p.scoringPlay?`background:${String(p.team?.id)===String(H.id)?col(H):col(A)}`:""}"></i>`).join("")}
+    </div><p class="note nbsley"><span class="nbsleq"><i style="background:${col(A)}"></i>${hoyEsc(nm(A))}</span><span class="nbsleq"><i style="background:${col(H)}"></i>${hoyEsc(nm(H))}</span><span class="nbsleq"><i class="ok"></i>Anotó</span><span class="nbsleq"><i></i>Falló</span></p>`:"";
   const IDX={MIN:"MIN",PTS:"PTS",REB:"REB",AST:"AST",STL:"ROB",BLK:"TAP",FG:"TC",["3PT"]:"3P",FT:"TL",["+/-"]:"+/-"}, cols=["MIN","PTS","REB","AST","STL","BLK","FG","3PT","FT","+/-"];
   const jug=(S.boxscore?.players||[]).map(bp=>{ const s=bp.statistics?.[0]; if(!s) return ""; const ix=cols.map(c=>s.labels.indexOf(c));
     const filas=(s.athletes||[]).filter(a=>!a.didNotPlay&&(a.stats||[]).length);
@@ -8577,40 +8583,41 @@ async function sufTenWiki(nom){
 const PZ_WA_ICO=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>`;
 async function sufImagen(U){
   const W=1080,H=1920,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
-  try{ await Promise.all(['800 100px "Barlow Condensed"','600 40px "Barlow"','400 40px "Barlow"'].map(f=>document.fonts.load(f))); }catch(e){}
+  try{ await Promise.all(['800 100px "Barlow Condensed"','700 40px "Barlow Condensed"','600 40px "Barlow"','400 40px "Barlow"'].map(f=>document.fonts.load(f))); }catch(e){}
   const F=(w,s,fam="Barlow Condensed")=>`${w} ${s}px "${fam}", "Arial Narrow", Arial, sans-serif`;
-  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,"#3a1f1a"); g.addColorStop(.45,"#1F332D"); g.addColorStop(1,"#14221d"); x.fillStyle=g; x.fillRect(0,0,W,H);
-  x.fillStyle="rgba(255,156,128,.10)"; x.beginPath(); x.arc(W-80,120,360,0,Math.PI*2); x.fill();
-  const P=80; let y=150;
-  x.font=F(700,60); x.fillStyle="#ECEFE7"; x.fillText("La",P,y); x.fillStyle="#F2D466"; x.fillText("Pizarra",P+x.measureText("La ").width,y);
-  y+=110; x.font=F(800,110); x.fillStyle="#ECEFE7"; x.fillText("MI SUFRÓMETRO",P,y);
-  y+=60; x.font=F(400,38,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(U.modo==="temporada"?"Cómo me tienen mis equipos esta temporada":U.modo==="esperado"?"Lo que me han hecho sufrir, contra lo que se les exige":"Lo que me han hecho sufrir en los últimos años",P,y);
-  // medidor
-  const cx=W/2, cy=y+330, r=250; x.lineWidth=56; x.lineCap="round";
+  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,"#3a1f1a"); g.addColorStop(.4,"#1F332D"); g.addColorStop(1,"#14221d"); x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.fillStyle="rgba(255,156,128,.10)"; x.beginPath(); x.arc(W-60,90,300,0,Math.PI*2); x.fill();
+  const P=70; let y=118;
+  x.font=F(700,54); x.fillStyle="#ECEFE7"; x.fillText("La",P,y); x.fillStyle="#F2D466"; x.fillText("Pizarra",P+x.measureText("La ").width,y);
+  y+=100; x.font=F(800,104); x.fillStyle="#ECEFE7"; x.fillText("MI SUFRÓMETRO",P,y);
+  y+=50; x.font=F(400,34,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(U.modo==="temporada"?"Cómo me tienen mis equipos esta temporada":U.modo==="esperado"?"Lo que me han hecho sufrir, contra lo que se les exige":"Lo que me han hecho sufrir en los últimos años",P,y);
+  // medidor (a la izquierda) y veredicto (a la derecha)
+  const cx=P+190, cy=y+250, r=170; x.lineWidth=40; x.lineCap="round";
   x.strokeStyle="rgba(255,255,255,.10)"; x.beginPath(); x.arc(cx,cy,r,Math.PI,2*Math.PI); x.stroke();
   const gr=x.createLinearGradient(cx-r,0,cx+r,0); gr.addColorStop(0,"#9FD3A8"); gr.addColorStop(.5,"#F2D466"); gr.addColorStop(1,"#FF7A6B");
   x.strokeStyle=gr; x.beginPath(); x.arc(cx,cy,r,Math.PI,Math.PI+Math.PI*Math.max(.02,U.suf/100)); x.stroke();
-  x.textAlign="center"; x.font=F(800,190); x.fillStyle="#ECEFE7"; x.fillText(`${U.suf}%`,cx,cy-20);
-  x.font=F(600,40,"Barlow"); x.fillStyle="#FF9C80"; x.fillText("DE SUFRIMIENTO",cx,cy+40);
-  y=cy+140; x.font=F(800,76); x.fillStyle="#F2D466"; x.fillText(U.V[1].toUpperCase(),cx,y);
-  y+=56; x.font=F(400,38,"Barlow"); x.fillStyle="#ECEFE7"; x.fillText(U.V[2],cx,y); x.textAlign="left";
-  // equipos (el que más hace sufrir primero)
-  y+=70; const L=U.L.slice(0,5);
+  x.textAlign="center"; x.font=F(800,124); x.fillStyle="#ECEFE7"; x.fillText(`${U.suf}%`,cx,cy-14); x.font=F(600,28,"Barlow"); x.fillStyle="#FF9C80"; x.fillText("DE SUFRIMIENTO",cx,cy+30); x.textAlign="left";
+  const vx=cx+r+60, vw=W-P-vx;
+  const parte=(t,font,lh,max,yy)=>{ x.font=font; let l="", n=0; for(const w of t.split(" ")){ if(x.measureText(l+w).width>vw&&l){ x.fillText(l.trim(),vx,yy); yy+=lh; l=""; if(++n>=max) return yy; } l+=w+" "; } if(l) { x.fillText(l.trim(),vx,yy); yy+=lh; } return yy; };
+  x.fillStyle="#F2D466"; let vy=parte(U.V[1].toUpperCase(),F(800,62),62,2,cy-110); x.fillStyle="#ECEFE7"; parte(U.V[2],F(400,30,"Barlow"),38,3,vy+6);
+  // equipos: mínimo 8 (hasta 10) aunque algunos textos se corten
+  y=cy+80; const pe=U.L.map(z=>z.peor&&{...z.peor,nom:z.nom}).filter(Boolean).sort((a,b)=>b.s-a.s||a.d-b.d)[0];
+  const L=U.L.slice(0,10), n=L.length, gap=12, abajo=H-170-(pe?118:0), hc=Math.max(84,Math.min(170,Math.floor((abajo-y-gap*(n-1))/Math.max(1,n))));
   const recorta=(t,max)=>{ let s=t; while(x.measureText(s).width>max&&s.length>3) s=s.slice(0,-2); return s===t?s:s.trim()+"…"; };
-  for(const z of L){ const [c1,c2]=favsCol(z.k), h=z.D?190:150; if(y+h>H-(U.L.some(q=>q.peor)?330:200)) break;
-    x.fillStyle="rgba(255,255,255,.07)"; x.beginPath(); x.roundRect(P,y,W-2*P,h,28); x.fill();
-    x.fillStyle=c1; x.beginPath(); x.arc(P+70,y+70,44,0,Math.PI*2); x.fill(); x.lineWidth=6; x.strokeStyle=c2; x.stroke();
-    x.font=F(800,34); x.fillStyle=perfLum(c1)>150?"#13201B":"#fff"; x.textAlign="center"; x.fillText(favIni(z.nom).slice(0,3),P+70,y+82); x.textAlign="left";
-    x.font=F(700,52); x.fillStyle="#ECEFE7"; x.fillText(recorta(z.nom,560),P+140,y+70);
-    x.font=F(400,30,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(recorta(z.lin,600),P+140,y+116);
-    x.textAlign="right"; x.font=F(800,72); x.fillStyle=z.pct>=55?"#FF9C80":z.pct>=40?"#F2D466":"#9FD3A8"; x.fillText(`${z.pct}%`,W-P-30,y+86); x.textAlign="left";
-    if(z.D){ const n=z.D.length, bx=P+140, bw=(W-2*P-170)/n, my=y+160; x.fillStyle="rgba(255,255,255,.3)"; x.fillRect(bx,my,W-2*P-170,2);
-      z.D.forEach((d,i)=>{ const hh=Math.max(4,Math.min(1,Math.abs(d)/.45)*26); x.fillStyle=d>=.05?"#9FD3A8":d>-.05?"rgba(255,255,255,.4)":d>-.2?"#FFB27A":"#FF7A6B"; x.fillRect(bx+i*bw+2,d>=0?my-hh:my+2,bw-4,hh); }); }
-    y+=h+22; }
-  const pe=U.L.map(z=>z.peor&&{...z.peor,nom:z.nom}).filter(Boolean).sort((a,b)=>a.d-b.d)[0];
-  if(pe&&y<H-280){ y+=20; x.font=F(700,34); x.fillStyle="#FF9C80"; x.fillText("LA QUE MÁS ME DOLIÓ",P,y); y+=52; x.font=F(400,36,"Barlow"); x.fillStyle="#ECEFE7";
-    const t=`${pe.nom}, ${pe.n}: se esperaba ${pe.esp||"más"} y quedó ${pe.res}.`; let lin="", ln=0; for(const w of t.split(" ")){ if(x.measureText(lin+w).width>W-2*P){ x.fillText(lin,P,y); y+=48; lin=""; if(++ln>=2) break; } lin+=w+" "; } if(ln<2) x.fillText(lin,P,y); }
-  x.font=F(700,46); x.fillStyle="#F2D466"; x.textAlign="center"; x.fillText("¿Y tú cuánto sufres?",W/2,H-150); x.font=F(400,38,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("lapizarra.mx · Favoritos",W/2,H-96);
+  for(const z of L){ if(y+hc>abajo+4) break; const [c1,c2]=favsCol(z.k), lr=Math.min(34,hc*.33), lx=P+18+lr, ly=y+hc/2-(z.D?6:0);
+    x.fillStyle="rgba(255,255,255,.07)"; x.beginPath(); x.roundRect(P,y,W-2*P,hc,22); x.fill();
+    x.fillStyle=c1; x.beginPath(); x.arc(lx,ly,lr,0,Math.PI*2); x.fill(); x.lineWidth=5; x.strokeStyle=c2; x.stroke();
+    x.font=F(800,Math.round(lr*.72)); x.fillStyle=perfLum(c1)>150?"#13201B":"#fff"; x.textAlign="center"; x.fillText(favIni(z.nom).slice(0,3),lx,ly+lr*.26); x.textAlign="left";
+    const tx=lx+lr+22, nf=Math.min(44,Math.round(hc*.4));
+    x.font=F(700,nf); x.fillStyle="#ECEFE7"; x.fillText(recorta(z.nom,W-P-tx-170),tx,y+nf+6);
+    x.textAlign="right"; x.font=F(800,Math.min(64,Math.round(hc*.55))); x.fillStyle=z.pct>=55?"#FF9C80":z.pct>=40?"#F2D466":"#9FD3A8"; x.fillText(`${z.pct}%`,W-P-24,y+Math.min(64,hc*.55)+8); x.textAlign="left";
+    if(hc>=100||!z.D){ x.font=F(400,Math.min(26,Math.round(hc*.24)),"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(recorta(z.lin,W-P-tx-170),tx,y+nf+12+Math.min(26,hc*.24)); }
+    if(z.D){ const nn=z.D.length, bx=tx, bwT=W-P-190-bx, bw=bwT/nn, my=y+hc-16; x.fillStyle="rgba(255,255,255,.3)"; x.fillRect(bx,my,bwT,2);
+      z.D.forEach((d,i)=>{ const hh=Math.max(3,Math.min(1,Math.abs(d)/.45)*12); x.fillStyle=d>=.05?"#9FD3A8":d>-.05?"rgba(255,255,255,.4)":d>-.2?"#FFB27A":"#FF7A6B"; x.fillRect(bx+i*bw+1.5,d>=0?my-hh:my+2,bw-3,hh); }); }
+    y+=hc+gap; }
+  if(pe){ y=Math.max(y+10,abajo+18); x.font=F(700,30); x.fillStyle="#FF9C80"; x.fillText("LA QUE MÁS ME DOLIÓ",P,y); y+=42; x.font=F(400,30,"Barlow"); x.fillStyle="#ECEFE7";
+    const t=`${pe.nom}, ${pe.n}: se esperaba ${pe.esp||"más"} y quedó ${pe.res}.`; let lin="", ln=0; for(const w of t.split(" ")){ if(x.measureText(lin+w).width>W-2*P){ x.fillText(lin,P,y); y+=40; lin=""; if(++ln>=2) break; } lin+=w+" "; } if(ln<2) x.fillText(lin,P,y); }
+  x.font=F(700,44); x.fillStyle="#F2D466"; x.textAlign="center"; x.fillText("¿Y tú cuánto sufres?",W/2,H-100); x.font=F(400,34,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("lapizarra.mx · Favoritos",W/2,H-52);
   return await new Promise(r=>c.toBlob(r,"image/png"));
 }
 async function sufCompartir(){
@@ -8689,7 +8696,7 @@ function favsSufreH(){
   return `${sub}<div class="fvsuf"><div class="fvsg"><div class="fvsmed" style="--p:${suf}"><b>${suf}<small>%</small></b><span>de sufrimiento</span></div>
       <div class="fvsv"><b>${hoyEsc(V[1])}</b><span>${hoyEsc(esp?"Medido contra lo que se le exige a cada uno.":V[2])}</span></div></div>
     <ol class="fvsl fvslh">${L.map((z,i)=>{ const T=FAVS_SUF.find(([m])=>z.n>=m), ab=SUFH.ab===z.k;
-      return `<li><button class="fvhrow" data-fvsab="${hoyEsc(z.k)}" aria-expanded="${ab}"><span class="fvsn">${i+1}</span>${favsLogo(z.k,32)}<span class="fvst"><b>${hoyEsc(nom(z.k,z.x))}</b><small>${hoyEsc(esp?`Se le exige: ${z.X.exige} · cumplió ${z.X.cumple} de ${z.T.length}`:z.det)}</small></span><em style="color:${T[2]}">${100-z.n}%</em></button>
+      return `<li><button class="fvhrow" data-fvsab="${hoyEsc(z.k)}" aria-expanded="${ab}"><span class="fvsn">${i+1}</span>${favsLogo(z.k,34)}<b class="fvhn">${hoyEsc(nom(z.k,z.x))}</b><em style="color:${T[2]}">${100-z.n}%</em><small class="fvhlin">${hoyEsc(esp?`Se le exige: ${z.X.exige} · cumplió ${z.X.cumple} de ${z.T.length}`:z.det)}</small></button>
         ${esp?barrasE(z):barras(z)}<span class="fvhlab"><span>${hoyEsc(z.desde)}</span><span>${z.T.length} ${z.lab}</span><span>hoy</span></span>
         ${ab&&esp?`<div class="fvhdolor">${z.X.peores.length?`<b>Las peores decepciones</b>${z.X.peores.map(x=>`<span><em>${hoyEsc(x.n)}</em>Se esperaba ${hoyEsc(sufhEspTxt(z.k,z,x.e))} y quedó: ${hoyEsc(x.res)}${x.extra?` · ${hoyEsc(x.extra)}`:""}</span>`).join("")}`:`<b>Cumple lo que se le pide</b><span>No ha tenido decepciones grandes en este periodo.</span>`}<small class="fvhdet">${hoyEsc(z.det)}</small></div>`:""}
         ${ab&&!esp?`<div class="fvhdolor">${z.dolor.length?`<b>Las que más dolieron</b>${z.dolor.map(([a,t,m])=>`<span><em>${hoyEsc(a)}</em>${hoyEsc(t)}${m?` · ${hoyEsc(m)}`:""}</span>`).join("")}`:`<b>Ni de qué quejarse</b><span>No hay finales perdidas en este periodo.</span>`}</div>`:""}</li>`; }).join("")}</ol>
