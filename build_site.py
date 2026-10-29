@@ -1788,6 +1788,13 @@ if AFK:
               +", ".join(f"{c['fecha']} vs {c['rival']} {c['gm']}-{c['gr']}" for c in out['sel_conv']))
     except Exception as ex:
         print("Plantel de la Selección: no se pudo obtener (la página usa el de ESPN):",ex)
+    # Videos oficiales de YouTube (29 oct 2026): resúmenes de los canales oficiales → docs/datos/videos.json (videos.py)
+    try:
+        from videos import generar as _videos
+        _rv=os.path.join(aqui,'docs','datos','videos.json'); _V=_videos(_rv)
+        if _V.get("v") or not os.path.exists(_rv): json.dump(_V,open(_rv,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
+        print(f"Videos: {len(_V.get('v') or [])} resúmenes de {len(_V.get('can') or {})} canales")
+    except Exception as ex: _pz_err("Videos de YouTube",ex)
     # "Lo último" (7 oct 2026): titulares cortos de la semana armados con nuestros datos (noticias.py):
     # lesiones y suspensiones de Europa, rachas, goleadas, tripletes, expulsados, fichajes de la Liga MX y lesiones de la NFL.
     try:

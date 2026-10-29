@@ -1837,6 +1837,18 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .rtgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rtcard{display:flex;flex-direction:column;gap:6px;min-height:104px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(140deg,color-mix(in srgb,var(--rc) 22%,transparent),var(--surface) 70%);color:var(--ink);text-align:left;cursor:pointer}
 .rth{display:flex;align-items:center;gap:6px}.rte{font-size:18px}.rth b{font:700 17px/1.05 var(--display)}.rtcard small{color:var(--muted);font-size:12px;line-height:1.3;flex:1}.rtcard i{font:700 13px var(--display);font-style:normal;color:var(--muted)}
 .rtcard i.ok{color:#9FD3A8}.rtcard i.pend{color:var(--mark)}.rtcard i.mal{color:#FF9C80}
+/* Videos y Bluesky (29 oct 2026) */
+.vidsub{color:var(--muted);font-size:12px}.vidf{display:inline-flex;flex-wrap:wrap;margin:0 0 10px}
+.vidrow{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}.vidrow::-webkit-scrollbar{display:none}
+.vidc{flex:0 0 240px;scroll-snap-align:start;display:flex;flex-direction:column;gap:5px;padding:0;border:0;background:none;color:var(--ink);text-align:left;cursor:pointer}
+.vidth{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:#15241F}.vidth img{width:100%;height:100%;object-fit:cover;display:block}
+.vidth i{position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-style:normal;display:flex;align-items:center;justify-content:center;font-size:18px}
+.vidth em{position:absolute;top:6px;left:6px;font:700 11px var(--body);font-style:normal;padding:3px 8px;border-radius:8px;background:var(--mark);color:#1d2a26}
+.vidc b{font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.vidc small{color:var(--muted);font-size:12px}
+.vidply h2{font-size:20px;margin:0 40px 10px 0}.vidfr{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}.vidfr iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.bslist{display:flex;flex-direction:column;gap:8px;max-width:640px}.bspost{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none}
+.bsa{display:flex;align-items:center;gap:8px}.bsa img{width:34px;height:34px;border-radius:50%;object-fit:cover}.bsa>span{display:flex;flex-direction:column}.bsa small{color:var(--muted);font-size:12px}
+.bspost p{margin:0;font-size:14px;line-height:1.45;overflow-wrap:anywhere}.bsimg{width:100%;max-height:260px;object-fit:cover;border-radius:10px}.bsver{color:#7FB8E8;font-size:12px}
 .rdopc{display:flex;flex-direction:column;gap:5px}.rdb span small{display:block;font:600 11px var(--body);color:var(--muted);text-align:right}
 .rdamL{display:flex;flex-wrap:wrap;gap:5px;padding-left:6px}.rdamc{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid var(--line)}.rdamc b{font-size:13px}
 .pushc{padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
@@ -2085,7 +2097,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div id="hoyRd"></div>
   <div id="hoyVivo"></div>
   <div class="hoygrid">
-    <div class="hoymain"><div id="hoyFav"></div><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyUlt"></div><div id="hoyNfl"></div></div>
+    <div class="hoymain"><div id="hoyFav"></div><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyUlt"></div><div id="hoyVid"></div><div id="hoyBs"></div><div id="hoyNfl"></div></div>
     <aside class="hoyside"><div id="hoyLpz"></div></aside>
   </div>
 </section>
@@ -10641,9 +10653,48 @@ function hoyPaint(){
   if(typeof hoyConfAplica==="function") hoyConfAplica();
   if(typeof rdPinta==="function"&&Date.now()-(RD.pt||0)>60e3){ RD.pt=Date.now(); rdPinta(); }
 }
+// ---------- Videos oficiales y Bluesky (29 oct 2026) ----------
+// Videos: datos/videos.json (videos.py junta los resúmenes de los canales oficiales de YouTube; se ven con su reproductor).
+// Bluesky: listas de periodistas armadas por ellos mismos (starter packs), leídas de la API pública de Bluesky, con link a cada post.
+const VID={d:null,t:0,f:"todo"}, VID_LIG={mx:["Liga MX","⚽"],ucl:["Champions","⚽"],eng:["Premier","⚽"],nba:["NBA","🏀"],nfl:["NFL","🏈"],f1:["F1","🏁"]};
+async function vidPinta(){ const el=$("#hoyVid"); if(!el) return;
+  if(!VID.d||Date.now()-VID.t>15*60e3){ VID.d=await fetch(`datos/videos.json?v=${Math.floor(Date.now()/9e5)}`).then(r=>r.ok?r.json():null).catch(()=>null); VID.t=Date.now(); }
+  const V=VID.d?.v||[]; if(!V.length){ el.innerHTML=""; return; }
+  const fav=Object.values(FAV?.eq||{}).map(x=>String(x.n||"").toLowerCase().split(" ")[0]).filter(n=>n.length>3);
+  const esFav=v=>fav.some(n=>v.t.toLowerCase().includes(n))?1:0;
+  const ligs=[...new Set(V.map(v=>v.c))].filter(k=>VID_LIG[k]); if(VID.f!=="todo"&&!ligs.includes(VID.f)) VID.f="todo";
+  const L=V.filter(v=>VID.f==="todo"||v.c===VID.f).sort((a,b)=>(esFav(b)-esFav(a))||b.ts-a.ts).slice(0,12);
+  el.innerHTML=`<section class="hsec vidsec"><div class="hh"><h3>Videos</h3><small class="vidsub">Resúmenes de los canales oficiales</small></div>
+    <div class="hseg vidf">${[["todo","Todo"],...ligs.map(k=>[k,VID_LIG[k][0]])].map(([k,n])=>`<button data-vidf="${k}" aria-pressed="${VID.f===k}">${n}</button>`).join("")}</div>
+    <div class="vidrow">${L.map(v=>`<button class="vidc" data-vid="${hoyEsc(v.id)}" data-vidt="${hoyEsc(v.t)}"><span class="vidth"><img src="https://i.ytimg.com/vi/${encodeURIComponent(v.id)}/mqdefault.jpg" alt="" loading="lazy"><i aria-hidden="true">▶</i>${esFav(v)?`<em>Tu equipo</em>`:""}</span><b>${hoyEsc(v.t)}</b><small>${VID_LIG[v.c]?.[1]||""} ${hoyEsc(VID_LIG[v.c]?.[0]||"")} · ${hoyEsc(amHace({seconds:v.ts}))}</small></button>`).join("")}</div></section>`; }
+function vidAbre(id,t){ $("#gbody").innerHTML=`<div class="vidply"><h2>${hoyEsc(t)}</h2><div class="vidfr"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1" title="${hoyEsc(t)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+  <p class="note">Video oficial en YouTube. Si no se reproduce aquí, <a class="q5link" href="https://www.youtube.com/watch?v=${encodeURIComponent(id)}" target="_blank" rel="noopener">ábrelo en YouTube</a>.</p></div>`;
+  if(!dlg.open) dlg.showModal(); FICHA.pila=[]; pzTrack("video",{id}); }
+dlg.addEventListener("close",()=>{ if($("#gbody .vidply")) $("#gbody").innerHTML=""; });
+const BS={packs:{nfl:["minakimes.bsky.social","3lbuvraefoe23","NFL"],nba:["mikevorkunov.bsky.social","3lah53b2rvu2a","NBA"]},f:"nfl",c:{}}, BSAPI="https://public.api.bsky.app/xrpc/";
+async function bsLista(k){ const key="pz_bs_"+k; try{ const c=JSON.parse(localStorage.getItem(key)||"null"); if(c&&Date.now()-c.t<7*864e5) return c.l; }catch(e){}
+  const [h,rk]=BS.packs[k], did=(await fetch(`${BSAPI}com.atproto.identity.resolveHandle?handle=${h}`).then(r=>r.json())).did;
+  const sp=await fetch(`${BSAPI}app.bsky.graph.getStarterPack?starterPack=${encodeURIComponent(`at://${did}/app.bsky.graph.starterpack/${rk}`)}`).then(r=>r.json());
+  const l=sp?.starterPack?.list?.uri; if(l){ try{ localStorage.setItem(key,JSON.stringify({l,t:Date.now()})); }catch(e){} } return l; }
+async function bsPinta(){ const el=$("#hoyBs"); if(!el) return; const k=BS.f;
+  if(!BS.c[k]||Date.now()-BS.c[k].t>5*60e3){ try{ const l=await bsLista(k); if(!l) throw 0;
+      const j=await fetch(`${BSAPI}app.bsky.feed.getListFeed?list=${encodeURIComponent(l)}&limit=40`).then(r=>r.json());
+      BS.c[k]={t:Date.now(),F:(j.feed||[]).filter(x=>!x.reason&&!x.reply&&!(x.post?.labels||[]).length&&!(x.post?.author?.labels||[]).some(l=>/porn|sexual|nudity|graphic/.test(l.val))&&String(x.post?.record?.text||"").length>40).slice(0,8)}; }
+    catch(e){ BS.c[k]={t:Date.now(),F:[]}; } }
+  const F=BS.c[k].F; if(!F.length&&!BS.c.nfl?.F?.length&&!BS.c.nba?.F?.length){ el.innerHTML=""; return; }
+  const txt=t=>hoyEsc(t).replace(/\n+/g,"<br>");
+  el.innerHTML=`<section class="hsec bssec"><div class="hh"><h3>Lo que se dice</h3><small class="vidsub">Periodistas en Bluesky · en inglés</small></div>
+    <div class="hseg vidf">${Object.entries(BS.packs).map(([x,v])=>`<button data-bsf="${x}" aria-pressed="${x===k}">${v[2]}</button>`).join("")}</div>
+    <div class="bslist">${F.map(x=>{ const P=x.post, A=P.author, rk=String(P.uri).split("/").pop(), img=P.embed?.images?.[0]?.thumb||P.embed?.media?.images?.[0]?.thumb||P.embed?.external?.thumb, url=`https://bsky.app/profile/${encodeURIComponent(A.handle)}/post/${encodeURIComponent(rk)}`;
+      return `<a class="bspost" href="${url}" target="_blank" rel="noopener"><span class="bsa">${A.avatar?`<img src="${hoyEsc(A.avatar)}" alt="" loading="lazy">`:""}<span><b>${hoyEsc(A.displayName||A.handle)}</b><small>@${hoyEsc(A.handle)} · ${hoyEsc(amHace({seconds:Date.parse(P.record?.createdAt||P.indexedAt)/1000}))}</small></span></span>
+        <p>${txt(String(P.record?.text||"").slice(0,420))}</p>${img?`<img class="bsimg" src="${hoyEsc(img)}" alt="" loading="lazy">`:""}<small class="bsver">Ver en Bluesky ›</small></a>`; }).join("")||`<p class="note">No pudimos cargar las publicaciones. Intenta en un momento.</p>`}</div></section>`; }
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return; let b;
+  if((b=t.closest("[data-vid]"))) return vidAbre(b.dataset.vid,b.dataset.vidt||"");
+  if((b=t.closest("[data-vidf]"))){ VID.f=b.dataset.vidf; return vidPinta(); }
+  if((b=t.closest("[data-bsf]"))){ BS.f=b.dataset.bsf; pzTrack("bluesky",{f:BS.f}); return bsPinta(); } });
 function hoyRender(){
   if(!HOY.ord){ HOY.ord=1; hoyOrden(); }
-  hoyPaint(); hoyMx(); votosCarga();
+  hoyPaint(); hoyMx(); votosCarga(); vidPinta().catch(()=>{}); bsPinta().catch(()=>{});
   hoyRefresh().then(c=>{if(c) hoyPaint();}).catch(()=>{});
   if(!HOY.init){ HOY.init=true; setTimeout(precarga,2500); }
 }
