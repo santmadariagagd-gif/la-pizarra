@@ -1813,6 +1813,8 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .smxfila.yo{border-color:var(--mark)}.smxfila.muerto{opacity:.65}.smxn{flex:1;display:flex;flex-direction:column;min-width:120px}.smxn small{color:var(--muted);font-size:12px}
 .fanliga{display:flex;gap:6px;margin:0 0 10px}.fanliga button{min-height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 14px var(--body);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .fanliga button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}.fanliga i{font:800 10px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;background:#FF9C80;color:#1d2a26;font-style:normal}
+.rdamL{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rdamc{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid var(--line)}
+.rdamc>span{display:flex;flex-direction:column;line-height:1.1}.rdamc b{font-size:13px}.rdamc small{font-size:12px;color:var(--muted)}.rdamc.ok{border-color:#9FD3A8}.rdamc.ok small{color:#9FD3A8}.rdamc.mal small{color:#FF9C80}
 .pushc{padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
 .pushh{display:flex;align-items:center;gap:12px}.pushh>span,.pushp>span{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.pushh small,.pushp small{color:var(--muted);font-size:12px}
 .pushsw{width:52px;height:30px;border-radius:15px;border:0;background:var(--line);position:relative;padding:0;flex-shrink:0;cursor:pointer}.pushsw:disabled{opacity:.6}
@@ -8334,14 +8336,18 @@ async function rdPinta(){
   const D_=await rdDatos(), f=rdHoy(), c=D_[f], ayer=D_[rdMas(f,-1)], man=D_[rdMas(f,1)];
   if(!c){ el.innerHTML=man?`<section class="rdcard rdnada"><div class="rdh"><span class="rdtag">Reto del día</span></div><span>Hoy no hay reto. Mañana: <b>${hoyEsc(rdTexto(man).q)}</b></span></section>`:""; return; }
   const T=rdTexto(c), cerr=c.ts<=Date.now()/1000, mi=await rdMiResp(f), h=await rdMiHash(), yo=h&&RD.t?.t?.[h], cuenta=amOk();
-  const [cnt,am]=mi||cerr?await Promise.all([rdCnt(f),rdAmigosResp(f)]):[{},[]];
+  // 29 oct 2026: antes de contestar se ve QUIÉN de tus amigos ya contestó (sin lo que puso); después, lo que puso cada uno
+  const [cnt,am]=await Promise.all([mi||cerr?rdCnt(f):Promise.resolve({}),cuenta?rdAmigosResp(f):Promise.resolve([])]);
+  const nom1=x=>hoyEsc(amNom(x.uid,x.a).split(" ")[0]);
+  const yaCont=am.length?`<span class="rdam">${am.slice(0,6).map(x=>amAv(x.uid,24,x.a)).join("")}<span>${am.length===1?`${nom1(am[0])} ya contestó`:am.length===2?`${nom1(am[0])} y ${nom1(am[1])} ya contestaron`:`${nom1(am[0])}, ${nom1(am[1])} y ${am.length-2} más ya contestaron`}. Contesta para ver qué pusieron.</span></span>`:"";
   const tot=T.ops.reduce((s,[k])=>s+(cnt[k]||0),0)||0;
   const res=c.res, acierto=res&&mi?mi===res:null;
   const opsH=!mi&&!cerr?`<div class="rdops n${T.ops.length}">${T.ops.map(([k,t],i)=>`<button class="rdop o${i}" data-rd="${k}">${hoyEsc(t)}</button>`).join("")}</div>
-      ${cuenta?`<span class="rdnota">Contesta antes de que empiece el partido. Si le atinas, tu racha sube.</span>`:`<span class="rdnota">Entra con tu cuenta para contestar y llevar tu racha.</span>`}`
+      ${cuenta?`<span class="rdnota">Contesta antes de que empiece el partido. Si le atinas, tu racha sube.</span>${yaCont}`:`<span class="rdnota">Entra con tu cuenta para contestar y llevar tu racha.</span>`}`
     :`<div class="rdbar">${T.ops.map(([k,t],i)=>{ const n=cnt[k]||0, pc=tot?Math.round(n/tot*100):0, tuya=mi===k, ok=res&&res===k;
       return `<div class="rdb${tuya?" tuya":""}${ok?" ok":""}${res&&tuya&&!ok?" mal":""}"><i class="o${i}" style="width:${pc}%"></i><b>${hoyEsc(t)}${tuya?" · tu respuesta":""}${ok?" ✓":""}</b><span>${tot?pc+"%":""}</span></div>`; }).join("")}</div>
-      ${am.length?`<span class="rdam">${am.slice(0,6).map(x=>amAv(x.uid,24,x.a)).join("")}<span>${am.slice(0,3).map(x=>`${hoyEsc(amNom(x.uid,x.a).split(" ")[0])}: ${hoyEsc((T.ops.find(o=>o[0]===x.r)||["",""])[1])}`).join(" · ")}${am.length>3?` y ${am.length-3} más`:""}</span></span>`:""}`;
+      ${am.length?`<div class="rdamL" aria-label="Lo que contestaron tus amigos">${am.map(x=>{ const ok=res&&res!=="x"?(x.r===res?" ok":" mal"):"";
+        return `<span class="rdamc${ok}">${amAv(x.uid,24,x.a)}<span><b>${nom1(x)}</b><small>${hoyEsc((T.ops.find(o=>o[0]===x.r)||["",""])[1])}${ok===" ok"?" ✓":ok?" ✗":""}</small></span></span>`; }).join("")}</div>`:""}`;
   const estado=res==="x"?`<div class="rdres x">Se anuló: no cuenta para tu racha.</div>`:res?`<div class="rdres ${acierto?"si":"no"}">${mi?(acierto?`¡Le atinaste! Quedó ${c.gh}-${c.ga}.`:`Esta vez no. Quedó ${c.gh}-${c.ga}.`):`Quedó ${c.gh}-${c.ga}. No contestaste.`}</div>`
     :cerr?`<span class="rdnota">${mi?"Ya está en juego. La respuesta sale cuando termine.":"Ya cerró. Mañana hay otro."}</span>`:"";
   const ayerH=ayer&&ayer.res&&ayer.res!=="x"?(()=>{ const m=rdLs()[rdMas(f,-1)]; return `<span class="rdayer">Ayer: ${m?(m===ayer.res?"le atinaste":"no le atinaste"):"no contestaste"} · ${hoyEsc(rdTexto(ayer).ops.find(o=>o[0]===ayer.res)?.[1]||"")}</span>`; })():"";
