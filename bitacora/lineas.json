@@ -4715,6 +4715,182 @@
       "PHI@WAS": -3.5,
       "CHI@SEA": -3.5
      }
+    },
+    {
+     "cuando": "2026-10-29 07:03",
+     "motivo": "diaria",
+     "lineas": {
+      "CAR@GB": {
+       "draftkings": -3.5,
+       "betus": -3.5,
+       "fanduel": -3.5,
+       "betrivers": -3.5,
+       "lowvig": -3.5,
+       "betonlineag": -3.5,
+       "mybookieag": -3.5,
+       "betmgm": -4.0,
+       "bovada": -3.5
+      },
+      "ARI@DAL": {
+       "draftkings": -7.0,
+       "betus": -7.0,
+       "fanduel": -6.5,
+       "betrivers": -6.5,
+       "lowvig": -7.0,
+       "betonlineag": -7.0,
+       "mybookieag": -7.0,
+       "betmgm": -7.0,
+       "bovada": -7.0
+      },
+      "ATL@TB": {
+       "draftkings": -2.5,
+       "betus": -1.0,
+       "fanduel": -2.5,
+       "betrivers": -2.5,
+       "lowvig": -2.5,
+       "betonlineag": -2.5,
+       "betmgm": -2.5,
+       "mybookieag": -2.5,
+       "bovada": -2.5
+      },
+      "BAL@BUF": {
+       "draftkings": -3.0,
+       "fanduel": -3.0,
+       "betrivers": -3.0,
+       "lowvig": -3.0,
+       "betonlineag": -3.0,
+       "betus": -3.0,
+       "betmgm": -3.0,
+       "mybookieag": -3.0,
+       "bovada": -3.0
+      },
+      "TEN@CIN": {
+       "draftkings": -10.0,
+       "betus": -10.5,
+       "fanduel": -10.5,
+       "betrivers": -10.5,
+       "lowvig": -10.5,
+       "betonlineag": -10.5,
+       "betmgm": -10.5,
+       "mybookieag": -10.5,
+       "bovada": -10.5
+      },
+      "CLE@PIT": {
+       "draftkings": -3.5,
+       "fanduel": -3.5,
+       "betrivers": -3.5,
+       "lowvig": -3.0,
+       "betonlineag": -3.0,
+       "betus": -3.5,
+       "betmgm": -3.5,
+       "mybookieag": -3.5,
+       "bovada": -3.5
+      },
+      "MIN@DET": {
+       "draftkings": -3.0,
+       "fanduel": -3.5,
+       "betrivers": -3.0,
+       "lowvig": -3.5,
+       "betonlineag": -3.5,
+       "betus": -3.5,
+       "betmgm": -3.5,
+       "mybookieag": -3.5,
+       "bovada": -3.5
+      },
+      "IND@JAX": {
+       "draftkings": -10.0,
+       "betus": -10.0,
+       "fanduel": -9.5,
+       "betrivers": -9.5,
+       "lowvig": -9.5,
+       "betonlineag": -9.5,
+       "betmgm": -10.0,
+       "mybookieag": -10.0,
+       "bovada": -10.0
+      },
+      "LV@NYJ": {
+       "draftkings": -1.5,
+       "fanduel": -1.5,
+       "betrivers": -1.0,
+       "lowvig": -1.5,
+       "betonlineag": -1.5,
+       "betus": -1.0,
+       "betmgm": -1.5,
+       "mybookieag": -1.5,
+       "bovada": -1.5
+      },
+      "LAC@LA": {
+       "draftkings": -6.5,
+       "betus": -6.5,
+       "fanduel": -6.5,
+       "betrivers": -6.5,
+       "lowvig": -6.5,
+       "betonlineag": -6.5,
+       "mybookieag": -6.5,
+       "betmgm": -6.5,
+       "bovada": -6.5
+      },
+      "KC@DEN": {
+       "draftkings": 1.5,
+       "betus": 0.0,
+       "fanduel": 1.5,
+       "betrivers": 1.5,
+       "lowvig": 1.0,
+       "betonlineag": 1.0,
+       "mybookieag": 1.0,
+       "betmgm": 1.5,
+       "bovada": 1.0
+      },
+      "NE@MIA": {
+       "draftkings": 7.0,
+       "betus": 7.0,
+       "fanduel": 7.0,
+       "betrivers": 7.0,
+       "lowvig": 7.0,
+       "betonlineag": 7.0,
+       "betmgm": 7.0,
+       "mybookieag": 7.0,
+       "bovada": 7.0
+      },
+      "PHI@WAS": {
+       "draftkings": -6.0,
+       "betus": -6.0,
+       "fanduel": -5.5,
+       "betrivers": -5.5,
+       "lowvig": -5.5,
+       "betonlineag": -5.5,
+       "mybookieag": -6.0,
+       "betmgm": -5.5,
+       "bovada": -6.0
+      },
+      "CHI@SEA": {
+       "draftkings": -3.0,
+       "fanduel": -3.0,
+       "betrivers": -3.0,
+       "lowvig": -3.0,
+       "betonlineag": -3.0,
+       "betus": -3.0,
+       "mybookieag": -3.0,
+       "betmgm": -3.0,
+       "bovada": -3.0
+      }
+     },
+     "espn": {
+      "ARI@DAL": -6.5,
+      "MIN@DET": -2.5,
+      "TEN@CIN": -10.5,
+      "ATL@TB": -2.5,
+      "IND@JAX": -7.5,
+      "LAC@LA": -6.5,
+      "LV@NYJ": 1.5,
+      "CLE@PIT": -3.5,
+      "CAR@GB": -3.5,
+      "BAL@BUF": -3.5,
+      "KC@DEN": 1.5,
+      "NE@MIA": 6.5,
+      "PHI@WAS": -3.5,
+      "CHI@SEA": -3.5
+     }
     }
    ],
    "primera_vez": "2026-10-27T20:42+00:00"
