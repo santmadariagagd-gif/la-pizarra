@@ -1775,6 +1775,37 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .amperfil{position:relative;margin:-8px -4px 0}.ampf{height:90px;border-radius:18px;background:linear-gradient(120deg,var(--c1),var(--c2))}
 .ampfin{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:0 6px;margin-top:-48px}.ampfin h2{margin:6px 0 0}
 .ampbtn{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:6px}
+/* Perfil completo (28 oct 2026) */
+.pfx{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
+.pfban{position:relative;height:120px;border-radius:18px;overflow:hidden;background:linear-gradient(120deg,var(--c1) 0 54%,var(--c2) 54% 61%,var(--c1) 61%)}
+.pfban::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.05) 0 12px,transparent 12px 24px)}
+.pfbr{position:absolute;top:0;bottom:0;width:90px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);animation:pfbr 3.4s ease-in-out infinite}
+@keyframes pfbr{0%{transform:translateX(-120%)}60%,100%{transform:translateX(560%)}}
+.pfcab{display:flex;align-items:flex-end;gap:12px;margin:-52px 0 0 12px;position:relative}
+.pfav{flex-shrink:0;border-radius:50%;box-shadow:0 0 0 4px var(--surface,#263D36);display:inline-flex}
+.pfnom{display:flex;flex-direction:column;gap:3px;padding-bottom:6px;min-width:0}.pfnom h2{margin:0;font:800 26px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pftit{align-self:flex-start;padding:3px 9px;border-radius:999px;background:var(--hl);color:var(--mark);font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase}
+.pfbio{margin:0 2px;font-size:15px;line-height:1.4}
+.pfbtn{display:flex;gap:8px}.pfbtn .btn{flex:1;justify-content:center;min-height:44px}
+.pfsec{background:var(--surface)!important;color:var(--ink)!important;border:1px solid var(--line)!important}
+.pfmas{text-align:center}
+.pfst{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 4px}
+.pfst span{display:flex;flex-direction:column;align-items:center}.pfst b{font:800 22px/1.1 var(--display)}.pfst small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.pfeq{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -2px;padding:0 2px}.pfeq::-webkit-scrollbar{display:none}
+.pfeqc{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;background:var(--bg);border:1px solid var(--line);flex-shrink:0;font:600 13px var(--body);white-space:nowrap}
+.pftabs{display:flex;border-bottom:1px solid var(--line)}
+.pftabs button{flex:1;min-height:44px;border:0;background:none;color:var(--muted);font:700 16px var(--display);letter-spacing:.03em;border-bottom:3px solid transparent;margin-bottom:-1px;cursor:pointer}
+.pftabs button[aria-selected="true"]{color:var(--mark);border-bottom-color:var(--mark)}
+.pfbody{display:flex;flex-direction:column;gap:8px;animation:pfsube .35s ease both}@keyframes pfsube{from{opacity:0;transform:translateY(6px)}}
+.pfdu{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:9px 12px}
+.pfdr{width:32px;height:32px;border-radius:50%;color:#15241F;font:800 15px var(--display);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pfdt{flex:1;display:flex;flex-direction:column;min-width:0}.pfdt b{font-size:15px}.pfdt small{font-size:12px;color:var(--muted)}.pfdm{font:800 20px var(--display)}
+.pftr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pft{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px;border-radius:14px;background:var(--bg);border:1px solid var(--line);text-align:center}
+.pft span{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c);border:2px solid var(--c);font:800 15px var(--display)}
+.pft b{font:700 14px/1.1 var(--display)}.pft small{font-size:11px;color:var(--muted);line-height:1.25}
+.pft.no{opacity:.38}.pft.no span{filter:grayscale(1)}
+@media(prefers-reduced-motion:reduce){.pfbr,.pfbody{animation:none}}
 
 /* Duelos (28 oct 2026) */
 #amDu:empty{display:none}
@@ -7274,7 +7305,7 @@ function vidaAccHTML(){
 function vidaPortadaHTML(){
   const {h}=vidaParte(), nom=(typeof q5AliasDef==="function"?q5AliasDef():"").split(" ")[0], sal=h<5?"Buenas noches":h<12?"Buenos días":h<19?"Buenas tardes":"Buenas noches";
   const yo=typeof acctOk==="function"&&acctOk()?perfMio():null, nom2=yo?.a?yo.a.split(" ")[0]:nom;
-  const saludo=`<div class="vsalf">${yo?`<button class="vav" data-vact="perfil" aria-label="Editar tu perfil">${perfAvatar(yo,48)}</button>`:""}<p class="vsal">${sal}${nom2?`, ${hoyEsc(nom2)}`:""}${yo&&perfTitulo(yo)?`<small class="vtit2">${hoyEsc(perfTitulo(yo))}</small>`:""}</p></div>`, cie=vidaCierreHTML(), acc=vidaAccHTML();
+  const saludo=`<div class="vsalf">${yo?`<button class="vav" data-vact="miperfil" aria-label="Ver tu perfil">${perfAvatar(yo,48)}</button>`:""}<p class="vsal">${sal}${nom2?`, ${hoyEsc(nom2)}`:""}${yo&&perfTitulo(yo)?`<small class="vtit2">${hoyEsc(perfTitulo(yo))}</small>`:""}</p></div>`, cie=vidaCierreHTML(), acc=vidaAccHTML();
   const cl=vidaClasico();
   if(cl){ const cH=PZ_COL[cl.h]||["#3d6b5a","#ECEFE7"], cV=PZ_COL[cl.v]||["#2c4a40","#ECEFE7"], e=HOY.ev?.get(cl.fid), st=e?.status?.type?.state;
     const sc=e&&st!=="pre"?e.competitions[0].competitors.map(c=>c.score??"–"):null;
@@ -7310,6 +7341,7 @@ $("#hoyPor")?.addEventListener("click",ev=>{
   if(t.dataset.vact==="logros") return vidaLogrosAbre();
   if(t.dataset.vact==="semana") return vidaHistoria();
   if(t.dataset.vact==="perfil") return perfAbre();
+  if(t.dataset.vact==="miperfil"){ if(!amOk()) return perfAbre(); pzTrack("perfil_ver",{yo:1}); return amPerfil(ACCT.user.uid,"pub"); }
   if(t.dataset.vact==="amigos"){ navIr("amigos"); window.scrollTo(0,0); return; }
 });   // los partidos (data-hid / data-nid) y "Sigue a tus equipos" (data-hact) los abre el manejador de #hoy
 
@@ -7555,7 +7587,15 @@ function perfNuevos(){ if(!VIDA.log) return []; const V=perfVistos(); return per
 function perfLimpia(p){ if(!p||typeof p!=="object") return null; const col=c=>/^#[0-9A-Fa-f]{6}$/.test(c||"")?c:null;
   return {a:String(p.a||"").replace(/[<>"&]/g,"").slice(0,24),eq:/^[fn][A-Za-z0-9]{1,8}$/.test(p.eq||"")?p.eq:"",c1:col(p.c1)||"#3d6b5a",c2:col(p.c2)||"#F2D466",c3:col(p.c3)||col(p.c2)||"#F2D466",
     d:PERF_DIS.some(x=>x[0]===p.d)?p.d:"liso",n:Math.max(0,Math.min(99,parseInt(p.n,10)||0)),f:Math.max(0,Math.min(PERF_FONDOS.length-1,parseInt(p.f,10)||0)),m:PERF_MARCOS.some(x=>x[0]===p.m)?p.m:"no",
-    x:(Array.isArray(p.x)?p.x:[]).filter(v=>PERF_X.some(y=>y[0]===v)).slice(0,5),ti:PERF_TIT.some(t=>t[0]===p.ti)?p.ti:"",k1:col(p.k1)||"",k2:col(p.k2)||"",vi:!!p.vi&&!!col(p.k1),al:goNorm(String(p.a||"").replace(/[<>"&]/g,"")).slice(0,24)}; }
+    x:(Array.isArray(p.x)?p.x:[]).filter(v=>PERF_X.some(y=>y[0]===v)).slice(0,5),ti:PERF_TIT.some(t=>t[0]===p.ti)?p.ti:"",k1:col(p.k1)||"",k2:col(p.k2)||"",vi:!!p.vi&&!!col(p.k1),al:goNorm(String(p.a||"").replace(/[<>"&]/g,"")).slice(0,24),...perfExtra(p)}; }
+// Perfil completo (28 oct 2026): frase (bi), equipos que sigue (fv "k|nombre"), logros ganados (lg) y números (s: a amigos,
+// g/p/e duelos). Los escribe cada quien en su perfil para que sus amigos los vean (perfSync).
+function perfExtra(p){ const o={}, ent=v=>Math.max(0,Math.min(9999,parseInt(v,10)||0));
+  const bi=String(p.bi||"").replace(/[<>]/g,"").replace(/\s+/g," ").trim().slice(0,90); if(bi) o.bi=bi;
+  const fv=(Array.isArray(p.fv)?p.fv:[]).filter(v=>typeof v==="string"&&/^[fnb][A-Za-z0-9]{1,10}\|[^<>|]{1,30}$/.test(v)).slice(0,8); if(fv.length) o.fv=fv;
+  const okL=new Set([...VIDA_LOGROS.map(l=>l[0]),"rd7","rd30"]), lg=(Array.isArray(p.lg)?p.lg:[]).filter(v=>okL.has(v)).slice(0,15); if(lg.length) o.lg=lg;
+  if(p.s&&typeof p.s==="object") o.s={a:ent(p.s.a),g:ent(p.s.g),p:ent(p.s.p),e:ent(p.s.e)};
+  return o; }
 function perfDef(){
   const k=Object.keys(FAV.eq).find(k=>k[0]==="f"&&PZ_COL[k.slice(1)])||Object.keys(FAV.eq).find(k=>k[0]==="n"&&NT[k.slice(1)]?.c)||"";
   const c=k?vidaColEq(k):["#3d6b5a","#F2D466"];
@@ -7584,10 +7624,24 @@ function perfAvatar(p,tam=44){
 async function perfCargaYo(){
   if(!(typeof acctOk==="function"&&acctOk())||!ACCT.db) return;
   try{ const s=await ACCT.db.doc(`perfiles/${ACCT.user.uid}`).get(); if(s.exists){ PERF.yo=perfLimpia(s.data()); try{ localStorage.setItem("pz_perfil",JSON.stringify(PERF.yo)); }catch(e){} }
-    else { const p=perfMio()||perfDef(); PERF.yo=p; try{ localStorage.setItem("pz_perfil",JSON.stringify(p)); }catch(e){} await ACCT.db.doc(`perfiles/${ACCT.user.uid}`).set({...p,t:grFV().serverTimestamp()}); }   // todos tienen perfil: así los encuentran sus amigos
-    if(s.exists&&!s.data().al&&PERF.yo){ await ACCT.db.doc(`perfiles/${ACCT.user.uid}`).set({...PERF.yo,t:grFV().serverTimestamp()}); } }catch(e){ console.warn("Perfil:",e?.code||e); }
+    else { const p=perfMio()||perfDef(); PERF.yo=p; try{ localStorage.setItem("pz_perfil",JSON.stringify(p)); }catch(e){} await perfEscribe(p); }   // todos tienen perfil: así los encuentran sus amigos
+    if(s.exists&&!s.data().al&&PERF.yo){ await perfEscribe(PERF.yo); } }catch(e){ console.warn("Perfil:",e?.code||e); }
   acctBtn(); if(typeof vidaPinta==="function") vidaPinta();
-  if(typeof amCarga==="function") amCarga(true).then(()=>{ if(AM.inv&&!$("#amigos").classList.contains("hidden")) amRender(); else if(AM.inv) navIr("amigos"); });
+  if(typeof amCarga==="function") amCarga(true).then(()=>{ Promise.all([duCarga().catch(()=>{}),vidaLogrosCalc().catch(()=>{})]).then(()=>setTimeout(perfSync,1500)); if(AM.inv&&!$("#amigos").classList.contains("hidden")) amRender(); else if(AM.inv) navIr("amigos"); });
+}
+async function perfEscribe(p){
+  const ref=ACCT.db.doc(`perfiles/${ACCT.user.uid}`);
+  try{ await ref.set({...p,t:grFV().serverTimestamp()}); }
+  catch(e){ if(e?.code!=="permission-denied") throw e; const b={...p}; ["bi","fv","lg","s"].forEach(k=>delete b[k]); await ref.set({...b,t:grFV().serverTimestamp()}); console.warn("Perfil: faltan las reglas nuevas de perfiles (bi, fv, lg, s)"); }
+}
+async function perfSync(){
+  if(!amOk()||!PERF.yo) return; const yo=ACCT.user.uid;
+  const fv=Object.entries(FAV.eq).filter(([k])=>/^[fnb]/.test(k)).map(([k,x])=>`${k}|${String((k[0]==="b"?(NBA_N?.[k.slice(1)]||x.n):k[0]==="n"?(NT[k.slice(1)]?.n||x.n):x.n)||"").replace(/[<>|]/g,"").slice(0,30)}`).filter(v=>!v.endsWith("|"));
+  const lg=[...(VIDA.log?.T||[])], r=[0,0,0]; for(const d of DU.L||[]){ if(d.est!=="ok"||!d.res?.p) continue; r[d.res.g===yo?0:d.res.g?1:2]++; }
+  const p=perfLimpia({...PERF.yo,fv,lg,s:{a:amAmigos().length,g:r[0],p:r[1],e:r[2]}}), k=JSON.stringify(p);
+  let ant=""; try{ ant=localStorage.getItem("pz_perf_sync")||""; }catch(e){}
+  PERF.yo=p; try{ localStorage.setItem("pz_perfil",k); }catch(e){}
+  if(k===ant) return; try{ await perfEscribe(p); localStorage.setItem("pz_perf_sync",k); }catch(e){ console.warn("Perfil: sync",e?.code||e); }
 }
 function perfCarga(uid){   // perfil de otro (para el chat)
   if(PERF.cache[uid]!==undefined||!ACCT.db) return; PERF.cache[uid]=null;
@@ -7613,6 +7667,7 @@ function perfEdPinta(){
   const vis=perfTiene("fan3"), tit=perfTitulo(e);
   box.innerHTML=`<div class="peed"><h2>Tu perfil</h2>
     <div class="petop"><span class="peprev">${perfAvatar(e,140)}</span><span class="pedat"><label class="pelab" for="peA">Apodo</label><input id="peA" maxlength="24" value="${hoyEsc(e.a)}" placeholder="Cómo te ven tus amigos" autocomplete="off">
+      <label class="pelab" for="peBi">Tu frase</label><input id="peBi" maxlength="90" value="${hoyEsc(e.bi||"")}" placeholder="Le voy a los que sufren…" autocomplete="off">
       <small>${e.eq?`Le va al ${hoyEsc(perfNomEq(e.eq))}`:"Escoge tu equipo abajo"}${tit?` · <b class="petit">${hoyEsc(tit)}</b>`:""}</small><span class="pemini">${perfAvatar(e,28)}<span>Así sales en el chat</span></span></span></div>
     ${N.size?`<div class="penov"><b>Desbloqueaste ${N.size===1?"algo nuevo":`${N.size} cosas nuevas`}</b><span>${[...N].map(id=>perfDesb().find(d=>d.id===id)?.n).filter(Boolean).map(hoyEsc).join(" · ")}</span></div>`:""}
     <h3 class="pet">Tu equipo</h3><div class="pechips">${eqs.map(chip).join("")}</div>
@@ -7642,13 +7697,13 @@ document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest||
   if(b.dataset.peM){ e.m=b.dataset.peM; return perfEdPinta(); }
   if(b.dataset.peX){ const S=new Set(e.x||[]); S.has(b.dataset.peX)?S.delete(b.dataset.peX):S.add(b.dataset.peX); e.x=[...S]; return perfEdPinta(); }
   if(b.dataset.peTi!=null){ e.ti=b.dataset.peTi; return perfEdPinta(); }
-  if(b.id==="peGuarda"){ const p=perfLimpia({...e,a:($("#peA")?.value||"").trim()||e.a}); PERF.yo=p; try{ localStorage.setItem("pz_perfil",JSON.stringify(p)); }catch(x){} if(typeof acctPush==="function") acctPush();
+  if(b.id==="peGuarda"){ const p=perfLimpia({...e,a:($("#peA")?.value||"").trim()||e.a,bi:($("#peBi")?.value??e.bi??"")}); PERF.yo=p; try{ localStorage.setItem("pz_perfil",JSON.stringify(p)); }catch(x){} if(typeof acctPush==="function") acctPush();
     $("#peMsg").textContent="Guardando…";
-    try{ await ACCT.db.doc(`perfiles/${ACCT.user.uid}`).set({...p,t:grFV().serverTimestamp()}); $("#peMsg").innerHTML=pzOk("Guardado"); pzTrack("perfil_guarda",{d:p.d,f:p.f,m:p.m,x:p.x.length}); }
+    try{ await perfEscribe(p); try{ localStorage.removeItem("pz_perf_sync"); }catch(x){} $("#peMsg").innerHTML=pzOk("Guardado"); pzTrack("perfil_guarda",{d:p.d,f:p.f,m:p.m,x:p.x.length}); }
     catch(x){ $("#peMsg").textContent=`Se guardó en este navegador, pero no en tu cuenta${x?.code?` (${x.code})`:""}.`; }
     acctBtn(); vidaPinta(); pzChispas(b); }
 });
-document.addEventListener("input",ev=>{ if(ev.target.id!=="peA"||!PERF.ed) return; PERF.ed.a=ev.target.value.slice(0,24); });
+document.addEventListener("input",ev=>{ if(!PERF.ed) return; if(ev.target.id==="peA") PERF.ed.a=ev.target.value.slice(0,24); if(ev.target.id==="peBi") PERF.ed.bi=ev.target.value.slice(0,90); });
 dlg.addEventListener("close",()=>{ PERF.ed=null; });
 
 // ---------- Amigos (28 oct 2026): solicitudes de amistad y lo que hacen tus amigos ----------
@@ -7780,13 +7835,50 @@ async function amAgrega(){
 const amFilaAgregar=(uid,n)=>`<div class="amsolr">${amAv(uid,42,{n:{[uid]:n}})}<span><b>${hoyEsc(n||"Jugador")}</b>${perfTitulo(PERF.cache[uid])?`<small>${hoyEsc(perfTitulo(PERF.cache[uid]))}</small>`:""}</span><button class="btn" data-amsol="${hoyEsc(uid)}" data-amn="${hoyEsc(n||"")}">Agregar</button></div>`;
 function amPintaBus(){ const el=$("#amBus"); if(!el) return; const ya=new Set((AM.L||[]).map(a=>a.otro));
   el.innerHTML=AM.busq.trim().length<2?"":AM.bus.length?AM.bus.map(uid=>ya.has(uid)?`<div class="amsolr">${amAv(uid,42)}<span><b>${hoyEsc(PERF.cache[uid]?.a||"")}</b><small>Ya es tu amigo o hay una solicitud</small></span></div>`:amFilaAgregar(uid,PERF.cache[uid]?.a)).join(""):`<p class="note">No encontramos a nadie con ese apodo. Mándale tu link por WhatsApp.</p>`; }
-function amPerfil(uid){
-  const a=(AM.L||[]).find(x=>x.otro===uid), p=PERF.cache[uid], yo=ACCT.user.uid;
-  $("#gbody").innerHTML=`<div class="amperfil">${p?`<div class="ampf" style="--c1:${p.vi&&p.k1?p.k1:p.c1};--c2:${p.vi&&p.k2?p.k2:p.c2}"></div>`:""}<div class="ampfin">${amAv(uid,96,a)}
-    <h2>${hoyEsc(uid===yo?(perfMio()?.a||"Tú"):amNom(uid,a))}</h2>${perfTitulo(p)?`<b class="petit">${hoyEsc(perfTitulo(p))}</b>`:""}${p?.eq?`<span class="note">Le va al ${hoyEsc(perfNomEq(p.eq))}</span>`:""}${a?.est==="ok"?(()=>{ const r=duRecord(uid); return r[0]+r[1]+r[2]?`<span class="note">Duelos entre ustedes: ganaste ${r[0]}, perdiste ${r[1]}${r[2]?`, ${r[2]} ${r[2]===1?"empate":"empates"}`:""}</span>`:""; })():""}
-    ${uid===yo?`<button class="btn" data-amedit="1">Editar mi perfil</button>`:a?.est==="ok"?`<div class="ampbtn"><button class="btn" data-duret="${hoyEsc(uid)}">Retar</button><button class="q5link" data-amdel="${a.id}">Quitar de mis amigos</button></div>`:a?`<p class="note">Solicitud pendiente.</p>`:`<button class="btn" data-amsol="${hoyEsc(uid)}" data-amn="${hoyEsc(p?.a||"")}">Agregar</button>`}
-    <h3 class="pet">Lo último</h3><div class="amfeed">${Object.values(AM.posts).filter(x=>x.uid===uid).sort((a,b)=>(b.t?.seconds||0)-(a.t?.seconds||0)).slice(0,6).map(amPost).join("")||`<p class="note">Todavía no hay nada.</p>`}</div></div></div>`;
-  if(!dlg.open) dlg.showModal(); FICHA.pila=[];
+// ---- Perfil completo (28 oct 2026): portada con los colores de su camiseta, avatar, título, frase, números, equipos y
+// pestañas Publicaciones / Duelos / Trofeos. El tuyo se abre desde tu avatar en la portada; el de tus amigos, desde su foto.
+const PFL={tab:"pub",uid:null};
+function perfEqLogo(v,tam){ const [k,n]=v.split("|"); if(FAV.eq[k]) return favsLogo(k,tam); FAV.eq[k]={n}; const h=favsLogo(k,tam); delete FAV.eq[k]; return h; }
+async function amPerfil(uid,tab){
+  if(!amOk()) return; const yo=ACCT.user.uid, mio=uid===yo; const ant=PFL.uid; PFL.uid=uid; if(tab) PFL.tab=tab; else if(ant!==uid) PFL.tab="pub";
+  if(!dlg.open){ $("#gbody").innerHTML=pzSkel(3); dlg.showModal(); FICHA.pila=[]; }
+  await Promise.all([mio?Promise.resolve(perfMio()):perfCargaP(uid),amCarga(),duCarga().catch(()=>[]),rdDatos().catch(()=>null),mio?vidaLogrosCalc().catch(()=>null):null,AM.feed?null:amFeed().catch(()=>null)]);
+  if(PFL.uid!==uid||!dlg.open) return;
+  amPerfilPinta(uid);
+}
+async function amPerfilPinta(uid){
+  const yo=ACCT.user.uid, mio=uid===yo, a=(AM.L||[]).find(x=>x.otro===uid), p=mio?perfMio():PERF.cache[uid], amigo=a?.est==="ok";
+  const c1=p?(p.vi&&p.k1?p.k1:p.c1):"#3d6b5a", c2=p?(p.vi&&p.k2?p.k2:p.c2):"#F2D466";
+  const h=await q5Hash(uid).catch(()=>null), RT=h&&RD.t?.t?.[h];
+  const lg=new Set(mio?[...(VIDA.log?.T||[])]:(p?.lg||[])), S=mio?null:p?.s;
+  let dg=0,dp=0,de=0; if(mio){ for(const d of DU.L||[]){ if(d.est!=="ok"||!d.res?.p) continue; d.res.g===yo?dg++:d.res.g?dp++:de++; } } else if(S){ dg=S.g; dp=S.p; de=S.e; }
+  const nAm=mio?amAmigos().length:S?.a;
+  const st=[[nAm??"–","Amigos",""],[RT?.r?`${RT.r}`:"0","Racha",RT?.r>=3?"var(--mark)":""],[`${dg}-${dp}${de?`-${de}`:""}`,"Duelos",dg>dp?"var(--good)":""],[`${lg.size}`,"Logros",""]];
+  const fv=mio?Object.entries(FAV.eq).filter(([k])=>/^[fnb]/.test(k)).map(([k,x])=>`${k}|${x.n||""}`):(p?.fv||(p?.eq?[`${p.eq}|${perfNomEq(p.eq)}`]:[]));
+  const nom=mio?(p?.a||"Tú"):amNom(uid,a), tit=perfTitulo(p);
+  const posts=Object.values(AM.posts).filter(x=>x.uid===uid).sort((x,y)=>(y.t?.seconds||0)-(x.t?.seconds||0)).slice(0,10);
+  const dus=(DU.L||[]).filter(d=>mio||d.otro===uid).filter(d=>d.est==="ok"||d.est==="pend").sort((x,y)=>y.ci-x.ci).slice(0,12);
+  const duFila=d=>{ const T=DU_T[d.tipo]||["Duelo","var(--mark)"], m=d.res?.p?{fin:true,g:d.res.g||"",p:d.res.p}:DU.sc[d.id]||{};
+    const r=d.est==="pend"?["…","var(--muted)","Pendiente"]:!m.fin?["•","var(--alt)","En juego"]:m.g===yo?["G","var(--good)","Ganaste"]:m.g?["P","var(--bad)","Perdiste"]:["E","#C9D6CF","Empate"];
+    const pts=m.p?`${m.p[yo]??0}-${m.p[d.otro]??0}`:"";
+    return `<div class="pfdu"><span class="pfdr" style="background:${r[1]}">${r[0]}</span><span class="pfdt"><b>${mio?`vs ${hoyEsc(duNom(d))}`:hoyEsc(T[0])}</b><small>${mio?hoyEsc(T[0])+" · ":""}${hoyEsc(r[2])}${d.ci?` · ${hoyEsc(duCuando(d.ci).toLowerCase())}`:""}</small></span>${pts?`<b class="pfdm">${pts}</b>`:""}</div>`; };
+  const trof=[...VIDA_LOGROS.map(l=>[l[0],l[1],l[2],l[3],l[4]]),["rd7","7🔥","Imparable","7 días seguidos en el reto del día","#FF9C80"],["rd30","30","Leyenda","30 días seguidos en el reto del día","#C9A7F0"]].sort((x,y)=>lg.has(y[0])-lg.has(x[0]));
+  const tabs=[["pub","Publicaciones"],["du","Duelos"],["tr","Trofeos"]];
+  const cuerpo=PFL.tab==="du"?(dus.length?dus.map(duFila).join(""):`<p class="note">${mio?"Todavía no tienes duelos. Reta a un amigo desde su perfil.":"Todavía no se han retado."}</p>`)
+    :PFL.tab==="tr"?`<div class="pftr">${trof.map(([k,ic,n,d,c])=>`<div class="pft${lg.has(k)?"":" no"}"><span style="--c:${c}">${hoyEsc(ic)}</span><b>${hoyEsc(n)}</b><small>${hoyEsc(d)}</small></div>`).join("")}</div>`
+    :(posts.length?`<div class="amfeed">${posts.map(amPost).join("")}</div>`:`<p class="note">${mio||amigo?"Todavía no hay nada.":"Lo que publica solo lo ven sus amigos."}</p>`);
+  const acc=mio?`<div class="pfbtn"><button class="btn" data-amedit="1">Editar perfil</button><button class="btn pfsec" data-pfcomp="1">Compartir</button></div>`
+    :amigo?`<div class="pfbtn"><button class="btn" data-duret="${hoyEsc(uid)}">Retar</button><button class="btn pfsec" data-pfmas="1" aria-expanded="false">Amigos ✓</button></div><div class="pfmas" hidden><button class="q5link" data-amdel="${a.id}">Quitar de mis amigos</button></div>`
+    :a?`<p class="note">Solicitud pendiente.</p>`:`<div class="pfbtn"><button class="btn" data-amsol="${hoyEsc(uid)}" data-amn="${hoyEsc(p?.a||"")}">Agregar</button></div>`;
+  $("#gbody").innerHTML=`<div class="amperfil pfx">
+    <div class="pfban" style="--c1:${c1};--c2:${c2}"><i class="pfbr"></i></div>
+    <div class="pfcab"><span class="pfav">${p?perfAvatar(p,104):amAv(uid,104,a)}</span><span class="pfnom"><h2>${hoyEsc(nom)}</h2>${tit?`<b class="pftit">${hoyEsc(tit)}</b>`:""}</span></div>
+    ${p?.bi?`<p class="pfbio">${hoyEsc(p.bi)}</p>`:mio?`<p class="pfbio note">Ponle una frase a tu perfil en «Editar perfil».</p>`:""}
+    ${acc}
+    <div class="pfst">${st.map(([v,l,c])=>`<span><b${c?` style="color:${c}"`:""}>${hoyEsc(String(v))}</b><small>${l}</small></span>`).join("")}</div>
+    ${fv.length?`<div class="pfeq">${fv.map(v=>`<span class="pfeqc">${perfEqLogo(v,24)}<span>${hoyEsc(v.split("|")[1]||"")}</span></span>`).join("")}</div>`:""}
+    <div class="pftabs" role="tablist">${tabs.map(([k,n])=>`<button role="tab" data-pftab="${k}" aria-selected="${PFL.tab===k}">${n}</button>`).join("")}</div>
+    <div class="pfbody">${cuerpo}</div></div>`;
 }
 // ---- reacciones y comentarios ----
 async function amReacciona(pid,k){
@@ -7817,7 +7909,10 @@ document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) 
   if(g("[data-amadd]")){ const el=$("#amAgrega"); if(el&&!el.hidden){ el.hidden=true; return; } amAgrega(); setTimeout(()=>$("#amQ")?.focus(),50); return; }
   if(g("[data-amcopia]")){ try{ await navigator.clipboard.writeText(amLink()); g("[data-amcopia]").textContent="¡Copiado!"; }catch(e){ prompt("Copia tu link:",amLink()); } return; }
   if((b=g("[data-amper]"))) return amPerfil(b.dataset.amper);
-  if(g("[data-amedit]")){ dlg.close(); return perfAbre(); }
+  if((b=g("[data-pftab]"))){ PFL.tab=b.dataset.pftab; return amPerfilPinta(PFL.uid); }
+  if((b=g("[data-pfmas]"))){ const m=$("#gbody .pfmas"); if(m){ m.hidden=!m.hidden; b.setAttribute("aria-expanded",String(!m.hidden)); } return; }
+  if(g("[data-pfcomp]")){ const u=amLink(), tx=`Agrégame en La Pizarra: ${u}`; try{ if(navigator.share){ await navigator.share({title:"La Pizarra",text:tx,url:u}); return; } await navigator.clipboard.writeText(u); g("[data-pfcomp]").textContent="¡Link copiado!"; }catch(e){} return; }
+  if(g("[data-amedit]")) return perfAbre();   // sin cerrar: cerrar hace history.back() y su popstate cerraría el editor
   if((b=g("[data-amfil]"))){ AM.filtro=b.dataset.amfil; return amRender(); }
   const post=g(".ampost"); if(!post) return; const pid=post.dataset.pid;
   if((b=g("[data-amr]"))) return amReacciona(pid,b.dataset.amr);
