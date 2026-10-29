@@ -1560,7 +1560,7 @@ button.fvnota{cursor:pointer}.fvnota .utag{align-self:flex-start}.fvnota b{font:
 .fvsmed b{font:800 34px/1 var(--display)}.fvsmed b small{font-size:16px}.fvsmed span{font-size:11px;color:var(--muted);text-align:center;max-width:70px;line-height:1.1}
 .fvsv{display:flex;flex-direction:column;gap:4px;min-width:0}.fvsv b{font:800 24px/1.05 var(--display)}.fvsv span{font-size:14px;color:#C9D6CF}
 .fvsl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.fvsmod{align-self:flex-start;margin-bottom:10px}.fvsmod2{align-self:flex-start;margin:-2px 0 10px}.fvsmod2 button{font-size:13px}
+.fvsmod{align-self:flex-start;margin-bottom:10px}.fvscomp{align-self:center;display:inline-flex;align-items:center;gap:8px;margin-top:4px}.pzstory img{max-height:62vh;width:auto!important;margin:0 auto;display:block}.fvsmod2{align-self:flex-start;margin:-2px 0 10px}.fvsmod2 button{font-size:13px}
 .fvhb.fvhbe{position:relative;height:56px;align-items:stretch}.fvhb.fvhbe::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed rgba(255,255,255,.3)}
 .fvhb.fvhbe i{height:calc(var(--h)/2);align-self:flex-end;margin-bottom:28px;border-radius:2px 2px 0 0}.fvhb.fvhbe i.dn{align-self:flex-start;margin:28px 0 0;border-radius:0 0 2px 2px;transform-origin:top}
 .fvhdet{display:block;margin-top:4px;color:var(--muted);font-size:12px}
@@ -6908,6 +6908,7 @@ document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return
 // ---------- Favoritos (27 oct 2026): tus equipos y jugadores en su propia pestaña ----------
 // favsRender: ver "Favoritos v2" (28 oct 2026)
 $("#favs").addEventListener("click",ev=>{ const fs=ev.target.closest("[data-fvsuf]"); if(fs){ FAVS.sufH=fs.dataset.fvsuf==="h"; pzTrack("sufrometro_modo",{h:FAVS.sufH?1:0}); return favsRender(); }
+  if(ev.target.closest("[data-fvscomp]")) return sufCompartir();
   const fe=ev.target.closest("[data-fvsexp]"); if(fe){ FAVS.sufE=fe.dataset.fvsexp==="1"; pzTrack("sufrometro_esperado",{e:FAVS.sufE?1:0}); return favsRender(); }
   const fa=ev.target.closest("[data-fvsab]"); if(fa){ SUFH.ab=SUFH.ab===fa.dataset.fvsab?null:fa.dataset.fvsab; return favsRender(); }
   const dp=ev.target.closest("[data-fvdep]"); if(dp){ FAVS.dep=dp.dataset.fvdep; pzTrack("favs_deporte",{d:FAVS.dep}); return favsRender(); }
@@ -7118,19 +7119,19 @@ async function pzImagen(o){
   x.font=F(400,36,"Barlow"); x.fillStyle="#A8B8AF"; x.fillText("¿Me ganas? lapizarra.mx",P,H-80);
   return await new Promise(r=>c.toBlob(r,"image/png"));
 }
-async function pzCompartir(o,nombre){
+async function pzCompartir(o,nombre,op={}){
   $("#gbody").innerHTML=pzSkel(2); if(!dlg.open) dlg.showModal(); pzTrack("compartir_abre",{t:nombre});
-  const b=await pzImagen(o); if(!b){ $("#gbody").innerHTML=`<p class="note">No se pudo hacer la imagen en este navegador.</p>`; return; }
+  const b=op.blob||await pzImagen(o), TX=op.texto||"¿Me ganas? https://lapizarra.mx"; if(!b){ $("#gbody").innerHTML=`<p class="note">No se pudo hacer la imagen en este navegador.</p>`; return; }
   const f=new File([b],`la-pizarra-${nombre}.png`,{type:"image/png"}), url=URL.createObjectURL(b), puede=!!(navigator.canShare&&navigator.canShare({files:[f]}));
-  $("#gbody").innerHTML=`<div class="pzshare"><h2>Comparte tu jornada</h2><img src="${url}" alt="Imagen para compartir con tu resultado"><div class="pzsb">
+  $("#gbody").innerHTML=`<div class="pzshare${nombre==="sufrometro"?" pzstory":""}"><h2>${op.titulo||"Comparte tu jornada"}</h2><img src="${url}" alt="Imagen para compartir con tu resultado"><div class="pzsb">
     <button class="pzwa" id="pzShareWa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>Mandar por WhatsApp</button>
     ${puede?`<button class="q5link" id="pzShareGo">Más opciones</button>`:""}<a class="q5link" href="${url}" download="la-pizarra-${nombre}.png" id="pzShareDl">Descargar imagen</a></div>
     <p class="note">${puede?"En el menú que se abre, escoge WhatsApp (o Instagram, o donde quieras).":"Se descarga la imagen y se abre WhatsApp: adjúntala en el chat que quieras."}</p></div>`;
   $("#pzShareWa")?.addEventListener("click",async()=>{ pzTrack("compartir_whatsapp",{t:nombre}); try{ localStorage.setItem("pz_compartio","1"); }catch(e){}
-    if(puede){ try{ await navigator.share({files:[f],text:"¿Me ganas? https://lapizarra.mx"}); }catch(e){} return; }
+    if(puede){ try{ await navigator.share({files:[f],text:TX}); }catch(e){} return; }
     const a=document.createElement("a"); a.href=url; a.download=`la-pizarra-${nombre}.png`; document.body.append(a); a.click(); a.remove();
-    setTimeout(()=>window.open("https://wa.me/?text="+encodeURIComponent("¿Me ganas? Mira cómo me fue en La Pizarra: https://lapizarra.mx"),"_blank","noopener"),400); });
-  $("#pzShareGo")?.addEventListener("click",async()=>{ try{ await navigator.share({files:[f],text:"¿Me ganas? https://lapizarra.mx"}); pzTrack("compartir",{t:nombre}); }catch(e){} });
+    setTimeout(()=>window.open("https://wa.me/?text="+encodeURIComponent(op.texto||"¿Me ganas? Mira cómo me fue en La Pizarra: https://lapizarra.mx"),"_blank","noopener"),400); });
+  $("#pzShareGo")?.addEventListener("click",async()=>{ try{ await navigator.share({files:[f],text:TX}); pzTrack("compartir",{t:nombre}); }catch(e){} });
   $("#pzShareDl")?.addEventListener("click",()=>{ pzTrack("compartir_descarga",{t:nombre}); try{ localStorage.setItem("pz_compartio","1"); }catch(e){} });
 }
 
@@ -8465,11 +8466,13 @@ function favsSufreT(){
   if(!L.length) return "";
   L.sort((a,b)=>b.n-a.n); const prom=L.reduce((s,z)=>s+z.n,0)/L.length, suf=Math.round(100-prom), V=FAVS_VER.find(([m])=>prom>=m);
   const nom=(k,x)=>k[0]==="b"?(NBA_N[k.slice(1)]||x.n):k[0]==="n"?(NT[k.slice(1)]?.n||x.n):x.n;
+  SUFH.ultT={modo:"temporada",suf,V,L:L.slice().reverse().map(z=>({k:z.k,nom:nom(z.k,z.x),pct:100-z.n,lin:z.det,D:null,peor:null}))};
   return `<div class="fvsuf"><div class="fvsg"><div class="fvsmed" style="--p:${suf}"><b>${suf}<small>%</small></b><span>de sufrimiento</span></div>
       <div class="fvsv"><b>${hoyEsc(V[1])}</b><span>${hoyEsc(V[2])}</span></div></div>
     <ol class="fvsl">${L.map((z,i)=>{ const T=FAVS_SUF.find(([m])=>z.n>=m); return `<li><span class="fvsn">${i+1}</span>${favsLogo(z.k,32)}<span class="fvst"><b>${hoyEsc(nom(z.k,z.x))}</b><small>${hoyEsc(z.det)}</small></span>
       <span class="fvsb"><i style="width:${Math.max(4,z.n)}%;background:${T[2]}"></i></span><em style="color:${T[2]}">${T[1]}</em></li>`; }).join("")}</ol>
-    <p class="note">Del más ganador al más perdedor, con cómo les ha ido esta temporada.</p></div>`;
+    <p class="note">Del más ganador al más perdedor, con cómo les ha ido esta temporada.</p>
+    <button class="btn fvscomp" data-fvscomp="1">${PZ_WA_ICO}Compartir mi sufrimiento</button></div>`;
 }
 // ---- El Sufrómetro de los últimos años (28 oct 2026) ----
 // datos/historia_eq.json (lo arma build_site.py): Liga MX desde Apertura 2016 con su liguilla, títulos y finales de toda la
@@ -8568,12 +8571,63 @@ async function sufTenWiki(nom){
   if(rr){ const v=[...rr.cells].slice(1).map(txt); yi.forEach(([,y],k)=>{ const n=parseInt((v[k]||"").replace(/\D/g,""),10); if(n>0&&n<3000) (Y[y]=Y[y]||{gs:[]}).rk=n; }); }
   return Y;
 }
+// ---- Compartir el Sufrómetro como historia (28 oct 2026): imagen 1080×1920 hecha en el navegador ----
+const PZ_WA_ICO=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>`;
+async function sufImagen(U){
+  const W=1080,H=1920,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  try{ await Promise.all(['800 100px "Barlow Condensed"','600 40px "Barlow"','400 40px "Barlow"'].map(f=>document.fonts.load(f))); }catch(e){}
+  const F=(w,s,fam="Barlow Condensed")=>`${w} ${s}px "${fam}", "Arial Narrow", Arial, sans-serif`;
+  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,"#3a1f1a"); g.addColorStop(.45,"#1F332D"); g.addColorStop(1,"#14221d"); x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.fillStyle="rgba(255,156,128,.10)"; x.beginPath(); x.arc(W-80,120,360,0,Math.PI*2); x.fill();
+  const P=80; let y=150;
+  x.font=F(700,60); x.fillStyle="#ECEFE7"; x.fillText("La",P,y); x.fillStyle="#F2D466"; x.fillText("Pizarra",P+x.measureText("La ").width,y);
+  y+=110; x.font=F(800,110); x.fillStyle="#ECEFE7"; x.fillText("MI SUFRÓMETRO",P,y);
+  y+=60; x.font=F(400,38,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(U.modo==="temporada"?"Cómo me tienen mis equipos esta temporada":U.modo==="esperado"?"Lo que me han hecho sufrir, contra lo que se les exige":"Lo que me han hecho sufrir en los últimos años",P,y);
+  // medidor
+  const cx=W/2, cy=y+330, r=250; x.lineWidth=56; x.lineCap="round";
+  x.strokeStyle="rgba(255,255,255,.10)"; x.beginPath(); x.arc(cx,cy,r,Math.PI,2*Math.PI); x.stroke();
+  const gr=x.createLinearGradient(cx-r,0,cx+r,0); gr.addColorStop(0,"#9FD3A8"); gr.addColorStop(.5,"#F2D466"); gr.addColorStop(1,"#FF7A6B");
+  x.strokeStyle=gr; x.beginPath(); x.arc(cx,cy,r,Math.PI,Math.PI+Math.PI*Math.max(.02,U.suf/100)); x.stroke();
+  x.textAlign="center"; x.font=F(800,190); x.fillStyle="#ECEFE7"; x.fillText(`${U.suf}%`,cx,cy-20);
+  x.font=F(600,40,"Barlow"); x.fillStyle="#FF9C80"; x.fillText("DE SUFRIMIENTO",cx,cy+40);
+  y=cy+140; x.font=F(800,76); x.fillStyle="#F2D466"; x.fillText(U.V[1].toUpperCase(),cx,y);
+  y+=56; x.font=F(400,38,"Barlow"); x.fillStyle="#ECEFE7"; x.fillText(U.V[2],cx,y); x.textAlign="left";
+  // equipos (el que más hace sufrir primero)
+  y+=70; const L=U.L.slice(0,5);
+  const recorta=(t,max)=>{ let s=t; while(x.measureText(s).width>max&&s.length>3) s=s.slice(0,-2); return s===t?s:s.trim()+"…"; };
+  for(const z of L){ const [c1,c2]=favsCol(z.k), h=z.D?190:150; if(y+h>H-(U.L.some(q=>q.peor)?330:200)) break;
+    x.fillStyle="rgba(255,255,255,.07)"; x.beginPath(); x.roundRect(P,y,W-2*P,h,28); x.fill();
+    x.fillStyle=c1; x.beginPath(); x.arc(P+70,y+70,44,0,Math.PI*2); x.fill(); x.lineWidth=6; x.strokeStyle=c2; x.stroke();
+    x.font=F(800,34); x.fillStyle=perfLum(c1)>150?"#13201B":"#fff"; x.textAlign="center"; x.fillText(favIni(z.nom).slice(0,3),P+70,y+82); x.textAlign="left";
+    x.font=F(700,52); x.fillStyle="#ECEFE7"; x.fillText(recorta(z.nom,560),P+140,y+70);
+    x.font=F(400,30,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(recorta(z.lin,600),P+140,y+116);
+    x.textAlign="right"; x.font=F(800,72); x.fillStyle=z.pct>=55?"#FF9C80":z.pct>=40?"#F2D466":"#9FD3A8"; x.fillText(`${z.pct}%`,W-P-30,y+86); x.textAlign="left";
+    if(z.D){ const n=z.D.length, bx=P+140, bw=(W-2*P-170)/n, my=y+160; x.fillStyle="rgba(255,255,255,.3)"; x.fillRect(bx,my,W-2*P-170,2);
+      z.D.forEach((d,i)=>{ const hh=Math.max(4,Math.min(1,Math.abs(d)/.45)*26); x.fillStyle=d>=.05?"#9FD3A8":d>-.05?"rgba(255,255,255,.4)":d>-.2?"#FFB27A":"#FF7A6B"; x.fillRect(bx+i*bw+2,d>=0?my-hh:my+2,bw-4,hh); }); }
+    y+=h+22; }
+  const pe=U.L.map(z=>z.peor&&{...z.peor,nom:z.nom}).filter(Boolean).sort((a,b)=>a.d-b.d)[0];
+  if(pe&&y<H-280){ y+=20; x.font=F(700,34); x.fillStyle="#FF9C80"; x.fillText("LA QUE MÁS ME DOLIÓ",P,y); y+=52; x.font=F(400,36,"Barlow"); x.fillStyle="#ECEFE7";
+    const t=`${pe.nom}, ${pe.n}: se esperaba ${pe.esp||"más"} y quedó ${pe.res}.`; let lin="", ln=0; for(const w of t.split(" ")){ if(x.measureText(lin+w).width>W-2*P){ x.fillText(lin,P,y); y+=48; lin=""; if(++ln>=2) break; } lin+=w+" "; } if(ln<2) x.fillText(lin,P,y); }
+  x.font=F(700,46); x.fillStyle="#F2D466"; x.textAlign="center"; x.fillText("¿Y tú cuánto sufres?",W/2,H-150); x.font=F(400,38,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("lapizarra.mx · Favoritos",W/2,H-96);
+  return await new Promise(r=>c.toBlob(r,"image/png"));
+}
+async function sufCompartir(){
+  const U=FAVS.sufH?SUFH.ult:SUFH.ultT; if(!U?.L?.length) return;
+  for(const z of U.L) if(z.peor) z.peor.esp=sufhEspTxt(z.k,{lab:z.k[0]==="f"&&(SUFH.d?.mx||[]).some(([,E])=>E[z.k.slice(1)])?"torneos":""},z.peor.e);
+  pzTrack("sufrometro_compartir",{m:U.modo});
+  return pzCompartir(null,"sufrometro",{blob:await sufImagen(U),titulo:"Comparte tu sufrimiento",texto:`Mi Sufrómetro: ${U.suf}% de sufrimiento con mis equipos 😭 ¿Y tú cuánto sufres? https://lapizarra.mx`});
+}
+
 // ---- Contra lo esperado (28 oct 2026) ----
 // A cada equipo se le exige según su grandeza (títulos de toda su historia en Liga MX y Super Bowls; en lo demás, su nivel en
 // todo el periodo) y lo que venía haciendo (promedio de las 3 temporadas anteriores): esperado = 40% grandeza + 60% forma.
 // Cada temporada sufres según cuánto quedó abajo de lo esperado (y gozas si quedó arriba). Castigos: perder una final siendo
 // favorito y quedar fuera de la liguilla/playoffs siendo grande.
+// Copas de Europa / Champions ganadas hasta 2010-11 (de 2011-12 en adelante se cuentan con los datos). Id de API-Football.
+const UCL_ANTES={541:9,489:7,40:5,157:4,529:4,505:3,33:3,496:2,65:2,165:1,81:1,66:1,175:1};
+function sufhUcl(id){ const H=SUFH.d||{}; return (UCL_ANTES[id]||0)+Object.values(H.int?.["2"]||{}).filter(E=>E[id]===6).length; }
 function sufhBase(k,z){ const H=SUFH.d||{}, t=k[0], id=k.slice(1), media=z.T.reduce((a,x)=>a+x.v,0)/z.T.length;
+  if(t==="f"&&z.lab!=="torneos"){ const u=sufhUcl(id), g=u>=12?.95:u>=7?.9:u>=5?.86:u>=3?.8:u>=1?.74:0; return Math.max(.15,media,g); }
   if(t==="f"&&z.lab==="torneos"){ const n=H.mxt?.[id]?.[1]||0; return n>=10?.72:n>=6?.62:n>=3?.52:n>=1?.42:.32; }
   if(t==="n"){ const n=H.nflt?.[id]?.[1]||0; return Math.max(n>=4?.62:n>=2?.56:n>=1?.5:.45,media*.9); }
   return Math.max(.15,media); }
@@ -8586,16 +8640,19 @@ function sufhRes(k,z,x){ const t=k[0];
   if(t==="t") return x.et===4?"ganó un Grand Slam":x.et===3?"final de Grand Slam":x.et===2?"semis de Grand Slam":x.et===1?"cuartos de Grand Slam":`#${x.rk||"?"} del mundo`;
   return ""; }
 const sufhEspTxt=(k,z,e)=>{ const t=k[0], liga=t==="f"&&z.lab==="torneos", po=liga?"liguilla":t==="f"?"Europa":t==="t"?"segunda semana de los Grand Slams":t==="e"||t==="r"?"el podio":"playoffs";
+  if(t==="f"&&!liga){ const u=sufhUcl(k.slice(1));
+    if(e>=.88&&u>=12) return "ganar la liga o la Champions cada año"; if(e>=.8&&u>=3) return "ganar la liga y pelear la Champions"; if(e>=.8) return "ganar la liga"; if(e>=.65) return "pelear la liga y la Champions"; }
   return e>=.9?(t==="t"?"ganar Grand Slams":"ser campeón"):e>=.76?(t==="e"||t==="r"?"pelear el campeonato":t==="t"?"llegar a finales":"llegar a la final"):e>=.62?(t==="e"||t==="r"?"el podio":t==="t"?"semifinales de Grand Slam":t==="f"&&!liga?"pelear arriba":t==="n"||t==="b"?"final de conferencia":"semifinales"):e>=.48?po:"no pasar penas"; };
 function sufhExp(k,z){
   const base=sufhBase(k,z), D=[]; let suf=0, cumple=0;
   z.T.forEach((x,i)=>{ const prev=z.T.slice(Math.max(0,i-3),i).map(y=>y.v), forma=prev.length?prev.reduce((a,b)=>a+b,0)/prev.length:base;
-    const e=.4*base+.6*forma, d=x.v-e; let s=Math.max(0,Math.min(1,.4-d*1.6)), extra="";
+    const wb=k[0]==="f"&&z.lab!=="torneos"?.55:.4, e=Math.min(.85,wb*base+(1-wb)*forma), d=x.v-e; let s=Math.max(0,Math.min(1,.4-d*1.6)), extra="";
+    if(x.et===4){ s=-.12; }   // temporada con título (liga, Champions, Super Bowl, Grand Slam…): no se sufre y además compensa las malas
     if(x.et===3&&e>=.6){ s=Math.min(1,s+.15); extra="perdió la final siendo favorito"; }
     if(x.et===0&&base>=.6&&!(k[0]==="e"||k[0]==="r")){ s=Math.min(1,s+.15); extra=extra||`siendo grande, ${k[0]==="f"&&z.lab==="torneos"?"se quedó fuera de la liguilla":k[0]==="f"?"no figuró":"se quedó fuera de playoffs"}`; }
-    if(d>=-.05) cumple++; suf+=s; D.push({n:x.n,d,e,s,res:sufhRes(k,z,x),extra}); });
+    if(d>=-.05||x.et===4) cumple++; suf+=s; D.push({n:x.n,d,e,s,res:sufhRes(k,z,x),extra}); });
   const peores=D.slice().sort((a,b)=>a.d-b.d).filter(x=>x.d<-.08).slice(0,3);
-  return {suf:Math.round(100*suf/D.length),D,cumple,base,exige:sufhEspTxt(k,z,base),peores}; }
+  return {suf:Math.max(0,Math.round(100*suf/D.length)),D,cumple,base,exige:sufhEspTxt(k,z,base),peores}; }
 function favsSufreH(){
   if(!SUFH.d){ sufhCarga(); return `<div class="fvsuf"><p class="note">Cargando la historia de tus equipos…</p></div>`; }
   const todos=[...Object.entries(FAV.eq).filter(([k])=>/^[fnbe]/.test(k)),...Object.entries(FAV.jug).filter(([k])=>"rt".includes(k[0]))];
@@ -8605,6 +8662,7 @@ function favsSufreH(){
   const esp=FAVS.sufE!==false;
   if(esp) for(const z of L){ z.X=sufhExp(z.k,z); z.n=100-z.X.suf; }
   L.sort((a,b)=>a.n-b.n); const prom=L.reduce((s,z)=>s+z.n,0)/L.length, suf=Math.round(100-prom), V=FAVS_VER.find(([m])=>prom>=m);
+  SUFH.ult={modo:esp?"esperado":"historia",suf,V,L:L.map(z=>({k:z.k,nom:z.k[0]==="n"?(NT[z.k.slice(1)]?.n||z.x.n):z.k[0]==="b"?(NBA_N[z.k.slice(1)]||z.x.n):z.x.n,pct:100-z.n,lin:esp?`Se le exige: ${z.X.exige} · cumplió ${z.X.cumple} de ${z.T.length}`:z.det,D:esp?z.X.D.map(x=>x.d):null,peor:esp&&z.X.peores[0]?{...z.X.peores[0]}:null}))};
   const sub=`<div class="hseg fvsmod2" role="group" aria-label="Cómo medir"><button data-fvsexp="1" aria-pressed="${esp}">Contra lo esperado</button><button data-fvsexp="0" aria-pressed="${!esp}">Solo resultados</button></div>`;
   const nom=(k,x)=>k[0]==="n"?(NT[k.slice(1)]?.n||x.n):k[0]==="b"?(NBA_N[k.slice(1)]||x.n):x.n;
   const barrasE=z=>`<span class="fvhb fvhbe" aria-hidden="true">${z.X.D.map(x=>{ const h=Math.round(Math.min(1,Math.abs(x.d)/.45)*100); return `<i class="${x.d>=0?"up":"dn"}" style="--h:${Math.max(6,h)}%;background:${x.d>=.05?"#9FD3A8":x.d>-.05?"rgba(255,255,255,.35)":x.d>-.2?"#FFB27A":"#FF7A6B"}" title="${hoyEsc(x.n)}"></i>`; }).join("")}</span>`;
@@ -8616,7 +8674,8 @@ function favsSufreH(){
         ${esp?barrasE(z):barras(z)}<span class="fvhlab"><span>${hoyEsc(z.desde)}</span><span>${z.T.length} ${z.lab}</span><span>hoy</span></span>
         ${ab&&esp?`<div class="fvhdolor">${z.X.peores.length?`<b>Las peores decepciones</b>${z.X.peores.map(x=>`<span><em>${hoyEsc(x.n)}</em>Se esperaba ${hoyEsc(sufhEspTxt(z.k,z,x.e))} y quedó: ${hoyEsc(x.res)}${x.extra?` · ${hoyEsc(x.extra)}`:""}</span>`).join("")}`:`<b>Cumple lo que se le pide</b><span>No ha tenido decepciones grandes en este periodo.</span>`}<small class="fvhdet">${hoyEsc(z.det)}</small></div>`:""}
         ${ab&&!esp?`<div class="fvhdolor">${z.dolor.length?`<b>Las que más dolieron</b>${z.dolor.map(([a,t,m])=>`<span><em>${hoyEsc(a)}</em>${hoyEsc(t)}${m?` · ${hoyEsc(m)}`:""}</span>`).join("")}`:`<b>Ni de qué quejarse</b><span>No hay finales perdidas en este periodo.</span>`}</div>`:""}</li>`; }).join("")}</ol>
-    <p class="note">Del que más te ha hecho sufrir al que menos. ${esp?"Cada barra es una temporada: para arriba (verde) le fue mejor de lo esperado, para abajo (naranja y rojo) peor. Toca un equipo para ver sus peores decepciones.":"Verde: liguilla, playoffs o buena copa europea · naranja: final perdida · amarillo: campeón."}${carga?" Cargando tenis…":sin>0?` ${sin===1?"Uno de tus favoritos todavía no tiene":`${sin} de tus favoritos todavía no tienen`} historia.`:""}${L.some(z=>z.wiki)?` Historia de NBA, F1 y tenis: <a href="https://es.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a> (CC BY-SA).`:""}</p></div>`;
+    <p class="note">Del que más te ha hecho sufrir al que menos. ${esp?"Cada barra es una temporada: para arriba (verde) le fue mejor de lo esperado, para abajo (naranja y rojo) peor. Toca un equipo para ver sus peores decepciones.":"Verde: liguilla, playoffs o buena copa europea · naranja: final perdida · amarillo: campeón."}${carga?" Cargando tenis…":sin>0?` ${sin===1?"Uno de tus favoritos todavía no tiene":`${sin} de tus favoritos todavía no tienen`} historia.`:""}${L.some(z=>z.wiki)?` Historia de NBA, F1 y tenis: <a href="https://es.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a> (CC BY-SA).`:""}</p>
+    <button class="btn fvscomp" data-fvscomp="1">${PZ_WA_ICO}Compartir mi sufrimiento</button></div>`;
 }
 // ---- Favoritos: tu equipo en vivo en todos los deportes (28 oct 2026) ----
 // Cuando lo que sigue de "Lo que sigue" ya empezó, la tarjeta grande se vuelve su marcador en vivo, con el estilo de cada deporte:
