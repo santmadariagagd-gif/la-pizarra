@@ -8531,7 +8531,9 @@ function sufhEquipo(k){
       dolor:sub.slice().reverse().map(z=>[z.n,"Subcampeón: se le fue el campeonato",""]).slice(0,4),camp:tit.length,wiki:1}; }
   if(t==="t"){ const nom=FAV.jug[k]?.n||""; if(!nom) return null; const Y=sufTenis(nom); if(!Y) return null;
     const MAP={W:1,F:.8,SF:.65,QF:.55,"4R":.45,"3R":.38,"2R":.32,"1R":.28}, GS={AO:"Abierto de Australia",RG:"Roland Garros",W:"Wimbledon",US:"US Open"};
-    const ys=Object.keys(Y).map(Number).filter(y=>y>=2011&&y<new Date().getFullYear()).sort((a,b)=>a-b); if(!ys.length) return null;
+    const ys0=Object.keys(Y).map(Number).filter(y=>y>=2011&&y<new Date().getFullYear()).sort((a,b)=>a-b);
+    const est=ys0.find(y=>(Y[y].rk&&Y[y].rk<=100)||(Y[y].gs||[]).some(z=>["W","F","SF","QF"].includes(z[1])));   // los años de debut no cuentan
+    const ys=est?ys0.filter(y=>y>=est):[]; if(!ys.length) return null;
     const T=ys.map(y=>{ const g=Y[y].gs||[], best=Math.max(0,...g.map(z=>MAP[z[1]]||0)), rk=Y[y].rk, rv=rk?Math.max(0,Math.min(1,1-Math.log10(rk)/2.3)):0;
       return {n:String(y),v:Math.max(best,rv*.9),et:g.some(z=>z[1]==="W")?4:g.some(z=>z[1]==="F")?3:g.some(z=>z[1]==="SF")?2:g.some(z=>z[1]==="QF")?1:0,rk}; });
     const tit=ys.flatMap(y=>(Y[y].gs||[]).filter(z=>z[1]==="W").map(z=>[y,z[0]])), mr=Math.min(...T.map(z=>z.rk||9999));
@@ -8643,16 +8645,33 @@ const sufhEspTxt=(k,z,e)=>{ const t=k[0], liga=t==="f"&&z.lab==="torneos", po=li
   if(t==="f"&&!liga){ const u=sufhUcl(k.slice(1));
     if(e>=.88&&u>=12) return "ganar la liga o la Champions cada año"; if(e>=.8&&u>=3) return "ganar la liga y pelear la Champions"; if(e>=.8) return "ganar la liga"; if(e>=.65) return "pelear la liga y la Champions"; }
   return e>=.9?(t==="t"?"ganar Grand Slams":"ser campeón"):e>=.76?(t==="e"||t==="r"?"pelear el campeonato":t==="t"?"llegar a finales":"llegar a la final"):e>=.62?(t==="e"||t==="r"?"el podio":t==="t"?"semifinales de Grand Slam":t==="f"&&!liga?"pelear arriba":t==="n"||t==="b"?"final de conferencia":"semifinales"):e>=.48?po:"no pasar penas"; };
+// Última Copa de Europa/Champions antes de 2011-12 (año en que terminó la temporada), para medir la sequía de los grandes.
+const UCL_ULT={541:2002,489:2007,40:2005,157:2001,529:2011,505:2010,33:2008,496:1996,65:1980,165:1997,81:1993,66:1982,175:1983};
+const sufAnio=n=>{ const m=String(n).match(/(\d{4})(?:-(\d{2}))?/); return m?(m[2]?+m[1]+1:+m[1]):0; };
 function sufhExp(k,z){
+  const H=SUFH.d||{}, t=k[0], id=k.slice(1), jug=t==="t"||t==="r", eu=t==="f"&&z.lab!=="torneos", mx=t==="f"&&z.lab==="torneos";
   const base=sufhBase(k,z), D=[]; let suf=0, cumple=0;
+  // sequías: Champions para los grandes de Europa (3 o más en su historia); título de liga para los grandes de la Liga MX
+  const ucl=eu?sufhUcl(id):0; let ultU=eu?(UCL_ULT[id]||0):0;
+  const mxTit=mx?(H.mxt?.[id]?.[1]||0):0; let ultMx=mx?(()=>{ const u=H.mxt?.[id]?.[0]; const y=sufAnio(u); return y&&y<2016?y:0; })():0;
   z.T.forEach((x,i)=>{ const prev=z.T.slice(Math.max(0,i-3),i).map(y=>y.v), forma=prev.length?prev.reduce((a,b)=>a+b,0)/prev.length:base;
-    const wb=k[0]==="f"&&z.lab!=="torneos"?.55:.4, e=Math.min(.85,wb*base+(1-wb)*forma), d=x.v-e; let s=Math.max(0,Math.min(1,.4-d*1.6)), extra="";
-    if(x.et===4){ s=-.12; }   // temporada con título (liga, Champions, Super Bowl, Grand Slam…): no se sufre y además compensa las malas
+    const wb=jug?.2:eu?.55:.4, e=Math.min(.85,wb*base+(1-wb)*forma), d=x.v-e, an=sufAnio(x.n); let s=Math.max(0,Math.min(1,.4-d*1.6)), extra="";
+    if(jug&&i===0){ s=Math.min(s,.25); }   // primera temporada que cuenta: todavía se está haciendo
+    const ganoU=eu&&(x.cups||[]).some(c=>c[0]==="Champions"&&c[1]===6);
+    if(ganoU) ultU=an; if(mx&&x.et===4) ultMx=an;
+    if(x.et===4){ s=-.12;   // temporada con título (liga, Champions, Super Bowl, Grand Slam…): no se sufre y además compensa las malas
+      if(eu&&ucl>=5&&!ganoU&&ultU&&an-ultU>=3){ s=Math.min(.35,.035*(an-ultU)); extra=`ganó la liga, pero ${an-ultU} años sin Champions`; } }   // a un grande la liga sola no le quita la sed de Champions
+    else {
+      if(eu&&ucl>=3&&ultU){ const sq=an-ultU; if(sq>=3){ s=Math.min(1,s+Math.min(.4,.04*sq)); extra=`${sq} años sin Champions`; } }
+      if(mx&&mxTit>=3&&ultMx){ const sq=an-ultMx; if(sq>=3){ s=Math.min(1,s+Math.min(.25,.02*sq)); extra=`${sq} años sin título`; } }
+    }
     if(x.et===3&&e>=.6){ s=Math.min(1,s+.15); extra="perdió la final siendo favorito"; }
-    if(x.et===0&&base>=.6&&!(k[0]==="e"||k[0]==="r")){ s=Math.min(1,s+.15); extra=extra||`siendo grande, ${k[0]==="f"&&z.lab==="torneos"?"se quedó fuera de la liguilla":k[0]==="f"?"no figuró":"se quedó fuera de playoffs"}`; }
+    if(x.et===0&&base>=.6&&!(t==="e"||t==="r")){ s=Math.min(1,s+.15); extra=extra||`siendo grande, ${mx?"se quedó fuera de la liguilla":t==="f"?"no figuró":"se quedó fuera de playoffs"}`; }
     if(d>=-.05||x.et===4) cumple++; suf+=s; D.push({n:x.n,d,e,s,res:sufhRes(k,z,x),extra}); });
-  const peores=D.slice().sort((a,b)=>a.d-b.d).filter(x=>x.d<-.08).slice(0,3);
-  return {suf:Math.max(0,Math.round(100*suf/D.length)),D,cumple,base,exige:sufhEspTxt(k,z,base),peores}; }
+  const peores=D.slice().sort((a,b)=>b.s-a.s||a.d-b.d).filter(x=>x.s>=.45).slice(0,3);
+  const hoyA=new Date().getFullYear(), sqU=eu&&ucl>=3&&ultU?hoyA-ultU:0, sqM=mx&&mxTit>=3&&ultMx?hoyA-ultMx:0;
+  const seq=sqU>=3?` · ${sqU} años sin Champions`:sqM>=4?` · ${sqM} años sin título`:"";
+  return {suf:Math.max(0,Math.round(100*suf/D.length)),D,cumple,base,exige:sufhEspTxt(k,z,base)+seq,peores}; }
 function favsSufreH(){
   if(!SUFH.d){ sufhCarga(); return `<div class="fvsuf"><p class="note">Cargando la historia de tus equipos…</p></div>`; }
   const todos=[...Object.entries(FAV.eq).filter(([k])=>/^[fnbe]/.test(k)),...Object.entries(FAV.jug).filter(([k])=>"rt".includes(k[0]))];
