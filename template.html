@@ -1748,7 +1748,7 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 
 /* Amigos (28 oct 2026) */
 .ambtn{position:relative;flex:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-right:8px}
-.ambtn[hidden]{display:none}.ambtn[aria-current="true"]{border-color:var(--mark);color:var(--mark)}.ambtn .vbadge{top:-4px;right:-4px}
+.ambtn[hidden]{display:none}.aperfb{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 2px}.pepers{margin-top:14px}.ambtn[aria-current="true"]{border-color:var(--mark);color:var(--mark)}.ambtn .vbadge{top:-4px;right:-4px}
 .amini{flex:none;border-radius:50%;background:var(--bg);border:1.5px solid var(--line);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;font:700 14px var(--display)}
 .amfila{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding:6px 0 10px}.amfila::-webkit-scrollbar{display:none}
 .amf{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;color:var(--ink);cursor:pointer;font:500 12px var(--body);padding:0;max-width:66px}
@@ -7744,6 +7744,7 @@ function perfEdPinta(){
     <h3 class="pet">Detalles</h3><div class="pex">${PERF_X.map(([v,n,req])=>btn(`data-pe-x="${v}"`,(e.x||[]).includes(v),perfTiene(req),n,"x_"+v)).join("")}</div>${falta(PERF_X.map(x=>({n:x[1],req:x[2]})))}
     <h3 class="pet">Título <small>(sale debajo de tu nombre)</small></h3><div class="pex">${PERF_TIT.map(([v,n,req])=>btn(`data-pe-ti="${v}"`,(e.ti||"")===v,perfTiene(req),n,v?"t_"+v:"")).join("")}</div>${falta(PERF_TIT.filter(t=>t[2]).map(t=>({n:t[1],req:t[2]})))}
     <div class="pepie"><button class="btn" id="peGuarda">Guardar</button><span class="note" id="peMsg"></span></div>
+    <p class="note pepers">¿Quieres la app con los colores de tu equipo? <button class="q5link" data-pfpers="1">Personalizar la app</button></p>
     <p class="note">Tu perfil lo ven las personas con cuenta en La Pizarra (por ahora, en el chat de tus grupos). Ganas más cosas con tus logros.</p></div>`;
   box.scrollTop=y;
 }
@@ -8843,13 +8844,13 @@ function acctRender(){
     const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase();
     box.innerHTML=`<h2>Tu cuenta</h2>
       <div class="aid"><div class="av">${u.photoURL?`<img src="${acctEsc(u.photoURL)}" alt="" referrerpolicy="no-referrer">`:acctEsc(ini)}</div><div><b>${acctEsc(u.displayName||u.email||"")}</b>${u.displayName&&u.email?`<small>${acctEsc(u.email)}</small>`:""}</div></div>
-      ${acctOk()?`<div class="aperf">${perfMio()?perfAvatar(perfMio(),56):`<span class="aperfv">?</span>`}<span><b>${perfMio()?"Tu perfil":"Arma tu perfil"}</b><small>${perfMio()?"Cambia tu avatar y tu apodo":"Tu avatar con la camiseta de tu equipo"}</small></span><button class="btn" id="aPerf">${perfMio()?"Editar":"Armar"}</button></div>`:""}
+      ${acctOk()?`<div class="aperf">${perfMio()?perfAvatar(perfMio(),56):`<span class="aperfv">?</span>`}<span><b>${perfMio()?"Tu perfil":"Arma tu perfil"}</b><small>${perfMio()?"Cambia tu avatar y tu apodo":"Tu avatar con la camiseta de tu equipo"}</small></span><button class="btn" id="aPerf">${perfMio()?"Editar":"Armar"}</button></div><div class="aperfb"><button class="q5link" id="aVer">Ver mi perfil</button><button class="q5link" id="aPers">Personalizar la app</button></div>`:""}
       ${acctOk()?"":`<div class="averify"><b>Confirma tu correo</b><span>Te mandamos un link a ${acctEsc(u.email)}. Hasta que lo abras, tu liga y tus picks se guardan solo en este navegador. Revisa también spam.</span>
         <button class="btn" id="aChk">Ya lo confirmé</button><button class="alink" id="aResend">Reenviar el correo</button></div>`}
       <ul class="asaved"><li><span>Liga de fantasy</span><b>${sl?acctEsc(lg||sl):"Sin conectar"}</b></li><li><span>Picks de la temporada ${D.season}</span><b>${n}</b></li></ul>
       <div class="aform"><button class="btn" id="aOut">Cerrar sesión</button><p class="amsg" id="aMsg" aria-live="polite"></p>
       <div class="alinks"><button class="alink danger" id="aDel">Borrar mi cuenta</button></div></div>`;
-    $("#aOut").onclick=acctOut; $("#aDel").onclick=acctDelete; if($("#aPerf")) $("#aPerf").onclick=()=>{ adlg.close(); perfAbre(); };
+    $("#aOut").onclick=acctOut; $("#aDel").onclick=acctDelete; if($("#aPerf")) $("#aPerf").onclick=()=>{ adlg.close(); perfAbre(); }; if($("#aVer")) $("#aVer").onclick=()=>{ adlg.close(); amPerfil(ACCT.user.uid,"pub"); }; if($("#aPers")) $("#aPers").onclick=()=>{ adlg.close(); persAbre(); };
     if(!acctOk()){ $("#aChk").onclick=()=>acctRun(async()=>{ if(!await acctCheck()) acctMsg("Todavía no aparece confirmado. Abre el link del correo y vuelve a intentar."); });
       $("#aResend").onclick=()=>acctRun(async()=>{ await ACCT.user.sendEmailVerification(ACCT_BACK); acctMsg("Listo, te lo volvimos a mandar.",true); }); }
     return;
