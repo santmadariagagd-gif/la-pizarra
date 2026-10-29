@@ -8510,15 +8510,68 @@ function sufhEquipo(k){
     const tt=H.nflt?.[id]||["",0,[]], po=T.filter(x=>x.et>=1).length, sbl=(tt[2]||[]).filter(x=>+x[0]>=2000);
     return {T,v:T.reduce((a,x)=>a+x.v,0)/T.length,det:`${tt[0]?`Último Super Bowl: temporada ${tt[0]}`:"Nunca ha ganado el Super Bowl"} · playoffs ${po} de ${T.length}`,lab:"temporadas",desde:T[0].n,
       dolor:sbl.slice(-3).reverse().map(x=>[x[0],`Perdió el Super Bowl contra ${x[1]}`,""]),camp:T.filter(x=>x.et===4).length}; }
+  if(t==="b"){ const L=H.nba?.[id]; if(!L?.length) return null;
+    const T=L.map(([n,g,p,et])=>{ const pct=g/Math.max(1,g+p), v=et===5?1:et===4?.8:et===3?.65:et===2?.55:et===1?.45:.45*pct; return {n,et:et===5?4:et===4?3:et>=2?2:et===1?1:0,v}; });
+    const tit=L.filter(x=>x[3]===5).map(x=>x[0]), po=L.filter(x=>x[3]>=1).length;
+    return {T,v:T.reduce((a,x)=>a+x.v,0)/T.length,det:`${tit.length?`${tit.length} ${tit.length===1?"título":"títulos"} desde ${L[0][0]} · último ${tit[tit.length-1]}`:`Sin título desde ${L[0][0]}`} · playoffs ${po} de ${L.length}`,lab:"temporadas",desde:L[0][0],
+      dolor:[...L.filter(x=>x[3]===4).map(x=>[x[0],"Perdió las Finales de la NBA",""]),...L.filter(x=>x[3]===3).map(x=>[x[0],"Se quedó en la final de conferencia",""])].sort((a,b)=>b[0].localeCompare(a[0])).slice(0,4),camp:tit.length,wiki:1}; }
+  if(t==="e"||t==="r"){ const x=t==="e"?FAV.eq[k]:FAV.jug[k], nom=x?.n||""; const S=t==="e"?H.f1c:H.f1d; if(!S||!nom) return null;
+    const re=t==="e"?f1Linaje(nom):null, nn=sufNorm(nom), T=[];
+    for(const y of Object.keys(S).sort()){ let pos=null; for(const [n,p] of Object.entries(S[y])){ if(t==="e"?re.test(n):sufNorm(n)===nn){ pos=pos==null?p:Math.min(pos,p); } } if(pos==null) continue;
+      const tot=Object.keys(S[y]).length||20, v=pos===1?1:pos<=3?.75:.7*Math.max(0,1-(pos-1)/(tot-1)); T.push({n:y,pos,v,et:pos===1?4:pos===2?3:pos<=3?2:0}); }
+    if(!T.length) return null; const tit=T.filter(z=>z.pos===1), sub=T.filter(z=>z.pos===2), mejor=Math.min(...T.map(z=>z.pos));
+    return {T,v:T.reduce((a,z)=>a+z.v,0)/T.length,det:tit.length?`${tit.length} ${t==="e"?(tit.length===1?"campeonato de constructores":"campeonatos de constructores"):(tit.length===1?"campeonato":"campeonatos")} desde ${T[0].n} · último ${tit[tit.length-1].n}`:`Sin campeonatos desde ${T[0].n} · lo mejor: ${mejor}º`,lab:"temporadas",desde:T[0].n,
+      dolor:sub.slice().reverse().map(z=>[z.n,"Subcampeón: se le fue el campeonato",""]).slice(0,4),camp:tit.length,wiki:1}; }
+  if(t==="t"){ const nom=FAV.jug[k]?.n||""; if(!nom) return null; const Y=sufTenis(nom); if(!Y) return null;
+    const MAP={W:1,F:.8,SF:.65,QF:.55,"4R":.45,"3R":.38,"2R":.32,"1R":.28}, GS={AO:"Abierto de Australia",RG:"Roland Garros",W:"Wimbledon",US:"US Open"};
+    const ys=Object.keys(Y).map(Number).filter(y=>y>=2011&&y<new Date().getFullYear()).sort((a,b)=>a-b); if(!ys.length) return null;
+    const T=ys.map(y=>{ const g=Y[y].gs||[], best=Math.max(0,...g.map(z=>MAP[z[1]]||0)), rk=Y[y].rk, rv=rk?Math.max(0,Math.min(1,1-Math.log10(rk)/2.3)):0;
+      return {n:String(y),v:Math.max(best,rv*.9),et:g.some(z=>z[1]==="W")?4:g.some(z=>z[1]==="F")?3:g.some(z=>z[1]==="SF")?2:g.some(z=>z[1]==="QF")?1:0,rk}; });
+    const tit=ys.flatMap(y=>(Y[y].gs||[]).filter(z=>z[1]==="W").map(z=>[y,z[0]])), mr=Math.min(...T.map(z=>z.rk||9999));
+    return {T,v:T.reduce((a,z)=>a+z.v,0)/T.length,det:`${tit.length?`${tit.length} Grand Slam${tit.length===1?"":"s"}`:"Sin Grand Slams"}${mr<9999?` · mejor fin de año: #${mr}`:""} desde ${ys[0]}`,lab:"años",desde:String(ys[0]),
+      dolor:ys.flatMap(y=>(Y[y].gs||[]).filter(z=>z[1]==="F").map(z=>[String(y),`Perdió la final de ${GS[z[0]]}`,""])).reverse().slice(0,4),camp:tit.length,wiki:1}; }
   return null;
+}
+const sufNorm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z ]/g,"").replace(/\s+/g," ").trim();
+function f1Linaje(n){ const x=sufNorm(n);   // los equipos cambian de nombre: se juntan sus nombres viejos
+  if(/racing bulls|^rb\b|visa cash|alphatauri|toro rosso/.test(x)) return /Toro Rosso|AlphaTauri|^RB[- ]|^RB$|Racing Bulls/i;
+  if(/red bull/.test(x)) return /^Red Bull/i;
+  if(/aston|racing point|force india/.test(x)) return /Force India|Racing Point|Aston Martin/i;
+  if(/alpine|renault|lotus/.test(x)) return /^Renault|^Lotus-Renault|^Lotus F1|^Lotus-Mercedes|^Alpine/i;
+  if(/sauber|audi|alfa/.test(x)) return /Sauber|Alfa Romeo|Audi/i;
+  if(/mercedes/.test(x)) return /^Mercedes/i; if(/ferrari/.test(x)) return /^Ferrari/i; if(/mclaren/.test(x)) return /^McLaren/i;
+  if(/williams/.test(x)) return /^Williams/i; if(/haas/.test(x)) return /^Haas/i; if(/cadillac/.test(x)) return /Cadillac/i;
+  return new RegExp("^"+String(n).split(/[ -]/)[0].replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"i"); }
+// Tenis: la página "<jugador> career statistics" de Wikipedia (Grand Slams año por año y ranking de fin de año). Se guarda 7 días.
+const SUFT={};
+function sufTenis(nom){ if(SUFT[nom]!==undefined) return SUFT[nom];
+  try{ const c=JSON.parse(localStorage.getItem("pz_ten_h")||"{}")[nom]; if(c&&Date.now()-c.t<7*864e5){ SUFT[nom]=c.Y; return c.Y; } }catch(e){}
+  SUFT[nom]=null; sufTenWiki(nom).then(Y=>{ SUFT[nom]=Y||false; try{ const A=JSON.parse(localStorage.getItem("pz_ten_h")||"{}"); A[nom]={t:Date.now(),Y:Y||null}; localStorage.setItem("pz_ten_h",JSON.stringify(A)); }catch(e){} favRepinta(); }).catch(()=>{ SUFT[nom]=false; });
+  return null; }
+async function sufTenWiki(nom){
+  const W=async t=>{ const r=await fetch("https://en.wikipedia.org/w/api.php?action=parse&format=json&formatversion=2&prop=text&redirects=1&origin=*&page="+encodeURIComponent(t)); const j=await r.json(); return j.parse?.text?new DOMParser().parseFromString(j.parse.text,"text/html"):null; };
+  const busca=d=>d?[...d.querySelectorAll("table.wikitable")].find(x=>/Australian Open/.test(x.textContent)&&/Wimbledon/.test(x.textContent)&&/\b20\d\d\b/.test(x.rows[0]?.textContent||"")):null;
+  let d=await W(nom+" career statistics"), t=busca(d); if(!t){ d=await W(nom); t=busca(d); } if(!t) return null;
+  d.querySelectorAll("sup.reference").forEach(e=>e.remove());
+  const txt=c=>(c?.textContent||"").replace(/\s+/g," ").trim();
+  const hdr=[...t.rows].find(r=>/\b20\d\d\b/.test(r.textContent)&&/Tournament/i.test(r.textContent))||t.rows[0];
+  const yi=[...hdr.cells].map(txt).map((h,i)=>/^(19|20)\d\d$/.test(h)?[i,+h]:null).filter(Boolean);
+  const Y={}, OK=new Set(["W","F","SF","QF","4R","3R","2R","1R"]);
+  for(const r of t.rows){ const c=[...r.cells].map(txt), n=c[0]||"";
+    const gs=/^Australian Open/.test(n)?"AO":/^French Open/.test(n)?"RG":/^Wimbledon/.test(n)?"W":/^US Open/.test(n)?"US":null; if(!gs) continue;
+    for(const [i,y] of yi){ const v=(c[i]||"").replace(/[^A-Z0-9]/g,""); if(OK.has(v)) (Y[y]=Y[y]||{gs:[]}).gs.push([gs,v]); } }
+  const rr=[...t.rows].find(r=>/^Year-end ranking/i.test(txt(r.cells[0])))||[...d.querySelectorAll("table.wikitable tr")].find(r=>/^Year-end ranking/i.test(txt(r.cells[0])));
+  if(rr){ const v=[...rr.cells].slice(1).map(txt); yi.forEach(([,y],k)=>{ const n=parseInt((v[k]||"").replace(/\D/g,""),10); if(n>0&&n<3000) (Y[y]=Y[y]||{gs:[]}).rk=n; }); }
+  return Y;
 }
 function favsSufreH(){
   if(!SUFH.d){ sufhCarga(); return `<div class="fvsuf"><p class="note">Cargando la historia de tus equipos…</p></div>`; }
-  const L=Object.entries(FAV.eq).filter(([k])=>/^[fn]/.test(k)).map(([k,x])=>{ const h=sufhEquipo(k); return h?{k,x,...h,n:Math.round(h.v*100)}:null; }).filter(Boolean);
-  const sin=Object.keys(FAV.eq).length+Object.keys(FAV.jug).filter(k=>"rt".includes(k[0])).length-L.length;
-  if(!L.length) return `<div class="fvsuf"><p class="note">Todavía no tenemos la historia de tus equipos. Por ahora hay Liga MX (desde 2016), las 5 grandes ligas de Europa y la NFL (desde 2011).</p></div>`;
+  const todos=[...Object.entries(FAV.eq).filter(([k])=>/^[fnbe]/.test(k)),...Object.entries(FAV.jug).filter(([k])=>"rt".includes(k[0]))];
+  const L=todos.map(([k,x])=>{ const h=sufhEquipo(k); return h?{k,x,...h,n:Math.round(h.v*100)}:null; }).filter(Boolean);
+  const sin=todos.length-L.length, carga=todos.some(([k])=>k[0]==="t"&&SUFT[FAV.jug[k]?.n]===null);
+  if(!L.length) return `<div class="fvsuf"><p class="note">${carga?"Cargando la historia de tus favoritos…":"Todavía no tenemos la historia de tus favoritos."}</p></div>`;
   L.sort((a,b)=>a.n-b.n); const prom=L.reduce((s,z)=>s+z.n,0)/L.length, suf=Math.round(100-prom), V=FAVS_VER.find(([m])=>prom>=m);
-  const nom=(k,x)=>k[0]==="n"?(NT[k.slice(1)]?.n||x.n):x.n;
+  const nom=(k,x)=>k[0]==="n"?(NT[k.slice(1)]?.n||x.n):k[0]==="b"?(NBA_N[k.slice(1)]||x.n):x.n;
   const barras=z=>`<span class="fvhb" aria-hidden="true">${z.T.map(x=>`<i style="height:${Math.round(18+82*x.v)}%;background:${x.et>=4?"#F2D466":x.et===3?"#FFB27A":x.et>=1?"#9FD3A8":"rgba(255,255,255,.28)"}" title="${hoyEsc(x.n)}"></i>`).join("")}</span>`;
   return `<div class="fvsuf"><div class="fvsg"><div class="fvsmed" style="--p:${suf}"><b>${suf}<small>%</small></b><span>de sufrimiento</span></div>
       <div class="fvsv"><b>${hoyEsc(V[1])}</b><span>${hoyEsc(V[2])}</span></div></div>
@@ -8526,7 +8579,7 @@ function favsSufreH(){
       return `<li><button class="fvhrow" data-fvsab="${hoyEsc(z.k)}" aria-expanded="${ab}"><span class="fvsn">${i+1}</span>${favsLogo(z.k,32)}<span class="fvst"><b>${hoyEsc(nom(z.k,z.x))}</b><small>${hoyEsc(z.det)}</small></span><em style="color:${T[2]}">${100-z.n}%</em></button>
         ${barras(z)}<span class="fvhlab"><span>${hoyEsc(z.desde)}</span><span>${z.T.length} ${z.lab}</span><span>hoy</span></span>
         ${ab?`<div class="fvhdolor">${z.dolor.length?`<b>Las que más dolieron</b>${z.dolor.map(([a,t,m])=>`<span><em>${hoyEsc(a)}</em>${hoyEsc(t)}${m?` · ${hoyEsc(m)}`:""}</span>`).join("")}`:`<b>Ni de qué quejarse</b><span>No hay finales perdidas en este periodo.</span>`}</div>`:""}</li>`; }).join("")}</ol>
-    <p class="note">Del que más te ha hecho sufrir al que menos. Verde: liguilla, playoffs o buena copa europea · naranja: final perdida · amarillo: campeón (liga o copa).${sin>0?" NBA, F1 y tenis todavía no tienen historia aquí.":""}</p></div>`;
+    <p class="note">Del que más te ha hecho sufrir al que menos. Verde: liguilla, playoffs o buena copa europea · naranja: final perdida · amarillo: campeón.${carga?" Cargando tenis…":sin>0?` ${sin===1?"Uno de tus favoritos todavía no tiene":`${sin} de tus favoritos todavía no tienen`} historia.`:""}${L.some(z=>z.wiki)?` Historia de NBA, F1 y tenis: <a href="https://es.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a> (CC BY-SA).`:""}</p></div>`;
 }
 // ---- Favoritos: tu equipo en vivo en todos los deportes (28 oct 2026) ----
 // Cuando lo que sigue de "Lo que sigue" ya empezó, la tarjeta grande se vuelve su marcador en vivo, con el estilo de cada deporte:

@@ -2708,9 +2708,11 @@ def _historia_wiki(H,hoy):
         try: T=wiki_tablas(wiki_html(f"List of {eq} seasons"))
         except Exception as ex: print("Historia NBA",ab,ex); continue
         if not T: continue
-        G=max(T,key=len); hd=[re.sub(r"\[.*?\]","",x).strip().lower() for x in G[0]]
-        iw=next((i for i,x in enumerate(hd) if x in ("w","wins")),None); il=next((i for i,x in enumerate(hd) if x in ("l","losses")),None)
-        ip=next((i for i,x in enumerate(hd) if x.startswith("playoff")),None)
+        G=max(T,key=len); lim=lambda x:re.sub(r"\[.*?\]","",x).strip().lower()
+        # encabezado de una o dos filas (Hawks, Blazers, Raptors: "Regular season" arriba y W / L abajo)
+        h0=[lim(x) for x in G[0]]; h1=[lim(x) for x in G[1]] if len(G)>1 and not re.match(r"\d{4}",G[1][0] if G[1] else "") else []
+        col=lambda pred:next((i for i in range(max(len(h0),len(h1))) if (i<len(h1) and pred(h1[i])) or (i<len(h0) and pred(h0[i]) and not (i<len(h1) and h1[i]!=h0[i] and h1[i]))),None)
+        iw=col(lambda x:x in ("w","wins")); il=col(lambda x:x in ("l","losses")); ip=col(lambda x:x.startswith("playoff"))
         if iw is None or il is None: print("Historia NBA: columnas",ab,hd[:12]); continue
         R=[]
         for f in G[1:]:
