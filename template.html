@@ -1797,6 +1797,15 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .ntx{display:flex;flex-direction:column;gap:10px}.ntcab{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-right:52px}.ntcab h2{margin:0}
 .ntfil{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.ntfil::-webkit-scrollbar{display:none}.ntfil button{min-height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 13px var(--body);cursor:pointer;flex-shrink:0}
 .ntfil button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}
+/* Avisos al teléfono (29 oct 2026) */
+.pushc{padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.pushh{display:flex;align-items:center;gap:12px}.pushh>span,.pushp>span{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.pushh small,.pushp small{color:var(--muted);font-size:12px}
+.pushsw{width:52px;height:30px;border-radius:15px;border:0;background:var(--line);position:relative;padding:0;flex-shrink:0;cursor:pointer}.pushsw:disabled{opacity:.6}
+.pushsw i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:12px;background:#ECEFE7;transition:left .2s}
+.pushsw[aria-checked="true"]{background:#9FD3A8}.pushsw[aria-checked="true"] i{left:25px}
+.pushps{display:flex;flex-direction:column;margin-top:10px;border-top:1px solid var(--line);padding-top:4px}
+.pushp{display:flex;align-items:center;gap:10px;min-height:48px;cursor:pointer}.pushp input{width:22px;height:22px;accent-color:var(--mark);flex-shrink:0}
+.pushc .note{margin:10px 0 0}.pushmsg{margin:8px 0 0;font-size:13px;color:#FFB27A}.pushmsg:empty{display:none}
 .ntg{font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:6px 2px 0}
 .nti{display:flex;gap:12px;align-items:flex-start;padding:10px 10px;border-radius:14px;border:0;background:transparent;color:var(--ink);text-align:left;width:100%;cursor:pointer;font:inherit;animation:ntin .3s ease both}
 .nti.nuevo{background:rgba(242,212,102,.07)}@keyframes ntin{from{opacity:0;transform:translateY(4px)}}
@@ -9221,7 +9230,8 @@ async function acctForget(){   // quita de este navegador lo que pertenece a la 
 }
 const acctOut=()=>acctRun(async()=>{
   if(acctLsGet("pz_cuenta_sucio")==="1"){clearTimeout(ACCT.pushT); await acctSend();}
-  const ok=acctOk(); await ACCT.auth.signOut(); if(ok) await acctForget(); adlg.close();
+  const ok=acctOk(); if(ok&&pushLs().on) await pushApaga().catch(()=>{});   // que no le lleguen tus avisos a quien use este aparato después
+  await ACCT.auth.signOut(); if(ok) await acctForget(); adlg.close();
 });
 const acctDelete=()=>acctRun(async()=>{
   if(!confirm("¿Borrar tu cuenta con tu liga y tus picks guardados? No se puede deshacer.")) return;
@@ -10634,15 +10644,78 @@ async function ntAbre(){
 function ntPinta(){
   const S=ntLs(), L=AV.L.filter(x=>AV.f==="todo"||x.k===AV.f), hoy0=new Date(rdHoy()+"T00:00:00-06:00").getTime()/1000;
   const G=[["Hoy",L.filter(x=>x.ts>=hoy0)],["Antes",L.filter(x=>x.ts<hoy0)]].filter(g=>g[1].length);
-  $("#gbody").innerHTML=`<div class="ntx"><div class="ntcab"><h2>Avisos</h2>${AV.L.some(x=>!ntLeido(S,x))?`<button class="q5link" data-ntleer="1">Marcar leídas</button>`:""}</div>
+  const pon=pushOn(), pc=pushCard(pon);
+  $("#gbody").innerHTML=`<div class="ntx"><div class="ntcab"><h2>Avisos</h2>${AV.L.some(x=>!ntLeido(S,x))?`<button class="q5link" data-ntleer="1">Marcar leídas</button>`:""}</div>${pon?"":pc}
     <div class="ntfil" role="group" aria-label="Tipo de aviso">${[["todo","Todo"],...Object.entries(NT_K)].map(([k,n])=>`<button data-ntf="${k}" aria-pressed="${AV.f===k}">${n}</button>`).join("")}</div>
-    ${G.length?G.map(([n,X])=>`<h3 class="ntg">${n}</h3>${X.map(x=>ntItem(x,S)).join("")}`).join(""):`<p class="note">${AV.L.length?"Nada de este tipo por ahora.":"Aquí te avisamos cuando te reten, te comenten, acepten tu solicitud o jueguen tus equipos."}</p>`}</div>`;
+    ${G.length?G.map(([n,X])=>`<h3 class="ntg">${n}</h3>${X.map(x=>ntItem(x,S)).join("")}`).join(""):`<p class="note">${AV.L.length?"Nada de este tipo por ahora.":"Aquí te avisamos cuando te reten, te comenten, acepten tu solicitud o jueguen tus equipos."}</p>`}${pon?pc:""}</div>`;
 }
+// ----- Avisos al teléfono (29 oct 2026) -----
+// Se pide permiso, Firebase Cloud Messaging da una clave de este aparato y se guarda en avisos_tk/{uid} (solo tú la lees).
+// El robot avisos.py (GitHub, cada 10 min) manda los avisos; sw.js los muestra aunque la página esté cerrada.
+const PUSH_K="pz_push", PUSH_P={eq:["Partidos de tus equipos","Cuando están por empezar y el resultado final"],gol:["Goles","Cada gol de tus equipos de fútbol"],soc:["Amigos","Solicitudes y comentarios en tus posts"],ret:["Retos","Cuando un amigo te reta a un duelo"]};
+const pushLs=()=>{ try{ return JSON.parse(localStorage.getItem(PUSH_K)||"{}")||{}; }catch(e){ return {}; } };
+const pushGuardaLs=o=>{ try{ localStorage.setItem(PUSH_K,JSON.stringify(o)); }catch(e){} };
+const pushIOS=()=>/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const pushApp=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+function pushEstado(){   // ok · ios (falta agregarla a la pantalla de inicio) · no (el navegador no puede) · bloq (permiso negado)
+  if(!/(^|\.)lapizarra\.mx$/.test(location.hostname)&&!window.PZ_PUSH_DEV) return "no";
+  if(pushIOS()&&!pushApp()) return "ios";
+  if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)) return pushIOS()?"ios":"no";
+  return Notification.permission==="denied"?"bloq":"ok";
+}
+const pushOn=()=>{ const L=pushLs(); return !!(L.on&&L.u===ACCT?.user?.uid&&pushEstado()==="ok"&&Notification.permission==="granted"); };
+function pushCard(on){ const e=pushEstado(), L=pushLs();
+  const cuerpo=e==="ios"?`<p class="note">En iPhone primero agrega La Pizarra a tu pantalla de inicio: abre lapizarra.mx en Safari, toca <b>Compartir</b> y luego <b>Agregar a inicio</b>. Entra desde ese ícono y aquí podrás activar los avisos.</p>`
+    :e==="no"?`<p class="note">Este navegador no permite avisos. Prueba con Chrome o Safari actualizados.</p>`
+    :e==="bloq"?`<p class="note">Los avisos de lapizarra.mx están bloqueados. Actívalos en la configuración de tu navegador (Notificaciones) y vuelve aquí.</p>`
+    :on?`<div class="pushps">${Object.entries(PUSH_P).map(([k,[n,d]])=>`<label class="pushp"><span><b>${n}</b><small>${d}</small></span><input type="checkbox" data-pushp="${k}"${(L.p?.[k]??1)?" checked":""}></label>`).join("")}</div>`:"";
+  return `<div class="pushc"><div class="pushh"><span><b>Avisos en tu teléfono</b><small>${on?"Activados en este aparato":"Goles de tus equipos, retos y lo que dicen tus amigos, aunque no tengas la página abierta"}</small></span>${e==="ok"?`<button class="pushsw" role="switch" aria-checked="${on}" aria-label="Avisos en tu teléfono" data-pushsw="1"><i></i></button>`:""}</div>${cuerpo}<p class="pushmsg" aria-live="polite"></p></div>`;
+}
+async function pushToken(){
+  await acctLoadJS("firebase-messaging-compat.js");
+  const reg=await navigator.serviceWorker.register("/sw.js"); await navigator.serviceWorker.ready;
+  return firebase.messaging().getToken({serviceWorkerRegistration:reg});
+}
+async function pushDoc(f){ const ref=ACCT.db.doc(`avisos_tk/${ACCT.user.uid}`); let d={}; try{ d=(await ref.get()).data()||{}; }catch(e){}
+  const n=f(d); await ref.set({tk:n.tk,p:n.p,t:firebase.firestore.FieldValue.serverTimestamp()}); return n; }
+const PUSH_P0={eq:1,gol:1,soc:1,ret:1};
+async function pushActiva(){
+  const per=await Notification.requestPermission(); if(per!=="granted") return per;   // se pide primero (en iPhone tiene que ser justo al picar)
+  const tk=await pushToken(); if(!tk) throw new Error("sin clave");
+  const n=await pushDoc(d=>({tk:[...(d.tk||[]).filter(x=>x!==tk),tk].slice(-5),p:{...PUSH_P0,...(d.p||{})}}));
+  pushGuardaLs({on:1,tk,p:n.p,u:ACCT.user.uid,d:Date.now()});
+  try{ (await navigator.serviceWorker.ready).showNotification("La Pizarra",{body:"Listo: así te van a llegar los avisos.",icon:"/iconos/icono-192.png",tag:"pz-prueba"}); }catch(e){}
+  return "ok";
+}
+async function pushApaga(){ const L=pushLs();
+  try{ await acctLoadJS("firebase-messaging-compat.js"); await firebase.messaging().deleteToken(); }catch(e){}
+  if(L.tk&&ACCT?.user) await pushDoc(d=>({tk:(d.tk||[]).filter(x=>x!==L.tk),p:d.p||{}})).catch(()=>{});
+  pushGuardaLs({on:0});
+}
+async function pushRefresca(){   // una vez al día confirma la clave (Firebase a veces la cambia)
+  const L=pushLs(); if(!L.on||!amOk()||L.u!==ACCT.user.uid||!("Notification" in window)||Notification.permission!=="granted"||Date.now()-(L.d||0)<864e5) return;
+  try{ const tk=await pushToken(); const n=await pushDoc(d=>({tk:[...(d.tk||[]).filter(x=>x!==tk&&x!==L.tk),tk].slice(-5),p:d.p||L.p||PUSH_P0})); pushGuardaLs({...L,tk,p:n.p,d:Date.now()}); }catch(e){}
+}
+document.addEventListener("change",async ev=>{ const c=ev.target.closest?.("[data-pushp]"); if(!c) return;
+  const k=c.dataset.pushp, v=c.checked; c.disabled=true;
+  try{ const n=await pushDoc(d=>({tk:d.tk||[],p:{...PUSH_P0,...(d.p||{}),[k]:v?1:0}})); pushGuardaLs({...pushLs(),p:n.p}); }
+  catch(e){ c.checked=!v; const m=c.closest(".pushc")?.querySelector(".pushmsg"); if(m) m.textContent="No se pudo guardar. Intenta de nuevo."; }
+  c.disabled=false; });
+(()=>{ try{ const q=new URLSearchParams(location.search); if(q.get("av")!=="1") return; q.delete("av");   // al tocar un aviso se abre la lista de avisos
+  history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash);
+  let n=0; const iv=setInterval(()=>{ if(amOk()){ clearInterval(iv); ntAbre(); } else if(++n>40) clearInterval(iv); },500); }catch(e){} })();
 document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) return; let b;
   if(t.closest("#ntBtn")) return ntAbre();
   if(!t.closest("#gbody .ntx")) return;
   if((b=t.closest("[data-ntf]"))){ AV.f=b.dataset.ntf; return ntPinta(); }
   if(t.closest("[data-ntleer]")){ ntMarca(AV.L.map(x=>x.id)); return ntPinta(); }
+  if((b=t.closest("[data-pushsw]"))){ const m=b.closest(".pushc").querySelector(".pushmsg"), on=b.getAttribute("aria-checked")==="true"; b.disabled=true;
+    try{ if(on) await pushApaga();
+      else{ m.textContent="Pidiendo permiso…"; const r=await pushActiva();
+        if(r!=="ok"){ ntPinta(); const m2=$("#gbody .pushmsg"); if(m2&&r!=="denied") m2.textContent="No diste permiso. Si cambias de opinión, vuelve a picarle."; return; }
+        pzTrack("avisos_push",{}); } }
+    catch(e){ console.warn("Avisos al teléfono:",e?.code||e); m.textContent=e?.code==="permission-denied"?"Falta actualizar los permisos de Firebase.":"No se pudo activar. Intenta de nuevo en un rato."; b.disabled=false; return; }
+    return ntPinta(); }
   const it=t.closest("[data-ntid]"); if(!it) return; ntMarca([it.dataset.ntid]);
   if(t.closest("[data-amok],[data-amno],[data-duok]")){ setTimeout(()=>ntCalcula(true).then(()=>{ if($("#gbody .ntx")) ntPinta(); }),1500); return; }   // los aceptan sus propios manejadores
   if(it.dataset.ntper) return amPerfil(it.dataset.ntper,it.dataset.ntab||"pub");
@@ -10651,8 +10724,8 @@ document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) 
   if(it.dataset.nid||it.dataset.hid||it.dataset.eqf||it.dataset.hact){ dlg.close(); setTimeout(()=>{ navIr("favs"); window.scrollTo(0,0); },350); return; }
   ntPinta();
 });
-setInterval(()=>{ if(amOk()&&!document.hidden) ntCalcula().catch(()=>{}); },120e3);
-document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&amOk()) ntCalcula().catch(()=>{}); });
+setInterval(()=>{ if(amOk()&&!document.hidden){ ntCalcula().catch(()=>{}); pushRefresca(); } },120e3);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&amOk()){ ntCalcula().catch(()=>{}); pushRefresca(); } });
 
 function navIr(tab,liga){
   if(liga&&LEAGUES[liga]&&liga!==FLIG) selectLeague(liga,true);
