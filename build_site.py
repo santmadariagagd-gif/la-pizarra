@@ -2668,6 +2668,7 @@ def _duelos():
     db=firestore.client()
     lee=lambda n:(lambda r:json.load(open(r,encoding='utf-8')) if os.path.exists(r) else {})(os.path.join(aqui,'docs','datos',n))
     G,F,R=lee('qmx_tabla.json'),lee('fan_ucl.json'),(lee('reto_dia.json').get("d") or {})
+    FM=lee('fan_mx.json')   # 29 oct 2026: duelos del Fantasy Liga MX (clave MXA2026-J16)
     hoy=datetime.now(ZoneInfo("America/Mexico_City")).date().isoformat()
     H=lambda uid:hashlib.sha256(uid.encode()).hexdigest()[:12]
     TIPO={"mx":"Quiniela Liga MX","fan":"Fantasy Champions","rd":"Reto del día"}
@@ -2685,8 +2686,9 @@ def _duelos():
                 err={u:(lambda g:abs(g-J.get("goles",0)) if isinstance(g,(int,float)) else 99)(((G.get("t") or {}).get(H(u),{}).get("j",{}).get(j) or [0,None])[1]) for u in U}
             elif tipo=="fan":
                 s2,c=k.split("-",1)
-                if f"UCL{F.get('s')}"!=s2 or not (F.get("j") or {}).get(c,{}).get("fin"): continue
-                p={u:((F.get("tabla") or {}).get(H(u),{}).get("j") or {}).get(c,0) for u in U}
+                FF=FM if s2.startswith("MX") else F
+                if (FF.get("slug") or f"UCL{FF.get('s')}")!=s2 or not (FF.get("j") or {}).get(c,{}).get("fin"): continue
+                p={u:((FF.get("tabla") or {}).get(H(u),{}).get("j") or {}).get(c,0) for u in U}
             elif tipo=="rd":
                 d0=datetime.strptime(k,"%Y-%m-%d").date(); dias=[(d0+timedelta(days=i)).isoformat() for i in range(7)]
                 if dias[-1]>hoy or any(R.get(f) and not R[f].get("res") for f in dias): continue
@@ -2705,10 +2707,10 @@ def _duelos():
             n=d.get("n") or {}; nom=lambda u:(str(n.get(u) or "").split(" ")[0] or "su amigo")
             if g:
                 o=y if g==x else x
-                _feed_post(db,g,f"duelo-{doc.id}","duelo",f"le ganó el duelo a {nom(o)}"+(" en el desempate" if p[g]==p[o] else ""),f"{p[g]}-{p[o]}",f"{TIPO.get(tipo,'')} · {d.get('e','')}")
+                _feed_post(db,g,f"duelo-{doc.id}","duelo",f"le ganó el duelo a {nom(o)}"+(" en el desempate" if p[g]==p[o] else ""),f"{p[g]}-{p[o]}",f"{'Fantasy Liga MX' if tipo=='fan' and k.startswith('MX') else TIPO.get(tipo,'')} · {d.get('e','')}")
             else:
                 de=d.get("de") or x; o=y if de==x else x
-                _feed_post(db,de,f"duelo-{doc.id}","duelo",f"empató el duelo con {nom(o)}",f"{p[x]}-{p[y]}",f"{TIPO.get(tipo,'')} · {d.get('e','')}")
+                _feed_post(db,de,f"duelo-{doc.id}","duelo",f"empató el duelo con {nom(o)}",f"{p[x]}-{p[y]}",f"{'Fantasy Liga MX' if tipo=='fan' and k.startswith('MX') else TIPO.get(tipo,'')} · {d.get('e','')}")
         except Exception as ex: _pz_err(f"Duelos: {doc.id}",ex)
     print(f"Duelos: {hechos} terminados")
 try:

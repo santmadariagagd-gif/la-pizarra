@@ -8301,7 +8301,7 @@ async function amPerfilPinta(uid){
   const nom=mio?(p?.a||"Tú"):amNom(uid,a), tit=perfTitulo(p);
   const posts=Object.values(AM.posts).filter(x=>x.uid===uid).sort((x,y)=>(y.t?.seconds||0)-(x.t?.seconds||0)).slice(0,10);
   const dus=(DU.L||[]).filter(d=>mio||d.otro===uid).filter(d=>d.est==="ok"||d.est==="pend").sort((x,y)=>y.ci-x.ci).slice(0,12);
-  const duFila=d=>{ const T=DU_T[d.tipo]||["Duelo","var(--mark)"], m=d.res?.p?{fin:true,g:d.res.g||"",p:d.res.p}:DU.sc[d.id]||{};
+  const duFila=d=>{ const T=duT(d), m=d.res?.p?{fin:true,g:d.res.g||"",p:d.res.p}:DU.sc[d.id]||{};
     const r=d.est==="pend"?["…","var(--muted)","Pendiente"]:!m.fin?["•","var(--alt)","En juego"]:m.g===yo?["G","var(--good)","Ganaste"]:m.g?["P","var(--bad)","Perdiste"]:["E","#C9D6CF","Empate"];
     const pts=m.p?`${m.p[yo]??0}-${m.p[d.otro]??0}`:"";
     return `<div class="pfdu"><span class="pfdr" style="background:${r[1]}">${r[0]}</span><span class="pfdt"><b>${mio?`vs ${hoyEsc(duNom(d))}`:hoyEsc(T[0])}</b><small>${mio?hoyEsc(T[0])+" · ":""}${hoyEsc(r[2])}${d.ci?` · ${hoyEsc(duCuando(d.ci).toLowerCase())}`:""}</small></span>${pts?`<b class="pfdm">${pts}</b>`:""}</div>`; };
@@ -8566,14 +8566,16 @@ async function duCarga(forzar){
   return DU.p;
 }
 const duRecibidos=()=>(DU.L||[]).filter(d=>d.est==="pend"&&d.de!==ACCT.user?.uid&&d.ci>Date.now()/1000);
-async function duFanD(){ if(FAN.D&&FAN.L==="ucl") return FAN.D; if(DU.fan&&Date.now()-DU.ft<10*60e3) return DU.fan;
-  DU.fan=await fetch(`datos/fan_ucl.json?v=${Math.floor(Date.now()/6e5)}`).then(r=>r.ok?r.json():null).catch(()=>null); DU.ft=Date.now(); return DU.fan; }
+// 29 oct 2026: duelos también del Fantasy Liga MX (mismo tipo "fan"; la clave dice el torneo: UCL2026-L4 o MXA2026-J16)
+async function duFanD(L="ucl"){ if(FAN.D&&FAN.L===L) return FAN.D; DU.fanL=DU.fanL||{}; const c=DU.fanL[L]; if(c&&Date.now()-c.t<10*60e3) return c.D;
+  const D_=await fetch(`datos/fan_${L}.json?v=${Math.floor(Date.now()/6e5)}`).then(r=>r.ok?r.json():null).catch(()=>null); DU.fanL[L]={D:D_,t:Date.now()}; return D_; }
+const duT=d=>d?.tipo==="fan"&&/^MX/.test(String(d.k||""))?["Fantasy Liga MX","#9FD3A8"]:(DU_T[d?.tipo]||["Duelo","var(--mark)"]);
 // Lo que se puede retar ahorita: la siguiente jornada de cada juego que todavía no empieza
 async function duOpciones(){
   const O=[], now=Date.now()/1000;
   try{ const Q=qmxD(), j=Q?qmxAbierta():null; if(j!=null&&j>=13) O.push({tipo:"mx",k:qmxJid(j),e:`Jornada ${j}`,cierre:Q.J[j].pr,det:"Gana quien le atine a más partidos. Desempate: los goles más cercanos."}); }catch(e){}
-  try{ const F=await duFanD(); if(F?.j){ const ks=Object.entries(F.j).sort((a,b)=>a[1].pr-b[1].pr).map(([k])=>k), L=ks.filter((k,i)=>i>=Math.max(0,ks.indexOf(F.desde)));
-    const k=L.find(k=>F.j[k].pr>now); if(k) O.push({tipo:"fan",k:`UCL${F.s}-${k}`,e:F.j[k].n||k,cierre:F.j[k].pr,det:"Gana quien haga más puntos con su once en esa jornada."}); } }catch(e){}
+  for(const Lg of ["ucl","mx"]) try{ const F=await duFanD(Lg); if(F?.j){ const ks=Object.entries(F.j).sort((a,b)=>a[1].pr-b[1].pr).map(([k])=>k), L=ks.filter((k,i)=>i>=Math.max(0,ks.indexOf(F.desde)));
+    const k=L.find(k=>F.j[k].pr>now); if(k) O.push({tipo:"fan",k:`${F.slug||"UCL"+F.s}-${k}`,e:F.j[k].n||k,cierre:F.j[k].pr,det:"Gana quien haga más puntos con su once en esa jornada."}); } }catch(e){}
   const m=rdMas(rdHoy(),1), fm=new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",weekday:"long",day:"numeric"}).format(new Date(m+"T12:00:00Z"));
   O.push({tipo:"rd",k:m,e:`7 retos desde el ${fm}`,cierre:Date.parse(m+"T06:00:00Z")/1000,det:"Gana quien le atine a más retos del día en una semana. Empieza mañana."});
   return O;
@@ -8595,8 +8597,8 @@ async function duMarcador(d){
           const gx=Gen&&Gen.s===s?Gen.t?.[await q5Hash(uid)]?.j?.[j]:null; if(gx&&gx[0]>a) a=gx[0];
           p[uid]=a; const gg=pk?.g??gx?.[1]; err[uid]=gg!=null?Math.abs(gg-goles):99; }
         M={p,fin,g:fin?gana(p,err):"",nota:`${R.filter(z=>z.fin).length} de ${P.length} partidos`}; } }
-    else if(d.tipo==="fan"){ const F=await duFanD(), i=d.k.indexOf("-"), s=d.k.slice(0,i), k=d.k.slice(i+1);
-      if(F&&`UCL${F.s}`===s&&F.j?.[k]){ const p={}; for(const uid of U) p[uid]=F.tabla?.[await q5Hash(uid)]?.j?.[k]??0;
+    else if(d.tipo==="fan"){ const i=d.k.indexOf("-"), s=d.k.slice(0,i), k=d.k.slice(i+1), F=await duFanD(/^MX/.test(s)?"mx":"ucl");
+      if(F&&(F.slug||`UCL${F.s}`)===s&&F.j?.[k]){ const p={}; for(const uid of U) p[uid]=F.tabla?.[await q5Hash(uid)]?.j?.[k]??0;
         const fin=!!F.j[k].fin; M={p,fin,g:fin?gana(p):"",nota:fin?"":"Los puntos se actualizan varias veces al día"}; } }
     else if(d.tipo==="rd"){ const R=await rdDatos(), hoy=rdHoy(), dias=[...Array(7)].map((_,i)=>rdMas(d.k,i)), p={};
       const ok=dias.filter(f=>f<=hoy&&R[f]?.res&&R[f].res!=="x");
@@ -8609,7 +8611,7 @@ function duRecord(uid){ const yo=ACCT.user.uid, r=[0,0,0];
   for(const d of DU.L||[]){ if(d.otro!==uid||d.est!=="ok") continue; const m=d.res?.p?{fin:true,g:d.res.g||""}:DU.sc[d.id]; if(!m?.fin) continue; r[m.g===yo?0:m.g?1:2]++; }
   return r; }
 function duCard(d,m){
-  const yo=ACCT.user.uid, o=d.otro, T=DU_T[d.tipo]||["Duelo","var(--mark)"], nom=duNom(d).split(" ")[0], now=Date.now()/1000;
+  const yo=ACCT.user.uid, o=d.otro, T=duT(d), nom=duNom(d).split(" ")[0], now=Date.now()/1000;
   let est="", btn="", cl="";
   if(d.est==="pend"){ if(d.de===yo){ est=`Esperando a que ${nom} acepte. Tiene hasta el ${duHasta(d)}`; btn=`<button class="q5link" data-duno="${hoyEsc(d.id)}">Cancelar</button>`; }
     else { est=`${nom} te retó. Acepta antes del ${duHasta(d)}`; btn=`<button class="btn" data-duok="${hoyEsc(d.id)}">Aceptar</button><button class="q5link" data-duno="${hoyEsc(d.id)}">Ahora no</button>`; cl=" dunuevo"; } }
@@ -8640,7 +8642,7 @@ async function duElegir(uid){
   const [O]=await Promise.all([duOpciones(),duCarga()]), yo=ACCT.user.uid, u=[yo,uid].sort(), ya=new Set((DU.L||[]).map(d=>d.id));
   DU.ops=O.map(o=>({...o,id:`${o.tipo}-${o.k}_${u[0]}_${u[1]}`}));
   if(!$("#duOps")) return;
-  $("#duOps").innerHTML=DU.ops.map((o,i)=>{ const T=DU_T[o.tipo]; return `<button class="duop" style="--dc:${T[1]}" data-duop="${i}"${ya.has(o.id)?" disabled":""}><b>${hoyEsc(T[0])}</b><span>${hoyEsc(o.e)}</span><small>${ya.has(o.id)?"Ya tienen este duelo":hoyEsc(o.det)}</small></button>`; }).join("")||`<p class="note">Ahorita no hay nada que retar. Vuelve cuando se abra la siguiente jornada.</p>`;
+  $("#duOps").innerHTML=DU.ops.map((o,i)=>{ const T=duT(o); return `<button class="duop" style="--dc:${T[1]}" data-duop="${i}"${ya.has(o.id)?" disabled":""}><b>${hoyEsc(T[0])}</b><span>${hoyEsc(o.e)}</span><small>${ya.has(o.id)?"Ya tienen este duelo":hoyEsc(o.det)}</small></button>`; }).join("")||`<p class="note">Ahorita no hay nada que retar. Vuelve cuando se abra la siguiente jornada.</p>`;
   const X=await duLista(uid), r=duRecord(uid); if(!$("#duCon")) return;
   $("#duCon").innerHTML=X.length?`<h3 class="pet">Contra ${hoyEsc(nom)}${r[0]+r[1]+r[2]?` · ${r[0]}-${r[1]}${r[2]?`-${r[2]}`:""}`:""}</h3><div class="dulist">${X.slice(0,6).map(({d,m})=>duCard(d,m)).join("")}</div>`:"";
 }
@@ -8656,7 +8658,7 @@ async function duReta(o){
 async function duAcepta(id){
   const d=(DU.L||[]).find(x=>x.id===id); if(!d) return;
   try{ await ACCT.db.doc(`duelos/${id}`).update({est:"ok"}); pzTrack("duelo_acepta",{tipo:d.tipo}); if(typeof pzConfeti==="function") pzConfeti(); pzAviso("¡Duelo aceptado!","Que gane el que más sabe");
-    amPublica(`du-${id}`,{g:"duelo",tx:`aceptó el duelo de ${duNom(d)}`,big:"VS",det:`${(DU_T[d.tipo]||[""])[0]} · ${d.e||""}`}); }
+    amPublica(`du-${id}`,{g:"duelo",tx:`aceptó el duelo de ${duNom(d)}`,big:"VS",det:`${duT(d)[0]} · ${d.e||""}`}); }
   catch(e){ console.warn("Duelos: aceptar",e?.code||e); pzAviso("No se pudo aceptar","¿Ya cerró? Intenta de nuevo"); }
   await duCarga(true); duRepinta();
 }
@@ -10869,7 +10871,7 @@ async function ntCalcula(forzar){
       if(a.est==="pend"&&a.de!==yo) L.push({id:`am-${a.id}`,k:"social",ts,uid:a.otro,tx:`<b>${hoyEsc(amNom(a.otro,a))}</b> quiere ser tu amigo`,acc:`<button class="btn" data-amok="${hoyEsc(a.id)}">Aceptar</button><button class="q5link" data-amno="${hoyEsc(a.id)}">Ahora no</button>`,fijo:1});
       else if(a.est==="ok"&&a.de===yo&&ts>now-7*86400) L.push({id:`ama-${a.id}`,k:"social",ts,uid:a.otro,tx:`<b>${hoyEsc(amNom(a.otro,a))}</b> aceptó tu solicitud. Ya son amigos`,abre:`data-ntper="${hoyEsc(a.otro)}"`}); }
     // duelos
-    for(const d of DU.L||[]){ const nom=hoyEsc(duNom(d)), T=(DU_T[d.tipo]||["duelo"])[0];
+    for(const d of DU.L||[]){ const nom=hoyEsc(duNom(d)), T=duT(d)[0];
       if(d.est==="pend"&&d.de!==yo&&d.ci>now) L.push({id:`du-${d.id}`,k:"retos",ts:ntTs(d.t)||now,uid:d.otro,tx:`<b>${nom}</b> te retó a un duelo: ${hoyEsc(T)} · ${hoyEsc(d.e||"")}`,acc:`<button class="btn" data-duok="${hoyEsc(d.id)}">Aceptar</button>`,fijo:1});
       if(d.est==="ok"&&d.res?.p&&d.ci>now-7*86400){ const g=d.res.g, m=`${d.res.p[yo]??0}-${d.res.p[d.otro]??0}`;
         L.push({id:`dur-${d.id}`,k:"retos",ts:d.ci,ic:"du",c:g===yo?"#2F5A3F":g?"#5A2F2F":"#3A4A44",tx:g===yo?`Le ganaste a <b>${nom}</b> ${m} en ${hoyEsc(T)}`:g?`<b>${nom}</b> te ganó ${m} en ${hoyEsc(T)}`:`Empataste ${m} con <b>${nom}</b> en ${hoyEsc(T)}`,abre:`data-ntper="${hoyEsc(d.otro)}" data-ntab="du"`}); } }
