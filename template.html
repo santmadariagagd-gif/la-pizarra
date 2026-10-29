@@ -10142,15 +10142,18 @@ function navIr(tab,liga){
 }
 window.addEventListener("popstate",e=>{
   const st=e.state||{tab:"hoy",liga:"",n:0}, abierta=[dlg,adlg,fdlg].find(d=>d.open);
+  if(abierta&&Date.now()-PZ_DLGT<800){   // el "atrás" viene de cerrar OTRA ventana justo antes de abrir ésta (cuenta → editar perfil): no se cierra
+    history.pushState({...(history.state||{}),dlg:1,n:(history.state?.n||0)+1},"",location.hash); navBtn(); return; }
   if(abierta){ abierta.close(); }                       // atrás con una ventana abierta: solo se cierra
   else if(st.dlg){ history.back(); return; }            // paso de una ventana que ya se cerró: se brinca
   if(!SECTIONS.includes(st.tab)) st.tab="hoy";
   if(st.tab!==NAV.cur||(st.liga||"")!==NAV.liga){ NAV.restaurando=true; try{ navIr(st.tab,st.liga); }finally{ NAV.restaurando=false; } window.scrollTo(0,0); }
   navBtn();
 });
+let PZ_DLGT=0;
 [dlg,adlg,fdlg].forEach(d=>{
   const abre=d.showModal.bind(d);
-  d.showModal=function(){ abre(); if(NAV.listo&&!history.state?.dlg) history.pushState({...(history.state||{}),dlg:1,n:(history.state?.n||0)+1},"",location.hash); navBtn(); };
+  d.showModal=function(){ abre(); PZ_DLGT=Date.now(); if(NAV.listo&&!history.state?.dlg) history.pushState({...(history.state||{}),dlg:1,n:(history.state?.n||0)+1},"",location.hash); navBtn(); };
   d.addEventListener("close",()=>{ if(history.state?.dlg) history.back(); });   // cerrada con ×, Esc o tocando afuera
 });
 // Si alguien pega una dirección con # en la misma pestaña (no la recarga)
