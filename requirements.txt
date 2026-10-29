@@ -2,3 +2,4 @@ nflreadpy
 pyarrow
 pandas
 numpy
+lxml

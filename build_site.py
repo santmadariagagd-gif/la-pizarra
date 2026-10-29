@@ -2644,6 +2644,104 @@ except Exception as ex:
 #   nfl: {abreviatura: [[año, g, p, e, etapa]]} desde 2011 (nflverse); etapa 0 nada, 1 comodines, 2 divisional,
 #       3 final de conferencia, 4 Super Bowl perdido, 5 campeón. nflt: {ab: [último Super Bowl, cuántos, [[año perdido, rival]]]}.
 # Lo que ya terminó no se vuelve a pedir (se guarda en el mismo archivo); cada corrida solo pide lo que falta.
+# Wikipedia (API de MediaWiki, contenido CC BY-SA 4.0). Se lee el HTML de la página y las tablas "wikitable" se expanden
+# a una cuadrícula (rowspan/colspan) para leer las columnas por su encabezado.
+WIKI_UA={"User-Agent":"LaPizarra/1.0 (https://lapizarra.mx; hola@lapizarra.mx)","Accept":"application/json"}
+def wiki_html(titulo):
+    url="https://en.wikipedia.org/w/api.php?"+urllib.parse.urlencode({"action":"parse","format":"json","formatversion":2,"prop":"text","redirects":1,"page":titulo})
+    for intento in range(3):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url,headers=WIKI_UA),timeout=60) as r: j=json.loads(r.read().decode("utf-8"))
+            return (j.get("parse") or {}).get("text") or ""
+        except Exception as ex:
+            if intento==2: raise
+            time.sleep(2+3*intento)
+def wiki_tablas(html):
+    import lxml.html
+    doc=lxml.html.fromstring(html) if html else None
+    if doc is None: return []
+    for e in doc.xpath('//sup[contains(@class,"reference")]|//style|//span[contains(@class,"sortkey")]'): e.drop_tree()
+    T=[]
+    for t in doc.xpath('//table[contains(concat(" ",normalize-space(@class)," ")," wikitable ")]'):
+        G=[]; pend={}
+        for tr in t.xpath('./tr|./thead/tr|./tbody/tr'):
+            fila=[]; col=0; celdas=tr.xpath('./th|./td'); i=0
+            while i<len(celdas) or col in pend:
+                if col in pend:
+                    txt,quedan=pend[col]; fila.append(txt)
+                    if quedan<=1: del pend[col]
+                    else: pend[col]=(txt,quedan-1)
+                    col+=1; continue
+                c=celdas[i]; i+=1
+                txt=re.sub(r"\s+"," ",c.text_content()).strip()
+                try: rs=int(c.get("rowspan","1") or 1)
+                except Exception: rs=1
+                try: cs=int(c.get("colspan","1") or 1)
+                except Exception: cs=1
+                for _ in range(max(1,min(cs,30))):
+                    fila.append(txt)
+                    if rs>1: pend[col]=(txt,rs-1)
+                    col+=1
+            if fila: G.append(fila)
+        if G: T.append(G)
+    return T
+NBA_WIKI={"ATL":"Atlanta Hawks","BOS":"Boston Celtics","BKN":"Brooklyn Nets","CHA":"Charlotte Hornets","CHI":"Chicago Bulls","CLE":"Cleveland Cavaliers",
+  "DAL":"Dallas Mavericks","DEN":"Denver Nuggets","DET":"Detroit Pistons","GSW":"Golden State Warriors","HOU":"Houston Rockets","IND":"Indiana Pacers",
+  "LAC":"Los Angeles Clippers","LAL":"Los Angeles Lakers","MEM":"Memphis Grizzlies","MIA":"Miami Heat","MIL":"Milwaukee Bucks","MIN":"Minnesota Timberwolves",
+  "NOP":"New Orleans Pelicans","NYK":"New York Knicks","OKC":"Oklahoma City Thunder","ORL":"Orlando Magic","PHI":"Philadelphia 76ers","PHX":"Phoenix Suns",
+  "POR":"Portland Trail Blazers","SAC":"Sacramento Kings","SAS":"San Antonio Spurs","TOR":"Toronto Raptors","UTA":"Utah Jazz","WAS":"Washington Wizards"}
+def nba_etapa(tx):
+    t=(tx or "").lower()
+    if re.search(r"won (the )?(nba )?finals",t): return 5
+    if re.search(r"lost (the )?(nba )?finals",t): return 4
+    if re.search(r"lost (the )?(conference|division) finals",t): return 3
+    if re.search(r"lost (the )?(conference|division) semifinals",t): return 2
+    if re.search(r"lost (the )?first round",t): return 1
+    return 0
+def _historia_wiki(H,hoy):
+    # NBA: "List of <equipo> seasons" (una tabla con todas las temporadas). Temporada terminada = la que acabó en junio.
+    ult_nba=hoy.year-1 if hoy.month>=7 else hoy.year-2   # oct 2026 -> 2025-26
+    N=H.setdefault('nba',{})
+    for ab,eq in NBA_WIKI.items():
+        L=N.get(ab) or []
+        if L and int(L[-1][0][:4])>=ult_nba: continue
+        try: T=wiki_tablas(wiki_html(f"List of {eq} seasons"))
+        except Exception as ex: print("Historia NBA",ab,ex); continue
+        if not T: continue
+        G=max(T,key=len); hd=[re.sub(r"\[.*?\]","",x).strip().lower() for x in G[0]]
+        iw=next((i for i,x in enumerate(hd) if x in ("w","wins")),None); il=next((i for i,x in enumerate(hd) if x in ("l","losses")),None)
+        ip=next((i for i,x in enumerate(hd) if x.startswith("playoff")),None)
+        if iw is None or il is None: print("Historia NBA: columnas",ab,hd[:12]); continue
+        R=[]
+        for f in G[1:]:
+            m=re.match(r"(\d{4})[–-](\d{2})",f[0] if f else "")
+            if not m or not (2011<=int(m.group(1))<=ult_nba) or len(f)<=max(iw,il): continue
+            try: w,l=int(re.sub(r"\D","",f[iw])),int(re.sub(r"\D","",f[il]))
+            except Exception: continue
+            R.append([f"{m.group(1)}-{m.group(2)}",w,l,nba_etapa(f[ip] if ip is not None and ip<len(f) else "")])
+        if R: N[ab]=R
+        time.sleep(0.3)
+    # F1: "<año> Formula One World Championship" -> tablas de pilotos y constructores (lugar final)
+    ult_f1=hoy.year-1 if hoy.month>=12 else hoy.year-1
+    FC=H.setdefault('f1c',{}); FD=H.setdefault('f1d',{})
+    for Y in range(2011,ult_f1+1):
+        if str(Y) in FC and str(Y) in FD: continue
+        try: T=wiki_tablas(wiki_html(f"{Y} Formula One World Championship"))
+        except Exception as ex: print("Historia F1",Y,ex); continue
+        for G in T:
+            hd=" | ".join(G[0]).lower()
+            if not hd.startswith("pos") or "points" not in hd: continue
+            dest=FC if "constructor" in G[0][1].lower() else FD if "driver" in G[0][1].lower() else None
+            if dest is None or str(Y) in dest: continue
+            P={}
+            for f in G[1:]:
+                if len(f)<2 or not re.fullmatch(r"\d{1,2}",f[0].strip()): continue
+                nom=re.sub(r"\s+"," ",f[1]).strip()
+                if nom and nom not in P: P[nom]=int(f[0])
+            if len(P)>=5: dest[str(Y)]=P
+        time.sleep(0.3)
+    print(f"Historia Wikipedia: {len(N)} equipos NBA, F1 {len(FC)} temporadas de constructores y {len(FD)} de pilotos")
+
 def _historia_eq():
     ruta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos','historia_eq.json')
     try: H=json.load(open(ruta,encoding='utf-8'))
@@ -2789,6 +2887,9 @@ def _historia_eq():
             if asb: nflt.setdefault(asb,["",0,[]])[2].append([t,c])
         H['nflt']=nflt
     except Exception as ex: _pz_err("Historia NFL",ex)
+    # --- NBA y F1 desde Wikipedia (28 oct 2026; licencia CC BY-SA: la página da el crédito) ---
+    try: _historia_wiki(H,hoy)
+    except Exception as ex: _pz_err("Historia Wikipedia",ex)
     json.dump(H,open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
     print(f"Historia de equipos: {len(H['mx'])} torneos de Liga MX, {sum(len(v) for v in H['eu'].values())} temporadas de Europa, {len(H.get('nfl',{}))} equipos NFL")
 try:
