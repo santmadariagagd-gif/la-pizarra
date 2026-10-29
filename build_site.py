@@ -2635,6 +2635,123 @@ try:
 except Exception as ex:
     _pz_err("Duelos",ex)
 
+# ---------- Historia de tus equipos para el Sufrómetro (28 oct 2026) ----------
+# docs/datos/historia_eq.json, lo baja la página solo cuando abres "Últimos años" en el Sufrómetro de Favoritos:
+#   mx: torneos desde Apertura 2016 (API-Football: tabla + liguilla) -> [[torneo, {id: [lugar, etapa]}]]; etapa 0 nada,
+#       1 liguilla/repechaje, 2 semifinal, 3 final perdida, 4 campeón.  mxt: {id: [último título, títulos, [[final perdida, rival, global]]]}
+#       con HIST_MX (toda la historia; los nombres de HIST_MX son los de AF_EQ).
+#   eu: {liga: [[temporada, {id: lugar}, equipos]]} desde 2011-12 (Premier, LaLiga, Serie A, Bundesliga, Ligue 1).
+#   nfl: {abreviatura: [[año, g, p, e, etapa]]} desde 2011 (nflverse); etapa 0 nada, 1 comodines, 2 divisional,
+#       3 final de conferencia, 4 Super Bowl perdido, 5 campeón. nflt: {ab: [último Super Bowl, cuántos, [[año perdido, rival]]]}.
+# Lo que ya terminó no se vuelve a pedir (se guarda en el mismo archivo); cada corrida solo pide lo que falta.
+def _historia_eq():
+    ruta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos','historia_eq.json')
+    try: H=json.load(open(ruta,encoding='utf-8'))
+    except Exception: H={}
+    H.setdefault('mx',[]); H.setdefault('eu',{}); H['v']=1
+    hoy=datetime.now(ZoneInfo("America/Mexico_City"))
+    if AFK:
+        # --- Liga MX: temporada Y = Apertura Y + Clausura Y+1 ---
+        ya={t for t,_ in H['mx']}
+        for Y in range(2016,hoy.year+1):
+            if f"Apertura {Y}" in ya and (f"Clausura {Y+1}" in ya or Y+1>hoy.year): continue
+            try:
+                st=af("standings",league=262,season=Y); fx=af("fixtures",league=262,season=Y)
+            except Exception as ex: print("Historia MX:",Y,ex); continue
+            grupos=(st[0]["league"]["standings"] if st else [])
+            for torneo,anio in (("Apertura",Y),("Clausura",Y+1)):
+                nom=f"{torneo} {anio}"
+                if nom in ya: continue
+                g=next((x for x in grupos if x and torneo.lower() in str(x[0].get("group","")).lower()),None)
+                F=[f for f in fx if str(f["league"]["round"]).startswith(torneo)]
+                ronda=lambda f: str(f["league"]["round"]).split(" - ",1)[-1]
+                fin=[f for f in F if re.search(r"^Finals?$",ronda(f),re.I)]
+                if not g: continue
+                hecho=len(fin)>=2 and all(f["fixture"]["status"]["short"] in AF_FIN for f in fin)
+                if not hecho and not (torneo=="Clausura" and anio==2020 and g): continue   # Clausura 2020 se canceló (pandemia): sin campeón
+                E={str(r["team"]["id"]):[r["rank"],0] for r in g}
+                for f in F:
+                    rd=ronda(f)
+                    if re.fullmatch(r"\d+",rd): continue
+                    et=2 if re.search(r"semi",rd,re.I) else 1
+                    for lado in ("home","away"):
+                        k=str(f["teams"][lado]["id"])
+                        if k in E: E[k][1]=max(E[k][1],et)
+                if hecho:
+                    a={}
+                    for f in fin:
+                        for lado,otro in (("home","away"),("away","home")):
+                            k=str(f["teams"][lado]["id"]); a[k]=a.get(k,0)+(f["goals"][lado] or 0)
+                    ks=list(a)
+                    if len(ks)==2:
+                        x,y=ks; gana=x if a[x]>a[y] else y if a[y]>a[x] else None
+                        if gana is None:
+                            ult=max(fin,key=lambda f:f["fixture"]["timestamp"]); pe=ult.get("score",{}).get("penalty") or {}
+                            if pe.get("home") is not None: gana=str(ult["teams"]["home" if pe["home"]>pe["away"] else "away"]["id"])
+                        for k in ks:
+                            if k in E: E[k][1]=4 if k==gana else 3
+                H['mx'].append([nom,E]); ya.add(nom)
+        orden=lambda t:(int(t.split()[1]),0 if t.startswith("Clausura") else 1)
+        H['mx'].sort(key=lambda x:orden(x[0]))
+        # --- Europa ---
+        for lid in (39,140,135,78,61):
+            L=H['eu'].setdefault(str(lid),[]); ya={t for t,*_ in L}
+            ult=hoy.year-1 if hoy.month>=8 else hoy.year-2   # última temporada ya terminada (ej. oct 2026 -> 2025-26)
+            for Y in range(2011,ult+1):
+                t=f"{Y}-{str(Y+1)[2:]}"
+                if t in ya: continue
+                try: st=af("standings",league=lid,season=Y)
+                except Exception as ex: print("Historia",lid,Y,ex); continue
+                g=(st[0]["league"]["standings"][0] if st and st[0]["league"]["standings"] else [])
+                if not g: continue
+                L.append([t,{str(r["team"]["id"]):r["rank"] for r in g},len(g)])
+            L.sort(key=lambda x:x[0])
+    # --- títulos de la Liga MX con HIST_MX (toda la historia) ---
+    nid={v[0]:str(k) for k,v in AF_EQ.items()}; mxt={}
+    for (t,c,sub,fin,*_r) in HIST_MX:
+        if c in nid: x=mxt.setdefault(nid[c],["",0,[]]); x[0]=t; x[1]+=1
+        if sub in nid: mxt.setdefault(nid[sub],["",0,[]])[2].append([t,c,fin])
+    H['mxt']=mxt
+    # --- NFL ---
+    try:
+        AB={"OAK":"LV","SD":"LAC","STL":"LA"}
+        ult=int(S)-1
+        sc=nfl.load_schedules(list(range(2011,ult+1))).to_pandas()
+        sc=sc[sc.result.notna()]
+        R={}
+        for r in sc.itertuples():
+            y=int(r.season); h=AB.get(r.home_team,r.home_team); a=AB.get(r.away_team,r.away_team); hs,as_=r.home_score,r.away_score
+            for eq,gf,gc in ((h,hs,as_),(a,as_,hs)):
+                x=R.setdefault(eq,{}).setdefault(y,[y,0,0,0,0])
+                if r.game_type=="REG": x[1 if gf>gc else 2 if gf<gc else 3]+=1
+                else:
+                    et={"WC":1,"DIV":2,"CON":3,"SB":4}.get(r.game_type,0)
+                    if r.game_type=="SB" and gf>gc: et=5
+                    x[4]=max(x[4],et)
+        H['nfl']={k:[v[y] for y in sorted(v)] for k,v in R.items()}
+        nick={a:str(teams.loc[a].team_nick) for a in teams.index}
+        def ab_de(nombre):
+            n=str(nombre or "")
+            if n.startswith("Washington"): return "WAS"
+            for a,k in nick.items():
+                if a in ("OAK","SD","STL","LAR"): continue
+                if n.endswith(" "+k) or n==k: return a
+            return None
+        nflt={}
+        for (t,c,sub,fin,*_r) in HIST_NFL:
+            if not str(fin).startswith("Super Bowl"): continue
+            ac,asb=ab_de(c),ab_de(sub)
+            if ac: x=nflt.setdefault(ac,["",0,[]]); x[0]=t; x[1]+=1
+            if asb: nflt.setdefault(asb,["",0,[]])[2].append([t,c])
+        H['nflt']=nflt
+    except Exception as ex: _pz_err("Historia NFL",ex)
+    json.dump(H,open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
+    print(f"Historia de equipos: {len(H['mx'])} torneos de Liga MX, {sum(len(v) for v in H['eu'].values())} temporadas de Europa, {len(H.get('nfl',{}))} equipos NFL")
+try:
+    _historia_eq()
+except Exception as ex:
+    _pz_err("Historia de equipos",ex)
+
 # ---------- Página ligera (5 oct 2026) ----------
 # Lo que solo usan algunas secciones sale de la página principal a docs/datos/paq_<nombre>.json; la página lo baja
 # la primera vez que lo necesita (Estadísticas, detalle de un partido NFL, Quiniela, Fantasy, fotos, Historia).
