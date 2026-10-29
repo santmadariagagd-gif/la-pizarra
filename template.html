@@ -1054,7 +1054,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 }
 @media (max-width:720px){
   header.top nav.tabs{display:none}
-  .bnav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:50;padding:6px;border-radius:32px;
+  .bnav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:50;padding:6px;border-radius:32px;
     background:rgba(28,44,39,.62);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.16);
     box-shadow:0 18px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.05)}
   .bnav{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -1063,7 +1063,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   .bnav button.pzsobre{color:var(--mark)}
   .bnav.pzarr button[aria-selected="true"]:not(.pzsobre){color:#C9D6CF}
   main,.wrap{min-height:calc(100lvh - 60px)}
-  .bnav .pzlente{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/5);border-radius:26px;background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 14px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,1.3,.4,1),scale .25s ease;pointer-events:none}
+  .bnav .pzlente{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/6);border-radius:26px;background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 14px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,1.3,.4,1),scale .25s ease;pointer-events:none}
   .bnav button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:52px;background:none;border:0;color:#C9D6CF;font:600 11px/1 var(--body);cursor:pointer;padding:0;transition:transform .12s,color .2s}
   .bnav button:active{transform:scale(.94)}
   .bnav button[aria-selected="true"]{color:var(--mark)}
@@ -2259,7 +2259,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </section>
 
 <nav class="bnav" aria-label="Secciones">
-  <button aria-selected="true" data-sport="hoy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Hoy</button><button aria-selected="false" data-sport="qn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Retas</button><button aria-selected="false" data-sport="favs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>Favoritos</button><button aria-selected="false" data-sport="ff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="9.5" ry="6" transform="rotate(-35 12 12)"/><path d="M9.5 14.5l5-5M10.5 11l1 1M12 9.5l1 1M13.5 12.5l-1-1"/></svg>Fantasy</button><button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3 12h18"/></svg>Deportes</button>
+  <button aria-selected="true" data-sport="hoy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Hoy</button><button aria-selected="false" data-sport="qn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Retas</button><button aria-selected="false" data-sport="amigos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.9-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6-.4 4.6 1.2 5 4.3"/></svg>Amigos</button><button aria-selected="false" data-sport="favs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>Favoritos</button><button aria-selected="false" data-sport="ff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="9.5" ry="6" transform="rotate(-35 12 12)"/><path d="M9.5 14.5l5-5M10.5 11l1 1M12 9.5l1 1M13.5 12.5l-1-1"/></svg>Fantasy</button><button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3 12h18"/></svg>Deportes</button>
 </nav>
 <div class="depmenu" id="depMenu" role="menu" aria-label="Deportes" hidden>
   <button role="menuitem" data-dep="mx"><b>Fútbol</b><span>Liga MX, Europa, Champions y selecciones</span></button>
@@ -7776,7 +7776,9 @@ async function amCarga(forzar){
 }
 const amAmigos=()=>(AM.L||[]).filter(a=>a.est==="ok");
 const amRecibidas=()=>(AM.L||[]).filter(a=>a.est==="pend"&&a.de!==ACCT.user?.uid);
-function amBadge(){ const n=amOk()?amRecibidas().length+(typeof duRecibidos==="function"?duRecibidos().length:0):0; const b=$("#amBtn"); if(!b) return; b.hidden=!(typeof acctOk==="function"&&acctOk());
+function amBadge(){ const n=amOk()?amRecibidas().length+(typeof duRecibidos==="function"?duRecibidos().length:0):0;
+  const bb=$('.bnav [data-sport="amigos"]'); if(bb){ let x=bb.querySelector(".vbadge"); if(!n) x?.remove(); else { if(!x){ x=document.createElement("b"); x.className="vbadge"; bb.append(x); } x.textContent=n; } }
+  const b=$("#amBtn"); if(!b) return; b.hidden=!(typeof acctOk==="function"&&acctOk());
   let s=b.querySelector(".vbadge"); if(!n){ s?.remove(); return; } if(!s){ s=document.createElement("b"); s.className="vbadge"; b.append(s); } s.textContent=n; b.setAttribute("aria-label",`Amigos: ${n} ${n===1?"pendiente":"pendientes"}`); }
 // ---- solicitudes ----
 async function amSolicita(uid,nombre){
