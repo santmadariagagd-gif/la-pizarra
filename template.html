@@ -10,6 +10,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#1F332D">
+<script>/* Personalización (28 oct 2026): los colores de la app según tu equipo se ponen antes de pintar */
+try{ var T=JSON.parse(localStorage.getItem("pz_tema")||"null"); if(T&&T.v){ var R=document.documentElement.style; for(var k in T.v) if(/^#[0-9a-fA-F]{6}$/.test(T.v[k])) R.setProperty("--"+k,T.v[k]); document.querySelector('meta[name="theme-color"]').content=T.v.bg; } }catch(e){}
+</script>
 <!-- App instalable (8 oct 2026): manifest, íconos y service worker en docs/ (raíz del sitio) -->
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/iconos/apple-touch-icon.png">
@@ -30,7 +33,7 @@
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--ink);transition:background-color .35s ease;font:400 16px/1.5 var(--body);-webkit-font-smoothing:antialiased}
 a{color:var(--mark)}
 .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
 header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0 8px}
@@ -1745,7 +1748,7 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 
 /* Amigos (28 oct 2026) */
 .ambtn{position:relative;flex:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-right:8px}
-.ambtn[aria-current="true"]{border-color:var(--mark);color:var(--mark)}.ambtn .vbadge{top:-4px;right:-4px}
+.ambtn[hidden]{display:none}.ambtn[aria-current="true"]{border-color:var(--mark);color:var(--mark)}.ambtn .vbadge{top:-4px;right:-4px}
 .amini{flex:none;border-radius:50%;background:var(--bg);border:1.5px solid var(--line);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;font:700 14px var(--display)}
 .amfila{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding:6px 0 10px}.amfila::-webkit-scrollbar{display:none}
 .amf{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;color:var(--ink);cursor:pointer;font:500 12px var(--body);padding:0;max-width:66px}
@@ -1789,6 +1792,23 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .ntt .ntacc{display:flex;gap:8px;margin-top:4px}.ntt .ntacc .btn{min-height:34px;padding:0 14px}
 .ntdot{width:9px;height:9px;border-radius:50%;background:var(--mark);margin-top:6px;flex-shrink:0}.nti:not(.nuevo) .ntdot{visibility:hidden}
 @media(prefers-reduced-motion:reduce){#ntBtn.ring svg,.nti{animation:none}}
+/* Personalización (28 oct 2026) */
+.pers{display:flex;flex-direction:column;gap:8px}.pers h2{margin:0 0 4px}.pers .note{margin:0}
+.pertem{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.pertem button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font:600 12px var(--body);cursor:pointer}
+.pertem button[aria-pressed="true"]{border-color:var(--mark)}.pertem i{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--a) 0 55%,var(--b) 55%);box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.pertem span{text-align:center;line-height:1.15}
+.perord{display:flex;flex-direction:column;gap:6px}.perfila{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 4px 0 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.perfila b{font:800 16px var(--display);color:var(--mark);width:16px}.perfila span{flex:1;font:600 15px var(--body)}
+.perfila button{width:40px;height:40px;border-radius:10px;border:0;background:none;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer}.perfila button:disabled{opacity:.25;cursor:default}
+.perins{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.perins button{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;font:inherit}
+.perins button span{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--c);color:var(--c);font:800 13px var(--display)}
+.perins button small{font-size:11px;text-align:center;line-height:1.15}.perins button[aria-pressed="true"]{border-color:var(--mark);background:var(--hl)}
+.perins button:disabled{opacity:.4;cursor:default}.perins button svg{position:absolute;top:6px;right:6px}
+.pfti{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.pfins{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:13px;border:2px solid var(--c);color:var(--c);font:800 12px var(--display);background:color-mix(in srgb,var(--c) 15%,transparent)}
+.pfico{flex:0 0 48px!important;padding:0!important}
+.hoyuna{grid-template-columns:minmax(0,1fr)!important}
 /* Feed más vivo (28 oct 2026) */
 .amcmp{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:18px;background:var(--surface);border:1px solid var(--line);margin:12px 0}
 .amcmpt{display:flex;gap:10px;align-items:flex-start}.amcmpt textarea{flex:1;min-width:0;min-height:40px;max-height:160px;resize:none;border:0;border-radius:20px;background:var(--bg);color:var(--ink);padding:10px 14px;font:500 16px/1.35 var(--body)}
@@ -1824,7 +1844,7 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .pfnom{display:flex;flex-direction:column;gap:3px;padding-bottom:6px;min-width:0}.pfnom h2{margin:0;font:800 26px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pftit{align-self:flex-start;padding:3px 9px;border-radius:999px;background:var(--hl);color:var(--mark);font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase}
 .pfbio{margin:0 2px;font-size:15px;line-height:1.4}
-.pfbtn{display:flex;gap:8px}.pfbtn .btn{flex:1;justify-content:center;min-height:44px}
+.pfbtn{display:flex;gap:8px}.pfbtn .btn{flex:1;justify-content:center;min-height:44px;white-space:nowrap;padding:0 12px}
 .pfsec{background:var(--surface)!important;color:var(--ink)!important;border:1px solid var(--line)!important}
 .pfmas{text-align:center}
 .pfst{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 4px}
@@ -7634,6 +7654,7 @@ function perfExtra(p){ const o={}, ent=v=>Math.max(0,Math.min(9999,parseInt(v,10
   const fv=(Array.isArray(p.fv)?p.fv:[]).filter(v=>typeof v==="string"&&/^[fnb][A-Za-z0-9]{1,10}\|[^<>|]{1,30}$/.test(v)).slice(0,8); if(fv.length) o.fv=fv;
   const okL=new Set([...VIDA_LOGROS.map(l=>l[0]),"rd7","rd30"]), lg=(Array.isArray(p.lg)?p.lg:[]).filter(v=>okL.has(v)).slice(0,15); if(lg.length) o.lg=lg;
   if(p.s&&typeof p.s==="object") o.s={a:ent(p.s.a),g:ent(p.s.g),p:ent(p.s.p),e:ent(p.s.e)};
+  const ins=(Array.isArray(p.in)?p.in:[]).filter(v=>okL.has(v)).slice(0,3); if(ins.length) o.in=ins;
   return o; }
 function perfDef(){
   const k=Object.keys(FAV.eq).find(k=>k[0]==="f"&&PZ_COL[k.slice(1)])||Object.keys(FAV.eq).find(k=>k[0]==="n"&&NT[k.slice(1)]?.c)||"";
@@ -7671,7 +7692,7 @@ async function perfCargaYo(){
 async function perfEscribe(p){
   const ref=ACCT.db.doc(`perfiles/${ACCT.user.uid}`);
   try{ await ref.set({...p,t:grFV().serverTimestamp()}); }
-  catch(e){ if(e?.code!=="permission-denied") throw e; const b={...p}; ["bi","fv","lg","s"].forEach(k=>delete b[k]); await ref.set({...b,t:grFV().serverTimestamp()}); console.warn("Perfil: faltan las reglas nuevas de perfiles (bi, fv, lg, s)"); }
+  catch(e){ if(e?.code!=="permission-denied") throw e; const b={...p}; ["bi","fv","lg","s","in"].forEach(k=>delete b[k]); await ref.set({...b,t:grFV().serverTimestamp()}); console.warn("Perfil: faltan las reglas nuevas de perfiles (bi, fv, lg, s)"); }
 }
 async function perfSync(){
   if(!amOk()||!PERF.yo) return; const yo=ACCT.user.uid;
@@ -7973,12 +7994,12 @@ async function amPerfilPinta(uid){
   const cuerpo=PFL.tab==="du"?(dus.length?dus.map(duFila).join(""):`<p class="note">${mio?"Todavía no tienes duelos. Reta a un amigo desde su perfil.":"Todavía no se han retado."}</p>`)
     :PFL.tab==="tr"?`<div class="pftr">${trof.map(([k,ic,n,d,c])=>`<div class="pft${lg.has(k)?"":" no"}"><span style="--c:${c}">${hoyEsc(ic)}</span><b>${hoyEsc(n)}</b><small>${hoyEsc(d)}</small></div>`).join("")}</div>`
     :(posts.length?`<div class="amfeed">${posts.map(amPost).join("")}</div>`:`<p class="note">${mio||amigo?"Todavía no hay nada.":"Lo que publica solo lo ven sus amigos."}</p>`);
-  const acc=mio?`<div class="pfbtn"><button class="btn" data-amedit="1">Editar perfil</button><button class="btn pfsec" data-pfcomp="1">Compartir</button></div>`
+  const acc=mio?`<div class="pfbtn"><button class="btn" data-amedit="1">Editar perfil</button><button class="btn pfsec" data-pfpers="1">Personalizar</button><button class="btn pfsec pfico" data-pfcomp="1" aria-label="Compartir mi perfil"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg></button></div>`
     :amigo?`<div class="pfbtn"><button class="btn" data-duret="${hoyEsc(uid)}">Retar</button><button class="btn pfsec" data-pfmas="1" aria-expanded="false">Amigos ✓</button></div><div class="pfmas" hidden><button class="q5link" data-amdel="${a.id}">Quitar de mis amigos</button></div>`
     :a?`<p class="note">Solicitud pendiente.</p>`:`<div class="pfbtn"><button class="btn" data-amsol="${hoyEsc(uid)}" data-amn="${hoyEsc(p?.a||"")}">Agregar</button></div>`;
   $("#gbody").innerHTML=`<div class="amperfil pfx">
     <div class="pfban" style="--c1:${c1};--c2:${c2}"><i class="pfbr"></i></div>
-    <div class="pfcab"><span class="pfav">${p?perfAvatar(p,104):amAv(uid,104,a)}</span><span class="pfnom"><h2>${hoyEsc(nom)}</h2>${tit?`<b class="pftit">${hoyEsc(tit)}</b>`:""}</span></div>
+    <div class="pfcab"><span class="pfav">${p?perfAvatar(p,104):amAv(uid,104,a)}</span><span class="pfnom"><h2>${hoyEsc(nom)}</h2><span class="pfti">${tit?`<b class="pftit">${hoyEsc(tit)}</b>`:""}${(p?.in||[]).map(k=>{ const t=trof.find(x=>x[0]===k); return t?`<span class="pfins" style="--c:${t[4]}" title="${hoyEsc(t[2])}">${hoyEsc(t[1])}</span>`:""; }).join("")}</span></span></div>
     ${p?.bi?`<p class="pfbio">${hoyEsc(p.bi)}</p>`:mio?`<p class="pfbio note">Ponle una frase a tu perfil en «Editar perfil».</p>`:""}
     ${acc}
     <div class="pfst">${st.map(([v,l,c])=>`<span><b${c?` style="color:${c}"`:""}>${hoyEsc(String(v))}</b><small>${l}</small></span>`).join("")}</div>
@@ -8710,7 +8731,7 @@ setInterval(()=>{ if(document.hidden) return; for(const e of document.querySelec
 
 function fanRepinta(){ FAN.nube=0; FAN.eq=null; FAN.hash=null; if(!$("#fan").classList.contains("hidden")) fanRender(); }
 
-const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio","pz_hoy","pz_perfil"];
+const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio","pz_hoy","pz_perfil","pz_tema","pz_hoy_orden"];
 const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
 const acctLsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
 const acctLsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
@@ -10006,6 +10027,7 @@ function hoyPaint(){
   if(typeof rdPinta==="function"&&Date.now()-(RD.pt||0)>60e3){ RD.pt=Date.now(); rdPinta(); }
 }
 function hoyRender(){
+  if(!HOY.ord){ HOY.ord=1; hoyOrden(); }
   hoyPaint(); hoyMx(); votosCarga();
   hoyRefresh().then(c=>{if(c) hoyPaint();}).catch(()=>{});
   if(!HOY.init){ HOY.init=true; setTimeout(precarga,2500); }
@@ -10141,6 +10163,77 @@ function navPush(id){
   if(NAV.listo&&!NAV.restaurando&&!igual){ const n=(history.state?.n||0)+1; history.pushState({tab:id,liga,n},"",navHash(id)); }
   navBtn();
 }
+// ---------- Personalización (28 oct 2026): colores de la app, orden de la portada e insignias ----------
+// pz_tema = {k, n, v:{bg,surface,line,hl,muted,mark}} (se aplica también en el <head> antes de pintar); pz_hoy_orden = [ids];
+// las insignias van en perfiles/{uid}.in (máximo 3 logros) y salen junto a tu nombre en tu perfil.
+const PZ_TEMA_BASE={bg:"#1F332D",surface:"#263D36",line:"#3A554C",hl:"#3E5A3A",muted:"#A8B8AF",mark:"#F2D466"};
+const hex2hsl=h=>{ const r=parseInt(h.slice(1,3),16)/255,g=parseInt(h.slice(3,5),16)/255,b=parseInt(h.slice(5,7),16)/255, mx=Math.max(r,g,b), mn=Math.min(r,g,b), l=(mx+mn)/2;
+  if(mx===mn) return [0,0,l]; const d=mx-mn, s=l>.5?d/(2-mx-mn):d/(mx+mn); let H=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4; return [H*60,s,l]; };
+const hsl2hex=(h,s,l)=>{ const f=n=>{ const k=(n+h/30)%12, a=s*Math.min(l,1-l), c=l-a*Math.max(-1,Math.min(k-3,9-k,1)); return Math.round(c*255).toString(16).padStart(2,"0"); }; return "#"+f(0)+f(8)+f(4); };
+function pzTemaDe(c1,c2){   // fondo oscuro con el color más oscuro del equipo; el acento (--mark) con el más claro
+  const A=hex2hsl(c1), B=hex2hsl(c2||c1), col=x=>x[1]>=.15&&x[2]>.06&&x[2]<.94, C=[A,B].filter(col).sort((x,y)=>x[2]-y[2]);
+  if(!C.length){ const L=[A,B].sort((x,y)=>y[2]-x[2])[0];   // equipos sin color (negro, blanco, plata): gris oscuro
+    return {bg:"#17191c",surface:"#202328",line:"#363a41",hl:"#2b2f35",muted:"#b3b7bd",mark:L[2]>.55?hsl2hex(L[0],L[1],Math.max(.72,L[2])):"#F2D466"}; }
+  const base=C[0], h=base[0], s=Math.max(.18,Math.min(.55,base[1])*.8);
+  const otro=[A,B].find(x=>x!==base&&(x[0]!==base[0]||x[2]!==base[2]));
+  let mark;
+  if(otro&&col(otro)&&Math.abs(otro[0]-h)>25) mark=hsl2hex(otro[0],Math.min(.9,otro[1]),Math.max(.6,Math.min(.72,otro[2])));
+  else if(otro&&otro[1]<.12&&otro[2]>.85) mark="#F4F1E8";
+  else mark=hsl2hex(h,Math.min(.85,base[1]+.15),.7);
+  return {bg:hsl2hex(h,s,.13),surface:hsl2hex(h,s,.18),line:hsl2hex(h,s*.9,.29),hl:hsl2hex(h,s,.24),muted:hsl2hex(h,.12,.72),mark};
+}
+function pzTemaPon(T){ const R=document.documentElement.style;
+  for(const k of Object.keys(PZ_TEMA_BASE)) R.removeProperty("--"+k);
+  if(T?.v) for(const [k,v] of Object.entries(T.v)) if(/^#[0-9a-fA-F]{6}$/.test(v)) R.setProperty("--"+k,v);
+  const m=document.querySelector('meta[name="theme-color"]'); if(m) m.content=T?.v?.bg||"#1F332D";
+  try{ if(T) localStorage.setItem("pz_tema",JSON.stringify(T)); else localStorage.removeItem("pz_tema"); }catch(e){} if(typeof acctPush==="function") acctPush(); }
+function pzTemas(){ const L=[{k:"",n:"Pizarrón",v:null,c:["#1F332D","#F2D466"]}], ya=new Set();
+  const mete=(k,n)=>{ if(!k||ya.has(k)) return; ya.add(k); const c=favsCol(k); if(!c||!c[0]) return; L.push({k,n,c,v:pzTemaDe(c[0],c[1])}); };
+  const p=perfMio(); if(p?.eq) mete(p.eq,perfNomEq(p.eq));
+  for(const [k,x] of Object.entries(FAV.eq)) if(/^[fnb]/.test(k)) mete(k,k[0]==="b"?(NBA_N[k.slice(1)]||x.n):k[0]==="n"?(NT[k.slice(1)]?.n||x.n):x.n);
+  return L.slice(0,10); }
+const HOY_ORD=[["hoyRd","Reto del día"],["hoyVivo","En vivo"],["hoyFav","Mis equipos"],["hoySem","Partidos de la semana"],["hoyMarc","Partidos de hoy"],["hoyUlt","Lo último"],["hoyNfl","NFL"],["hoyLpz","Lo de La Pizarra"]];
+const hoyOrdenLs=()=>{ try{ const o=JSON.parse(localStorage.getItem("pz_hoy_orden")||"null"); return Array.isArray(o)?o.filter(id=>HOY_ORD.some(x=>x[0]===id)):null; }catch(e){ return null; } };
+function hoyOrden(){
+  const o=hoyOrdenLs(), main=$("#hoy .hoymain"), side=$("#hoy .hoyside"), grid=$("#hoy .hoygrid"); if(!main||!grid) return;
+  if(o&&o.length){ const todos=[...o,...HOY_ORD.map(x=>x[0]).filter(id=>!o.includes(id))]; for(const id of todos){ const el=$("#"+id); if(el) main.append(el); } side.hidden=true; grid.classList.add("hoyuna"); }
+  else { for(const id of ["hoyRd","hoyVivo"]){ const el=$("#"+id); if(el) grid.before(el); } for(const id of ["hoyFav","hoySem","hoyMarc","hoyUlt","hoyNfl"]){ const el=$("#"+id); if(el) main.append(el); } const l=$("#hoyLpz"); if(l) side.append(l); side.hidden=false; grid.classList.remove("hoyuna"); }
+}
+const PERS={};
+function persAbre(){ if(!dlg.open){ dlg.showModal(); FICHA.pila=[]; } pzTrack("personaliza_abre",{}); persPinta(); }
+function persPinta(){
+  const T=(()=>{ try{ return JSON.parse(localStorage.getItem("pz_tema")||"null"); }catch(e){ return null; } })(), tk=T?.k||"";
+  const o=hoyOrdenLs()||HOY_ORD.map(x=>x[0]), lg=[...(VIDA.log?.T||[])], ins=perfMio()?.in||[];
+  const LG=[...VIDA_LOGROS.map(l=>[l[0],l[1],l[2],l[4]]),["rd7","7","Imparable","#FF9C80"],["rd30","30","Leyenda","#C9A7F0"]];
+  $("#gbody").innerHTML=`<div class="pers"><h2>Hazla <span style="color:var(--mark)">tuya</span></h2>
+    <h3 class="pet">Colores de la app</h3><p class="note">Toda la app se pinta con los colores de tu equipo.</p>
+    <div class="pertem">${pzTemas().map(t=>`<button data-perst="${hoyEsc(t.k)}" aria-pressed="${tk===t.k}" style="--a:${t.c[0]};--b:${t.c[1]||t.v?.mark}"><i></i><span>${hoyEsc(t.n)}</span></button>`).join("")}</div>
+    ${pzTemas().length<2?`<p class="note">Sigue a tus equipos en Favoritos o escoge tu equipo en tu perfil para ver sus colores aquí.</p>`:""}
+    <h3 class="pet">Orden de tu portada</h3><p class="note">Lo que va primero en Hoy.</p>
+    <div class="perord">${o.map((id,i)=>`<div class="perfila"><b>${i+1}</b><span>${hoyEsc(HOY_ORD.find(x=>x[0]===id)?.[1]||id)}</span>
+      <button data-perup="${i}" aria-label="Subir"${i?"":" disabled"}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+      <button data-perdn="${i}" aria-label="Bajar"${i<o.length-1?"":" disabled"}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>`).join("")}</div>
+    ${hoyOrdenLs()?`<button class="q5link" data-perrest="1">Volver al orden original</button>`:""}
+    <h3 class="pet">Presume 3 insignias · ${ins.length}/3</h3><p class="note">Salen junto a tu nombre en tu perfil.</p>
+    <div class="perins">${LG.map(([k,ic,n,c])=>{ const ok=lg.includes(k), on=ins.includes(k); return `<button data-persi="${k}" aria-pressed="${on}"${ok&&(on||ins.length<3)?"":" disabled"} style="--c:${c}"><span>${hoyEsc(ic)}</span><small>${hoyEsc(n)}</small>${ok?"":PERF_CANDADO}</button>`; }).join("")}</div>
+    <p class="note" id="persMsg"></p></div>`;
+}
+async function persInsignia(k){
+  const p=perfMio(); if(!p) return; let I=[...(p.in||[])]; I=I.includes(k)?I.filter(x=>x!==k):[...I,k].slice(0,3);
+  PERF.yo=perfLimpia({...p,in:I}); try{ localStorage.setItem("pz_perfil",JSON.stringify(PERF.yo)); localStorage.removeItem("pz_perf_sync"); }catch(e){} persPinta();
+  try{ await perfEscribe(PERF.yo); }catch(e){ const m=$("#persMsg"); if(m) m.textContent="Se guardó en este navegador, pero no en tu cuenta."; }
+}
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return; let b;
+  if(t.closest("[data-pfpers]")) return persAbre();
+  if(!t.closest("#gbody .pers")) return;
+  if((b=t.closest("[data-perst]"))){ const T=pzTemas().find(x=>x.k===b.dataset.perst); pzTemaPon(T?.v?{k:T.k,n:T.n,v:T.v}:null); pzTrack("personaliza_tema",{k:b.dataset.perst||"base"}); return persPinta(); }
+  const mov=(i,d)=>{ const o=hoyOrdenLs()||HOY_ORD.map(x=>x[0]), j=i+d; if(j<0||j>=o.length) return; [o[i],o[j]]=[o[j],o[i]]; try{ localStorage.setItem("pz_hoy_orden",JSON.stringify(o)); }catch(e){} if(typeof acctPush==="function") acctPush(); hoyOrden(); persPinta(); };
+  if((b=t.closest("[data-perup]"))) return mov(+b.dataset.perup,-1);
+  if((b=t.closest("[data-perdn]"))) return mov(+b.dataset.perdn,1);
+  if(t.closest("[data-perrest]")){ try{ localStorage.removeItem("pz_hoy_orden"); }catch(e){} if(typeof acctPush==="function") acctPush(); hoyOrden(); return persPinta(); }
+  if((b=t.closest("[data-persi]"))) return persInsignia(b.dataset.persi);
+});
+
 // ---------- Avisos (28 oct 2026): la campanita ----------
 // Se arman en el navegador con lo que ya carga la página: solicitudes de amistad (y quién aceptó la tuya), retos a duelo y
 // resultados, comentarios y reacciones nuevas en tus posts (posts/{pid}: r y nc contra lo último visto), el reto del día y
