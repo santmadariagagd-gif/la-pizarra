@@ -1798,6 +1798,8 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .ntfil{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.ntfil::-webkit-scrollbar{display:none}.ntfil button{min-height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 13px var(--body);cursor:pointer;flex-shrink:0}
 .ntfil button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}
 /* Avisos al teléfono (29 oct 2026) */
+.fanliga{display:flex;gap:6px;margin:0 0 10px}.fanliga button{min-height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:700 14px var(--body);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.fanliga button[aria-pressed="true"]{background:var(--mark);border-color:var(--mark);color:#1d2a26}.fanliga i{font:800 10px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;background:#FF9C80;color:#1d2a26;font-style:normal}
 .pushc{padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
 .pushh{display:flex;align-items:center;gap:12px}.pushh>span,.pushp>span{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.pushh small,.pushp small{color:var(--muted);font-size:12px}
 .pushsw{width:52px;height:30px;border-radius:15px;border:0;background:var(--line);position:relative;padding:0;flex-shrink:0;cursor:pointer}.pushsw:disabled{opacity:.6}
@@ -1992,7 +1994,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
 </nav>
 <nav class="subnav" data-for="qn" aria-label="Retas" hidden>
-  <button aria-current="page" data-tab="nflq">Quiniela NFL</button><button data-tab="qmx">Liga MX</button><button data-tab="nbaq5">Quinteta</button><button data-tab="fan">Champions</button>
+  <button aria-current="page" data-tab="nflq">Quiniela NFL</button><button data-tab="qmx">Liga MX</button><button data-tab="nbaq5">Quinteta</button><button data-tab="fan">Fantasy</button>
 </nav>
 <nav class="subnav" data-for="mas" aria-label="Más deportes" hidden>
   <button aria-current="page" data-tab="f1">Fórmula 1</button><button data-tab="tenis">Tenis</button>
@@ -2141,7 +2143,8 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div id="qmxBody"></div>
 </section>
 <section class="panel hidden" id="fan">
-  <div class="headrow"><h2>Fantasy Champions</h2></div>
+  <div class="headrow"><h2 id="fanTit">Fantasy Champions</h2></div>
+  <div class="fanliga" id="fanLiga" role="group" aria-label="Torneo del fantasy"><button data-fl="ucl" aria-pressed="true">Champions</button><button data-fl="mx" aria-pressed="false">Liga MX <i>nuevo</i></button></div>
   <div class="qview" id="fanView" role="tablist"><button role="tab" aria-selected="true" data-fv="once">Mi once</button><button role="tab" aria-selected="false" data-fv="puntos">Puntos</button><button role="tab" aria-selected="false" data-fv="grupos">Grupos</button><button role="tab" aria-selected="false" data-fv="general">General</button></div>
   <div id="fanBody"></div>
 </section>
@@ -6581,7 +6584,16 @@ const fanLs=()=>{try{return JSON.parse(localStorage.getItem(FAN.K)||"{}")||{};}c
 const fanLsSet=o=>{try{localStorage.setItem(FAN.K,JSON.stringify(o));}catch(e){}};
 const fanIds=()=>{try{return (JSON.parse(localStorage.getItem(FAN.GK)||"[]")||[]).filter(x=>typeof x==="string");}catch(e){return [];}};
 const fanSetIds=L=>{try{localStorage.setItem(FAN.GK,JSON.stringify([...new Set(L)]));}catch(e){} if(typeof acctPush==="function") acctPush();};
-const fanSlug=()=>`UCL${FAN.D.s}`, fanJid=k=>`${fanSlug()}-${k}`;
+const fanSlug=()=>FAN.D.slug||`UCL${FAN.D.s}`, fanJid=k=>`${fanSlug()}-${k}`;
+// Fantasy Liga MX (29 oct 2026): el mismo juego con jugadores de Liga MX (datos/fan_mx.json). Se elige arriba (Champions / Liga MX);
+// los onces de los dos van en la misma colección fan_ucl con su propio torneo (s = "UCL2026" o "MXA2026"). Grupos: los mismos.
+const FAN_CFG={ucl:{arch:"fan_ucl.json",est:"jugadores_ucl.json",nom:"Fantasy Champions",corto:"la Champions"},mx:{arch:"fan_mx.json",est:"jugadores_mx.json",nom:"Fantasy Liga MX",corto:"el torneo"}};
+FAN.L=(()=>{ try{ return localStorage.getItem("pz_fan_liga")==="mx"?"mx":"ucl"; }catch(e){ return "ucl"; } })();
+const fanNom=()=>FAN_CFG[FAN.L].nom;
+function fanLigaPinta(){ const t=$("#fanTit"); if(t) t.textContent=fanNom(); document.querySelectorAll("#fanLiga [data-fl]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.fl===FAN.L))); }
+function fanLigaPon(L){ if(L===FAN.L||!FAN_CFG[L]) return; FAN.L=L; try{ localStorage.setItem("pz_fan_liga",L); }catch(e){}
+  Object.assign(FAN,{D:null,P:null,t:0,sel:null,eq:null,c:null,j:null,tab:null,nube:0,est:null,tot:null,cambiar:null,pick:null}); fanLigaPinta(); pzTrack("fan_liga",{l:L}); fanRender(); }
+document.addEventListener("click",ev=>{ const b=ev.target.closest?.("#fanLiga [data-fl]"); if(b) fanLigaPon(b.dataset.fl); });
 const fanJ=()=>Object.entries(FAN.D.j).sort((a,b)=>a[1].pr-b[1].pr).map(([k])=>k).filter((k,i,L)=>i>=L.indexOf(FAN.D.desde));
 const fanAbierta=()=>fanJ().find(k=>FAN.D.j[k].pr>Date.now()/1000)||null;
 const fanCerradas=()=>fanJ().filter(k=>FAN.D.j[k].pr<=Date.now()/1000);
@@ -6590,9 +6602,10 @@ const fanEq=tid=>FAN.D.eq[tid]||["","",""];
 const fanCuando=ts=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"long",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000));
 async function fanCarga(){
   if(FAN.D&&Date.now()-FAN.t<10*60e3) return FAN.D;
-  const [D,P]=await Promise.all([fetch(`datos/fan_ucl.json?v=${Math.floor(Date.now()/6e5)}`).then(r=>r.ok?r.json():null).catch(()=>null),
-    FAN.P?Promise.resolve(FAN.P):fetch("datos/jugadores_ucl.json").then(r=>r.ok?r.json():null).catch(()=>null)]);
-  if(!D) return null;
+  const C=FAN_CFG[FAN.L], L0=FAN.L;
+  const [D,P]=await Promise.all([fetch(`datos/${C.arch}?v=${Math.floor(Date.now()/6e5)}`).then(r=>r.ok?r.json():null).catch(()=>null),
+    FAN.P?Promise.resolve(FAN.P):fetch(`datos/${C.est}`).then(r=>r.ok?r.json():null).catch(()=>null)]);
+  if(!D||L0!==FAN.L) return L0!==FAN.L?FAN.D:null;
   D.jm=Object.fromEntries(D.jug.map(r=>[String(r[0]),{id:String(r[0]),n:r[1],tid:String(r[2]),pos:r[3],p:r[4]}]));
   FAN.D=D; FAN.P=P; FAN.t=Date.now();
   FAN.est=Object.fromEntries((P?.filas||[]).map(r=>[String(r.id),r]));
@@ -6641,7 +6654,8 @@ async function fanRender(){
   const box=$("#fanBody"); if(!box) return;
   document.querySelectorAll("#fanView button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.fv===FAN.vista)));
   if(!FAN.D) box.innerHTML=pzSkel(3);
-  const D=await fanCarga(); if(!D){ box.innerHTML=`<p class="note">El Fantasy de la Champions aparece en la próxima actualización.</p>`; return; }
+  fanLigaPinta();
+  const D=await fanCarga(); if(!D){ box.innerHTML=`<p class="note">El ${fanNom()} aparece en la próxima actualización.</p>`; return; }
   fanNube(); fanJoinRender();
   if(typeof acctOk==="function"&&acctOk()&&!FAN.hash) FAN.hash=await q5Hash(ACCT.user.uid);
   if(FAN.vista==="once") return fanOnce();
@@ -6677,7 +6691,7 @@ function fanLista(){
     .sort((a,b)=>(FAN.tot[b.id]||0)-(FAN.tot[a.id]||0)||b.p-a.p).slice(0,120);
   return `<div class="fanpick"><div class="fanpickh"><b>${fuera?`Cambiar a ${fanEsc(fanJug(fuera).n)}`:`Escoge ${FAN_POSL[p].toLowerCase()}`}</b><button class="q5link" data-fanact="cerrar">Cerrar</button></div>
     <input id="fanQ" type="search" placeholder="Busca jugador o equipo" value="${fanEsc(FAN.q||"")}" aria-label="Buscar jugador">
-    <p class="note" style="margin:6px 0">Te quedan ${resto.toFixed(1)} · ordenados por los puntos que llevan en la Champions</p>
+    <p class="note" style="margin:6px 0">Te quedan ${resto.toFixed(1)} · ordenados por los puntos que llevan en ${FAN_CFG[FAN.L].corto}</p>
     <div class="fanlist">${L.map(J=>{ const ya=E.includes(J.id), no=ya||J.p>resto+1e-9||(cnt[J.tid]||0)>=3, s=FAN.est[J.id];
       const bj=FAN.D.baja?.[J.id], det=(bj?`Baja: ${bajaEs(bj[0],bj[1])} · `:"")+(s?[s.g?`${s.g} gol${s.g>1?"es":""}`:"",s.as?`${s.as} asist.`:"",s.cs&&"GD".includes(J.pos)?`${s.cs} en cero`:"",s.min?`${s.min}'`:""].filter(Boolean).join(" · "):"Sin minutos en la Champions");
       return `<button data-fanadd="${J.id}"${no?' class="no" disabled':""}><span class="fanf">${fanEq(J.tid)[2]?`<img src="${fanEq(J.tid)[2]}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:""}</span><span><b>${fanEsc(J.n)}</b><small${bj?' class="fanbaja"':""}>${fanEsc(fanEq(J.tid)[1])} · ${fanEsc(det)}</small></span><b>${J.p.toFixed(1)}</b><b class="y">${FAN.tot[J.id]||0}</b></button>`; }).join("")||`<p class="note">Nadie con ese nombre.</p>`}</div></div>`;
@@ -6757,7 +6771,7 @@ async function fanGrupos(){
   const g=G.find(x=>x.id===FAN.tab);
   box.innerHTML=`${G.length?`<div class="hseg" style="display:inline-flex;flex-wrap:wrap;margin:0 0 10px">${G.map(x=>`<button data-fant="${x.id}" aria-pressed="${x.id===FAN.tab}">${acctEsc(x.nombre)}</button>`).join("")}</div>`:`<p class="note">Todavía no estás en ningún grupo de Fantasy.</p>`}
     ${g?chatSeg(FAN.gv||"tabla","data-fangv"):""}<div id="fanGrTabla">${g?pzSkel(2):""}</div>
-    ${g?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» del Fantasy Champions en La Pizarra: https://lapizarra.mx/?fang=${g.id}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-fancopy="${g.id}">Copiar link</button> · <button class="q5link" data-fansalir="${g.id}">Salir</button></p>`:""}
+    ${g?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» de Fantasy en La Pizarra (Champions y Liga MX): https://lapizarra.mx/?fang=${g.id}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-fancopy="${g.id}">Copiar link</button> · <button class="q5link" data-fansalir="${g.id}">Salir</button></p>`:""}
     <div class="q5new"><input id="fanGrNom" maxlength="40" placeholder="Nombre del grupo" aria-label="Nombre del grupo"><button class="q5save" id="fanGrCrear">Crear grupo</button></div><p class="note" id="fanGrMsg"></p>`;
   if(!g) return;
   if((FAN.gv||"tabla")==="chat"){ const C=fanCerradas().filter(k=>FAN.D.j[k].ok), u=C[C.length-1], T=FAN.D.tabla||{}, sis=[];
@@ -6802,7 +6816,7 @@ async function fanGuarda(){
   if(!(typeof acctOk==="function"&&acctOk())){ fanOnce(); return; }
   try{ await ACCT.db.doc(`fan_ucl/${jid}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,jid,j:k,s:fanSlug(),eq:x.eq.map(Number),c:Number(x.c),a,t:grFV().serverTimestamp()});
     fanOnce(); $("#fanMsg").innerHTML=pzOk("Guardado en tu cuenta");
-    if(typeof amPublica==="function") amPublica(`fan-${jid}`,{g:"fan",tx:`ya armó su once para la ${(FAN.D.j[k]?.n||"jornada").toLowerCase()}`,big:"XI",det:"Fantasy Champions · su once se ve cuando cierre"}); }
+    if(typeof amPublica==="function") amPublica(`fan-${jid}`,{g:"fan",tx:`ya armó su once para la ${(FAN.D.j[k]?.n||"jornada").toLowerCase()}`,big:"XI",det:`${fanNom()} · su once se ve cuando cierre`}); }
   catch(e){ console.warn("Fantasy: no se guardó",e?.code||e); fanOnce(); $("#fanMsg").textContent="No se pudo guardar en tu cuenta (¿ya cerró la jornada?)."; }
 }
 document.addEventListener("click",async ev=>{
@@ -6823,7 +6837,7 @@ document.addEventListener("click",async ev=>{
     FAN.pick=null; FAN.cambiar=null; fanOnce(); return; }
   if(t.closest("#fanSave")){ fanGuarda(); return; }
   if(t.closest("#fanShare")&&FAN.share){ const {k,total,m,pts}=FAN.share, best=[...m.eq].sort((a,b)=>pts(b)-pts(a))[0], J=fanJug(best), T=Object.entries(FAN.D.tabla||{}).sort((a,b)=>b[1].t-a[1].t), i=T.findIndex(([h])=>h===FAN.hash);
-    pzCompartir({titulo:`Fantasy Champions · ${FAN.D.j[k].n}`,grande:String(total??0),sub:"puntos",tema:"#3b5f8a",gx:1080,
+    pzCompartir({titulo:`${fanNom()} · ${FAN.D.j[k].n}`,grande:String(total??0),sub:"puntos",tema:"#3b5f8a",gx:1080,
       lineas:[`Mi figura: ${J?J.n:""}${m.c===best?" (capitán)":""} · ${pts(best)} pts`],stats:[i>=0?[`${i+1}º`,`de ${T.length} en la general`]:null,[String(FAN.D.tabla?.[FAN.hash]?.t??total??0),"puntos en total"]].filter(Boolean)},`fantasy-${k}`); return; }
   if(t.closest("#fanPrev")||t.closest("#fanNext")){ const C=fanTodas().filter(k=>FAN.D.j[k].pr<=Date.now()/1000); const i=C.indexOf(FAN.vj)+(t.closest("#fanPrev")?-1:1); FAN.vj=C[Math.max(0,Math.min(C.length-1,i))]; fanPuntos(); return; }
   const tb=t.closest("[data-fant]"); if(tb){ FAN.tab=tb.dataset.fant; fanGrupos(); return; }
@@ -6849,10 +6863,10 @@ document.addEventListener("input",ev=>{ if(ev.target.id!=="fanQ") return; FAN.q=
 async function fanJoinRender(){
   const id=FAN.join; let el=$("#fanJoin"); if(!id){ el?.remove(); return; }
   if(!el){ el=document.createElement("div"); el.id="fanJoin"; el.className="qgate"; el.style.maxWidth="640px"; $("#fanBody").before(el); }
-  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo del Fantasy Champions</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
+  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de Fantasy</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
   if(fanIds().includes(id)){ FAN.join=pzInv('fan',null); el.remove(); return; }
   let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); return null; });
-  el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo del Fantasy Champions: tabla y mano a mano cada jornada.</span><span><button class="btn" id="fanUnir">Unirme</button> <button class="q5link" id="fanNoUnir">Ahora no</button></span>`
+  el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo de Fantasy (Champions y Liga MX): tabla y mano a mano cada jornada.</span><span><button class="btn" id="fanUnir">Unirme</button> <button class="q5link" id="fanNoUnir">Ahora no</button></span>`
     :`<b>No pudimos abrir la invitación</b><span>${errQ?`Código: ${acctEsc(errQ)}. `:""}Pide a quien te invitó un link nuevo.</span><button class="q5link" id="fanNoUnir">Cerrar</button>`;
 }
 // ---------- Más deportes: Fórmula 1 y tenis (27 oct 2026) ----------
@@ -7364,7 +7378,7 @@ function vidaCierreDatos(){
   const LL=D.qmx?.L; if(LL?.pr&&LL.pr>now&&(LL.sem||[]).length===8){ const P=qmxMios("llave").p||{}, h=(P.q||[]).filter(x=>x!=null).length+(P.s||[]).filter(x=>x!=null).length+(P.c!=null?1:0);
     R.push({k:"llave",nom:"Llave de la Liguilla",j:"Liguilla",id:qmxJid("llave"),pr:LL.pr,falta:LL.pr-now,hechos:h,tot:7,pend:7-h,juega:Object.keys(qmxLs()).length>0}); }
   if(FAN.D&&Object.keys(fanLs()).length){ const k=fanAbierta(); if(k){ const m=fanMio(k), baja=(m?.eq||[]).filter(id=>FAN.D.baja?.[id]).length, J=FAN.D.j[k];
-    R.push({k:"fan",nom:"Fantasy Champions",j:J.n||k,id:"fan-"+k,pr:J.pr,falta:J.pr-now,hechos:m?1:0,tot:1,pend:m?0:1,baja,juega:true}); } }
+    R.push({k:"fan",nom:fanNom(),j:J.n||k,id:"fan-"+k,pr:J.pr,falta:J.pr-now,hechos:m?1:0,tot:1,pend:m?0:1,baja,juega:true}); } }
   return R;
 }
 const vidaNivel=f=>f<=900?3:f<=7200?2:f<=86400?1:0;
@@ -7517,7 +7531,7 @@ function vidaSlides(){
   if(D.week&&typeof qnRecord==="function") for(const m of ["su","ats"]){ const R=qnRecord(m,D.week); if(R.w+R.l+R.p){ const T=qnRecord(m);
     S.push({eti:"Quiniela NFL",grande:`${R.w}-${R.l}`,txt:`en la semana ${D.week} ${m==="ats"?"contra el spread":"sin spread"}`,sub:`Temporada: ${qnRecTxt(T)}`,c:"#7FB8E8",fondo:"#1c3a5e",tam:118}); break; } }
   if(G.gen) S.push({eti:"En la general",grande:`${G.gen.pos}º`,txt:`de ${G.gen.de} en la Quiniela Liga MX`,sub:`${G.gen.de>2?`Mejor que el ${Math.round((G.gen.de-G.gen.pos)/(G.gen.de-1)*100)}% · `:""}${G.gen.pts} puntos`,c:"#FF9C80",fondo:"#8a4a3a",tam:130});
-  if(G.fan) S.push({eti:"Fantasy Champions",grande:`${G.fan.pts} pts`,txt:`en la ${G.fan.n.toLowerCase()}`,sub:`${G.fan.pos}º de ${G.fan.de} · ${G.fan.tot} en total`,c:"#7FB8E8",fondo:"#2f5a8a",tam:96});
+  if(G.fan) S.push({eti:fanNom(),grande:`${G.fan.pts} pts`,txt:`en la ${G.fan.n.toLowerCase()}`,sub:`${G.fan.pos}º de ${G.fan.de} · ${G.fan.tot} en total`,c:"#7FB8E8",fondo:"#2f5a8a",tam:96});
   const eqs=Object.keys(FAV.eq).filter(k=>k[0]==="f"&&D.eq_info?.[k.slice(1)]?.f).map(k=>[FAV.eq[k].n,D.eq_info[k.slice(1)].f.slice(-1)]);
   if(eqs.length){ const c={G:0,E:0,P:0}; eqs.forEach(([,r])=>c[r]!=null&&c[r]++);
     S.push({eti:"Tus equipos",grande:`${c.G}G · ${c.E}E · ${c.P}P`,txt:eqs.slice(0,4).map(([n])=>esTeam(n)).join(", ")+(eqs.length>4?` y ${eqs.length-4} más`:""),sub:c.P?"En su último partido":"Ninguno perdió en su último partido",c:"#F2D466",fondo:(vidaColFav()||["#3d6b5a"])[0],tam:64}); }
@@ -8287,7 +8301,7 @@ async function duCarga(forzar){
   return DU.p;
 }
 const duRecibidos=()=>(DU.L||[]).filter(d=>d.est==="pend"&&d.de!==ACCT.user?.uid&&d.ci>Date.now()/1000);
-async function duFanD(){ if(FAN.D) return FAN.D; if(DU.fan&&Date.now()-DU.ft<10*60e3) return DU.fan;
+async function duFanD(){ if(FAN.D&&FAN.L==="ucl") return FAN.D; if(DU.fan&&Date.now()-DU.ft<10*60e3) return DU.fan;
   DU.fan=await fetch(`datos/fan_ucl.json?v=${Math.floor(Date.now()/6e5)}`).then(r=>r.ok?r.json():null).catch(()=>null); DU.ft=Date.now(); return DU.fan; }
 // Lo que se puede retar ahorita: la siguiente jornada de cada juego que todavía no empieza
 async function duOpciones(){

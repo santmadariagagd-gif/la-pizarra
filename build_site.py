@@ -2281,7 +2281,14 @@ def _fan_jkey(f):
     if m: return "L"+m.group(1)
     base={"knockout round play-offs":"PO","round of 16":"OF","quarter-finals":"CF","semi-finals":"SF","final":"FI"}.get(rd.lower().strip())
     return base
-FAN_NOM={"PO":"Play-off","OF":"Octavos","CF":"Cuartos","SF":"Semifinales","FI":"Final"}
+FAN_NOM={"PO":"Play-off","PI":"Play-in","OF":"Octavos","CF":"Cuartos","SF":"Semifinales","FI":"Final"}
+# Fantasy Liga MX (29 oct 2026): el mismo juego con los jugadores de Liga MX. Jornadas J1…J17 y la Liguilla (play-in, cuartos,
+# semis y final, ida y vuelta). Se estrena con la jornada que siga cuando se publique por primera vez (se guarda en "desde").
+FAN_MX_TIER={"A":{2287,2281,2295,2279,2282},"B":{2278,2286,2292,2289,2283}}
+def _fan_jkey_mx(f):
+    if af_regular(f): return "J"+str((f["league"].get("round") or "").rsplit("-",1)[-1].strip())
+    rd=str((f.get("league") or {}).get("round") or "").lower()
+    return "PI" if "play" in rd else "CF" if "quarter" in rd else "SF" if "semi" in rd else "FI" if "final" in rd else None
 def _fan_pts(pos,s,cs_eq,og=0):
     g=s.get("games") or {}; mins=g.get("minutes") or 0
     if mins<=0: return None
@@ -2293,50 +2300,62 @@ def _fan_pts(pos,s,cs_eq,og=0):
 def _fan_ts(t):
     try: return t.timestamp() if hasattr(t,"timestamp") else float(t)/(1000 if float(t)>1e11 else 1)
     except Exception: return None
-def _fan_ucl():
+def _fan_ucl(liga="ucl"):
     import hashlib
-    if 'AF_FX' not in globals() or 'ucl' not in AF_FX: print("Fantasy Champions: sin partidos"); return
-    F=[f for f in AF_FX['ucl'][0] if _fan_jkey(f)]
+    MX=liga=="mx"; NOMF="Fantasy Liga MX" if MX else "Fantasy Champions"; LP="J" if MX else "L"
+    if 'AF_FX' not in globals() or liga not in AF_FX: print(NOMF+": sin partidos"); return
+    if MX:
+        _F,torneo=AF_FX['mx']
+        if not torneo: return
+        F=[f for f in _F if af_torneo(f)==torneo and _fan_jkey_mx(f)]
+        jkey=_fan_jkey_mx
+    else:
+        F=[f for f in AF_FX['ucl'][0] if _fan_jkey(f)]; jkey=_fan_jkey
     if not F: return
     s=(F[0].get("league") or {}).get("season")
-    ruta=os.path.join(aqui,'docs','datos','fan_ucl.json')
+    slug=f"MX{torneo[0]}{min(datetime.fromtimestamp(f['fixture']['timestamp']).year for f in F if af_regular(f))}" if MX else f"UCL{s}"
+    ruta=os.path.join(aqui,'docs','datos','fan_mx.json' if MX else 'fan_ucl.json')
     try: P=json.load(open(ruta,encoding='utf-8'))
     except Exception: P={}
-    if P.get("s")!=s: P={}
+    if P.get("s")!=s or (MX and P.get("slug")!=slug): P={}
     # jornadas: fase de liga por número; eliminatorias por ronda y semana (ida / vuelta)
     G={}
     for f in F:
-        k=_fan_jkey(f)
-        if not k.startswith("L"):
+        k=jkey(f)
+        if not k.startswith(LP):
             sem=datetime.fromtimestamp(f["fixture"]["timestamp"],tz=ZoneInfo("UTC")).isocalendar()
             k=f"{k}-{sem[0]}{sem[1]:02d}"
         G.setdefault(k,[]).append(f)
     ko={}
-    for k in sorted([k for k in G if not k.startswith("L")],key=lambda k:min(f["fixture"]["timestamp"] for f in G[k])):
+    for k in sorted([k for k in G if not k.startswith(LP)],key=lambda k:min(f["fixture"]["timestamp"] for f in G[k])):
         b=k.split("-")[0]; ko[b]=ko.get(b,0)+1; ko[k]=(b,ko[b])
+    nko={b:sum(1 for k in ko if isinstance(ko[k],tuple) and ko[k][0]==b) for b in FAN_NOM}
     J={}
     for k,L in G.items():
         vivos=[f for f in L if (f["fixture"].get("status") or {}).get("short") not in ("PST","CANC","ABD")]
         pr=min(f["fixture"]["timestamp"] for f in (vivos or L)); fin=all((f["fixture"].get("status") or {}).get("short") in AF_FIN|{"PST","CANC","ABD"} for f in L)
-        n=f"Jornada {k[1:]}" if k.startswith("L") else (FAN_NOM[ko[k][0]] if ko[k][0]=="FI" else f"{FAN_NOM[ko[k][0]]} · {'ida' if ko[k][1]==1 else 'vuelta'}")
+        n=f"Jornada {k[1:]}" if k.startswith(LP) else (FAN_NOM[ko[k][0]] if (nko.get(ko[k][0],0)<=1 if MX else ko[k][0]=="FI") else f"{FAN_NOM[ko[k][0]]} · {'ida' if ko[k][1]==1 else 'vuelta'}")
         J[k]=dict(n=n,pr=pr,fin=fin,f=[f["fixture"]["id"] for f in L])
     orden=sorted(J,key=lambda k:J[k]["pr"])
-    desde=orden.index(FAN_DESDE) if FAN_DESDE in orden else 0
+    if MX:   # se estrena con la primera jornada que todavía no empieza cuando se publica por primera vez
+        DESDE=P.get("desde") or next((k for k in orden if J[k]["pr"]>time.time()+3600),orden[-1])
+    else: DESDE=FAN_DESDE
+    desde=orden.index(DESDE) if DESDE in orden else 0
     # plantillas de los equipos (una vez por semana)
-    tids=sorted({f["teams"][x]["id"] for f in F if _fan_jkey(f).startswith("L") for x in ("home","away")})
+    tids=sorted({f["teams"][x]["id"] for f in F if jkey(f).startswith(LP) for x in ("home","away")})
     eq=P.get("eq") or {}; jug={str(r[0]):r for r in (P.get("jug") or [])}; tab0=P.get("tabla") or {}
-    for k,v in FAN_POS_FIX.items():
+    for k,v in ({} if MX else FAN_POS_FIX).items():
         if k in jug: jug[k][3]=v
     viejo=(time.time()-(P.get("sq_t") or 0))>6*86400
     if viejo or not jug:
-        try: cods=af_codigos(2,s)
+        try: cods={k:v[1] for k,v in AF_EQ.items()} if MX else af_codigos(2,s)
         except Exception: cods={}
         nuevos={}
         for tid in tids:
             try: R=af("players/squads",team=tid)
-            except Exception as ex: print("Fantasy Champions: plantilla",tid,ex); continue
+            except Exception as ex: print(NOMF+": plantilla",tid,ex); continue
             for x in R:
-                t=x.get("team") or {}; eq[str(tid)]=[AF_NOMBRE.get(t.get("name"),t.get("name") or ""),cods.get(tid) or (t.get("name") or "XXX")[:3].upper(),t.get("logo") or ""]
+                t=x.get("team") or {}; eq[str(tid)]=[AF_EQ[tid][0] if MX and tid in AF_EQ else AF_NOMBRE.get(t.get("name"),t.get("name") or ""),cods.get(tid) or (t.get("name") or "XXX")[:3].upper(),t.get("logo") or ""]
                 for p in x.get("players") or []:
                     nuevos[str(p["id"])]=[p["id"],(p.get("name") or "").strip(),tid,_fan_pos(p.get("position")),None]
         if nuevos:
@@ -2345,11 +2364,12 @@ def _fan_ucl():
             jug=nuevos; P["sq_t"]=time.time()
     # precios
     ahora=time.time(); actual=next((k for k in orden if J[k]["pr"]>ahora),orden[-1])
-    repreciar=(not actual.startswith("L")) and not P.get("rep_ko")
+    repreciar=(not actual.startswith(LP)) and not P.get("rep_ko")
     def hist(nombre):
         try: return {r["id"]:r for r in json.load(open(os.path.join(aqui,'docs','datos',nombre),encoding='utf-8')).get("filas",[])}
         except Exception: return {}
-    H1=hist('jugadores_ucl.json'); H0=hist(f'jugadores_ucl_{s-1}.json')
+    if MX: H1=hist('jugadores_mx.json'); H0=hist(f'jugadores_mx_{s-1}_Clausura.json' if torneo=="Apertura" else f'jugadores_mx_{s}_Apertura.json')
+    else: H1=hist('jugadores_ucl.json'); H0=hist(f'jugadores_ucl_{s-1}.json')
     def est(r,pos):
         if not r or not r.get("ap"): return None,0
         ap=r["ap"]; mins=r.get("min") or 0
@@ -2358,7 +2378,8 @@ def _fan_ucl():
         return p/ap,ap
     nombre_eq=lambda tid:(eq.get(str(tid)) or [""])[0]
     def calidad(pid,tid,pos):   # puntos esperados por partido, mezclados con un previo según el nivel del equipo
-        tier="A" if nombre_eq(tid) in FAN_TIER["A"] else "B" if nombre_eq(tid) in FAN_TIER["B"] else "C"
+        if MX: tier="A" if int(tid) in FAN_MX_TIER["A"] else "B" if int(tid) in FAN_MX_TIER["B"] else "C"
+        else: tier="A" if nombre_eq(tid) in FAN_TIER["A"] else "B" if nombre_eq(tid) in FAN_TIER["B"] else "C"
         prior={"A":3.0,"B":2.5,"C":2.0}[tier]
         a,n1=est(H1.get(pid),pos); b,n0=est(H0.get(pid),pos)
         num=prior*3; den=3
@@ -2385,7 +2406,7 @@ def _fan_ucl():
         D=[]
         try:
             for i in range(0,len(fin),20): D+=af("fixtures",ids="-".join(str(f["fixture"]["id"]) for f in fin[i:i+20]))
-        except Exception as ex: _pz_err("Fantasy Champions: partidos de "+k,ex); continue
+        except Exception as ex: _pz_err(NOMF+": partidos de "+k,ex); continue
         T={}
         for f in D:
             gl=f.get("goals") or {}; h=f["teams"]["home"]["id"]; a=f["teams"]["away"]["id"]
@@ -2399,21 +2420,21 @@ def _fan_ucl():
                     pid=pl["player"]["id"]; r=jug.get(str(pid)); pos=r[3] if r else str(((pl.get("statistics") or [{}])[0].get("games") or {}).get("position") or "M")[:1]
                     if pos not in FAN_PG: pos="M"
                     try: v=_fan_pts(pos,(pl.get("statistics") or [{}])[0] or {},rec.get(tid,1)==0,og.get(pid,0))
-                    except Exception as ex: _pz_err(f"Fantasy Champions: puntos de {pid} en {k}",ex); v=None
+                    except Exception as ex: _pz_err(f"{NOMF}: puntos de {pid} en {k}",ex); v=None
                     if v: T[str(pid)]=v
         pts[k]=T
         if x["fin"]: x["ok"]=1
     # bajas (27 oct 2026): lesionados y suspendidos que API-Football reporta para la jornada que viene (o la última)
     try:
         ia=orden.index(actual); fx_b={f for k in orden[max(0,ia-1):ia+1] for f in J[k]["f"]}; baja={}
-        for x in af("injuries",league=2,season=s):
+        for x in af("injuries",league=262 if MX else 2,season=s):
             fid=(x.get("fixture") or {}).get("id"); pid=str((x.get("player") or {}).get("id") or "")
             if fid not in fx_b or not pid: continue
             ts=(x.get("fixture") or {}).get("timestamp") or 0
             if pid not in baja or ts>baja[pid][2]: baja[pid]=[(x["player"].get("reason") or "")[:40],(x["player"].get("type") or "")[:20],ts]
         P["baja"]=baja
-    except Exception as ex: _pz_err("Fantasy Champions: bajas",ex)
-    P.update(s=s,desde=FAN_DESDE,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j={k:J[k] for k in orden},eq=eq,
+    except Exception as ex: _pz_err(NOMF+": bajas",ex)
+    P.update(s=s,slug=slug,nom=NOMF,desde=DESDE,al=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),j={k:J[k] for k in orden},eq=eq,
              jug=sorted(jug.values(),key=lambda r:(-r[4],r[1])),pts=pts)
     # tabla general (con la llave de administrador) y jornadas abiertas en Firebase
     sa=os.environ.get('FIREBASE_SA','').strip()
@@ -2422,7 +2443,7 @@ def _fan_ucl():
             import firebase_admin
             from firebase_admin import credentials, firestore
             if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
-            db=firestore.client(); slug=f"UCL{s}"
+            db=firestore.client()
             for k in [k for k in orden[desde:] if J[k]["pr"]>ahora][:2]:
                 db.collection('fan_jornadas').document(f"{slug}-{k}").set(dict(s=slug,j=k,primero=datetime.fromtimestamp(J[k]["pr"],tz=ZoneInfo("UTC"))))
             U={}
@@ -2462,18 +2483,19 @@ def _fan_ucl():
                     h=hashlib.sha256(uid.encode()).hexdigest()[:12]
                     for k,p in (tabla.get(h,{}).get("j") or {}).items():
                         if not J[k].get("fin") or ahora-J[k]["pr"]>6*86400: continue
-                        if _feed_post(db,uid,f"fanr-{slug}-{k}","fan",f"hizo {p} puntos en la {str(J[k].get('n') or k).lower()} del Fantasy Champions",f"{p} pts","Fantasy Champions"): pub+=1
+                        if _feed_post(db,uid,f"fanr-{slug}-{k}","fan",f"hizo {p} puntos en la {str(J[k].get('n') or k).lower()} del {NOMF}",f"{p} pts",NOMF): pub+=1
                 if pub: print(f"Amigos: {pub} resultados del Fantasy publicados")
             except Exception as ex: _pz_err("Amigos: resultados del Fantasy",ex)
-            print(f"Fantasy Champions: {len(tabla)} equipos en la tabla")
-        except Exception as ex: _pz_err("Fantasy Champions: Firebase",ex)
+            print(f"{NOMF}: {len(tabla)} equipos en la tabla")
+        except Exception as ex: _pz_err(NOMF+": Firebase",ex)
     os.makedirs(os.path.dirname(ruta),exist_ok=True)
     json.dump(P,open(ruta,'w',encoding='utf-8'),ensure_ascii=False,separators=(",",":"))
-    print(f"Fantasy Champions: {len(jug)} jugadores, {len(eq)} equipos; próxima: {J[actual]['n']}; jornadas con puntos: {[k for k in pts]}")
-try:
-    _fan_ucl()
-except Exception as ex:
-    _pz_err("Fantasy Champions: no se pudo preparar",ex)
+    print(f"{NOMF}: {len(jug)} jugadores, {len(eq)} equipos; desde {DESDE}; próxima: {J[actual]['n']}; jornadas con puntos: {[k for k in pts]}")
+for _lf in ("ucl","mx"):
+    try:
+        _fan_ucl(_lf)
+    except Exception as ex:
+        _pz_err(f"Fantasy {_lf}: no se pudo preparar",ex)
 
 # ----- Reto del día (28 oct 2026) -----
 # Cada día una pregunta sobre el partido más atractivo (Champions, Liga MX, grandes de Europa o la NFL): quién gana, si habrá
