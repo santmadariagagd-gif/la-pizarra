@@ -1,1 +1,10 @@
-{"al": "2026-10-29T02:29Z", "errores": []}
+{
+ "al": "2026-10-29T02:40Z",
+ "errores": [
+  {
+   "donde": "Historia NFL",
+   "error": "int() argument must be a string, a bytes-like object or a real number, not 'dict'",
+   "traza": "Traceback (most recent call last):\n  File \"/home/runner/work/la-pizarra/la-pizarra/build_site.py\", line 2718, in _historia_eq\n    ult=int(S)-1\n        ^^^^^^\nTypeError: int() argument must be a string, a bytes-like object or a real number, not 'dict'\n"
+  }
+ ]
+}
