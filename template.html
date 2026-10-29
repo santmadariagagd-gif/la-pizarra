@@ -2254,6 +2254,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <section class="panel hidden" id="nbaq5">
   <div class="rjtop"><button class="rjback" data-rjback="1">‹ Retas</button><button class="rjcomo" data-rjcomo="q5" aria-expanded="false">¿Cómo se juega?</button></div><div class="rjcomobox" data-rjbox="q5" hidden></div>
   <h2>La Quinteta · NBA</h2>
+  <div class="qview" id="q5View" role="tablist"><button role="tab" aria-selected="true" data-q5v="jugar">Jugar</button><button role="tab" aria-selected="false" data-q5v="tabla">Tabla</button><button role="tab" aria-selected="false" data-q5v="chat">Chat</button></div>
   <div id="q5Body"></div>
 </section>
 <section class="panel hidden" id="mxgoleo">
@@ -6200,7 +6201,25 @@ const q5PuedeCambiar=q=>nbaHoy()>=Q5_CAMBIOS&&q.c!==q5Mes();
 const q5Tramos=e=>[...(e.p||[]).map(([eq,d,h])=>({eq,d,h})),{eq:e.eq,d:e.d,h:null}];
 const q5PtsDe=(e,H)=>q5Tramos(e).reduce((s,t)=>s+t.eq.reduce((s2,k)=>s2+(H[k]||[]).filter(x=>x.fin&&x.gano&&x.f>=t.d&&(!t.h||x.f<t.h)).length,0),0);
 const q5MesTxt=m=>new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",month:"long"}).format(new Date(m+"-15T12:00:00Z"));
+// Retas v2 (29 oct 2026): La Quinteta también con Jugar · Tabla · Chat
 async function q5Render(){
+  const v=Q5.vista||"jugar"; document.querySelectorAll("#q5View button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.q5v===v)));
+  if(v!=="chat"&&$("#q5ChatBox")) chatCierra();
+  if(v==="tabla"){ q5JoinRender(); $("#q5Body").innerHTML=`<div id="q5Tabla"></div><h3 style="margin:22px 0 6px">Tus grupos</h3><div id="q5Grp"></div>${q5Cuenta()}`; q5Tabla(); return q5GrRender(); }
+  if(v==="chat") return q5Chat();
+  return q5Jugar();
+}
+async function q5Chat(){ const box=$("#q5Body");
+  if(!(typeof acctOk==="function"&&acctOk())){ box.innerHTML=`<div class="qgate"><b>El chat es de tus grupos</b><span>Entra con tu cuenta para crear un grupo con tus amigos o unirte a uno.</span><button class="btn" data-acct>Entrar</button></div>`; return; }
+  const G=[]; for(const id of Q5.ids()){ const I=await grInfo(id).catch(()=>null); if(I) G.push(I); }
+  if(!G.length){ box.innerHTML=`<p class="note">Todavía no estás en ningún grupo de La Quinteta. Créalo en <button class="alink" data-q5v="tabla">Tabla</button> y manda el link a tus amigos.</p>`; return; }
+  if(!G.some(g=>g.id===Q5.chat)) Q5.chat=G[0].id; const g=G.find(x=>x.id===Q5.chat);
+  box.innerHTML=`<div class="hseg rjchips">${G.map(x=>`<button data-q5chat="${x.id}" aria-pressed="${x.id===Q5.chat}">${acctEsc(x.nombre)}</button>`).join("")}</div><div id="q5ChatBox">${pzSkel(2)}</div>`;
+  chatAbre($("#q5ChatBox"),g,[]); }
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return; let b;
+  if((b=t.closest("[data-q5v]"))){ Q5.vista=b.dataset.q5v; window.scrollTo(0,Math.min(window.scrollY,200)); return q5Render(); }
+  if((b=t.closest("[data-q5chat]"))){ Q5.chat=b.dataset.q5chat; return q5Chat(); } });
+async function q5Jugar(){
   const box=$("#q5Body"); q5JoinRender(); await Promise.race([nbaEquipos(),new Promise(r=>setTimeout(r,2500))]);
   const lock=await Promise.race([nbaLock(),new Promise(r=>setTimeout(()=>r(+new Date("2026-10-20T23:00:00Z")),2500))]);
   const q=Q5.lee(), cerrado=Date.now()>=lock;
@@ -6290,10 +6309,8 @@ async function q5Mia(q,cerrado,lock){
     ${!cerrado?`<p><button class="q5link" id="q5Edit">Cambiar mi quinteta</button></p>`:q5PuedeCambiar(q)?`<p><button class="q5save" id="q5Cambio">Hacer mi cambio del mes</button></p>`:""}
     ${hayDatos?"":`<p class="note">ESPN no respondió para algún equipo; los puntos se completan al recargar.</p>`}
     ${acctOk&&acctOk()?`<p class="note" id="q5Nom">Apareces en la tabla como <b>${hoyEsc(q.a||q5AliasDef()||"Jugador")}</b> · <button class="q5link" id="q5NomBtn">Cambiar nombre</button></p>`:""}
-    <h3 style="margin:22px 0 6px">Tabla</h3><div id="q5Tabla"></div>
-    <h3 style="margin:22px 0 6px">Grupos de La Quinteta</h3><div id="q5Grp"></div>
+    <p><button class="q5save" data-q5v="tabla">Ver la tabla y tus grupos</button></p>
     ${q5Cuenta()}`;
-  q5Tabla(); q5GrRender();
 }
 // Tabla general y de grupos: quién juega lo publica GitHub (datos/q5.json, se actualiza cada mañana); los puntos se
 // calculan aquí con ESPN: victorias de la temporada (tabla de posiciones) o, si la quinteta empezó tarde, desde su fecha.
@@ -6692,7 +6709,7 @@ function rtIr(k){ pzTrack("retas_ir",{k}); window.scrollTo(0,0);
   if(k==="nflq"){ if(qnMode==="surv"){ qnMode=(()=>{ try{ const m=localStorage.getItem("pz_qmode"); return m==="su"?"su":"ats"; }catch(e){ return "ats"; } })(); } qnSetView("picks"); return showTab("nflq"); }
   if(k==="fan"||k==="fanucl"||k==="fanmx"){ if(k!=="fan"&&typeof fanLigaPon==="function"){ const L=k==="fanmx"?"mx":"ucl"; if(FAN.L!==L){ FAN.L=L; try{ localStorage.setItem("pz_fan_liga",L); }catch(e){} Object.assign(FAN,{D:null,P:null,t:0,sel:null,eq:null,c:null,j:null,nube:0}); } }
     FAN.vista="once"; return showTab("fan"); }
-  if(k==="q5") return showTab("nbaq5");
+  if(k==="q5"){ Q5.vista="jugar"; return showTab("nbaq5"); }
   if(k==="rd"){ showSport("hoy"); setTimeout(()=>$("#hoyRd")?.scrollIntoView({block:"center"}),300); } }
 document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return; let b;
   if((b=t.closest("[data-rtir]"))) return rtIr(b.dataset.rtir);
