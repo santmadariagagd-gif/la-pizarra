@@ -10652,7 +10652,7 @@ function ntPinta(){
 // ----- Avisos al teléfono (29 oct 2026) -----
 // Se pide permiso, Firebase Cloud Messaging da una clave de este aparato y se guarda en avisos_tk/{uid} (solo tú la lees).
 // El robot avisos.py (GitHub, cada 10 min) manda los avisos; sw.js los muestra aunque la página esté cerrada.
-const PUSH_K="pz_push", PUSH_P={eq:["Partidos de tus equipos","Cuando están por empezar y el resultado final"],gol:["Goles","Cada gol de tus equipos de fútbol"],soc:["Amigos","Solicitudes y comentarios en tus posts"],ret:["Retos","Cuando un amigo te reta a un duelo"]};
+const PUSH_K="pz_push", PUSH_P={eq:["Partidos de tus equipos","Cuando están por empezar y el resultado final"],gol:["Goles","Cada gol de tus equipos de fútbol"],soc:["Amigos","Solicitudes y comentarios en tus posts"],ret:["Retos","Cuando un amigo te reta a un duelo"],riv:["Sufrimiento ajeno","Cuando pierde el rival de toda la vida de tu equipo"]};
 const pushLs=()=>{ try{ return JSON.parse(localStorage.getItem(PUSH_K)||"{}")||{}; }catch(e){ return {}; } };
 const pushGuardaLs=o=>{ try{ localStorage.setItem(PUSH_K,JSON.stringify(o)); }catch(e){} };
 const pushIOS=()=>/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
@@ -10678,7 +10678,7 @@ async function pushToken(){
 }
 async function pushDoc(f){ const ref=ACCT.db.doc(`avisos_tk/${ACCT.user.uid}`); let d={}; try{ d=(await ref.get()).data()||{}; }catch(e){}
   const n=f(d); await ref.set({tk:n.tk,p:n.p,t:firebase.firestore.FieldValue.serverTimestamp()}); return n; }
-const PUSH_P0={eq:1,gol:1,soc:1,ret:1};
+const PUSH_P0={eq:1,gol:1,soc:1,ret:1,riv:1};
 async function pushActiva(){
   const per=await Notification.requestPermission(); if(per!=="granted") return per;   // se pide primero (en iPhone tiene que ser justo al picar)
   const tk=await pushToken(); if(!tk) throw new Error("sin clave");

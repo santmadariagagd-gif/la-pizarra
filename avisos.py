@@ -8,6 +8,8 @@ sus equipos favoritos (usuarios/{uid}.fav) y lo nuevo en Firebase, y manda notif
   · Goles (p.gol): cada gol de un partido de tus equipos de fútbol.
   · Amigos (p.soc): solicitudes de amistad, solicitudes aceptadas y comentarios en tus posts.
   · Retos (p.ret): cuando un amigo te reta a un duelo.
+  · Sufrimiento ajeno (p.riv): cuando pierde el rival de toda la vida de tu equipo (América-Pumas, Real Madrid-Barça…).
+Los textos cambian según cómo va el partido (remontadas, goles al final, goleadas, penales).
 
 Si hay un partido de tus equipos en juego, se queda revisando ~9 minutos (cada minuto) para que los goles lleguen rápido.
 Lo que ya se mandó se anota en sistema/avisos (solo GitHub lo lee) para no repetir.
@@ -51,6 +53,81 @@ def hora(ts):
 def corta(s, n=70):
     s = " ".join(str(s or "").split())
     return s if len(s) <= n else s[:n - 1] + "…"
+
+
+# ---------- Textos con personalidad (29 oct 2026) ----------
+# Cada aviso elige entre varias frases (siempre la misma para el mismo partido/persona, para no repetir al reintentar).
+def elige(semilla, opciones):
+    return opciones[int(hashlib.sha1(str(semilla).encode()).hexdigest(), 16) % len(opciones)]
+
+# Nombres cortos en español (API-Football los trae en inglés o largos)
+NOMBRES = {2287: "el América", 2286: "Pumas", 2278: "Chivas", 2283: "Atlas", 2295: "Cruz Azul", 2279: "Tigres", 2282: "Rayados",
+           2281: "Toluca", 2292: "Pachuca", 2289: "León", 2291: "Puebla", 2285: "Santos", 2288: "Necaxa", 2280: "Xolos",
+           541: "el Real Madrid", 529: "el Barça", 530: "el Atlético", 536: "el Sevilla", 543: "el Betis",
+           33: "el Manchester United", 40: "el Liverpool", 50: "el Manchester City", 42: "el Arsenal", 47: "el Tottenham", 45: "el Everton", 49: "el Chelsea",
+           505: "el Inter", 489: "el Milan", 496: "la Juventus", 497: "la Roma", 487: "la Lazio", 157: "el Bayern", 165: "el Dortmund", 85: "el PSG", 81: "el Marsella"}
+def nombre(i, defecto):
+    n = NOMBRES.get(i)
+    return n[3:] if n and n.startswith("el ") else n[3:] if n and n.startswith("la ") else (n or defecto)
+def nombre_art(i, defecto):   # "el América", "la Juventus"
+    return NOMBRES.get(i) or defecto
+
+# Rivales de toda la vida (en los dos sentidos). f = fútbol (id de API-Football), n = NFL, b = NBA
+_PARES = [("f2287", "f2278"), ("f2287", "f2286"), ("f2287", "f2295"), ("f2278", "f2283"), ("f2279", "f2282"), ("f2286", "f2295"),
+          ("f541", "f529"), ("f541", "f530"), ("f536", "f543"), ("f33", "f40"), ("f33", "f50"), ("f42", "f47"), ("f40", "f45"),
+          ("f505", "f489"), ("f505", "f496"), ("f497", "f487"), ("f157", "f165"), ("f85", "f81"),
+          ("nKC", "nLV"), ("nDAL", "nPHI"), ("nDAL", "nWAS"), ("nGB", "nCHI"), ("nPIT", "nBAL"), ("nNE", "nNYJ"), ("nSF", "nSEA"),
+          ("bLAL", "bBOS"), ("bNYK", "bBOS"), ("bLAL", "bLAC"), ("bGSW", "bCLE")]
+RIVALES = {}
+for a, b in _PARES:
+    RIVALES.setdefault(a, set()).add(b); RIVALES.setdefault(b, set()).add(a)
+
+def titulo_gol(nuestro, nom, riv, yo, el, antes, peor, m, autogol, sem):
+    """yo/el: marcador ya con el gol; antes: diferencia antes del gol; peor: la peor diferencia que tuvimos."""
+    m = m or 0
+    N = nom.upper()
+    if nuestro:
+        if yo - el == 0: return elige(sem, [f"⚽ ¡EMPATA {N}! Aquí hay partido", f"⚽ ¡Gol de {nom}! Se empareja todo", f"⚽ ¡{N} lo empata! No estaba muerto"])
+        if yo > el and antes <= 0 and peor < 0: return elige(sem, [f"🔥 ¡LA REMONTADA! {nom} le da la vuelta", f"🔥 ¡{N} LO VOLTEÓ!", f"🔥 ¡De atrás para adelante! {nom} ya gana"])
+        if yo > el and antes == 0 and m >= 80: return elige(sem, [f"⚽ ¡GOL DE {N} AL {m}'! Que alguien detenga el reloj", f"⚽ ¡{N} lo gana al final! ¡Gol al {m}'!", f"⚽ ¡En el último suspiro! Gol de {nom}"])
+        if yo - el >= 3: return elige(sem, [f"⚽ ¡Otro de {nom}! Esto ya es goleada", f"⚽ ¡Y van {yo}! {nom} no tiene piedad", f"⚽ ¡Baile! Gol de {nom}"])
+        if m and m <= 5: return elige(sem, [f"⚽ ¡Tempranero! Gol de {nom} al {m}'", f"⚽ ¡Ni se habían acomodado! Gol de {nom}"])
+        return elige(sem, [f"⚽ ¡GOOOL DE {N}!", f"⚽ ¡Gol de {nom}! Grítalo", f"⚽ ¡GOL! {nom} pega primero" if yo == 1 and el == 0 else f"⚽ ¡GOL DE {N}!", f"⚽ ¡Gooool! Anota {nom}"])
+    if autogol: return elige(sem, [f"🤦 Autogol de {nom}…", f"🤦 Nos la metimos solos: autogol de {nom}"])
+    if yo - el == 0 and m >= 80: return elige(sem, [f"💔 {riv} lo empata al {m}'…", f"💔 Se nos escapó al final: empata {riv}"])
+    if yo < el and antes > 0: return elige(sem, [f"😱 {riv} le da la vuelta a {nom}", f"😱 Se voltea el partido: gana {riv}"])
+    if el - yo >= 3: return elige(sem, [f"🙈 Otro de {riv}. Mejor ni veas", f"🙈 {riv} ya va {el}-{yo}. Paciencia…"])
+    if m >= 85 and yo < el: return elige(sem, [f"💔 Gol de {riv} al {m}'. Duele", f"💔 {riv} anota al final. Ni modo"])
+    return elige(sem, [f"😬 Gol de {riv}", f"😬 Nos anotó {riv}. Respira", f"😬 Gol de {riv}. Todavía hay tiempo" if (m or 0) < 75 else f"😬 Gol de {riv}"])
+
+def titulo_final(nom, riv, yo, el, peor, mejor, py, pe, sem):
+    if py is not None and pe is not None and yo == el:
+        return f"😮‍💨 ¡{nom} gana en penales!" if py > pe else f"💔 Se fue en penales: {nom} cae {py}-{pe}"
+    if yo > el:
+        if yo - el >= 3: return elige(sem, [f"🔥 ¡Goleada de {nom}!", f"🔥 ¡{nom} dio cátedra! Ganó {yo}-{el}", f"🔥 ¡Bailó {nom}! Ganó {yo}-{el}"])
+        if peor < 0: return elige(sem, [f"🔥 ¡{nom} lo remontó y ganó!", f"🔥 ¡Remontada completa! Ganó {nom}"])
+        if yo - el == 1: return elige(sem, [f"😮‍💨 ¡Sufrido, pero ganó {nom}!", f"✅ Ganó {nom}. Con el corazón en la mano", f"✅ ¡Tres puntos para {nom}!"])
+        return elige(sem, [f"✅ ¡Ganó {nom}!", f"✅ {nom} cumplió y ganó", f"✅ ¡Victoria de {nom}!"])
+    if yo < el:
+        if el - yo >= 3: return elige(sem, [f"📈 Goleada en contra. Tu Sufrómetro va a subir", f"🙈 Mejor ni preguntes: {nom} perdió {yo}-{el}", f"💀 Noche para olvidar: {nom} perdió {yo}-{el}"])
+        if mejor > 0: return elige(sem, [f"💔 {nom} lo tenía y lo dejó ir", f"💔 Iba ganando… y perdió {nom}"])
+        return elige(sem, [f"❌ Perdió {nom}", f"❌ Hoy no se pudo: perdió {nom}", f"❌ Derrota de {nom}. Ya vendrán tiempos mejores"])
+    if yo == 0: return elige(sem, [f"😴 {nom} empató 0-0. Ni modo", f"😴 Cero a cero. {nom} no pudo", f"🥱 Empate sin goles de {nom}"])
+    if mejor > 0: return elige(sem, [f"😩 {nom} lo tenía y se lo empataron", f"😩 Se escapó la victoria: empató {nom}"])
+    if peor < 0: return elige(sem, [f"😮‍💨 ¡{nom} rescató el empate!", f"👊 {nom} no se rindió y empató"])
+    return elige(sem, [f"🤝 Empató {nom}", f"🤝 Reparten puntos: empató {nom}"])
+
+def titulo_final_us(nom, gy, gr, pre, sem):
+    paliza = 21 if pre == "n" else 20
+    if gy > gr:
+        if gy - gr >= paliza: return elige(sem, [f"🔥 ¡Paliza de los {nom}!", f"🔥 ¡Los {nom} pasaron por encima!"])
+        if gy - gr <= 3: return elige(sem, [f"😮‍💨 ¡Sufrido! Ganaron los {nom}", f"😮‍💨 ¡De infarto! Ganaron los {nom}"])
+        return elige(sem, [f"✅ ¡Ganaron los {nom}!", f"✅ Victoria de los {nom}"])
+    if gy < gr:
+        if gr - gy >= paliza: return elige(sem, [f"🙈 Mejor ni preguntes: perdieron los {nom}", f"💀 Noche para olvidar de los {nom}"])
+        if gr - gy <= 3: return elige(sem, [f"💔 Por poquito… perdieron los {nom}", f"💔 Se les fue por nada: perdieron los {nom}"])
+        return elige(sem, [f"❌ Perdieron los {nom}", f"❌ Hoy no se pudo: perdieron los {nom}"])
+    return f"🤝 Empataron los {nom}"
 
 
 class Avisos:
@@ -98,15 +175,26 @@ class Avisos:
             otro = next((x for x in u if x != de), None)
             if not otro: continue
             if a.get("est") == "pend":
-                self.manda(otro, "soc", "Solicitud de amistad", f"{n.get(de) or 'Alguien'} quiere ser tu amigo en La Pizarra", "/?av=1", f"am-{a['_id']}")
+                N = n.get(de) or "Alguien"
+                t, b = elige(a["_id"], [("👋 Nueva solicitud", f"{N} quiere ser tu amigo en La Pizarra"),
+                                        ("👋 ¿Lo dejas entrar a tu banca?", f"{N} te mandó solicitud de amistad"),
+                                        ("👋 Alguien te quiere en su grupo", f"{N} quiere ser tu amigo. Ya tendrás a quién retar")])
+                self.manda(otro, "soc", t, b, "/?av=1", f"am-{a['_id']}")
             elif a.get("est") == "ok":
-                self.manda(de, "soc", "Ya son amigos", f"{n.get(otro) or 'Tu amigo'} aceptó tu solicitud", "/#amigos", f"amok-{a['_id']}")
+                N = n.get(otro) or "Tu amigo"
+                t, b = elige(a["_id"], [("🤝 Ya son amigos", f"{N} aceptó tu solicitud. Ya pueden retarse"),
+                                        ("🤝 Solicitud aceptada", f"{N} ya está en tu banca. Que empiece la rivalidad")])
+                self.manda(de, "soc", t, b, "/#amigos", f"amok-{a['_id']}")
         for d in self.db.nuevos("duelos", "t", desde):
             if d.get("est") != "pend": continue
             de, n = d.get("de"), d.get("n") or {}
             otro = next((x for x in d.get("u") or [] if x != de), None)
             if otro:
-                self.manda(otro, "ret", "Te retaron a un duelo ⚔️", f"{n.get(de) or 'Un amigo'} te retó: {DU_T.get(d.get('tipo'), 'duelo')} · {d.get('e') or ''}".strip(" ·"), "/?av=1", f"du-{d['_id']}")
+                N, T, e = n.get(de) or "Un amigo", DU_T.get(d.get("tipo"), "duelo"), d.get("e") or ""
+                t, b = elige(d["_id"], [(f"⚔️ {N} te retó", f"{T}{' · ' + e if e else ''}. ¿Aceptas o le sacas?"),
+                                        (f"⚔️ {N} te está buscando", f"Te retó a un duelo de {T}{' · ' + e if e else ''}. No te rajes"),
+                                        (f"⚔️ Te tiraron el guante", f"{N} te retó: {T}{' · ' + e if e else ''}")])
+                self.manda(otro, "ret", t, b, "/?av=1", f"du-{d['_id']}")
         # comentarios: posts de las últimas 2 semanas cuyo contador de comentarios subió
         nc = self.E.setdefault("nc", {})
         vivos = set()
@@ -117,24 +205,35 @@ class Avisos:
             if antes is None or c <= antes or p.get("uid") not in self.subs: continue
             for cm in self.db.comentarios(pid, min(5, c - antes)):
                 if cm.get("uid") == p.get("uid"): continue
-                self.manda(p["uid"], "soc", f"{cm.get('n') or 'Un amigo'} comentó tu post", f"“{corta(cm.get('tx'), 90)}”", "/#amigos", f"co-{pid}-{cm['_id']}")
+                N = cm.get("n") or "Un amigo"
+                t = elige(cm["_id"], [f"💬 {N} comentó tu post", f"💬 {N} te contestó", f"💬 {N} tiene algo que decir"])
+                self.manda(p["uid"], "soc", t, f"“{corta(cm.get('tx'), 90)}”", "/#amigos", f"co-{pid}-{cm['_id']}")
         for k in list(nc):
             if k not in vivos: del nc[k]
         self.E["soc_t"] = hasta
 
     # ---------- partidos ----------
     def favoritos(self):
-        """{"f2283": {uid: "Pumas"}, "nKC": {...}, "bNYK": {...}} de quienes quieren avisos de partidos o goles"""
-        F = {}
+        """F: {"f2286": {uid: "Pumas"}, "nKC": {...}} de quienes quieren avisos de partidos o goles.
+        RV: {"f2287": {uid: "Pumas"}} rivales de toda la vida de sus equipos (para el sufrimiento ajeno)."""
+        F, RV = {}, {}
         for uid, S in self.subs.items():
             p = S.get("p", {})
-            if not (p.get("eq", 1) or p.get("gol", 1)): continue
             for k, x in (self.db.favoritos(uid) or {}).items():
-                if k[:1] in "fnb": F.setdefault(k, {})[uid] = (x or {}).get("n") or k[1:]
+                if k[:1] not in "fnb": continue
+                nom = (x or {}).get("n") or k[1:]
+                if p.get("eq", 1) or p.get("gol", 1): F.setdefault(k, {})[uid] = nom
+                if p.get("riv", 1):
+                    for r in RIVALES.get(k, ()): RV.setdefault(r, {})[uid] = nom
+        for r in list(RV):   # si también le va a ese equipo, no es su rival
+            for uid in list(RV[r]):
+                if uid in F.get(r, {}): del RV[r][uid]
+        self.RV = RV
         return F
 
     def futbol(self, F, vivo_check):
-        ids = {int(k[1:]) for k in F if k[0] == "f" and k[1:].isdigit()}
+        RV = getattr(self, "RV", {})
+        ids = {int(k[1:]) for k in list(F) + list(RV) if k[0] == "f" and k[1:].isdigit()}
         if not ids or not AFK: return False
         hoy = datetime.now(MX).date().isoformat()
         dia = self.E.get("dia") or {}
@@ -155,8 +254,12 @@ class Avisos:
             if 0 < falta <= 35 * 60:
                 for lado in ("h", "a"):
                     for uid, nom in F.get(f"f{x[lado]}", {}).items():
-                        riv = x["an"] if lado == "h" else x["hn"]
-                        self.manda(uid, "eq", f"En un rato juega {nom}", f"{nom} {'vs' if lado == 'h' else 'en casa de'} {riv} · {hora(x['ts'])} · {x['lg']}", "/#favs", f"pre-f{x['id']}-{uid[:8]}")
+                        rid = x["a"] if lado == "h" else x["h"]
+                        riv = nombre(rid, x["an"] if lado == "h" else x["hn"])
+                        clasico = rid in {int(r[1:]) for r in RIVALES.get(f"f{x[lado]}", ())}
+                        t = (elige(x["id"], [f"🔥 ¡Hoy es clásico! {nom} vs {riv}", f"🔥 Se juega el clásico: {nom} vs {riv}", f"🔥 Partido de rivalidad: {nom} vs {riv}"]) if clasico
+                             else elige(f"{x['id']}{uid}", [f"⏰ En media hora juega {nom}", f"🍿 Prepara la botana: juega {nom}", f"⏰ Ya casi: {nom} sale a la cancha", f"📺 Prende la tele: juega {nom}"]))
+                        self.manda(uid, "eq", t, f"{nom} {'vs' if lado == 'h' else 'en casa de'} {riv} · {hora(x['ts'])} · {x['lg']}", "/#favs", f"pre-f{x['id']}-{uid[:8]}")
         # en juego: marcador y final
         enj = [x for x in mios if x["ts"] - 10 * 60 < self.now < x["ts"] + 3.5 * 3600 and f"fin-f{x['id']}" not in self.E["env"]]
         if not enj or not vivo_check: return bool(enj)
@@ -169,31 +272,47 @@ class Avisos:
             if st == "NS": hay = True; continue
             gh, ga = int(gh or 0), int(ga or 0)
             visto = f"f{fid}" in self.E["mk"]
-            mk = self.E["mk"].get(f"f{fid}") or [0, 0]
+            mk = (self.E["mk"].get(f"f{fid}") or [0, 0, 0, 0]) + [0, 0]
+            dmin, dmax = min(mk[2], gh - ga), max(mk[3], gh - ga)   # peor y mejor diferencia para el local en todo el partido
             m = r["fixture"]["status"].get("elapsed")
-            if [gh, ga] != mk and (gh + ga) > sum(mk):
+            if [gh, ga] != mk[:2] and (gh + ga) > mk[0] + mk[1]:
                 goles = [e for e in r.get("events") or [] if e.get("type") == "Goal" and e.get("detail") != "Missed Penalty"]
                 ult = goles[-1] if goles else None
-                quien = None
-                if ult: quien = H if ult["team"]["id"] == H["id"] else A
-                elif gh > mk[0]: quien = H
-                else: quien = A
-                autor = f" · {ult['player']['name']}" + (" (autogol)" if ult and ult.get("detail") == "Own Goal" else "") if ult and ult.get("player", {}).get("name") else ""
+                quien = (H if ult["team"]["id"] == H["id"] else A) if ult else (H if gh > mk[0] else A)
+                autogol = bool(ult and ult.get("detail") == "Own Goal")
+                autor = f" · {ult['player']['name']}" + (" (autogol)" if autogol else "") if ult and (ult.get("player") or {}).get("name") else ""
                 mins = f" ({m}')" if m else ""
                 for lado, T in (("h", H), ("a", A)):
                     for uid, nom in F.get(f"f{T['id']}", {}).items():
-                        nuestro = quien["id"] == T["id"]
-                        tit = f"⚽ ¡GOL DE {nom.upper()}!" if nuestro else f"Gol de {quien['name']} 😬"
-                        hn, an = (nom, A["name"]) if lado == "h" else (H["name"], nom)
-                        self.manda(uid, "gol", tit, f"{hn} {gh}-{ga} {an}{mins}{autor}", "/#favs", f"gol-f{fid}-{gh}-{ga}-{uid[:8]}")
-            self.E["mk"][f"f{fid}"] = [gh, ga]
+                        yo, el = (gh, ga) if lado == "h" else (ga, gh)
+                        antes = (mk[0] - mk[1]) if lado == "h" else (mk[1] - mk[0])
+                        peor = dmin if lado == "h" else -dmax
+                        riv = nombre((A if lado == "h" else H)["id"], (A if lado == "h" else H)["name"])
+                        t = titulo_gol(quien["id"] == T["id"], nom, riv, yo, el, antes, peor, m, autogol, f"{fid}{gh}{ga}")
+                        hn, an = (nom, riv) if lado == "h" else (riv, nom)
+                        self.manda(uid, "gol", t, f"{hn} {gh}-{ga} {an}{mins}{autor}", "/#favs", f"gol-f{fid}-{gh}-{ga}-{uid[:8]}")
+            self.E["mk"][f"f{fid}"] = [gh, ga, dmin, dmax]
             if st in AF_FIN:
                 if not visto: self.E["env"][f"fin-f{fid}"] = int(self.now); self.E["mk"].pop(f"f{fid}", None); continue   # no lo vimos en juego: no se avisa tarde
-                for lado, T, gy, gr, R2 in (("h", H, gh, ga, A), ("a", A, ga, gh, H)):
+                pen = (r.get("score") or {}).get("penalty") or {}
+                ph, pa = pen.get("home"), pen.get("away")
+                for lado, T, O in (("h", H, A), ("a", A, H)):
+                    yo, el = (gh, ga) if lado == "h" else (ga, gh)
+                    py, pe = (ph, pa) if lado == "h" else (pa, ph)
+                    peor, mejor = (dmin, dmax) if lado == "h" else (-dmax, -dmin)
+                    riv = nombre(O["id"], O["name"])
                     for uid, nom in F.get(f"f{T['id']}", {}).items():
-                        v = "ganó" if gy > gr else "perdió" if gy < gr else "empató"
-                        hn, an = (nom, A["name"]) if lado == "h" else (H["name"], nom)
-                        self.manda(uid, "eq", f"Final: {nom} {v}", f"{hn} {gh}-{ga} {an}", "/#favs", f"fin-f{fid}-{uid[:8]}")
+                        t = titulo_final(nom, riv, yo, el, peor, mejor, py, pe, f"{fid}{uid}")
+                        hn, an = (nom, riv) if lado == "h" else (riv, nom)
+                        self.manda(uid, "eq", t, f"{hn} {gh}-{ga} {an}" + (f" ({ph}-{pa} en penales)" if st == "PEN" and ph is not None else ""), "/#favs", f"fin-f{fid}-{uid[:8]}")
+                    # sufrimiento ajeno: perdió el rival de toda la vida de tu equipo
+                    if yo < el or (st == "PEN" and py is not None and pe is not None and py < pe):
+                        for uid, mio in RV.get(f"f{T['id']}", {}).items():
+                            if uid in F.get(f"f{O['id']}", {}): continue   # ya le llegó el final de su propio partido
+                            yon = nombre_art(T["id"], T["name"])
+                            t = elige(f"{fid}{uid}", [f"😏 Perdió {yon}", f"😏 Sufrimiento ajeno: perdió {yon}", f"😏 ¿Ya viste? Perdió {yon}", f"🍿 Perdió {yon}. Disfrútalo"])
+                            b = elige(f"{fid}{uid}b", ["Hoy duermes tranquilo.", f"La afición de {mio} lo agradece.", "Mándale captura a tu amigo que le va.", "No es lo mismo que ganar, pero se le parece."])
+                            self.manda(uid, "riv", t, f"{nombre(H['id'], H['name'])} {gh}-{ga} {nombre(A['id'], A['name'])}. {b}", "/#favs", f"riv-f{fid}-{uid[:8]}")
                 self.E["env"][f"fin-f{fid}"] = int(self.now)
                 self.E["mk"].pop(f"f{fid}", None)
             else:
@@ -201,7 +320,8 @@ class Avisos:
         return hay
 
     def espn(self, F, liga, pre, ruta, mapa):
-        keys = {k[1:] for k in F if k[0] == pre}
+        RV = {k: v for k, v in getattr(self, "RV", {}).items() if k[0] == pre}
+        keys = {k[1:] for k in list(F) + list(RV) if k[0] == pre}
         if not keys: return False
         try: j = get_json(f"{ESPN}/{ruta}/scoreboard")
         except Exception as e: print("ESPN", liga, e); return False
@@ -216,14 +336,23 @@ class Avisos:
                 if k not in keys: continue
                 o = next((x for x in cs if x is not c), None)
                 if not o: continue
+                visto = f"{pre}{ev['id']}" in self.E.get("vis", {})
+                gy, gr = int(float(c.get("score") or 0)), int(float(o.get("score") or 0))
+                riv = o["team"].get("shortDisplayName") or o["team"].get("displayName") or ab(o)
                 for uid, nom in F.get(pre + k, {}).items():
-                    riv = o["team"].get("shortDisplayName") or o["team"].get("displayName") or ab(o)
                     if st == "pre" and 0 < ts - self.now <= 35 * 60:
-                        self.manda(uid, "eq", f"En un rato juegan los {nom}", f"{nom} {'vs' if c.get('homeAway') == 'home' else 'en casa de'} {riv} · {hora(ts)} · {liga}", "/#favs", f"pre-{pre}{ev['id']}-{uid[:8]}")
-                    if st == "post" and f"{pre}{ev['id']}" in self.E.get("vis", {}):
-                        gy, gr = int(float(c.get("score") or 0)), int(float(o.get("score") or 0))
-                        v = "ganaron" if gy > gr else "perdieron" if gy < gr else "empataron"
-                        self.manda(uid, "eq", f"Final: los {nom} {v}", f"{nom} {gy}-{gr} {riv} · {liga}", "/#favs", f"fin-{pre}{ev['id']}-{uid[:8]}")
+                        clasico = pre + ab(o) in RIVALES.get(pre + k, ())
+                        t = (f"🔥 Partido de rivalidad: {nom} vs {riv}" if clasico else
+                             elige(f"{ev['id']}{uid}", [f"⏰ En media hora juegan los {nom}", f"🍿 Prepara la botana: juegan los {nom}", f"📺 Prende la tele: juegan los {nom}"]))
+                        self.manda(uid, "eq", t, f"{nom} {'vs' if c.get('homeAway') == 'home' else 'en casa de'} {riv} · {hora(ts)} · {liga}", "/#favs", f"pre-{pre}{ev['id']}-{uid[:8]}")
+                    if st == "post" and visto:
+                        self.manda(uid, "eq", titulo_final_us(nom, gy, gr, pre, f"{ev['id']}{uid}"), f"{nom} {gy}-{gr} {riv} · {liga}", "/#favs", f"fin-{pre}{ev['id']}-{uid[:8]}")
+                if st == "post" and visto and gy < gr:   # sufrimiento ajeno
+                    for uid, mio in RV.get(pre + k, {}).items():
+                        if uid in F.get(pre + ab(o), {}): continue
+                        yon = c["team"].get("shortDisplayName") or k
+                        t = elige(f"{ev['id']}{uid}", [f"😏 Perdieron los {yon}", f"😏 Sufrimiento ajeno: perdieron los {yon}", f"🍿 ¿Ya viste? Perdieron los {yon}"])
+                        self.manda(uid, "riv", t, f"{yon} {gy}-{gr} {riv} · {liga}. Hoy duermes tranquilo.", "/#favs", f"riv-{pre}{ev['id']}-{uid[:8]}")
                 if st == "in" or (st == "pre" and 0 < ts - self.now <= 40 * 60): hay = True
                 if st in ("pre", "in") and ts - self.now < 3600: self.E.setdefault("vis", {})[f"{pre}{ev['id']}"] = int(self.now)
         return hay
