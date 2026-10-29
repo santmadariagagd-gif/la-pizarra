@@ -2648,7 +2648,8 @@ def _historia_eq():
     ruta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos','historia_eq.json')
     try: H=json.load(open(ruta,encoding='utf-8'))
     except Exception: H={}
-    H.setdefault('mx',[]); H.setdefault('eu',{}); H['v']=1
+    if H.get('v')!=2: H['mx']=[]   # v2: el play-in ya no cuenta como semifinal; se vuelven a armar los torneos de Liga MX
+    H.setdefault('mx',[]); H.setdefault('eu',{}); H['v']=2
     hoy=datetime.now(ZoneInfo("America/Mexico_City"))
     if AFK:
         # --- Liga MX: temporada Y = Apertura Y + Clausura Y+1 ---
@@ -2666,14 +2667,22 @@ def _historia_eq():
                 F=[f for f in fx if str(f["league"]["round"]).startswith(torneo)]
                 ronda=lambda f: str(f["league"]["round"]).split(" - ",1)[-1]
                 fin=[f for f in F if re.search(r"^Finals?$",ronda(f),re.I)]
-                if not g: continue
+                if not g:   # API-Football no trae la tabla de algunos torneos (Apertura 2025): se calcula con los partidos
+                    T={}
+                    for f in F:
+                        if not re.fullmatch(r"\d+",ronda(f)) or f["fixture"]["status"]["short"] not in AF_FIN: continue
+                        gh,ga=f["goals"]["home"] or 0,f["goals"]["away"] or 0
+                        for lado,gf,gc in (("home",gh,ga),("away",ga,gh)):
+                            k=f["teams"][lado]["id"]; x=T.setdefault(k,[0,0,0]); x[0]+=3 if gf>gc else 1 if gf==gc else 0; x[1]+=gf-gc; x[2]+=gf
+                    if len(T)<10: continue
+                    g=[{"team":{"id":k},"rank":i+1} for i,(k,_) in enumerate(sorted(T.items(),key=lambda z:(-z[1][0],-z[1][1],-z[1][2])))]
                 hecho=len(fin)>=2 and all(f["fixture"]["status"]["short"] in AF_FIN for f in fin)
                 if not hecho and not (torneo=="Clausura" and anio==2020 and g): continue   # Clausura 2020 se canceló (pandemia): sin campeón
                 E={str(r["team"]["id"]):[r["rank"],0] for r in g}
                 for f in F:
                     rd=ronda(f)
                     if re.fullmatch(r"\d+",rd): continue
-                    et=2 if re.search(r"semi",rd,re.I) else 1
+                    et=2 if re.search(r"semi",rd,re.I) and not re.search(r"play.?in",rd,re.I) else 1
                     for lado in ("home","away"):
                         k=str(f["teams"][lado]["id"])
                         if k in E: E[k][1]=max(E[k][1],et)
@@ -2715,7 +2724,7 @@ def _historia_eq():
     # --- NFL ---
     try:
         AB={"OAK":"LV","SD":"LAC","STL":"LA"}
-        ult=int(S)-1
+        ult=int(out['season'])-1
         sc=nfl.load_schedules(list(range(2011,ult+1))).to_pandas()
         sc=sc[sc.result.notna()]
         R={}
