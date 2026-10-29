@@ -9,7 +9,7 @@ sus equipos favoritos (usuarios/{uid}.fav) y lo nuevo en Firebase, y manda notif
   · Amigos (p.soc): solicitudes de amistad, solicitudes aceptadas y comentarios en tus posts.
   · Retos (p.ret): cuando un amigo te reta a un duelo.
 
-Si hay un partido de tus equipos en juego, se queda revisando ~9 minutos (cada 2 min) para que los goles lleguen rápido.
+Si hay un partido de tus equipos en juego, se queda revisando ~9 minutos (cada minuto) para que los goles lleguen rápido.
 Lo que ya se mandó se anota en sistema/avisos (solo GitHub lo lee) para no repetir.
 Variables: FIREBASE_SA (llave de servicio, secreto), API_FOOTBALL_KEY (secreto). PRUEBA=1: no manda nada, solo imprime.
 """
@@ -26,7 +26,7 @@ NBA_AB = {"NY": "NYK", "SA": "SAS", "GS": "GSW", "NO": "NOP", "UTAH": "UTA", "WS
 DU_T = {"mx": "Quiniela Liga MX", "fan": "Fantasy Champions", "rd": "Reto del día"}
 AF_FIN, AF_NO = {"FT", "AET", "PEN"}, {"PST", "CANC", "ABD", "AWD", "WO", "TBD"}
 DUR = 9 * 60          # cuánto se queda revisando si hay partido en juego
-CADA = 120            # cada cuánto revisa en ese rato
+CADA = 60             # cada cuánto revisa en ese rato (1 llamada a API-Football por vuelta, solo con partido en juego)
 
 def get_json(url, headers=None):
     req = urllib.request.Request(url, headers={"User-Agent": "LaPizarra/1.0 (+https://lapizarra.mx)", "Accept": "application/json", **(headers or {})})
