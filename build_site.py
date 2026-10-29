@@ -1405,7 +1405,9 @@ def af(ruta,**q):
         os.makedirs(AF_CACHE,exist_ok=True); json.dump(r,open(ck,"w",encoding="utf-8"),separators=(",",":"))
     except Exception: pass
     return r
+AF_AGOTADO=[False]
 def _af_pide(url):
+    if AF_AGOTADO[0]: raise RuntimeError("API-Football: sin pedidos hoy")
     for intento in range(4):
         time.sleep(0.35)
         req=urllib.request.Request(url,headers={"x-apisports-key":AFK,"Accept":"application/json","User-Agent":"LaPizarra/1.0 (+https://lapizarra.mx)"})
@@ -1414,8 +1416,9 @@ def _af_pide(url):
         AF_USADOS[0]+=1
         e=j.get("errors")
         if e and "rateLimit" in json.dumps(e) and intento<3: time.sleep(2+3*intento); continue
-        if e and "request limit" in json.dumps(e).lower():   # se acabaron los pedidos del día: no se toca la página (se queda la última buena)
-            print("API-Football: se acabaron los pedidos del día; la corrida se detiene sin cambiar la página"); sys.exit(3)
+        if e and "request limit" in json.dumps(e).lower():   # se acabaron los pedidos del día: se usa lo de la página anterior
+            if not AF_AGOTADO[0]: print("API-Football: se acabaron los pedidos del día; el fútbol se queda como estaba en la página anterior")
+            AF_AGOTADO[0]=True; raise RuntimeError("API-Football: sin pedidos hoy")
         if e and (not isinstance(e,list) or e): raise RuntimeError(f"API-Football {ruta}: {e}")
         return j.get("response") or []
     return []
@@ -1523,6 +1526,7 @@ out['mxp']=[]; out['mx_logos']=[]
 # Goleador del torneo actual de cada liga (para la portada "Hoy"): {liga:{n, eq, g, e}}; e = cuántos más tienen los mismos goles.
 out['goleo']={}
 def guarda_jugadores(nombre_archivo,filas):
+    if AF_AGOTADO[0]: print("Sin pedidos de API-Football: se deja como estaba",nombre_archivo); return
     equipos={}
     for r in filas: equipos[r["t"]]=[r.pop("tn"),r.pop("logo")]
     clave=nombre_archivo[len('jugadores_'):-len('.json')]
@@ -2924,6 +2928,18 @@ except Exception as ex:
 # OJO: 'out' no se toca (más abajo se sigue usando out['ffw'] para El Pizarrón); D es una copia sin esas claves.
 PAQUETES={"stats":["qb","rec","rush","def","teams"],"box":["box"],"previa":["h2h","starters"],
           "fantasy":["fantasy","sleeper","ffw"],"fotos":["wd_photos","wd_photos_q"],"historia":["historia"],"goleo":["bota"]}
+# Si API-Football se quedó sin pedidos, lo que no se pudo armar se toma de la página anterior (y de sus paquetes)
+if AF_AGOTADO[0]:
+    try:
+        _aq=os.path.dirname(os.path.abspath(__file__)); _ant=open(os.path.join(_aq,'docs','index.html'),encoding='utf-8').read()
+        _m=re.search(r"^const D = (.*);$",_ant,re.M); _old=json.loads(_m.group(1)) if _m else {}
+        for _n in PAQUETES:
+            try: _old.update(json.load(open(os.path.join(_aq,'docs','datos',f'paq_{_n}.json'),encoding='utf-8')))
+            except Exception: pass
+        _rec=[k for k,v in _old.items() if k not in ('paq','hist_n') and (k not in out or out[k] in (None,{},[],""))]
+        for k in _rec: out[k]=_old[k]
+        print(f"API-Football sin pedidos: {len(_rec)} datos se tomaron de la página anterior ({', '.join(_rec[:12])}{'…' if len(_rec)>12 else ''})")
+    except Exception as ex: _pz_err("Copia de la página anterior",ex)
 D_out=dict(out)
 try:
     _carp=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'); os.makedirs(_carp,exist_ok=True)
