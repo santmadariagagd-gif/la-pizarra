@@ -1806,6 +1806,15 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .ntt .ntacc{display:flex;gap:8px;margin-top:4px}.ntt .ntacc .btn{min-height:34px;padding:0 14px}
 .ntdot{width:9px;height:9px;border-radius:50%;background:var(--mark);margin-top:6px;flex-shrink:0}.nti:not(.nuevo) .ntdot{visibility:hidden}
 @media(prefers-reduced-motion:reduce){#ntBtn.ring svg,.nti{animation:none}}
+/* Sufrómetro de tus amigos (29 oct 2026) */
+#amSuf:empty{display:none}.amsuf{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:18px;background:linear-gradient(150deg,rgba(255,156,128,.16),var(--surface) 60%);border:1px solid rgba(255,156,128,.35)}
+.amsuft{display:flex;gap:12px;align-items:center}.amsuft span{display:flex;flex-direction:column;gap:2px}.amsuft b{font:700 18px/1.15 var(--display)}.amsuft small{font-size:13px;color:var(--muted)}
+.amsufl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.amsufl li{display:grid;grid-template-columns:16px 30px minmax(0,1fr) 64px auto;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;background:rgba(0,0,0,.18)}.amsufl li.yo{box-shadow:inset 0 0 0 1px var(--mark)}
+.amsn{font:800 15px var(--display);color:var(--muted)}.amsav{padding:0;border:0;background:none;cursor:pointer;border-radius:50%;display:inline-flex}
+.amsnm{display:flex;flex-direction:column;min-width:0}.amsnm b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.amsnm small{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.amsbar{height:8px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden}.amsbar i{display:block;height:100%;border-radius:4px;animation:amllena .6s ease-out both}
+.amsufl em{font:800 17px var(--display);font-style:normal}
 /* Personalización (28 oct 2026) */
 .pers{display:flex;flex-direction:column;gap:8px}.pers h2{margin:0 0 4px}.pers .note{margin:0}
 .pertem{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
@@ -7966,12 +7975,13 @@ async function amRender(){
     <div id="amAgrega" hidden></div>
     <div id="amCmp">${amCmpHTML()}</div>
     <section class="hsec amsec" id="amDu"></section>
+    <section class="hsec amsec" id="amSuf"></section>
     ${En.length?`<p class="note">Esperando respuesta de ${En.map(a=>`${hoyEsc(amNom(a.otro,a))} <button class="q5link" data-amcan="${a.id}">Cancelar</button>`).join(" · ")}</p>`:""}
     ${A.length?`<div class="hseg amfil" role="group" aria-label="Juego">${[["todo","Todo"],...Object.entries(AM_G).map(([k,v])=>[k,v[0]])].map(([k,n])=>`<button data-amfil="${k}" aria-pressed="${AM.filtro===k}">${n}</button>`).join("")}</div>
       <div class="amfeed">${F.length?F.map(amPost).join(""):`<p class="note">${AM.feed?.length?"Nada de este juego todavía.":"Aquí sale lo que hacen tus amigos: sus picks guardados, sus aciertos, sus logros y más. Los picks de cada quien nunca se publican."}</p>`}</div>`
     :`<div class="amvacio"><b>Agrega a tus amigos</b><span>Búscalos por su apodo, mándales tu link por WhatsApp o escoge a los de tus grupos. Cuando acepten, aquí ves lo que hace cada quien en todos los juegos.</span><button class="btn" data-amadd="1">Agregar amigos</button></div>${F.length?`<div class="amfeed">${F.map(amPost).join("")}</div>`:""}`}`;
   if(!A.length&&!Rc.length) amAgrega();
-  duPinta(); amFotosVisibles();
+  duPinta(); amFotosVisibles(); amSufPinta();
 }
 async function amAgrega(){
   const el=$("#amAgrega"); if(!el) return; el.hidden=false;
@@ -8031,6 +8041,26 @@ async function amPerfilPinta(uid){
     <div class="pftabs" role="tablist">${tabs.map(([k,n])=>`<button role="tab" data-pftab="${k}" aria-selected="${PFL.tab===k}">${n}</button>`).join("")}</div>
     <div class="pfbody">${cuerpo}</div></div>`;
   amFotosVisibles();
+}
+// ---- El Sufrómetro de tus amigos (29 oct 2026) ----
+// Para que sea parejo, a todos se les mide igual: con los equipos que siguen (perfiles.fv: fútbol, NFL y NBA) y la fórmula de
+// "Contra lo esperado" de los últimos años. Sale en Amigos; el primero se lleva la carrilla.
+function sufDeEquipos(fv){
+  const L=(fv||[]).map(v=>String(v).split("|")).filter(([k])=>/^[fnb]/.test(k)).map(([k,n])=>{ const z=sufhEquipo(k); if(!z) return null; const X=sufhExp(k,z); return {k,n:n||k,suf:X.suf}; }).filter(Boolean);
+  if(!L.length) return null; L.sort((a,b)=>b.suf-a.suf);
+  return {suf:Math.round(L.reduce((a,x)=>a+x.suf,0)/L.length),peor:L[0],n:L.length}; }
+function amSufPinta(){
+  const el=$("#amSuf"); if(!el) return; const A=amAmigos(); if(!A.length){ el.innerHTML=""; return; }
+  if(!SUFH.d){ sufhCarga(); el.innerHTML=""; setTimeout(()=>{ if(SUFH.d) amSufPinta(); },1500); return; }
+  const yo=ACCT.user.uid, mioFv=Object.entries(FAV.eq).filter(([k])=>/^[fnb]/.test(k)).map(([k,x])=>`${k}|${x.n||""}`);
+  const F=[{uid:yo,n:"Tú",r:sufDeEquipos(mioFv)},...A.map(a=>({uid:a.otro,n:amNom(a.otro,a),r:sufDeEquipos(PERF.cache[a.otro]?.fv)}))].filter(x=>x.r).sort((a,b)=>b.r.suf-a.r.suf);
+  if(F.length<2){ el.innerHTML=""; return; }
+  const top=F[0], CARR=["Mándenle un abrazo","Que le manden un pésame","Ya no le pregunten por su equipo","Sufre más que en final de telenovela","Le urge terapia deportiva"];
+  const c=CARR[(top.uid.charCodeAt(0)+top.r.suf)%CARR.length];
+  el.innerHTML=`<div class="hh"><h3>¿Quién sufre más?</h3></div>
+    <div class="amsuf"><div class="amsuft">${amAv(top.uid,46)}<span><b>${top.uid===yo?"Tú sufres":`${hoyEsc(top.n.split(" ")[0])} sufre`} más que todos: ${top.r.suf}%</b><small>Culpa de ${hoyEsc(top.r.peor.n)}. ${top.uid===yo?"Ánimo, campeón del sufrimiento":hoyEsc(c)}.</small></span></div>
+      <ol class="amsufl">${F.slice(0,8).map((x,i)=>`<li class="${x.uid===yo?"yo":""}"><span class="amsn">${i+1}</span><button class="amsav" data-amper="${hoyEsc(x.uid)}" aria-label="Ver perfil de ${hoyEsc(x.n)}">${amAv(x.uid,30)}</button><span class="amsnm"><b>${hoyEsc(x.n)}</b><small>Le duele: ${hoyEsc(x.r.peor.n)}</small></span><span class="amsbar"><i style="width:${Math.max(4,x.r.suf)}%;background:${x.r.suf>=55?"#FF9C80":x.r.suf>=40?"#F2D466":"#9FD3A8"}"></i></span><em>${x.r.suf}%</em></li>`).join("")}</ol>
+      <p class="note">Con los equipos que sigue cada quien, contra lo que se les exige en los últimos años. ${F.length<A.length+1?"Los que no salen todavía no siguen equipos o no han actualizado su perfil.":""}</p></div>`;
 }
 // ---- reacciones y comentarios ----
 async function amReacciona(pid,k){
