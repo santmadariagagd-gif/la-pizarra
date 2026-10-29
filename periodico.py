@@ -105,8 +105,30 @@ class Liga:
         tm = TFIX.get(p.get("team") or "", p.get("team") or "")
         n = p.get("full_name") or (f"{p.get('first_name','')} {p.get('last_name','')}".strip()) or f"Jugador {pid}"
         pos = p.get("position") or "?"
+        # Sleeper casi nunca trae gsis_id (154 de 196 en Danny Dimes) y a veces con espacios: se completa con la tabla
+        # de nflverse (sleeper_id → gsis_id). Si aun así no hay, se busca por nombre|equipo (ver Liga.proy).
+        g = (p.get("gsis_id") or "").strip() or S2G.get(str(pid)) or None
         return dict(id=str(pid), n=n, pos=pos, tm=tm, eleg=p.get("fantasy_positions") or [pos],
-                    key=p.get("gsis_id") or f"n|{norm(n)}|{tm}", gsis=p.get("gsis_id"))
+                    key=g or f"n|{norm(n)}|{tm}", alt=f"n|{norm(n)}|{tm}", gsis=g)
+
+
+S2G = {}
+def cargar_ids():
+    """sleeper_id → gsis_id de nflverse (ff_playerids)."""
+    try:
+        import nflreadpy as nfl
+        m = nfl.load_ff_playerids().to_pandas()[["sleeper_id", "gsis_id"]].dropna()
+        for a, b in zip(m.sleeper_id, m.gsis_id):
+            try: S2G[str(int(float(a)))] = str(b).strip()
+            except Exception: pass
+        print(f"Periódico: tabla de IDs sleeper→gsis con {len(S2G)} jugadores")
+    except Exception as ex: print("Periódico: no se pudo cargar la tabla de IDs:", repr(ex))
+
+def proy(D, j):
+    """Proyección de un jugador: primero por gsis, luego por nombre|equipo."""
+    if not j: return None
+    v = D.get(j["key"])
+    return v if v is not None else D.get(j.get("alt"))
 
 
 def mejor_alineacion(L, jug, pts):
@@ -171,7 +193,7 @@ def calcular(L, PROJ, PROJ_SIG):
         jug = [j for j in jug if j]
         stset = set(s for s in st if s not in (None, "0"))
         for j in jug:
-            pr = PROJ.get(j["key"]); x = dict(j, pts=r1(pp.get(j["id"], 0)), proj=r1(pr), eq=L.equipo(rid), rid=rid)
+            pr = proy(PROJ, j); x = dict(j, pts=r1(pp.get(j["id"], 0)), proj=r1(pr), eq=L.equipo(rid), rid=rid)
             (titulares if j["id"] in stset else banca).append(x)
         opt = mejor_alineacion(L, jug, pp)
         por_equipo[rid] = dict(pts=f.get("points") or 0, opt=round(opt, 2), banca=round(max(0, opt - (f.get("points") or 0)), 1),
@@ -309,7 +331,7 @@ def calcular(L, PROJ, PROJ_SIG):
             for f in par:
                 jug = [L.jugador(p) for p in (L.rosters[f["roster_id"]].get("players") or [])]
                 jug = [j for j in jug if j]
-                pp = {j["id"]: PROJ_SIG.get(j["key"], 0) for j in jug}
+                pp = {j["id"]: proy(PROJ_SIG, j) or 0 for j in jug}
                 pr.append((f["roster_id"], r1(mejor_alineacion(L, jug, pp))))
             (ra, pa), (rb, pb) = sorted(pr, key=lambda x: -x[1])
             prev.append(dict(fav=L.equipo(ra), fav_pts=pa, otro=L.equipo(rb), otro_pts=pb, linea=round((pa - pb) * 2) / 2, ou=round((pa + pb) * 2) / 2))
@@ -496,9 +518,16 @@ th{font:600 13px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:
 .dos{display:grid;grid-template-columns:1fr 1fr;gap:28px}@media(max-width:700px){.dos{grid-template-columns:1fr}}
 .esq{border:2px solid rgba(236,239,231,.5);border-radius:6px;padding:12px 14px;margin-bottom:10px;text-align:center}
 .esq b{font:700 20px var(--disp)}.esq small{display:block;color:var(--dim);font-style:italic}
-.prev{background:var(--board2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
-.prev b{font:700 17px/1.1 var(--disp)}.prev small{display:block;color:var(--dim)}.prev .ln{font:700 30px var(--gis);color:var(--yellow)}
-.prev .tag{grid-column:1/-1;font:600 12px var(--disp);letter-spacing:.1em;color:var(--dim)}
+.prev{background:var(--board2);border:1px solid var(--line);border-radius:12px;padding:12px 14px 10px;margin-bottom:10px}
+.prev .fl{display:grid;grid-template-columns:1fr auto 64px;align-items:baseline;gap:10px;padding:2px 0}
+.prev .fl b{font:700 17px/1.2 var(--disp);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prev .fl.dog b{font-weight:500;color:var(--dim)}
+.prev .pp{font:600 15px var(--disp);color:var(--dim);font-variant-numeric:tabular-nums}
+.prev .sp{font:700 24px/1 var(--gis);text-align:right;color:var(--yellow)}.prev .fl.dog .sp{font-size:18px;color:var(--dim)}
+.prev .br{display:flex;height:6px;border-radius:3px;overflow:hidden;margin:6px 0;background:var(--deep)}
+.prev .br i{background:var(--yellow)}.prev .br u{background:var(--line);flex:1}
+.prev .ou{display:flex;justify-content:space-between;font:600 12px var(--disp);letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-top:4px}
+.prev .ou b{color:var(--chalk)}.prevcab{display:grid;grid-template-columns:1fr auto 64px;gap:10px;padding:0 15px;font:600 11px var(--disp);letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.prevcab span:last-child{text-align:right}
 .rec{border-bottom:1px dashed var(--line);padding:8px 0;display:flex;justify-content:space-between;gap:10px;align-items:center}
 .rec .v{font:700 30px var(--gis);color:var(--yellow)}.rec small{color:var(--dim);font:600 12px var(--disp);letter-spacing:.1em}
 .nuevo{background:var(--yellow);color:#1B2A38;font:700 10px var(--disp);letter-spacing:.1em;padding:1px 6px;border-radius:3px;margin-left:6px}
@@ -514,6 +543,14 @@ th{font:600 13px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:
 .cta b{display:block;font:700 26px var(--gis);color:var(--yellow)}
 .compartir{display:inline-block;margin-top:12px;background:#25D366;color:#0b2b17;text-decoration:none;font:700 17px var(--disp);letter-spacing:.04em;padding:12px 22px;border-radius:999px}
 .pie{text-align:center;color:var(--dim);font-size:13px;margin-top:18px}.pie a{color:var(--yellow)}
+.btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px}.btns .compartir{margin-top:0}
+.pdf{display:inline-block;background:var(--yellow);color:#15241F;border:0;cursor:pointer;font:700 17px var(--disp);letter-spacing:.04em;padding:12px 22px;border-radius:999px}
+.pdfmini{position:absolute;top:12px;right:14px;z-index:3;background:rgba(0,0,0,.25);color:var(--chalk);border:1px solid var(--line);border-radius:999px;font:600 12px var(--disp);letter-spacing:.08em;padding:6px 12px;cursor:pointer}
+@media print{@page{size:letter;margin:0}
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+html,body{background:var(--board)!important}.hoja{margin:0!important;max-width:none!important;border-radius:0!important;box-shadow:none!important;border-width:10px!important}
+.noprint,.cta,.pdfmini{display:none!important}
+.prev,.carta,.esq,.premio,.rec,.post,.tx,.marc,.ficha,.caja,.cita,.mc{break-inside:avoid}h3.sec{break-after:avoid}}
 """
 JUGADA = ('<svg class="jug" style="{pos}" width="150" height="90" viewBox="0 0 150 90" fill="none" stroke="#ECEFE7" stroke-width="2.5" stroke-linecap="round">'
           '<circle cx="20" cy="70" r="7"/><circle cx="50" cy="70" r="7"/><circle cx="80" cy="70" r="7"/>'
@@ -535,7 +572,7 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
          f"<title>{esc(titulo)} · Semana {w}</title><meta property='og:title' content='{esc(titulo)} · Semana {w}'><meta property='og:description' content='{esc(tit)}'>",
          f"<link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='{fonts}' rel='stylesheet'>",
          f"<style>{CSS}</style></head><body><div class='hoja'>",
-         "<header class='cab'>" + JUGADA.replace("{pos}", "top:18px;left:16px") + JUGADA.replace("{pos}", "top:18px;right:16px;transform:scaleX(-1)"),
+         "<header class='cab' style='position:relative'><button class='pdfmini noprint' onclick='window.print()'>PDF ⤓</button>" + JUGADA.replace("{pos}", "top:18px;left:16px") + JUGADA.replace("{pos}", "top:18px;right:16px;transform:scaleX(-1)"),
          f"<div class='marca'>{logo_svg()}La Pizarra presenta</div>",
          f"<h1>{esc(titulo.split(' de ')[0] if ' de ' in titulo else titulo)}</h1>",
          f"<h2>{esc(titulo.split(' de ', 1)[1]) if ' de ' in titulo else esc(liga_nombre)}</h2>",
@@ -614,8 +651,14 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
     col2 = []
     if D.get("previa"):
         col2 = [f"<h3 class='sec'>La línea de la semana {w+1}</h3><p class='nota'>Sale de las proyecciones. Aquí no se aceptan apuestas, solo carrilla.</p>"]
-        col2 += [f"<div class='prev'><div><b>{esc(x['fav'])}</b><small>{x['fav_pts']}</small></div><div class='ln'>−{x['linea']}</div><div><b>{esc(x['otro'])}</b><small>{x['otro_pts']}</small></div>"
-                 f"<span class='tag'>FAVORITO: {esc(x['fav']).upper()} · O/U {x['ou']}</span></div>" for x in D["previa"]]
+        def _prev(x):
+            tot = (x["fav_pts"] or 0) + (x["otro_pts"] or 0); pc = round(100 * (x["fav_pts"] or 0) / tot) if tot else 50
+            ln = f"{x['linea']:.1f}"
+            return (f"<div class='prev'><div class='fl'><b>{esc(x['fav'])}</b><span class='pp'>{x['fav_pts']}</span><span class='sp'>−{ln}</span></div>"
+                    f"<div class='br'><i style='width:{pc}%'></i><u></u></div>"
+                    f"<div class='fl dog'><b>{esc(x['otro'])}</b><span class='pp'>{x['otro_pts']}</span><span class='sp'>+{ln}</span></div>"
+                    f"<div class='ou'><span>Total O/U <b>{x['ou']}</b></span><span>{'Volado' if x['linea'] < 3 else ('Favorito claro' if x['linea'] >= 15 else 'Ligero favorito')}</span></div></div>")
+        col2 += ["<div class='prevcab'><span>Equipo</span><span>Proy.</span><span>Línea</span></div>"] + [_prev(x) for x in D["previa"]]
     R = D.get("records") or {}
     rec = []
     for k, nom in [("alta", "Puntuación más alta"), ("baja", "Puntuación más baja"), ("paliza", "La madriza más grande"), ("cerrado", "El partido más cerrado"),
@@ -632,15 +675,10 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
             if len(lados) != 2: continue
             ul = lambda l: "<ul>" + "".join(f"<li>{esc(r['n'])} <small class='pe'>{esc(r['pe'])}</small></li>" for r in l["recibe"]) + "</ul>"
             h.append(f"<div class='tx'><div><b>{esc(lados[0]['eq'])}</b> se lleva{ul(lados[0])}</div><div class='fl'>⇄</div><div><b>{esc(lados[1]['eq'])}</b> se lleva{ul(lados[1])}</div></div>")
-    if D.get("movimientos"):
-        h.append("<h3 class='sec'>Altas y bajas</h3>")
-        for x in D["movimientos"]:
-            ag = ", ".join(f"{esc(j['n'])} <small class='pe'>{esc(j['pe'])}</small>" for j in x["agrega"]); su = ", ".join(f"{esc(j['n'])} <small class='pe'>{esc(j['pe'])}</small>" for j in x["suelta"])
-            h.append(f"<div class='mv'><span>{x['tipo']}{' · $'+str(x['faab']) if x.get('faab') is not None else ''}</span><div><b>{esc(x['eq'])}</b>{' agrega '+ag if ag else ''}{', suelta '+su if su and ag else (' suelta '+su if su else '')}</div></div>")
     if S.get("avisos"):
         h.append("<h3 class='sec'>Clasificados</h3><div class='posts'>" + "".join(f"<div class='post'><b>{esc(x.get('titulo'))}</b>{esc(x.get('texto'))}<i>{esc(x.get('pie'))}</i></div>" for x in S["avisos"] if isinstance(x, dict)) + "</div>")
     wa = "https://wa.me/?text=" + urllib.request.quote(f"{titulo} · Semana {w}: {tit} {url}")
-    h.append(f"<div class='cta'><b>¿Ya lo viste? Pásalo al grupo</b><a class='compartir' href='{wa}' target='_blank' rel='noopener'>Compartir por WhatsApp</a>"
+    h.append(f"<div class='cta'><b>¿Ya lo viste? Pásalo al grupo</b><div class='btns'><a class='compartir' href='{wa}' target='_blank' rel='noopener'>Compartir por WhatsApp</a><button class='pdf' onclick='window.print()'>Descargar PDF</button></div>"
              f"<p class='pie'>¿Quieres El Pizarrón para tu liga? Pídelo en <a href='https://lapizarra.mx'>lapizarra.mx</a></p></div>")
     h.append("<p class='pie'>Hecho con los datos reales de la liga por La Pizarra. Los textos los escribe una IA con mucha carrilla; los números son reales. La Pizarra no está afiliada a la NFL ni a las plataformas de fantasy. <a href='https://lapizarra.mx/terminos.html'>Términos</a> · <a href='https://lapizarra.mx/privacidad.html'>Privacidad</a></p>")
     h.append("</div></div></body></html>")
@@ -660,7 +698,7 @@ def main():
     w = int(os.environ.get("SEMANA") or 0) or semana_terminada(season)
     if not w: print("Periódico: todavía no termina ninguna semana"); return
     print(f"Periódico: temporada {season}, semana {w}, {len(ligas)} liga(s)")
-    P = get(f"{SLEEPER}/players/nfl")
+    P = get(f"{SLEEPER}/players/nfl"); cargar_ids()
     PROJ, PROJ_SIG = proyecciones(season, w), proyecciones(season, w + 1)
     print(f"Periódico: proyecciones semana {w}: {len(PROJ)} jugadores; semana {w+1}: {len(PROJ_SIG)}")
     total = 0.0
