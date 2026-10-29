@@ -24,7 +24,7 @@ out={}
 # Igual que se probó para Liga MX: una consulta SPARQL por liga y por actualización, futbolistas de
 # clubes de ese país con foto libre en Commons. Liga MX se queda con escudos (así lo prefirió Santiago).
 # El emparejamiento (nombre EXACTO + club) se hace en el navegador, igual que antes.
-import urllib.request, urllib.parse, time
+import urllib.request, urllib.parse, time, sys
 def wd_query_text(country_qid):
     return f"""SELECT ?j ?nombre ?clubLabel ?foto WHERE {{
   ?club wdt:P17 wd:{country_qid} ; wdt:P31 wd:Q476028 .
@@ -1387,8 +1387,25 @@ AF_EQ={2278:("Guadalajara","GUA"),2279:("Tigres UANL","TUA"),2280:("Tijuana","TI
        2285:("Santos Laguna","SLA"),2286:("Pumas UNAM","PUM"),2287:("América","AME"),2288:("Necaxa","NXA"),2289:("León","LEO"),2290:("Querétaro","QUE"),
        2291:("Puebla","PUE"),2292:("Pachuca","PCH"),2295:("Cruz Azul","CAZ"),2298:("Juárez","JUA"),2312:("Atlante","ATL"),2314:("Atlético San Luis","ASL"),14002:("Mazatlán","MAZ")}
 AF_USADOS=[0]
+# Caché de respuestas (29 oct 2026): cada corrida guarda lo que contestó API-Football en .afcache/ (GitHub la guarda entre
+# corridas con actions/cache). Las corridas que dispara un cambio de código (push) usan lo guardado si tiene menos de AF_TTL
+# segundos; las programadas (7 am y 11 pm) piden todo de nuevo. Así subir cambios no gasta pedidos (el 28 oct se acabaron
+# los 7,500 del día con 21 corridas de 360 pedidos).
+import hashlib
+AF_CACHE=os.path.join(os.path.dirname(os.path.abspath(__file__)),".afcache"); AF_TTL=int(os.environ.get("AF_TTL","0") or 0); AF_DE_CACHE=[0]
 def af(ruta,**q):
     url="https://v3.football.api-sports.io/"+ruta+("?"+urllib.parse.urlencode(q) if q else "")
+    ck=os.path.join(AF_CACHE,hashlib.sha1(url.encode()).hexdigest()+".json")
+    if AF_TTL and os.path.exists(ck) and time.time()-os.path.getmtime(ck)<AF_TTL:
+        try:
+            AF_DE_CACHE[0]+=1; return json.load(open(ck,encoding="utf-8"))
+        except Exception: pass
+    r=_af_pide(url)
+    try:
+        os.makedirs(AF_CACHE,exist_ok=True); json.dump(r,open(ck,"w",encoding="utf-8"),separators=(",",":"))
+    except Exception: pass
+    return r
+def _af_pide(url):
     for intento in range(4):
         time.sleep(0.35)
         req=urllib.request.Request(url,headers={"x-apisports-key":AFK,"Accept":"application/json","User-Agent":"LaPizarra/1.0 (+https://lapizarra.mx)"})
@@ -1397,6 +1414,8 @@ def af(ruta,**q):
         AF_USADOS[0]+=1
         e=j.get("errors")
         if e and "rateLimit" in json.dumps(e) and intento<3: time.sleep(2+3*intento); continue
+        if e and "request limit" in json.dumps(e).lower():   # se acabaron los pedidos del día: no se toca la página (se queda la última buena)
+            print("API-Football: se acabaron los pedidos del día; la corrida se detiene sin cambiar la página"); sys.exit(3)
         if e and (not isinstance(e,list) or e): raise RuntimeError(f"API-Football {ruta}: {e}")
         return j.get("response") or []
     return []
@@ -1827,7 +1846,7 @@ if AFK:
     except Exception as ex:
         out['bota']={}; print("Bota de Oro: no se pudo armar:",ex)
     print("Goleadores (portada): "+", ".join(f"{k} {v['n']} {v['g']}" for k,v in out['goleo'].items()))
-    print(f"API-Football: {AF_USADOS[0]} pedidos en esta corrida (el plan Pro deja 7,500 al día)")
+    print(f"API-Football: {AF_USADOS[0]} pedidos en esta corrida y {AF_DE_CACHE[0]} de la caché (el plan Pro deja 7,500 al día)")
 else:
     out['hoy']={}
     try:   # sin API-Football: "Lo último" solo con la NFL

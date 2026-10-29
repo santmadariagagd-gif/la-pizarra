@@ -20,8 +20,15 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt firebase-admin   # firebase-admin: sube los partidos de los grupos
+      # Caché de API-Football (29 oct 2026): se recupera la de la corrida anterior y se guarda la nueva al terminar
+      - uses: actions/cache@v4
+        with:
+          path: .afcache
+          key: afcache-${{ github.run_id }}
+          restore-keys: afcache-
       - run: python build_site.py
         env:
+          AF_TTL: ${{ github.event_name == 'push' && '43200' || '0' }}   # push: usa lo guardado de las últimas 12 h; programada o a mano: todo nuevo
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}   # clave de The Odds API (Settings → Secrets and variables → Actions)
           FIREBASE_SA: ${{ secrets.FIREBASE_SA }}     # llave de servicio de Firebase (JSON) para los grupos de quiniela
           SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}   # Sportmonks: estadísticas de jugadores de fútbol
