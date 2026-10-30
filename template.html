@@ -10681,30 +10681,39 @@ dlg.addEventListener("close",()=>{ if($("#gbody .vidply")) $("#gbody").innerHTML
 // v2 (29 oct 2026): por deporte, varias listas; solo cuentas verificadas o con dominio propio (prueba de que son quienes dicen)
 // y solo publicaciones que son noticia (fuentes, lesiones, fichajes, cambios, alineaciones…). Tus equipos van primero.
 const BS={packs:{fut:[["brazikowski.eurosky.social","3le2vh6ssd72c"],["thefootymuseum.bsky.social","3laqpx4bxpi2n"],["philippeauclair.bsky.social","3letjcsp46z27"]],nfl:[["minakimes.bsky.social","3lbuvraefoe23"]],nba:[["mikevorkunov.bsky.social","3lah53b2rvu2a"]]},
-  nom:{fut:"Fútbol",nfl:"NFL",nba:"NBA"},f:"fut",c:{}}, BSAPI="https://public.api.bsky.app/xrpc/";
+  nom:{fut:"Fútbol",nfl:"NFL",nba:"NBA"},f:"fut",c:{},
+  // medios con cuenta propia (si alguno no existe en Bluesky, simplemente no trae nada)
+  medios:{fut:["as.com","marca.com","elpais.com","record.com.mx","mediotiempo.com","theathletic.com","theguardian.com","skysports.com","goal.com"],nfl:["theathletic.com"],nba:["theathletic.com"]}},
+  BSAPI="https://public.api.bsky.app/xrpc/";
+// v3 (29 oct 2026): en fútbol, además de ser noticia fuerte, tiene que hablar de un equipo grande, la Selección, una estrella o tus equipos
+const BS_FUERTE=/\b(sources?|fuentes?|breaking|[uú]ltim[ao] hora|report(?:ed|edly)|seg[uú]n|injur(?:y|ed|ies)|lesi[oó]n|lesionad[oa]|ruled out|baja|will miss|se perder[aá]|out for|signs?|signed|signing|firma|ficha(?:je)?|transfer|traspaso|agree[sd]?|agreement|acuerdo|contract|contrato|renueva|renovaci[oó]n|sacked|fired|dismissed|despid|cesad|appointed|nombrad[oa]|nuevo (?:t[eé]cnico|entrenador|dt)|suspend(?:ed|ida|ido)|sanci[oó]n|here we go|medical|revisi[oó]n m[eé]dica|loan|pr[eé]stamo|bid|oferta|traded|trade|waived|released|extension|activated|placed on|questionable|doubtful)/i;
+const BS_FUT_GRANDES=/(real madrid|barcelona|bar[cç]a|atl[eé]tico|manchester (?:united|city)|man (?:utd|united|city)|liverpool|arsenal|chelsea|tottenham|spurs|newcastle|bayern|dortmund|psg|paris saint|juventus|inter(?:\s|$|\b)|milan|napoli|am[eé]rica|chivas|guadalajara|pumas|cruz azul|tigres|monterrey|rayados|toluca|selecci[oó]n mexicana|el tri\b|mexico|m[eé]xico|liga mx|mbapp[eé]|vin[ií]cius|bellingham|yamal|haaland|salah|kane|messi|ronaldo|ra[uú]l jim[eé]nez|santiago gim[eé]nez|edson [aá]lvarez|lozano|champions league|premier league|laliga|la liga)/i;
 const BS_SI=/\b(sources?|source:|breaking|report(?:s|ed|edly)?|per\s|injur(?:y|ed|ies)|out for|ruled out|questionable|doubtful|activated|placed on|ir\b|trade[ds]?|traded|signs?|signed|signing|agree[sd]?|agreement|deal|contract|extension|released|waived|fired|hired|sacked|appointed|head coach|manager|suspend(?:ed|sion)|transfer|loan|here we go|official|confirmed|announce[ds]?|starting (?:xi|lineup)|line-?up|team news|will miss|returns?|return to|medical|bid|offer|lesi[oó]n|fichaje|baja|alta|cesad[oa]|despid|nuevo (?:t[eé]cnico|entrenador)|convocatoria|alineaci[oó]n|oficial)\b/i;
 const BS_NO=/\b(podcast|episode|newsletter|subscribe|giveaway|promo code|% off|sale|listen|live now|watch live|tune in|tickets?|merch|dvoa|breakdown|rankings? update|mock draft|quiz|poll:|trivia|thread 🧵)\b/i;
 const bsVerif=a=>a?.verification?.verifiedStatus==="valid"||a?.verification?.trustedVerifierStatus==="valid"||(a?.handle&&!/\.bsky\.social$/.test(a.handle));
-async function bsListas(k){ const key="pz_bs2_"+k; try{ const c=JSON.parse(localStorage.getItem(key)||"null"); if(c&&Date.now()-c.t<7*864e5) return c.l; }catch(e){}
+async function bsListas(k){ const key="pz_bs3_"+k; try{ const c=JSON.parse(localStorage.getItem(key)||"null"); if(c&&Date.now()-c.t<7*864e5) return c.l; }catch(e){}
   const L=(await Promise.all(BS.packs[k].map(async([h,rk])=>{ try{ const did=(await fetch(`${BSAPI}com.atproto.identity.resolveHandle?handle=${h}`).then(r=>r.json())).did;
     const sp=await fetch(`${BSAPI}app.bsky.graph.getStarterPack?starterPack=${encodeURIComponent(`at://${did}/app.bsky.graph.starterpack/${rk}`)}`).then(r=>r.json()); return sp?.starterPack?.list?.uri||null; }catch(e){ return null; } }))).filter(Boolean);
   if(L.length){ try{ localStorage.setItem(key,JSON.stringify({l:L,t:Date.now()})); }catch(e){} } return L; }
 async function bsPinta(){ const el=$("#hoyBs"); if(!el) return; const k=BS.f;
   if(!BS.c[k]||Date.now()-BS.c[k].t>5*60e3){ try{ const Ls=await bsListas(k); if(!Ls.length) throw 0;
-      const J=await Promise.all(Ls.map(l=>fetch(`${BSAPI}app.bsky.feed.getListFeed?list=${encodeURIComponent(l)}&limit=100`).then(r=>r.json()).catch(()=>({feed:[]}))));
+      const J=await Promise.all([...Ls.map(l=>fetch(`${BSAPI}app.bsky.feed.getListFeed?list=${encodeURIComponent(l)}&limit=100`).then(r=>r.json()).catch(()=>({feed:[]}))),
+        ...(BS.medios[k]||[]).map(h=>fetch(`${BSAPI}app.bsky.feed.getAuthorFeed?actor=${encodeURIComponent(h)}&filter=posts_no_replies&limit=50`).then(r=>r.ok?r.json():{feed:[]}).catch(()=>({feed:[]})))]);
       const fav=Object.values(FAV?.eq||{}).map(x=>String(x.n||"").toLowerCase()).filter(n=>n.length>3), visto=new Set(), lim=Date.now()-3*864e5;
       const F=J.flatMap(j=>j.feed||[]).filter(x=>{ const P=x.post, t=String(P?.record?.text||""), A=P?.author;
         if(!P||x.reason||x.reply||P.record?.reply||visto.has(P.uri)) return false; visto.add(P.uri);
         if((P.labels||[]).length||(A?.labels||[]).some(l=>/porn|sexual|nudity|graphic|spam/.test(l.val))) return false;
-        if(t.length<50||!bsVerif(A)||BS_NO.test(t)||!BS_SI.test(t)) return false;
+        if(t.length<50||!bsVerif(A)||BS_NO.test(t)||!BS_FUERTE.test(t)) return false;
+        if(k==="fut"&&!BS_FUT_GRANDES.test(t)&&!fav.some(n=>t.toLowerCase().includes(n.split(" ")[0]))) return false;
+        if(k==="fut"&&/\b(nfl|nba|touchdown|quarterback|lakers|celtics)\b/i.test(t)) return false;
         return Date.parse(P.record?.createdAt||P.indexedAt)>lim; });
       const pf=x=>fav.some(n=>String(x.post.record.text).toLowerCase().includes(n.split(" ")[0]))?1:0;
       F.sort((a,b)=>pf(b)-pf(a)||Date.parse(b.post.indexedAt)-Date.parse(a.post.indexedAt));
-      BS.c[k]={t:Date.now(),F:F.slice(0,8)}; }
+      BS.c[k]={t:Date.now(),F:F.slice(0,6)}; }
     catch(e){ BS.c[k]={t:Date.now(),F:[]}; } }
   const F=BS.c[k].F;
   const txt=t=>hoyEsc(t).replace(/\n+/g,"<br>");
-  el.innerHTML=`<section class="hsec bssec"><div class="hh"><h3>Noticias</h3><small class="vidsub">Cuentas verificadas en Bluesky · en inglés</small></div>
+  el.innerHTML=`<section class="hsec bssec"><div class="hh"><h3>Noticias</h3><small class="vidsub">Medios y cuentas verificadas en Bluesky</small></div>
     <div class="hseg vidf">${Object.keys(BS.packs).map(x=>`<button data-bsf="${x}" aria-pressed="${x===k}">${BS.nom[x]}</button>`).join("")}</div>
     <div class="bslist">${F.map(x=>{ const P=x.post, A=P.author, rk=String(P.uri).split("/").pop(), img=P.embed?.images?.[0]?.thumb||P.embed?.media?.images?.[0]?.thumb||P.embed?.external?.thumb, url=`https://bsky.app/profile/${encodeURIComponent(A.handle)}/post/${encodeURIComponent(rk)}`;
       return `<a class="bspost" href="${url}" target="_blank" rel="noopener"><span class="bsa">${A.avatar?`<img src="${hoyEsc(A.avatar)}" alt="" loading="lazy">`:""}<span><b>${hoyEsc(A.displayName||A.handle)}</b><small>@${hoyEsc(A.handle)} · ${hoyEsc(amHace({seconds:Date.parse(P.record?.createdAt||P.indexedAt)/1000}))}</small></span></span>
