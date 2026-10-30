@@ -19,16 +19,22 @@ CANALES = {
     "ucl": (["user:UEFAchampionsleague", "@ChampionsLeague", "user:UEFA", "@UEFA"], ["highlights", "goals", "resumen"]),
     "eng": (["UCG5qGWdu8nIRZqJ_GgDwQ-w", "user:premierleague", "@premierleague"], ["highlights", "goals"]),
     "nba": (["UCWJ2lWNubArHWmf3FIHbfcQ", "user:NBA", "@NBA"], ["highlights", "game recap", "full game"]),
-    "nfl": (["user:NFL", "@NFL", "UCDVYQ4Zhbm3S2dlz7P1GBDg"], ["highlights", "game recap"]),
+    "nfl": (["@NFL", "user:NFL"], ["highlights", "game recap", "best plays", "every touchdown"]),
     "f1":  (["user:Formula1", "@Formula1", "UCB_qr75-ydFVKSF9Dmo6izg"], ["highlights", "race", "qualifying"]),
 }
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
       "Accept-Language": "es-MX,es;q=0.9,en;q=0.8", "Cookie": "CONSENT=YES+1; SOCS=CAI"}
 NS = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015", "m": "http://search.yahoo.com/mrss/"}
 
-def pide(url):
-    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
-        return r.read().decode("utf-8", "replace")
+def pide(url, intentos=4):
+    """YouTube a veces contesta 404 a sus propios RSS por un rato: se reintenta unas veces antes de rendirse."""
+    for i in range(intentos):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
+                return r.read().decode("utf-8", "replace")
+        except Exception as e:
+            if i == intentos - 1 or "404" not in str(e) and "429" not in str(e) and "5" != str(getattr(e, "code", ""))[:1]: raise
+            time.sleep(3 + 4 * i)
 
 def canal_id(c, cache):
     if (c.startswith("UC") and len(c) == 24) or c.startswith("user:"): return c
