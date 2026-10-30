@@ -10668,7 +10668,7 @@ async function vidPinta(){ const el=$("#hoyVid"); if(!el) return;
   const fav=Object.values(FAV?.eq||{}).map(x=>String(x.n||"").toLowerCase().split(" ")[0]).filter(n=>n.length>3);
   const esFav=v=>fav.some(n=>v.t.toLowerCase().includes(n))?1:0;
   const ligs=[...new Set(V.map(v=>v.c))].filter(k=>VID_LIG[k]); if(VID.f!=="todo"&&!ligs.includes(VID.f)) VID.f="todo";
-  const sc=v=>(v.vw||0)*(v.k?3:1)*(esFav(v)?4:1)||v.ts/1e9;   // vistas, con extra a partidos grandes y a tus equipos
+  const orden=new Map(V.map((v,i)=>[v.id,i])), sc=v=>(esFav(v)?1e6:0)+(VID.f==="todo"?-orden.get(v.id):(v.sc||0));   // tus equipos primero; luego el orden de la semana (las ligas intercaladas)
   const L=V.filter(v=>VID.f==="todo"||v.c===VID.f).sort((a,b)=>sc(b)-sc(a)).slice(0,12);
   const vistas=n=>!n?"":n>=1e6?`${(n/1e6).toFixed(1).replace(".0","")} M vistas`:n>=1e3?`${Math.round(n/1e3)} mil vistas`:`${n} vistas`;
   el.innerHTML=`<section class="hsec vidsec"><div class="hh"><h3>Lo más visto de la semana</h3><small class="vidsub">Videos oficiales</small></div>

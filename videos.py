@@ -143,11 +143,18 @@ def generar(ruta_prev=None):
             B.sort(key=lambda x: -(x["vw"] * (3 if x["k"] else 1)))
             salida += B[:6]
             dbg.setdefault(liga, []).append(["ok", f"{nombre}: {len(B)} de {len(V)}"])
+            if len(B) < 2: dbg[liga].append(["títulos", [x["t"][:70] for x in V[:10]]])   # para ajustar el filtro
+            if B:   # puntaje relativo a su liga: así la F1 o la NBA (millones de vistas) no tapan a las demás
+                med = sorted(x["vw"] for x in B)[len(B) // 2] or 1
+                for x in B: x["sc"] = round(x["vw"] / med * (3 if x["k"] else 1) * (1.5 if "highlight" in x["t"].lower() or "resumen" in x["t"].lower() else 1), 2)
         except Exception as e:
             dbg.setdefault(liga, []).append(["error", str(e)[:100]])
             salida += [x for x in prev.get("v") or [] if x.get("c") == liga and ahora - x.get("ts", 0) < DIAS * 86400 and bueno(liga, x.get("t", ""), palabras)]
             if liga in (prev.get("can") or {}): can[liga] = prev["can"][liga]
-    salida.sort(key=lambda x: -(x.get("vw", 0) * (3 if x.get("k") else 1)))
+    # en "Todo": se intercalan las ligas (el mejor de cada una, luego el segundo…)
+    por = {}
+    for x in sorted(salida, key=lambda x: -x.get("sc", 0)): por.setdefault(x["c"], []).append(x)
+    salida = [L[i] for i in range(6) for L in por.values() if i < len(L)]
     return {"al": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "v": salida, "can": can, "dbg": dbg}
 
 if __name__ == "__main__":
