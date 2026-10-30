@@ -7540,7 +7540,7 @@ function pzEntraSeccion(id){
 }
 (()=>{ const m=document.createElement("div"); m.id="pzMini"; m.setAttribute("aria-hidden","true"); document.body.append(m); let on=false;
   addEventListener("scroll",()=>{ const y=scrollY>110; if(y===on) return; on=y;
-    if(on){ const p=document.querySelector("section.panel:not(.hidden)"), t=p?.querySelector("h1,h2")?.textContent||""; m.innerHTML=`<span>La <b>Pizarra</b></span><em>${hoyEsc(t)}</em>`; }
+    if(on){ const p=document.querySelector("section.panel:not(.hidden)"), h=p?.querySelector("h1,h2"), t=(h?.querySelector(".hm")||h)?.textContent||""; m.innerHTML=`<span>La <b>Pizarra</b></span><em>${hoyEsc(t)}</em>`; }
     m.classList.toggle("on",on); },{passive:true}); })();
 // Brillitos al seguir (estrella)
 function pzChispas(btn){ if(PZ_RM()) return; const c=document.createElement("span"); c.className="pzchis"; c.setAttribute("aria-hidden","true");
@@ -10128,12 +10128,17 @@ function favToggle(k,dat){
   if(on) FAV[grupo][k]=dat; else delete FAV[grupo][k];
   pzTrack("fav",{k,on}); favGuarda(); return on;
 }
+// Apodos para encontrar a los equipos como les dice la gente (29 oct 2026)
+const FAV_APODO={2278:"chivas rebano",2287:"aguilas america",2286:"pumas unam universidad",2295:"la maquina cementeros",2279:"tigres felinos",2282:"rayados",2283:"zorros rojinegros",2281:"diablos rojos",2285:"guerreros",2292:"tuzos",2289:"la fiera esmeraldas",2280:"xolos",2290:"gallos blancos",2291:"la franja camoteros",2288:"rayos",2314:"san luis",2298:"bravos",2312:"potros de hierro",14002:"canoneros",
+  541:"merengues madrid",529:"barca blaugrana",530:"atleti colchoneros",33:"man united red devils",50:"man city citizens",40:"reds",42:"gunners",47:"spurs",49:"blues",157:"bayern munich",85:"psg paris",505:"inter milan",489:"milan rossoneri",496:"juve"};
 function favEquipos(tab){   // [{k,n,logo,lg,sub,h}] (h = encabezado de grupo)
   if(tab==="nfl") return Object.entries(NT).map(([a,t])=>({k:"n"+a,n:t.name||t.n,logo:t.logo,lg:"nfl"})).sort((a,b)=>a.n.localeCompare(b.n,"es"));
   if(tab==="sel") return [{k:"f16",n:"México",logo:favLogoF(16),lg:"sel",sub:"Selección"}];
   const ligas=tab==="mx"?["mx"]:["eng","esp","ita","ger","fra","por","arg","sau"], R=[];
-  for(const lg of ligas){ const L=D.fav_eq?.[lg]||[]; if(!L.length) continue; if(tab!=="mx") R.push({h:FAV_LIGA[lg]});
-    L.forEach(([id,n])=>R.push({k:"f"+id,n,logo:favLogoF(id),lg})); }
+  for(const lg of ligas){ let L=D.fav_eq?.[lg]||[];
+    if(!L.length&&lg==="mx") L=Object.entries(AF_EQ).filter(([id])=>id!=="2312"||true).map(([id,v])=>[+id,v[0]]).sort((a,b)=>a[1].localeCompare(b[1],"es"));   // 29 oct 2026: respaldo si la página salió sin la lista
+    if(!L.length) continue; if(tab!=="mx") R.push({h:FAV_LIGA[lg]});
+    L.forEach(([id,n])=>R.push({k:"f"+id,n,logo:favLogoF(id),lg,al:FAV_APODO[id]||""})); }
   return R;
 }
 async function favCargaJug(){
@@ -10172,7 +10177,7 @@ function favListaHTML(){
     return R.length?`<div class="fgrid">${R.map(x=>favItem(x,"jug")).join("")}</div>`:`<p class="note">No lo encontramos. Buscamos en la Liga MX, las grandes ligas de Europa, los goleadores de toda Europa y la Selección.</p>`;
   }
   if(["nba","f1","ten"].includes(FAV_UI.tab)) return favxListaHTML(FAV_UI.tab,q);
-  const L=favEquipos(FAV_UI.tab).filter(x=>x.h||!q||goNorm(x.n).includes(q));
+  const L=favEquipos(FAV_UI.tab).filter(x=>x.h||!q||goNorm(x.n+" "+(x.al||"")).includes(q));
   const R=L.filter((x,i)=>!x.h||(L[i+1]&&!L[i+1].h));   // sin encabezados vacíos
   const mundo=FAV_UI.tab==="mundo"?favxMundoHTML(q):"";
   return R.length?`<div class="fgrid">${R.map(x=>x.h?`<p class="fgh">${hoyEsc(x.h)}</p>`:favItem(x,"eq")).join("")}</div>${mundo}`:mundo||`<p class="note">No hay equipos con ese nombre en esta pestaña.</p>`;
