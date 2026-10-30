@@ -1,30 +1,48 @@
 """
-La Pizarra · Videos oficiales (29 oct 2026)
+La Pizarra · Videos oficiales (29 oct 2026; v2 el mismo día)
 
-Resúmenes y jugadas de los canales OFICIALES de YouTube (Liga MX, Champions, Premier, NBA, NFL, F1). YouTube publica
-un RSS gratis por canal (youtube.com/feeds/videos.xml?channel_id=…) y sus términos permiten poner los videos en otra
-página con su reproductor. Solo se guardan id, título, canal y fecha; el video se ve con el reproductor de YouTube.
+Los videos más importantes de la semana de los canales OFICIALES de YouTube (Liga MX, Champions, Premier, NBA, NFL, F1).
+Solo se guardan id, título, canal, fecha y vistas; el video se ve con el reproductor de YouTube (sus términos lo permiten).
 
-Sale en docs/datos/videos.json = {al, v: [{id, t, c: liga, n: canal, ts}], can: {liga: {id, n}}}
-Se llama desde build_site.py (corrida de la mañana y de la noche). Prueba sola: python videos.py
+Dos formas de leer YouTube:
+  1. Con la llave gratis de YouTube (secreto YT_API_KEY): lo más confiable. Trae las vistas reales de cada video, la
+     duración (para quitar los "shorts") y encuentra solo el canal oficial de la Liga MX.
+  2. Sin llave: el RSS público de cada canal (a veces YouTube lo contesta con error; se reintenta y si no, se quedan los
+     de la vez anterior). El RSS también trae las vistas.
+
+"Los más importantes de la semana": de los últimos 7 días, solo resúmenes y jugadas (no shorts, no videos de años
+pasados), ordenados por vistas, con extra a los clásicos y partidos grandes.
+
+Sale en docs/datos/videos.json = {al, v: [{id, t, c: liga, n: canal, ts, vw: vistas, k: 1 si es clásico/partido grande}], can, dbg}
+Se llama desde build_site.py. Prueba sola: python videos.py
 """
-import json, os, re, time, urllib.request
+import json, os, re, time, urllib.parse, urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
-# liga: (@ del canal o ids posibles, palabras que debe traer el título para que sea resumen o jugada)
-# Candidatos: id del canal (UC…), "user:" nombre viejo de usuario (RSS ?user=) o "@" del canal (se busca su id en la página)
+# liga: (candidatos de canal, búsqueda para encontrarlo con la llave, palabras que debe traer el título)
 CANALES = {
-    "mx":  (["@LIGABBVAMX", "@ligabbvamx", "user:LIGABBVAMX", "user:ligamx", "@LigaMXoficial"], ["resumen", "goles", "gol ", "highlights"]),
-    "ucl": (["user:UEFAchampionsleague", "@ChampionsLeague", "user:UEFA", "@UEFA"], ["highlights", "goals", "resumen"]),
-    "eng": (["UCG5qGWdu8nIRZqJ_GgDwQ-w", "user:premierleague", "@premierleague"], ["highlights", "goals"]),
-    "nba": (["UCWJ2lWNubArHWmf3FIHbfcQ", "user:NBA", "@NBA"], ["highlights", "game recap", "full game"]),
-    "nfl": (["@NFL", "user:NFL"], ["highlights", "game recap", "best plays", "every touchdown"]),
-    "f1":  (["user:Formula1", "@Formula1", "UCB_qr75-ydFVKSF9Dmo6izg"], ["highlights", "race", "qualifying"]),
+    "mx":  (["@LIGABBVAMX", "@ligabbvamx", "user:LIGABBVAMX"], "LIGA BBVA MX", ["resumen", "goles", "highlights"]),
+    "ucl": (["@ChampionsLeague", "user:UEFA", "@UEFA"], "UEFA Champions League", ["highlights", "goals", "resumen"]),
+    "eng": (["UCG5qGWdu8nIRZqJ_GgDwQ-w", "@premierleague"], "Premier League", ["highlights", "goals"]),
+    "nba": (["UCWJ2lWNubArHWmf3FIHbfcQ", "@NBA"], "NBA", ["highlights", "game recap"]),
+    "nfl": (["@NFL", "user:NFL"], "NFL", ["highlights", "game recap", "best plays", "every touchdown"]),
+    "f1":  (["UCB_qr75-ydFVKSF9Dmo6izg", "@Formula1"], "FORMULA 1", ["highlights"]),
+}
+# Partidos grandes: si el título trae dos de estos de la misma liga (o dice clásico/derby), suben
+GRANDES = {
+    "mx": ["america", "américa", "chivas", "guadalajara", "pumas", "cruz azul", "tigres", "monterrey", "rayados", "toluca"],
+    "ucl": ["real madrid", "barcelona", "bayern", "liverpool", "manchester city", "arsenal", "psg", "paris", "inter", "juventus", "milan", "chelsea", "atlético", "atletico"],
+    "eng": ["liverpool", "manchester city", "man city", "arsenal", "manchester united", "man united", "chelsea", "tottenham", "spurs", "newcastle"],
+    "nba": ["lakers", "celtics", "warriors", "knicks", "thunder", "nuggets", "cavaliers", "bucks", "76ers", "spurs"],
+    "nfl": ["chiefs", "eagles", "cowboys", "bills", "49ers", "ravens", "packers", "lions", "steelers"],
+    "f1": [],
 }
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
       "Accept-Language": "es-MX,es;q=0.9,en;q=0.8", "Cookie": "CONSENT=YES+1; SOCS=CAI"}
 NS = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015", "m": "http://search.yahoo.com/mrss/"}
+KEY = os.environ.get("YT_API_KEY", "").strip()
+DIAS = 7
 
 def pide(url, intentos=4):
     """YouTube a veces contesta 404 a sus propios RSS por un rato: se reintenta unas veces antes de rendirse."""
@@ -33,65 +51,107 @@ def pide(url, intentos=4):
             with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
                 return r.read().decode("utf-8", "replace")
         except Exception as e:
-            if i == intentos - 1 or "404" not in str(e) and "429" not in str(e) and "5" != str(getattr(e, "code", ""))[:1]: raise
+            cod = getattr(e, "code", 0) or 0
+            if i == intentos - 1 or not (cod in (404, 429) or cod >= 500): raise
             time.sleep(3 + 4 * i)
 
-def canal_id(c, cache):
-    if (c.startswith("UC") and len(c) == 24) or c.startswith("user:"): return c
-    if c in cache: return cache[c]
-    try:
-        h = pide(f"https://www.youtube.com/{c}")
-        m = re.search(r'"(?:externalId|channelId)":"(UC[\w-]{22})"', h) or re.search(r'youtube\.com/channel/(UC[\w-]{22})', h)
-        if m: cache[c] = m.group(1); return m.group(1)
-    except Exception as e:
-        print("Videos: no se encontró", c, e)
-    return None
+def api(ruta, **q):
+    q["key"] = KEY
+    return json.loads(pide("https://www.googleapis.com/youtube/v3/" + ruta + "?" + urllib.parse.urlencode(q), intentos=2))
 
-def feed(cid):
-    q = f"user={cid[5:]}" if cid.startswith("user:") else f"channel_id={cid}"
-    x = ET.fromstring(pide(f"https://www.youtube.com/feeds/videos.xml?{q}"))
-    nombre = (x.findtext("a:title", default="", namespaces=NS) or "").strip()
+def iso_dur(d):   # PT1M5S → 65
+    m = re.match(r"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", d or "")
+    return (int(m.group(1) or 0) * 3600 + int(m.group(2) or 0) * 60 + int(m.group(3) or 0)) if m else 0
+
+def bueno(liga, t, palabras):
+    tl = t.lower()
+    if "#short" in tl or "shorts" in tl: return False
+    if not any(p in tl for p in palabras): return False
+    año = datetime.now().year
+    temporadas = [int(b) for a, b in re.findall(r"\b(20\d\d)\s*[-/]\s*(\d\d)\b", t)]
+    años = [int(y) for y in re.findall(r"\b(19\d\d|20\d\d)\b", t)]
+    if temporadas and max(temporadas) >= año % 100: return True      # "2026-27"
+    if años and max(años) < año: return False                         # "Highlights 2021": video viejo
+    return True
+
+def grande(liga, t):
+    tl = t.lower(); L = GRANDES.get(liga) or []
+    return 1 if sum(1 for x in L if x in tl) >= 2 or "clásico" in tl or "clasico" in tl or "derby" in tl else 0
+
+def por_api(liga, cands, busq, cache, dbg):
+    cid = cache.get(liga)
+    if not cid:
+        for c in cands:
+            try:
+                if c.startswith("@"): j = api("channels", part="id", forHandle=c)
+                elif c.startswith("UC"): j = {"items": [{"id": c}]}
+                else: continue
+                if j.get("items"): cid = j["items"][0]["id"]; break
+            except Exception as e: dbg.setdefault(liga, []).append([c, str(e)[:80]])
+        if not cid:
+            j = api("search", part="snippet", q=busq, type="channel", maxResults=1)
+            if j.get("items"): cid = j["items"][0]["snippet"]["channelId"]
+    if not cid: raise RuntimeError("sin canal")
+    ch = api("channels", part="contentDetails,snippet", id=cid)["items"][0]
+    nombre, up = ch["snippet"]["title"], ch["contentDetails"]["relatedPlaylists"]["uploads"]
+    its = api("playlistItems", part="contentDetails", playlistId=up, maxResults=50).get("items") or []
+    ids = [x["contentDetails"]["videoId"] for x in its]
     V = []
-    for e in x.findall("a:entry", NS):
-        vid = e.findtext("yt:videoId", default="", namespaces=NS)
-        t = (e.findtext("a:title", default="", namespaces=NS) or "").strip()
-        pub = e.findtext("a:published", default="", namespaces=NS)
-        try: ts = datetime.fromisoformat(pub.replace("Z", "+00:00")).timestamp()
-        except Exception: ts = 0
-        if vid and t: V.append({"id": vid, "t": t[:140], "ts": int(ts)})
-    return nombre, V
+    if ids:
+        for x in api("videos", part="snippet,statistics,contentDetails", id=",".join(ids)).get("items") or []:
+            ts = datetime.fromisoformat(x["snippet"]["publishedAt"].replace("Z", "+00:00")).timestamp()
+            if iso_dur(x["contentDetails"].get("duration")) < 70: continue   # shorts
+            V.append({"id": x["id"], "t": x["snippet"]["title"][:140], "ts": int(ts), "vw": int(x["statistics"].get("viewCount", 0))})
+    return cid, nombre, V
+
+def por_rss(liga, cands, cache, dbg):
+    for c in cands:
+        cid = cache.get(liga) if c.startswith("@") and cache.get(liga) else c
+        if cid.startswith("@"):
+            try:
+                h = pide(f"https://www.youtube.com/{c}", intentos=2)
+                m = re.search(r'"(?:externalId|channelId)":"(UC[\w-]{22})"', h)
+                cid = m.group(1) if m else None
+            except Exception as e: dbg.setdefault(liga, []).append([c, str(e)[:80]]); cid = None
+            if not cid: continue
+        q = f"user={cid[5:]}" if cid.startswith("user:") else f"channel_id={cid}"
+        try: x = ET.fromstring(pide(f"https://www.youtube.com/feeds/videos.xml?{q}"))
+        except Exception as e: dbg.setdefault(liga, []).append([c, str(e)[:80]]); continue
+        nombre = (x.findtext("a:title", default="", namespaces=NS) or "").strip(); V = []
+        for e in x.findall("a:entry", NS):
+            vid = e.findtext("yt:videoId", default="", namespaces=NS); t = (e.findtext("a:title", default="", namespaces=NS) or "").strip()
+            try: ts = datetime.fromisoformat(e.findtext("a:published", default="", namespaces=NS).replace("Z", "+00:00")).timestamp()
+            except Exception: ts = 0
+            st = e.find("m:group/m:community/m:statistics", NS); vw = int(st.get("views", 0)) if st is not None else 0
+            if vid and t: V.append({"id": vid, "t": t[:140], "ts": int(ts), "vw": vw})
+        chid = e.findtext("yt:channelId", default="", namespaces=NS) if x.findall("a:entry", NS) else ""
+        return (chid or (cid if cid.startswith("UC") else "")), nombre, V
+    raise RuntimeError("sin canal")
 
 def generar(ruta_prev=None):
     prev = {}
     if ruta_prev and os.path.exists(ruta_prev):
         try: prev = json.load(open(ruta_prev, encoding="utf-8"))
         except Exception: prev = {}
-    cache = {}
-    for k, v in (prev.get("can") or {}).items():
-        if v.get("h"): cache[v["h"]] = v["id"]
-    ahora = time.time(); salida = []; can = {}; dbg = {}
-    for liga, (cands, palabras) in CANALES.items():
-        ok = False
-        for c in cands:
-            cid = canal_id(c, cache)
-            if not cid: dbg.setdefault(liga, []).append([c, "sin id"]); continue
-            try: nombre, V = feed(cid)
-            except Exception as e: print("Videos:", liga, c, e); dbg.setdefault(liga, []).append([c, str(e)[:80]]); continue
-            can[liga] = {"id": cid, "n": nombre, "h": c if c.startswith("@") else ""}
-            buenos = [x for x in V if ahora - x["ts"] < 5 * 86400 and any(p in x["t"].lower() for p in palabras)
-                      and "#shorts" not in x["t"].lower()]
-            for x in buenos[:8]: salida.append({**x, "c": liga, "n": nombre})
-            print(f"Videos: {liga} → {nombre} ({cid}): {len(buenos)} de {len(V)}")
-            dbg.setdefault(liga, []).append([c, f"ok {nombre}: {len(buenos)} de {len(V)}"])
-            ok = True; break
-        if not ok:   # si un canal falla, se quedan sus videos de la vez anterior
-            salida += [x for x in prev.get("v") or [] if x.get("c") == liga and ahora - x.get("ts", 0) < 5 * 86400]
+    cache = {k: v.get("id") for k, v in (prev.get("can") or {}).items() if str(v.get("id", "")).startswith("UC")}
+    ahora = time.time(); salida = []; can = {}; dbg = {"modo": ["api" if KEY else "rss"]}
+    for liga, (cands, busq, palabras) in CANALES.items():
+        try:
+            cid, nombre, V = por_api(liga, cands, busq, cache, dbg) if KEY else por_rss(liga, cands, cache, dbg)
+            can[liga] = {"id": cid, "n": nombre}
+            B = [{**x, "c": liga, "n": nombre, "k": grande(liga, x["t"])} for x in V if ahora - x["ts"] < DIAS * 86400 and bueno(liga, x["t"], palabras)]
+            B.sort(key=lambda x: -(x["vw"] * (3 if x["k"] else 1)))
+            salida += B[:6]
+            dbg.setdefault(liga, []).append(["ok", f"{nombre}: {len(B)} de {len(V)}"])
+        except Exception as e:
+            dbg.setdefault(liga, []).append(["error", str(e)[:100]])
+            salida += [x for x in prev.get("v") or [] if x.get("c") == liga and ahora - x.get("ts", 0) < DIAS * 86400 and bueno(liga, x.get("t", ""), palabras)]
             if liga in (prev.get("can") or {}): can[liga] = prev["can"][liga]
-    salida.sort(key=lambda x: -x["ts"])
+    salida.sort(key=lambda x: -(x.get("vw", 0) * (3 if x.get("k") else 1)))
     return {"al": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "v": salida, "can": can, "dbg": dbg}
 
 if __name__ == "__main__":
     r = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "datos", "videos.json")
     out = generar(r)
     json.dump(out, open(r, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
-    print(len(out["v"]), "videos")
+    print(len(out["v"]), "videos", out["dbg"])

@@ -1843,7 +1843,7 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .vidc{flex:0 0 240px;scroll-snap-align:start;display:flex;flex-direction:column;gap:5px;padding:0;border:0;background:none;color:var(--ink);text-align:left;cursor:pointer}
 .vidth{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:#15241F}.vidth img{width:100%;height:100%;object-fit:cover;display:block}
 .vidth i{position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-style:normal;display:flex;align-items:center;justify-content:center;font-size:18px}
-.vidth em{position:absolute;top:6px;left:6px;font:700 11px var(--body);font-style:normal;padding:3px 8px;border-radius:8px;background:var(--mark);color:#1d2a26}
+.vidth em.gr{background:#FF9C80}.vidth em{position:absolute;top:6px;left:6px;font:700 11px var(--body);font-style:normal;padding:3px 8px;border-radius:8px;background:var(--mark);color:#1d2a26}
 .vidc b{font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.vidc small{color:var(--muted);font-size:12px}
 .vidply h2{font-size:20px;margin:0 40px 10px 0}.vidfr{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}.vidfr iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .bslist{display:flex;flex-direction:column;gap:8px;max-width:640px}.bspost{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none}
@@ -10663,31 +10663,47 @@ async function vidPinta(){ const el=$("#hoyVid"); if(!el) return;
   const fav=Object.values(FAV?.eq||{}).map(x=>String(x.n||"").toLowerCase().split(" ")[0]).filter(n=>n.length>3);
   const esFav=v=>fav.some(n=>v.t.toLowerCase().includes(n))?1:0;
   const ligs=[...new Set(V.map(v=>v.c))].filter(k=>VID_LIG[k]); if(VID.f!=="todo"&&!ligs.includes(VID.f)) VID.f="todo";
-  const L=V.filter(v=>VID.f==="todo"||v.c===VID.f).sort((a,b)=>(esFav(b)-esFav(a))||b.ts-a.ts).slice(0,12);
-  el.innerHTML=`<section class="hsec vidsec"><div class="hh"><h3>Videos</h3><small class="vidsub">Resúmenes de los canales oficiales</small></div>
+  const sc=v=>(v.vw||0)*(v.k?3:1)*(esFav(v)?4:1)||v.ts/1e9;   // vistas, con extra a partidos grandes y a tus equipos
+  const L=V.filter(v=>VID.f==="todo"||v.c===VID.f).sort((a,b)=>sc(b)-sc(a)).slice(0,12);
+  const vistas=n=>!n?"":n>=1e6?`${(n/1e6).toFixed(1).replace(".0","")} M vistas`:n>=1e3?`${Math.round(n/1e3)} mil vistas`:`${n} vistas`;
+  el.innerHTML=`<section class="hsec vidsec"><div class="hh"><h3>Lo más visto de la semana</h3><small class="vidsub">Videos oficiales</small></div>
     <div class="hseg vidf">${[["todo","Todo"],...ligs.map(k=>[k,VID_LIG[k][0]])].map(([k,n])=>`<button data-vidf="${k}" aria-pressed="${VID.f===k}">${n}</button>`).join("")}</div>
-    <div class="vidrow">${L.map(v=>`<button class="vidc" data-vid="${hoyEsc(v.id)}" data-vidt="${hoyEsc(v.t)}"><span class="vidth"><img src="https://i.ytimg.com/vi/${encodeURIComponent(v.id)}/mqdefault.jpg" alt="" loading="lazy"><i aria-hidden="true">▶</i>${esFav(v)?`<em>Tu equipo</em>`:""}</span><b>${hoyEsc(v.t)}</b><small>${VID_LIG[v.c]?.[1]||""} ${hoyEsc(VID_LIG[v.c]?.[0]||"")} · ${hoyEsc(amHace({seconds:v.ts}))}</small></button>`).join("")}</div></section>`; }
+    <div class="vidrow">${L.map(v=>`<button class="vidc" data-vid="${hoyEsc(v.id)}" data-vidt="${hoyEsc(v.t)}"><span class="vidth"><img src="https://i.ytimg.com/vi/${encodeURIComponent(v.id)}/mqdefault.jpg" alt="" loading="lazy"><i aria-hidden="true">▶</i>${esFav(v)?`<em>Tu equipo</em>`:v.k?`<em class="gr">Partidazo</em>`:""}</span><b>${hoyEsc(v.t)}</b><small>${VID_LIG[v.c]?.[1]||""} ${hoyEsc(VID_LIG[v.c]?.[0]||"")} · ${[vistas(v.vw),hoyEsc(amHace({seconds:v.ts}))].filter(Boolean).join(" · ")}</small></button>`).join("")}</div></section>`; }
 function vidAbre(id,t){ $("#gbody").innerHTML=`<div class="vidply"><h2>${hoyEsc(t)}</h2><div class="vidfr"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1" title="${hoyEsc(t)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
   <p class="note">Video oficial en YouTube. Si no se reproduce aquí, <a class="q5link" href="https://www.youtube.com/watch?v=${encodeURIComponent(id)}" target="_blank" rel="noopener">ábrelo en YouTube</a>.</p></div>`;
   if(!dlg.open) dlg.showModal(); FICHA.pila=[]; pzTrack("video",{id}); }
 dlg.addEventListener("close",()=>{ if($("#gbody .vidply")) $("#gbody").innerHTML=""; });
-const BS={packs:{nfl:["minakimes.bsky.social","3lbuvraefoe23","NFL"],nba:["mikevorkunov.bsky.social","3lah53b2rvu2a","NBA"]},f:"nfl",c:{}}, BSAPI="https://public.api.bsky.app/xrpc/";
-async function bsLista(k){ const key="pz_bs_"+k; try{ const c=JSON.parse(localStorage.getItem(key)||"null"); if(c&&Date.now()-c.t<7*864e5) return c.l; }catch(e){}
-  const [h,rk]=BS.packs[k], did=(await fetch(`${BSAPI}com.atproto.identity.resolveHandle?handle=${h}`).then(r=>r.json())).did;
-  const sp=await fetch(`${BSAPI}app.bsky.graph.getStarterPack?starterPack=${encodeURIComponent(`at://${did}/app.bsky.graph.starterpack/${rk}`)}`).then(r=>r.json());
-  const l=sp?.starterPack?.list?.uri; if(l){ try{ localStorage.setItem(key,JSON.stringify({l,t:Date.now()})); }catch(e){} } return l; }
+// v2 (29 oct 2026): por deporte, varias listas; solo cuentas verificadas o con dominio propio (prueba de que son quienes dicen)
+// y solo publicaciones que son noticia (fuentes, lesiones, fichajes, cambios, alineaciones…). Tus equipos van primero.
+const BS={packs:{fut:[["brazikowski.eurosky.social","3le2vh6ssd72c"],["thefootymuseum.bsky.social","3laqpx4bxpi2n"],["philippeauclair.bsky.social","3letjcsp46z27"]],nfl:[["minakimes.bsky.social","3lbuvraefoe23"]],nba:[["mikevorkunov.bsky.social","3lah53b2rvu2a"]]},
+  nom:{fut:"Fútbol",nfl:"NFL",nba:"NBA"},f:"fut",c:{}}, BSAPI="https://public.api.bsky.app/xrpc/";
+const BS_SI=/\b(sources?|source:|breaking|report(?:s|ed|edly)?|per\s|injur(?:y|ed|ies)|out for|ruled out|questionable|doubtful|activated|placed on|ir\b|trade[ds]?|traded|signs?|signed|signing|agree[sd]?|agreement|deal|contract|extension|released|waived|fired|hired|sacked|appointed|head coach|manager|suspend(?:ed|sion)|transfer|loan|here we go|official|confirmed|announce[ds]?|starting (?:xi|lineup)|line-?up|team news|will miss|returns?|return to|medical|bid|offer|lesi[oó]n|fichaje|baja|alta|cesad[oa]|despid|nuevo (?:t[eé]cnico|entrenador)|convocatoria|alineaci[oó]n|oficial)\b/i;
+const BS_NO=/\b(podcast|episode|newsletter|subscribe|giveaway|promo code|% off|sale|listen|live now|watch live|tune in|tickets?|merch|dvoa|breakdown|rankings? update|mock draft|quiz|poll:|trivia|thread 🧵)\b/i;
+const bsVerif=a=>a?.verification?.verifiedStatus==="valid"||a?.verification?.trustedVerifierStatus==="valid"||(a?.handle&&!/\.bsky\.social$/.test(a.handle));
+async function bsListas(k){ const key="pz_bs2_"+k; try{ const c=JSON.parse(localStorage.getItem(key)||"null"); if(c&&Date.now()-c.t<7*864e5) return c.l; }catch(e){}
+  const L=(await Promise.all(BS.packs[k].map(async([h,rk])=>{ try{ const did=(await fetch(`${BSAPI}com.atproto.identity.resolveHandle?handle=${h}`).then(r=>r.json())).did;
+    const sp=await fetch(`${BSAPI}app.bsky.graph.getStarterPack?starterPack=${encodeURIComponent(`at://${did}/app.bsky.graph.starterpack/${rk}`)}`).then(r=>r.json()); return sp?.starterPack?.list?.uri||null; }catch(e){ return null; } }))).filter(Boolean);
+  if(L.length){ try{ localStorage.setItem(key,JSON.stringify({l:L,t:Date.now()})); }catch(e){} } return L; }
 async function bsPinta(){ const el=$("#hoyBs"); if(!el) return; const k=BS.f;
-  if(!BS.c[k]||Date.now()-BS.c[k].t>5*60e3){ try{ const l=await bsLista(k); if(!l) throw 0;
-      const j=await fetch(`${BSAPI}app.bsky.feed.getListFeed?list=${encodeURIComponent(l)}&limit=40`).then(r=>r.json());
-      BS.c[k]={t:Date.now(),F:(j.feed||[]).filter(x=>!x.reason&&!x.reply&&!(x.post?.labels||[]).length&&!(x.post?.author?.labels||[]).some(l=>/porn|sexual|nudity|graphic/.test(l.val))&&String(x.post?.record?.text||"").length>40).slice(0,8)}; }
+  if(!BS.c[k]||Date.now()-BS.c[k].t>5*60e3){ try{ const Ls=await bsListas(k); if(!Ls.length) throw 0;
+      const J=await Promise.all(Ls.map(l=>fetch(`${BSAPI}app.bsky.feed.getListFeed?list=${encodeURIComponent(l)}&limit=100`).then(r=>r.json()).catch(()=>({feed:[]}))));
+      const fav=Object.values(FAV?.eq||{}).map(x=>String(x.n||"").toLowerCase()).filter(n=>n.length>3), visto=new Set(), lim=Date.now()-3*864e5;
+      const F=J.flatMap(j=>j.feed||[]).filter(x=>{ const P=x.post, t=String(P?.record?.text||""), A=P?.author;
+        if(!P||x.reason||x.reply||P.record?.reply||visto.has(P.uri)) return false; visto.add(P.uri);
+        if((P.labels||[]).length||(A?.labels||[]).some(l=>/porn|sexual|nudity|graphic|spam/.test(l.val))) return false;
+        if(t.length<50||!bsVerif(A)||BS_NO.test(t)||!BS_SI.test(t)) return false;
+        return Date.parse(P.record?.createdAt||P.indexedAt)>lim; });
+      const pf=x=>fav.some(n=>String(x.post.record.text).toLowerCase().includes(n.split(" ")[0]))?1:0;
+      F.sort((a,b)=>pf(b)-pf(a)||Date.parse(b.post.indexedAt)-Date.parse(a.post.indexedAt));
+      BS.c[k]={t:Date.now(),F:F.slice(0,8)}; }
     catch(e){ BS.c[k]={t:Date.now(),F:[]}; } }
-  const F=BS.c[k].F; if(!F.length&&!BS.c.nfl?.F?.length&&!BS.c.nba?.F?.length){ el.innerHTML=""; return; }
+  const F=BS.c[k].F;
   const txt=t=>hoyEsc(t).replace(/\n+/g,"<br>");
-  el.innerHTML=`<section class="hsec bssec"><div class="hh"><h3>Lo que se dice</h3><small class="vidsub">Periodistas en Bluesky · en inglés</small></div>
-    <div class="hseg vidf">${Object.entries(BS.packs).map(([x,v])=>`<button data-bsf="${x}" aria-pressed="${x===k}">${v[2]}</button>`).join("")}</div>
+  el.innerHTML=`<section class="hsec bssec"><div class="hh"><h3>Noticias</h3><small class="vidsub">Cuentas verificadas en Bluesky · en inglés</small></div>
+    <div class="hseg vidf">${Object.keys(BS.packs).map(x=>`<button data-bsf="${x}" aria-pressed="${x===k}">${BS.nom[x]}</button>`).join("")}</div>
     <div class="bslist">${F.map(x=>{ const P=x.post, A=P.author, rk=String(P.uri).split("/").pop(), img=P.embed?.images?.[0]?.thumb||P.embed?.media?.images?.[0]?.thumb||P.embed?.external?.thumb, url=`https://bsky.app/profile/${encodeURIComponent(A.handle)}/post/${encodeURIComponent(rk)}`;
       return `<a class="bspost" href="${url}" target="_blank" rel="noopener"><span class="bsa">${A.avatar?`<img src="${hoyEsc(A.avatar)}" alt="" loading="lazy">`:""}<span><b>${hoyEsc(A.displayName||A.handle)}</b><small>@${hoyEsc(A.handle)} · ${hoyEsc(amHace({seconds:Date.parse(P.record?.createdAt||P.indexedAt)/1000}))}</small></span></span>
-        <p>${txt(String(P.record?.text||"").slice(0,420))}</p>${img?`<img class="bsimg" src="${hoyEsc(img)}" alt="" loading="lazy">`:""}<small class="bsver">Ver en Bluesky ›</small></a>`; }).join("")||`<p class="note">No pudimos cargar las publicaciones. Intenta en un momento.</p>`}</div></section>`; }
+        <p>${txt(String(P.record?.text||"").slice(0,420))}</p>${img?`<img class="bsimg" src="${hoyEsc(img)}" alt="" loading="lazy">`:""}<small class="bsver">Ver en Bluesky ›</small></a>`; }).join("")||`<p class="note">No hay noticias importantes en los últimos días. Revisamos cada 5 minutos.</p>`}</div></section>`; }
 document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return; let b;
   if((b=t.closest("[data-vid]"))) return vidAbre(b.dataset.vid,b.dataset.vidt||"");
   if((b=t.closest("[data-vidf]"))){ VID.f=b.dataset.vidf; return vidPinta(); }
