@@ -22,13 +22,16 @@ from datetime import datetime, timezone
 
 # liga: (candidatos de canal, búsqueda para encontrarlo con la llave, palabras que debe traer el título)
 CANALES = {
-    "mx":  (["@LIGABBVAMX", "@ligabbvamx", "user:LIGABBVAMX"], "LIGA BBVA MX", ["resumen", "goles", "highlights"]),
-    "ucl": (["@ChampionsLeague", "user:UEFA", "@UEFA"], "UEFA Champions League", ["highlights", "goals", "resumen"]),
+    "mx":  (["@LIGABBVAMX", "@ligabbvamx", "user:LIGABBVAMX"], "LIGA BBVA MX", [r"\b\d{1,2}\s*-\s*\d{1,2}\b", "resumen", "mejores momentos", "goles", "jugadas"]),
+    "ucl": (["@ChampionsLeague", "user:UEFA", "@UEFA"], "UEFA Champions League", ["highlights", "every champions league goal", "best goals", "resumen"]),
     "eng": (["UCG5qGWdu8nIRZqJ_GgDwQ-w", "@premierleague"], "Premier League", ["highlights", "goals"]),
     "nba": (["UCWJ2lWNubArHWmf3FIHbfcQ", "@NBA"], "NBA", ["highlights", "game recap"]),
     "nfl": (["@NFL", "user:NFL"], "NFL", ["highlights", "game recap", "best plays", "every touchdown"]),
     "f1":  (["UCB_qr75-ydFVKSF9Dmo6izg", "@Formula1"], "FORMULA 1", ["highlights"]),
 }
+# Lo que no queremos aunque pase el filtro: otras ligas del mismo canal, previas, entrevistas, clásicos de otros años
+FUERA = {"mx": r"expansi[oó]n|femenil|previa|#lapr|podcast|entrevista", "ucl": r"classic|ballon|reaction|europa league|conference league|uel\b|uecl",
+         "eng": r"all .* goals and assists|career|classic|compilation", "nba": r"", "nfl": r"preview|podcast|report|picks|rankings|mic'd", "f1": r"onboard|interview"}
 # Partidos grandes: si el título trae dos de estos de la misma liga (o dice clásico/derby), suben
 GRANDES = {
     "mx": ["america", "américa", "chivas", "guadalajara", "pumas", "cruz azul", "tigres", "monterrey", "rayados", "toluca"],
@@ -66,7 +69,8 @@ def iso_dur(d):   # PT1M5S → 65
 def bueno(liga, t, palabras):
     tl = t.lower()
     if "#short" in tl or "shorts" in tl: return False
-    if not any(p in tl for p in palabras): return False
+    if not any(re.search(p, tl) for p in palabras): return False
+    if FUERA.get(liga) and re.search(FUERA[liga], tl): return False
     año = datetime.now().year
     temporadas = [int(b) for a, b in re.findall(r"\b(20\d\d)\s*[-/]\s*(\d\d)\b", t)]
     años = [int(y) for y in re.findall(r"\b(19\d\d|20\d\d)\b", t)]
@@ -94,11 +98,17 @@ def por_api(liga, cands, busq, cache, dbg):
     if not cid: raise RuntimeError("sin canal")
     ch = api("channels", part="contentDetails,snippet", id=cid)["items"][0]
     nombre, up = ch["snippet"]["title"], ch["contentDetails"]["relatedPlaylists"]["uploads"]
-    its = api("playlistItems", part="contentDetails", playlistId=up, maxResults=50).get("items") or []
-    ids = [x["contentDetails"]["videoId"] for x in its]
+    ids, tok = [], None
+    for _ in range(3):   # hasta 150 videos (la NFL sube muchísimos al día)
+        q = dict(part="contentDetails", playlistId=up, maxResults=50)
+        if tok: q["pageToken"] = tok
+        j = api("playlistItems", **q); its = j.get("items") or []
+        ids += [x["contentDetails"]["videoId"] for x in its]
+        tok = j.get("nextPageToken")
+        if not tok or not its or datetime.fromisoformat(its[-1]["contentDetails"].get("videoPublishedAt", "2000-01-01T00:00:00Z").replace("Z", "+00:00")).timestamp() < time.time() - DIAS * 86400: break
     V = []
-    if ids:
-        for x in api("videos", part="snippet,statistics,contentDetails", id=",".join(ids)).get("items") or []:
+    for i in range(0, len(ids), 50):
+        for x in api("videos", part="snippet,statistics,contentDetails", id=",".join(ids[i:i + 50])).get("items") or []:
             ts = datetime.fromisoformat(x["snippet"]["publishedAt"].replace("Z", "+00:00")).timestamp()
             if iso_dur(x["contentDetails"].get("duration")) < 70: continue   # shorts
             V.append({"id": x["id"], "t": x["snippet"]["title"][:140], "ts": int(ts), "vw": int(x["statistics"].get("viewCount", 0))})
