@@ -5386,6 +5386,39 @@
       "PHI@WAS": -3.5,
       "CHI@SEA": -3.5
      }
+    },
+    {
+     "cuando": "2026-11-02 09:55",
+     "motivo": "diaria",
+     "lineas": {
+      "CHI@SEA": {
+       "draftkings": -3.0,
+       "fanduel": -3.0,
+       "betrivers": -3.0,
+       "lowvig": -3.5,
+       "betonlineag": -3.0,
+       "betus": -3.0,
+       "mybookieag": -3.0,
+       "betmgm": -3.0,
+       "bovada": -3.0
+      }
+     },
+     "espn": {
+      "ARI@DAL": -6.5,
+      "MIN@DET": -2.5,
+      "TEN@CIN": -10.5,
+      "ATL@TB": -2.5,
+      "IND@JAX": -7.5,
+      "LAC@LA": -6.5,
+      "LV@NYJ": 1.5,
+      "CLE@PIT": -3.5,
+      "CAR@GB": -3.5,
+      "BAL@BUF": -3.5,
+      "KC@DEN": 1.5,
+      "NE@MIA": 6.5,
+      "PHI@WAS": -3.5,
+      "CHI@SEA": -3.5
+     }
     }
    ],
    "primera_vez": "2026-10-27T20:42+00:00"
