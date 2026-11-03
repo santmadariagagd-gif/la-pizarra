@@ -10,6 +10,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#1F332D">
+<script>/* Invitaciones (3 nov 2026): quién te mandó el link (?amigo=UID o ?de=UID en los links de grupos). Se guarda la primera vez. */
+try{ var q=new URLSearchParams(location.search), iv=q.get("de")||q.get("amigo"); if(iv&&/^[A-Za-z0-9]{20,40}$/.test(iv)&&!localStorage.getItem("pz_invpor")) localStorage.setItem("pz_invpor",iv); }catch(e){}
+</script>
 <script>/* Personalización (28 oct 2026): los colores de la app según tu equipo se ponen antes de pintar */
 try{ var T=JSON.parse(localStorage.getItem("pz_tema")||"null"); if(T&&T.v){ var R=document.documentElement.style; for(var k in T.v) if(/^#[0-9a-fA-F]{6}$/.test(T.v[k])) R.setProperty("--"+k,T.v[k]); document.querySelector('meta[name="theme-color"]').content=T.v.bg; } }catch(e){}
 </script>
@@ -1855,6 +1858,15 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .rdamL{display:flex;flex-wrap:wrap;gap:5px;padding-left:6px}.rdamc{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid var(--line)}.rdamc b{font-size:13px}
 dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background:var(--bg);color:var(--ink);width:min(440px,94vw);max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 40px)}dialog#pdlg::backdrop{background:rgba(0,0,0,.6)}
 .pushpide .x{width:40px;height:40px}
+.invc{padding:14px;border-radius:18px;background:linear-gradient(135deg,#1f4a35,var(--surface));border:1px solid #25D36666;margin:0 0 16px;position:relative;max-width:640px}
+.invh{display:flex;gap:12px;align-items:center}.invh>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.invh b{font:800 20px/1.1 var(--display)}.invh small{color:var(--muted);font-size:13px}.invic{font-size:34px;line-height:1}
+.invbar{position:relative;height:10px;border-radius:5px;background:rgba(255,255,255,.1);margin:16px 6px 14px}.invbar i{position:absolute;inset:0 auto 0 0;border-radius:5px;background:linear-gradient(90deg,#25D366,#F2D466);transition:width .6s}
+.invbar span{position:absolute;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}.invbar span.si{background:#F2D466;border-color:#F2D466}
+.invps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}.invp{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.18);flex-wrap:wrap}
+.invp>b{flex:none;width:28px;height:28px;border-radius:14px;background:var(--line);text-align:center;font:800 16px/28px var(--display)}.invp.si>b{background:#F2D466;color:#13201B}
+.invp>span{display:flex;flex-direction:column;font:800 16px/1.1 var(--display)}.invp small{font:500 11px var(--body,inherit);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.invp em{font-style:normal;font-size:12px;color:var(--muted);flex-basis:100%}
+.invbt{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.invbt .pzwa{min-height:44px}.invl{font-size:13px;color:var(--muted);margin:10px 0 0}.invc .note{margin:10px 0 0}
+.invc.chico .invbar{margin:12px 6px 12px}
 .pushpide{text-align:center;max-width:420px;margin:0 auto}.pushpide h2{font:800 26px/1.1 var(--display);margin:6px 0 8px}.pushpide>p{color:var(--muted);margin:0 0 14px}
 .pushbell{font-size:44px;display:block;margin-top:6px}.pushbt{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:16px}.pushbt .btn{min-width:220px;min-height:48px;font-size:17px}
 .pushej{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin:0 auto;max-width:320px}.pushej>span:first-child{font-size:26px}.pushej span:last-child{display:flex;flex-direction:column}.pushej small{color:var(--muted);font-size:12px}
@@ -6375,7 +6387,7 @@ async function q5Tabla(){
 // ----- Grupos de La Quinteta (separados de los de la quiniela NFL) -----
 // Mismo lugar en Firebase que los de la quiniela (grupos/{g} con modos:["q5"] y grupos/{g}/miembros/{uid}), pero la lista
 // de tus grupos de La Quinteta va en tu cuenta (q5.g), así no aparecen en la quiniela. Invitación: lapizarra.mx/?q5g=ID
-const q5Link=id=>`https://lapizarra.mx/?q5g=${id}`;
+const q5Link=id=>`https://lapizarra.mx/?q5g=${id}${pzDe()}`;
 async function q5GrRender(){
   const box=$("#q5Grp"); if(!box) return;
   if(!(typeof acctOk==="function"&&acctOk())){ box.innerHTML=`<p class="note">Entra con tu cuenta para crear un grupo con tus amigos o unirte a uno.</p>`; return; }
@@ -6573,7 +6585,7 @@ document.addEventListener("click",ev=>{ const b=ev.target.closest?.("[data-ll]")
 });
 
 // ----- Grupos de la Quiniela Liga MX -----
-const qmxLink=id=>`https://lapizarra.mx/?qmxg=${id}`;
+const qmxLink=id=>`https://lapizarra.mx/?qmxg=${id}${pzDe()}`;
 async function qmxPicksDe(jid,uid){   // picks de otro (o tuyos) de una jornada ya cerrada; las cerradas y terminadas se guardan en el navegador
   const ck=`pz_qmxp_${jid}_${uid}`; try{ const c=JSON.parse(localStorage.getItem(ck)||"null"); if(c) return c; }catch(e){}
   let r=null; try{ const s=await ACCT.db.doc(`qmx_picks/${jid}_${uid}`).get(); if(s.exists) r={p:s.data().p||{},g:s.data().g??null}; }catch(e){ console.warn("Quiniela MX: picks de",jid,e?.code||e); }
@@ -7035,7 +7047,7 @@ async function fanGrupos(){   // Retas v2 (29 oct 2026): Tabla = general y tus g
     <div class="q5new" id="fanNuevo"${FAN.nuevo||(chat&&!G.length)?"":" hidden"}><input id="fanGrNom" maxlength="40" placeholder="Nombre del grupo" aria-label="Nombre del grupo"><button class="q5save" id="fanGrCrear">Crear grupo</button></div><p class="note" id="fanGrMsg"></p>
     ${chat&&!G.length?`<p class="note">Crea un grupo y manda el link a tus amigos: aquí platican y juegan mano a mano cada jornada.</p>`:""}
     <div id="fanGrTabla">${pzSkel(2)}</div>
-    ${g&&!chat?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» de Fantasy en La Pizarra (Champions y Liga MX): https://lapizarra.mx/?fang=${g.id}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-fancopy="${g.id}">Copiar link</button> · <button class="q5link" data-fansalir="${g.id}">Salir</button></p>`:""}
+    ${g&&!chat?`<p class="note"><a class="q5link" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${g.nombre}» de Fantasy en La Pizarra (Champions y Liga MX): https://lapizarra.mx/?fang=${g.id}${pzDe()}`)}" target="_blank" rel="noopener">Invitar por WhatsApp</a> · <button class="q5link" data-fancopy="${g.id}">Copiar link</button> · <button class="q5link" data-fansalir="${g.id}">Salir</button></p>`:""}
     ${!cuenta?`<div class="qgate"><b>¿Juegas con tus amigos?</b><span>Entra con tu cuenta para crear un grupo, jugar mano a mano y platicar en el chat.</span><button class="btn" data-acct>Entrar</button></div>`:""}`;
   if(!chat&&FAN.tab==="gen"){ chatCierra(); return fanGeneral($("#fanGrTabla")); }
   if(!g){ $("#fanGrTabla").innerHTML=""; return; }
@@ -7115,7 +7127,7 @@ document.addEventListener("click",async ev=>{
       await b.commit(); fanSetIds([...fanIds(),ref.id]); FAN.tab=ref.id; FAN.nuevo=false; pzTrack("fan_crear_grupo",{}); fanGrupos();
     }catch(e){ console.warn("Fantasy: no se pudo crear el grupo",e?.code||e); $("#fanGrMsg").textContent="No se pudo crear el grupo. Intenta de nuevo."; t.disabled=false; }
     return; }
-  if(t.closest("[data-fancopy]")){ const id=t.closest("[data-fancopy]").dataset.fancopy, u=`https://lapizarra.mx/?fang=${id}`; try{ await navigator.clipboard.writeText(u); t.textContent="¡Copiado!"; setTimeout(()=>{t.textContent="Copiar link";},1500);}catch(e){ prompt("Copia este link:",u); } return; }
+  if(t.closest("[data-fancopy]")){ const id=t.closest("[data-fancopy]").dataset.fancopy, u=`https://lapizarra.mx/?fang=${id}${pzDe()}`; try{ await navigator.clipboard.writeText(u); t.textContent="¡Copiado!"; setTimeout(()=>{t.textContent="Copiar link";},1500);}catch(e){ prompt("Copia este link:",u); } return; }
   if(t.closest("[data-fansalir]")){ const id=t.closest("[data-fansalir]").dataset.fansalir; if(!confirm("¿Salir de este grupo?")) return;
     try{ await ACCT.db.doc(`grupos/${id}/miembros/${ACCT.user.uid}`).delete(); }catch(e){} fanSetIds(fanIds().filter(x=>x!==id)); FAN.tab=null; fanGrupos(); return; }
   if(t.closest("#fanUnir")){ const id=FAN.join; t.disabled=true;
@@ -7735,7 +7747,8 @@ const VIDA_LOGROS=[["pick","1","Primera quiniela","Guardaste tus primeros picks"
   ["seis","6+","Seis o más","6 aciertos o más en una jornada","#F2D466"],["perfecta","9/9","Jornada perfecta","Le atinaste a todos los partidos","#F2D466"],
   ["goles","G","Ojo de halcón","Atinaste los goles exactos de la jornada","#7FB8E8"],["lider","1º","Líder","Primero de la general de la Liga MX","#F2D466"],
   ["once","XI","Tu once","Armaste tu equipo del Fantasy","#9FD3A8"],["cincuenta","50","Medio centenar","50 puntos o más en una jornada del Fantasy","#7FB8E8"],
-  ["fan3","3★","Fiel","Sigues a 3 equipos o más","#C9D6CF"],["comparte","WA","Lo presumiste","Compartiste tu resultado","#25D366"]];
+  ["fan3","3★","Fiel","Sigues a 3 equipos o más","#C9D6CF"],["comparte","WA","Lo presumiste","Compartiste tu resultado","#25D366"],
+  ["recluta","+1","Reclutador","Un amigo se unió con tu invitación","#25D366"],["embajador","+3","Embajador","3 amigos se unieron con tu invitación","#C9A7F0"]];
 function vidaQmxMias(){
   const out={}; if(!D.qmx) return out; const L=qmxLs(), now=Date.now()/1000;
   for(const j of qmxJornadas()){ const J=qmxD().J[j], m=L[qmxJid(j)]; if(!m||!Object.keys(m.p||{}).length) continue;
@@ -7763,6 +7776,7 @@ async function vidaLogrosCalc(forzar){
     if(Object.keys(fanLs()).length||yoF) T.add("once"); if(yoF&&Object.values(yoF.j||{}).some(v=>v>=50)) T.add("cincuenta");
     if(Object.keys(FAV.eq).length>=3) T.add("fan3");
     if(h){ try{ await rdDatos(); const RT=RD.t?.t?.[h]; if(RT?.m>=7) T.add("rd7"); if(RT?.m>=30) T.add("rd30"); }catch(e){} } try{ if(localStorage.getItem("pz_compartio")) T.add("comparte"); }catch(e){}
+    if(h){ try{ const n=(await invCarga()).length; if(n>=1) T.add("recluta"); if(n>=3) T.add("embajador"); }catch(e){} }
     let fan=null; if(yoF&&F){ const ks=Object.keys(yoF.j||{}).sort((a,b)=>F.j[a].pr-F.j[b].pr), k=ks[ks.length-1];
       if(k){ const L=Object.entries(F.tabla).sort((a,b)=>(b[1].t||0)-(a[1].t||0)); fan={k,n:F.j[k]?.n||k,pts:yoF.j[k],tot:yoF.t||0,pos:L.findIndex(x=>x[0]===h)+1,de:L.length}; } }
     // nuevos: aviso de vidrio
@@ -7998,9 +8012,9 @@ const PERF_FONDOS=[["#263D36"],["radial-gradient(circle at 30% 20%,#3d6b5a,#1F33
   ["linear-gradient(90deg,transparent 48%,rgba(255,255,255,.55) 48% 52%,transparent 52%),repeating-linear-gradient(90deg,#2f7a3e 0 14%,#286b35 14% 28%)","pick","Cancha"],
   ["radial-gradient(circle at 18% 8%,rgba(255,255,230,.75),transparent 22%),radial-gradient(circle at 82% 8%,rgba(255,255,230,.75),transparent 22%),linear-gradient(180deg,#0d1b2a,#1c3a2e)","cincuenta","Estadio de noche"],
   ["radial-gradient(#F2D466 1.5px,transparent 2.2px) 0 0/12px 12px,radial-gradient(#FF9C80 1.5px,transparent 2.2px) 6px 6px/12px 12px,radial-gradient(#9FD3A8 1.2px,transparent 2px) 3px 9px/12px 12px,#263D36","comparte","Confeti"]];
-const PERF_MARCOS=[["no","Sin marco",null,""],["fuego","Racha de fuego","racha3","conic-gradient(#FF9C80,#F2D466,#FF9C80)"],["oro","Marco dorado","perfecta","conic-gradient(#F2D466,#FFF6C9,#F2D466,#C9A227,#F2D466)"],["lider","Marco de líder","lider","conic-gradient(#C9A7F0,#7FB8E8,#C9A7F0)"]];
+const PERF_MARCOS=[["no","Sin marco",null,""],["fuego","Racha de fuego","racha3","conic-gradient(#FF9C80,#F2D466,#FF9C80)"],["oro","Marco dorado","perfecta","conic-gradient(#F2D466,#FFF6C9,#F2D466,#C9A227,#F2D466)"],["lider","Marco de líder","lider","conic-gradient(#C9A7F0,#7FB8E8,#C9A7F0)"],["emb","Marco de embajador","embajador","conic-gradient(#25D366,#F2D466,#C9A7F0,#7FB8E8,#25D366)"]];
 const PERF_X=[["nd","Número dorado","perfecta"],["est","Estrella en el escudo","goles"],["cor","Corona","lider"],["llama","Llamita animada","rd7"],["brillo","Brillo que da la vuelta","rd30"]];
-const PERF_TIT=[["","Sin título",null],["sabe","El que sabe","seis"],["const","Constante","racha3"],["profeta","El Profeta","perfecta"],["halcon","Ojo de halcón","goles"],["lider","El Líder","lider"],["fanta","Fantasista","once"],["fiel","Fiel","fan3"],["presume","El Presumido","comparte"],["imparable","Imparable","rd7"]];
+const PERF_TIT=[["","Sin título",null],["sabe","El que sabe","seis"],["const","Constante","racha3"],["profeta","El Profeta","perfecta"],["halcon","Ojo de halcón","goles"],["lider","El Líder","lider"],["fanta","Fantasista","once"],["fiel","Fiel","fan3"],["presume","El Presumido","comparte"],["imparable","Imparable","rd7"],["recluta","Reclutador","recluta"],["emba","Embajador","embajador"]];
 const PERF_PAL=["#FFFFFF","#1A1A1A","#C8102E","#12305E","#0047BB","#6CABDD","#FFD23F","#F4B400","#00843D","#A50044","#7A3E9D","#E8742C"], PERF_NEON=["#39FF14","#FF2BD6","#00E5FF"];
 const PERF_REQ_PRONTO={rd7:"7 días seguidos atinándole al reto del día",rd30:"30 días seguidos atinándole al reto del día"};
 const PERF_CAM="M38 20 L50 13 Q60 21 70 13 L82 20 L106 34 L97 55 L85 49 L85 120 L35 120 L35 49 L23 55 L14 34 Z";
@@ -8034,6 +8048,7 @@ function perfExtra(p){ const o={}, ent=v=>Math.max(0,Math.min(9999,parseInt(v,10
   const okL=new Set([...VIDA_LOGROS.map(l=>l[0]),"rd7","rd30"]), lg=(Array.isArray(p.lg)?p.lg:[]).filter(v=>okL.has(v)).slice(0,15); if(lg.length) o.lg=lg;
   if(p.s&&typeof p.s==="object") o.s={a:ent(p.s.a),g:ent(p.s.g),p:ent(p.s.p),e:ent(p.s.e)};
   const ins=(Array.isArray(p.in)?p.in:[]).filter(v=>okL.has(v)).slice(0,3); if(ins.length) o.in=ins;
+  if(/^[A-Za-z0-9]{20,40}$/.test(p.iv||"")) o.iv=p.iv;   // quién lo invitó (3 nov 2026)
   return o; }
 function perfDef(){
   const k=Object.keys(FAV.eq).find(k=>k[0]==="f"&&PZ_COL[k.slice(1)])||Object.keys(FAV.eq).find(k=>k[0]==="n"&&NT[k.slice(1)]?.c)||"";
@@ -8047,7 +8062,7 @@ function perfSinTocar(){ const p=perfMio(); if(!p) return false; let d; try{ d=p
 const perfNudgeOff=()=>{ try{ return localStorage.getItem("pz_perfnudge")==="1"; }catch(e){ return false; } };
 function perfNudgeHTML(){ if(!(typeof amOk==="function"&&amOk())||!perfSinTocar()||perfNudgeOff()) return "";
   return `<div class="pfnudge">${perfAvatar(perfMio(),56)}<span><b>Haz tuya tu playera</b><small>Escoge tus colores, el diseño, tu número y una frase. Así te reconocen tus amigos.</small></span><button class="btn" data-pfnudge="1">Editar mi perfil</button><button class="pfnx" data-pfnudgex="1" aria-label="Ahora no">×</button></div>`; }
-function perfNudgePinta(){ const el=$("#hoyPf"); if(el) el.innerHTML=perfNudgeHTML()||(typeof pushNudgeHTML==="function"?pushNudgeHTML():"")||sufNudgeHTML(); }
+function perfNudgePinta(){ const el=$("#hoyPf"); if(el) el.innerHTML=perfNudgeHTML()||(typeof pushNudgeHTML==="function"?pushNudgeHTML():"")||sufNudgeHTML()||(typeof invNudgeHTML==="function"?invNudgeHTML():""); if(typeof invCarga==="function"&&amOk()&&!INV.L) invCarga().then(()=>{ if(!el.innerHTML.trim()) el.innerHTML=invNudgeHTML(); }); }
 // 3 nov 2026: mucha gente no ha visto el Sufrómetro (vive en Favoritos, a media página). Tarjeta en Hoy hasta que lo vea o la cierre.
 const sufVisto=()=>{ try{ return localStorage.getItem("pz_suf_visto")==="1"||localStorage.getItem("pz_sufnudge")==="1"; }catch(e){ return true; } };
 function sufNudgeHTML(){ if(sufVisto()) return ""; const tiene=Object.keys(FAV.eq||{}).length+Object.keys(FAV.jug||{}).filter(k=>"rt".includes(k[0])).length;
@@ -8086,14 +8101,17 @@ async function perfCargaYo(){
   if(!(typeof acctOk==="function"&&acctOk())||!ACCT.db) return;
   try{ const s=await ACCT.db.doc(`perfiles/${ACCT.user.uid}`).get(); if(s.exists){ PERF.yo=perfLimpia(s.data()); try{ localStorage.setItem("pz_perfil",JSON.stringify(PERF.yo)); }catch(e){} }
     else { const p=perfMio()||perfDef(); PERF.yo=p; try{ localStorage.setItem("pz_perfil",JSON.stringify(p)); }catch(e){} await perfEscribe(p); }   // todos tienen perfil: así los encuentran sus amigos
-    if(s.exists&&!s.data().al&&PERF.yo){ await perfEscribe(PERF.yo); } }catch(e){ console.warn("Perfil:",e?.code||e); }
+    if(s.exists&&!s.data().al&&PERF.yo){ await perfEscribe(PERF.yo); }
+    // 3 nov 2026: si llegó con el link de alguien y su cuenta es nueva (3 días), se anota quién lo invitó (una sola vez)
+    try{ const iv=localStorage.getItem("pz_invpor"), nueva=Date.now()-Date.parse(ACCT.user.metadata?.creationTime||0)<3*864e5;
+      if(iv&&iv!==ACCT.user.uid&&nueva&&PERF.yo&&!PERF.yo.iv){ PERF.yo={...PERF.yo,iv}; localStorage.setItem("pz_perfil",JSON.stringify(PERF.yo)); await perfEscribe(PERF.yo); pzTrack("invitado_llega",{}); } }catch(e){} }catch(e){ console.warn("Perfil:",e?.code||e); }
   acctBtn(); if(typeof vidaPinta==="function") vidaPinta();
   if(typeof amCarga==="function") amCarga(true).then(()=>{ Promise.all([duCarga().catch(()=>{}),vidaLogrosCalc().catch(()=>{})]).then(()=>{ setTimeout(perfSync,1500); ntCalcula(true).catch(()=>{}); }); if(AM.inv&&!$("#amigos").classList.contains("hidden")) amRender(); else if(AM.inv) navIr("amigos"); });
 }
 async function perfEscribe(p){
   const ref=ACCT.db.doc(`perfiles/${ACCT.user.uid}`);
   try{ await ref.set({...p,t:grFV().serverTimestamp()}); }
-  catch(e){ if(e?.code!=="permission-denied") throw e; const b={...p}; ["bi","fv","lg","s","in"].forEach(k=>delete b[k]); await ref.set({...b,t:grFV().serverTimestamp()}); console.warn("Perfil: faltan las reglas nuevas de perfiles (bi, fv, lg, s)"); }
+  catch(e){ if(e?.code!=="permission-denied") throw e; const b={...p}; ["bi","fv","lg","s","in","iv"].forEach(k=>delete b[k]); await ref.set({...b,t:grFV().serverTimestamp()}); console.warn("Perfil: faltan las reglas nuevas de perfiles (bi, fv, lg, s)"); }
 }
 async function perfSync(){
   if(!amOk()||!PERF.yo) return; const yo=ACCT.user.uid;
@@ -8342,6 +8360,7 @@ async function amRender(){
   box.innerHTML=`${inv?`<div class="aminv" id="amInv">${amAv(inv,52)}<span><b>${hoyEsc(PERF.cache[inv]?.a||"")}</b><small>Te invitó a ser su amigo en La Pizarra</small></span><button class="btn" data-amsol="${hoyEsc(inv)}">Agregar</button><button class="q5link" data-aminvno="1">Ahora no</button></div>`:""}
     ${Rc.length?`<section class="hsec amsec"><div class="hh"><h3>Solicitudes</h3></div>${Rc.map(a=>`<div class="amsolr">${amAv(a.otro,46,a)}<span><b>${hoyEsc(amNom(a.otro,a))}</b><small>Quiere ser tu amigo</small></span><button class="btn" data-amok="${a.id}">Aceptar</button><button class="q5link" data-amno="${a.id}">Ahora no</button></div>`).join("")}</section>`:""}
     ${perfNudgeHTML()}
+    <div id="amInvC">${invCardHTML()}</div>
     <div class="amfila">${A.map(a=>`<button class="amf" data-amper="${hoyEsc(a.otro)}">${amAv(a.otro,58,a)}<span>${hoyEsc(amNom(a.otro,a).split(" ")[0])}</span></button>`).join("")}<button class="amf amadd" data-amadd="1"><span class="amplus">+</span><span>Agregar</span></button></div>
     <div id="amAgrega" hidden></div>
     <div id="amCmp">${amCmpHTML()}</div>
@@ -8353,7 +8372,34 @@ async function amRender(){
     :`<div class="amvacio"><b>Agrega a tus amigos</b><span>Búscalos por su apodo, mándales tu link por WhatsApp o escoge a los de tus grupos. Cuando acepten, aquí ves lo que hace cada quien en todos los juegos.</span><button class="btn" data-amadd="1">Agregar amigos</button></div>${F.length?`<div class="amfeed">${F.map(amPost).join("")}</div>`:""}`}`;
   if(!A.length&&!Rc.length) amAgrega();
   duPinta(); amFotosVisibles(); amSufPinta();
+  invCarga().then(()=>{ const c=$("#amInvC"); if(c) c.innerHTML=invCardHTML(); }).catch(()=>{});
 }
+// ---- Invita y gana (3 nov 2026) ----
+// Quien entra con tu link (?amigo=UID o ?de=UID de un grupo) y crea su cuenta queda anotado en su perfil (iv = tu uid).
+// Aquí se cuentan: 1 amigo = logro e insignia "Reclutador" + título; 3 amigos = "Embajador" + marco de embajador.
+const INV={t:0,L:null,p:null};
+function invCarga(forzar){ if(!amOk()) return Promise.resolve([]); if(!forzar&&INV.L&&Date.now()-INV.t<10*60e3) return Promise.resolve(INV.L); if(INV.p) return INV.p;
+  INV.p=ACCT.db.collection("perfiles").where("iv","==",ACCT.user.uid).limit(50).get().then(s=>{ const L=[]; (s.docs||[]).forEach(d=>{ const x=d.data()||{}; L.push({uid:d.id,a:String(x.a||"").slice(0,24)}); });
+      INV.L=L; INV.t=Date.now(); let prev=null; try{ prev=JSON.parse(localStorage.getItem("pz_invn")||"null"); localStorage.setItem("pz_invn",JSON.stringify(L.map(x=>x.uid))); }catch(e){}
+      const nv=prev?L.filter(x=>!prev.includes(x.uid)):[]; if(nv.length){ setTimeout(()=>pzAviso("¡Tu invitación funcionó!",`${nv[0].a||"Un amigo"}${nv.length>1?` y ${nv.length-1} más`:""} se unió a La Pizarra con tu link`),1200); if(typeof pzConfeti==="function") pzConfeti(); }
+      return L; }).catch(e=>{ console.warn("Invitados:",e?.code||e); return INV.L||[]; }).finally(()=>{ INV.p=null; });
+  return INV.p; }
+const invTexto=()=>`Te invito a La Pizarra 🏆 Quinielas de Liga MX y NFL, Survivor, Fantasy y retos con amigos. Es gratis. Entra con mi link y quedamos como amigos: ${amLink()}`;
+function invCardHTML(chico){ if(!amOk()) return ""; const L=INV.L||[], n=L.length, meta=n<1?1:3, lleno=Math.min(n,3);
+  const premio=(k,t,s)=>`<span class="invp${n>=k?" si":""}"><b>${k}</b><span><small>${n>=k?"Ganaste":"Con "+k+(k===1?" amigo":" amigos")}</small>${t}</span><em>${s}</em></span>`;
+  return `<section class="invc${chico?" chico":""}"><div class="invh"><span class="invic" aria-hidden="true">🎟️</span><span><b>${n>=3?"¡Eres Embajador de La Pizarra!":"Invita a tus amigos y gana"}</b><small>${n?`${n} ${n===1?"amigo se ha unido":"amigos se han unido"} con tu link`:"Cuando alguien crea su cuenta con tu link, cuenta para ti"}</small></span>${chico?`<button class="pfnx" data-invx="1" aria-label="Ahora no">×</button>`:""}</div>
+    <div class="invbar" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="${lleno}" aria-label="Amigos invitados"><i style="width:${lleno/3*100}%"></i>${[1,2,3].map(k=>`<span class="${n>=k?"si":""}" style="left:${k/3*100}%"></span>`).join("")}</div>
+    ${chico?"":`<div class="invps">${premio(1,"Reclutador","Insignia y título")}${premio(3,"Embajador","Marco especial para tu playera")}</div>`}
+    <div class="invbt"><button class="pzwa" data-invwa="1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>Invitar por WhatsApp</button><button class="q5link" data-invcopia="1">Copiar mi link</button></div>
+    ${!chico&&n?`<p class="invl">Se unieron: ${L.slice(0,8).map(x=>`<button class="q5link" data-amper="${hoyEsc(x.uid)}">${hoyEsc(x.a||"Sin apodo")}</button>`).join(", ")}${n>8?` y ${n-8} más`:""}</p>`:""}
+    ${n<3&&!chico?`<p class="note">${meta-n===1?"Te falta 1":`Te faltan ${meta-n}`} para ${meta===1?"tu primera insignia":"el marco de Embajador"}. Los links de tus grupos (quiniela, Fantasy, La Quinteta) también cuentan.</p>`:""}</section>`; }
+function invNudgeHTML(){ if(!amOk()||!INV.L||INV.L.length>=3) return ""; try{ if(Date.now()-(+localStorage.getItem("pz_invx")||0)<7*864e5) return ""; }catch(e){} return invCardHTML(true); }
+document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) return; let b;
+  if(t.closest("[data-invwa]")){ pzTrack("invita_whatsapp",{n:INV.L?.length||0}); const tx=invTexto();
+    if(navigator.share&&/Android|iPhone|iPad/i.test(navigator.userAgent)){ try{ await navigator.share({text:tx}); return; }catch(e){ if(e?.name==="AbortError") return; } }
+    window.open("https://wa.me/?text="+encodeURIComponent(tx),"_blank","noopener"); return; }
+  if((b=t.closest("[data-invcopia]"))){ pzTrack("invita_copia",{}); try{ await navigator.clipboard.writeText(amLink()); b.textContent="¡Link copiado!"; setTimeout(()=>b.textContent="Copiar mi link",2000); }catch(e){ prompt("Copia tu link:",amLink()); } return; }
+  if(t.closest("[data-invx]")){ try{ localStorage.setItem("pz_invx",String(Date.now())); }catch(e){} t.closest(".invc")?.remove(); } });
 async function amAgrega(){
   const el=$("#amAgrega"); if(!el) return; el.hidden=false;
   el.innerHTML=`<div class="amag"><label class="gobus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="amQ" type="search" placeholder="Busca por apodo" autocomplete="off" aria-label="Buscar amigos" value="${hoyEsc(AM.busq)}"></label>
@@ -9671,7 +9717,7 @@ var GR={ids:[],loaded:false,info:{},cur:null,mode:"ats",join:null,joinInfo:null,
 const grFV=()=>firebase.firestore.FieldValue;
 const grMe=()=>ACCT.user;
 const grName=()=>{const u=grMe(); return ((u?.displayName||(u?.email||"").split("@")[0]||"Jugador").trim()).slice(0,40);};
-const grLink=id=>`https://lapizarra.mx/?g=${id}`;
+const grLink=id=>`https://lapizarra.mx/?g=${id}${pzDe()}`;
 async function grLoadIds(){
   GR.loaded=false; GR.ids=[]; if(!acctOk()) return;
   try{const s=await ACCT.db.doc(`misgrupos/${grMe().uid}`).get(); GR.ids=(s.data()?.ids)||[];}catch(e){console.warn("Grupos:",e?.code||e);}
@@ -11262,6 +11308,7 @@ $("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport
 (()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("qn","nflq"); qnSetView("grupos");}}catch(e){}})();
 // Invitaciones pendientes (27 oct 2026): se guardan en el navegador hasta que te unes o dices "Ahora no",
 // para que no se pierdan si primero tienes que crear tu cuenta o confirmar tu correo.
+const pzDe=()=>{ try{ return ACCT?.user?.uid?`&de=${ACCT.user.uid}`:""; }catch(e){ return ""; } };
 function pzInv(k,v){ try{ if(v) localStorage.setItem("pz_inv_"+k,v); else localStorage.removeItem("pz_inv_"+k); }catch(e){} return v; }
 (()=>{ try{ if(location.search) return; const q=localStorage.getItem("pz_inv_qmx"), f=localStorage.getItem("pz_inv_fan"), c=localStorage.getItem("pz_inv_q5");
   if(q){ QMX.join=q; QMX.vista="grupos"; } if(f){ FAN.join=f; FAN.vista="grupos"; } if(c) Q5.join=c;
