@@ -11174,7 +11174,7 @@ function pushEstado(){   // ok · ios (falta agregarla a la pantalla de inicio) 
 }
 const pushOn=()=>{ const L=pushLs(); return !!(L.on&&L.u===ACCT?.user?.uid&&pushEstado()==="ok"&&Notification.permission==="granted"); };
 function pushCard(on){ const e=pushEstado(), L=pushLs();
-  const cuerpo=e==="ios"?`<p class="note">En iPhone primero agrega La Pizarra a tu pantalla de inicio: abre lapizarra.mx en Safari, toca <b>Compartir</b> y luego <b>Agregar a inicio</b>. Entra desde ese ícono y aquí podrás activar los avisos.</p>`
+  const cuerpo=e==="ios"?`<p class="note">En iPhone primero hay que agregar La Pizarra a tu pantalla de inicio (tarda 10 segundos).</p><button class="btn" data-pushnudge="1" style="margin-top:10px">Ver cómo</button>`
     :e==="no"?`<p class="note">Este navegador no permite avisos. Prueba con Chrome o Safari actualizados.</p>`
     :e==="bloq"?`<p class="note">Los avisos de lapizarra.mx están bloqueados. Actívalos en la configuración de tu navegador (Notificaciones) y vuelve aquí.</p>`
     :on?`<div class="pushps">${Object.entries(PUSH_P).map(([k,[n,d]])=>`<label class="pushp"><span><b>${n}</b><small>${d}</small></span><input type="checkbox" data-pushp="${k}"${(L.p?.[k]??1)?" checked":""}></label>`).join("")}</div>`:"";
