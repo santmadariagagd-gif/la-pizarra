@@ -17,7 +17,7 @@ def rx(nombre):
     return re.compile(m.group(1), re.I) if m else None
 
 FUERTE, GRANDES, CTX, NO, LIVE, NFL, NBA = rx("BS_FUERTE"), rx("BS_FUT_GRANDES"), rx("BS_FUT_CTX"), rx("BS_NO"), rx("BS_LIVE"), rx("BS_NFL_CTX"), rx("BS_NBA_CTX")
-SOC = rx("BS_SOCCER")
+SOC, APU = rx("BS_SOCCER"), rx("BS_APUESTA")
 SERIOS = set(json.loads("[" + re.search(r"BS_SERIOS=new Set\(\[(.*?)\]\)", T).group(1) + "]"))
 packs = json.loads(re.sub(r"(\w+):\[", r'"\1":[', re.search(r"packs:(\{fut:.*?\]\]\})", T).group(1)).replace("'", '"'))
 medios = json.loads(re.sub(r"(\w+):\[", r'"\1":[', re.search(r"medios:(\{fut:.*?\})\}", T).group(1)))
@@ -58,9 +58,14 @@ for k in ("fut", "nfl", "nba"):
         if not verif(A): motivos.append("no verificado")
         if NO and NO.search(t): motivos.append("promo/no")
         if LIVE.search(t): motivos.append("en vivo/horario/política")
-        if not FUERTE.search(t) and not (k == "fut" and A.get("handle") in SERIOS): motivos.append("no es noticia fuerte")
-        if k == "nfl" and (not NFL.search(t) or SOC.search(t)): motivos.append("no es NFL")
-        if k == "nba" and (not NBA.search(t) or SOC.search(t)): motivos.append("no es NBA")
+        serio = A.get("handle") in SERIOS
+        if APU.search(t): motivos.append("apuestas")
+        if not FUERTE.search(t) and not serio: motivos.append("no es noticia fuerte")
+        if k == "nfl" and (not NFL.search(t) or SOC.search(t) or (serio and NBA.search(t))): motivos.append("no es NFL")
+        if k == "nba" and (not NBA.search(t) or SOC.search(t) or (serio and NFL.search(t))): motivos.append("no es NBA")
+        tk = re.sub(r"https?:\S+|\S+\.\S+/\S*", "", t.lower())[:70]
+        if tk in vistos: motivos.append("repetida")
+        vistos.add(tk)
         if k == "fut" and not GRANDES.search(t): motivos.append("sin equipo grande")
         if k == "fut" and not CTX.search(t): motivos.append("no habla de fútbol")
         r = {"@": A.get("handle"), "t": t[:240], "ver": verif(A)}

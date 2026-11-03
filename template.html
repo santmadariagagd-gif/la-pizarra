@@ -1458,6 +1458,8 @@ html.vsinscroll{overflow:hidden}
 @media (prefers-reduced-motion:reduce){.pfdot{animation:none}}
 .pfnudge{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:linear-gradient(120deg,#3E5A3A,var(--surface));border:1px solid var(--mark);margin:0 0 14px;position:relative;flex-wrap:wrap;max-width:640px}
 .pfnudge>span:not(.pzav){flex:1;min-width:170px;display:flex;flex-direction:column;gap:2px}.pfnudge>.pzav{flex:none}.pfnudge b{font:800 19px/1.1 var(--display)}.pfnudge small{color:var(--muted);font-size:13px}
+.sufnudge{background:linear-gradient(120deg,#5a2f2f,var(--surface))}.sufic{font-size:40px;line-height:1;flex:none!important;min-width:0!important}
+#fvSuf{scroll-margin-top:80px;transition:box-shadow .4s}#fvSuf.sufbrilla{box-shadow:0 0 0 3px #FF9C80;border-radius:18px}
 .pfnx{position:absolute;top:6px;right:8px;width:30px;height:30px;border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer}
 .aperf{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--line);margin:0 0 16px}
 .aperf>span:nth-child(2){flex:1;display:flex;flex-direction:column}.aperf b{font-size:16px}.aperf small{color:var(--muted);font-size:13px}
@@ -2540,7 +2542,7 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   $("#fconn").classList.toggle("hidden",!["fmatch","froster","fliga"].includes(id)); if(id==="fwaivers") slTrendLoad();
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="favs") favsRender(); if(id==="amigos") amRender();
+  if(id==="favs"){ favsRender(); setTimeout(()=>typeof sufObserva==="function"&&sufObserva(),400); } if(id==="amigos") amRender();
   if(id==="retas") rtRender(); if(id==="survmx") smxRender();
   if(id==="qmx") qmxAbre(); if(id==="fan") fanRender(); if(id==="f1") f1Render(); if(id==="tenis") tenRender();
   if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbastats") nbaStats(); if(id==="nbaq5") q5Render();
@@ -7417,7 +7419,7 @@ async function pzCompartir(o,nombre,op={}){
   $("#gbody").innerHTML=pzSkel(2); if(!dlg.open) dlg.showModal(); pzTrack("compartir_abre",{t:nombre});
   const b=op.blob||await pzImagen(o), TX=op.texto||"¿Me ganas? https://lapizarra.mx"; if(!b){ $("#gbody").innerHTML=`<p class="note">No se pudo hacer la imagen en este navegador.</p>`; return; }
   const f=new File([b],`la-pizarra-${nombre}.png`,{type:"image/png"}), url=URL.createObjectURL(b), puede=!!(navigator.canShare&&navigator.canShare({files:[f]}));
-  $("#gbody").innerHTML=`<div class="pzshare${nombre==="sufrometro"?" pzstory":""}"><h2>${op.titulo||"Comparte tu jornada"}</h2><img src="${url}" alt="Imagen para compartir con tu resultado"><div class="pzsb">
+  $("#gbody").innerHTML=`<div class="pzshare${nombre==="sufrometro"||nombre==="mi-semana"?" pzstory":""}"><h2>${op.titulo||"Comparte tu jornada"}</h2><img src="${url}" alt="Imagen para compartir con tu resultado"><div class="pzsb">
     <button class="pzwa" id="pzShareWa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>Mandar por WhatsApp</button>
     ${puede?`<button class="q5link" id="pzShareGo">Más opciones</button>`:""}<a class="q5link" href="${url}" download="la-pizarra-${nombre}.png" id="pzShareDl">Descargar imagen</a></div>
     <p class="note">${puede?"En el menú que se abre, escoge WhatsApp (o Instagram, o donde quieras).":"Se descarga la imagen y se abre WhatsApp: adjúntala en el chat que quieras."}</p></div>`;
@@ -7816,7 +7818,7 @@ function vidaSlides(){
   // Reto del día de esta semana
   try{ const rt=RD.h&&RD.t?.t?.[RD.h]; if(rt&&rt.w?.[1]) S.push({eti:"Reto del día",grande:`${rt.w[0]}/${rt.w[1]}`,txt:rt.w[1]===1?"reto contestado esta semana":"aciertos esta semana",sub:rt.r>=2?`Racha de ${rt.r} seguidas · tu mejor: ${rt.m}`:`Tu mejor racha: ${rt.m||0}`,c:"#C9A7F0",fondo:"#3f2f6b",tam:118}); }catch(e){}
   // Survivor (Liga MX y NFL)
-  try{ if(D.qmx&&Object.keys(smxLs()).length){ const C=smxCamino(smxMio); S.push({eti:"Survivor Liga MX",grande:C.vivo?"Vivo":"Fuera",txt:C.vivo?`${C.n} ${C.n===1?"jornada":"jornadas"} aguantando`:`Caíste en la jornada ${C.cae}`,sub:C.vivo?"Escoge bien tu próximo equipo":(C.mot?`Tu equipo ${C.mot}`:""),c:C.vivo?"#9FD3A8":"#FF9C80",fondo:C.vivo?"#2f5a3f":"#5a2f2f",tam:120}); } }catch(e){}
+  try{ if(D.qmx&&Object.keys(smxLs()).length){ const C=smxCamino(smxMio); S.push({eti:"Survivor Liga MX",grande:C.vivo?"Vivo":"Fuera",txt:C.vivo?(C.n?`${C.n} ${C.n===1?"jornada":"jornadas"} aguantando`:"Ya escogiste tu primer equipo"):`Caíste en la jornada ${C.cae}`,sub:C.vivo?"Escoge bien tu próximo equipo":(C.mot?`Tu equipo ${C.mot}`:""),c:C.vivo?"#9FD3A8":"#FF9C80",fondo:C.vivo?"#2f5a3f":"#5a2f2f",tam:120}); } }catch(e){}
   try{ const M=svMine(); if(Object.keys(M).length){ const w=+(qnCache?.week||D.gweek), r=svRun(x=>M[x]||null,1,SV_DESDE,w); S.push({eti:"Survivor NFL",grande:r.out!=null?"Fuera":"Vivo",txt:r.out!=null?`Te eliminaron en la semana ${r.out}`:`Sigues en pie en la semana ${w}`,sub:"",c:r.out!=null?"#FF9C80":"#9FD3A8",fondo:r.out!=null?"#5a2f2f":"#2f5a3f",tam:120}); } }catch(e){}
   // Duelos que terminaron esta semana
   try{ const yo=ACCT.user?.uid, lim=Date.now()/1000-7*86400, T=(DU.L||[]).filter(d=>d.res?.p&&(d.ci||0)>lim-3*86400);
@@ -7847,11 +7849,51 @@ function vidaHistPinta(){
     <div class="vspie">${ult?`<button class="vsshare"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>Compartir mi semana</button>`:""}<small>Toca a la derecha para avanzar y a la izquierda para regresar</small></div>`;
   clearTimeout(H.t); if(!ult&&!PZ_RM()) H.t=setTimeout(()=>{ if(VIDA.story===H){ H.i++; vidaHistPinta(); } },5000);
 }
+// 3 nov 2026: imagen propia para compartir "Mi semana" (formato historia 1080×1920): tu nombre, el dato grande y hasta 6 tarjetas.
+async function vidaImagen(S,rango){
+  const W=1080,H=1920,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  try{ await Promise.all(['800 100px "Barlow Condensed"','700 40px "Barlow Condensed"','400 40px "Barlow"'].map(f=>document.fonts.load(f))); }catch(e){}
+  const Fn=(w,s,fam="Barlow Condensed")=>`${w} ${s}px "${fam}", "Arial Narrow", Arial, sans-serif`;
+  const g=x.createLinearGradient(0,0,W,H); g.addColorStop(0,"#24413a"); g.addColorStop(.55,"#1F332D"); g.addColorStop(1,"#13201B"); x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.fillStyle="rgba(242,212,102,.08)"; x.beginPath(); x.arc(W-40,120,320,0,Math.PI*2); x.fill(); x.fillStyle="rgba(127,184,232,.06)"; x.beginPath(); x.arc(-60,H-260,360,0,Math.PI*2); x.fill();
+  const P=64, ajusta=(t,w,s0,max,fam)=>{ let s=s0; do{ x.font=Fn(w,s,fam); s-=2; }while(x.measureText(t).width>max&&s>16); return s+2; };
+  const recorta=(t,max)=>{ t=String(t||""); let s=t; while(x.measureText(s).width>max&&s.length>3) s=s.slice(0,-2); return s===t?s:s.trim()+"…"; };
+  let y=112; x.font=Fn(700,54); x.fillStyle="#ECEFE7"; x.fillText("La",P,y); x.fillStyle="#F2D466"; x.fillText("Pizarra",P+x.measureText("La ").width,y);
+  x.textAlign="right"; x.font=Fn(700,36); x.fillStyle="#A8B8AF"; x.fillText(rango.toUpperCase(),W-P,y); x.textAlign="left";
+  // tú
+  const yo=perfMio(), nom=yo?.a||ACCT.user?.displayName?.split(" ")[0]||"Yo", c1=yo?(yo.vi&&yo.k1?yo.k1:yo.c1):"#3d6b5a", c2=yo?(yo.vi&&yo.k2?yo.k2:yo.c2):"#F2D466";
+  y+=70; const r=62, cx=P+r, cy=y+r; x.fillStyle=c1||"#3d6b5a"; x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.fill(); x.lineWidth=8; x.strokeStyle=c2||"#F2D466"; x.stroke();
+  x.font=Fn(800,54); x.fillStyle=perfLum(c1||"#3d6b5a")>150?"#13201B":"#fff"; x.textAlign="center"; x.fillText(yo?.n?String(yo.n):favIni(nom)||"LP",cx,cy+19); x.textAlign="left";
+  x.font=Fn(700,34); x.fillStyle="#9FD3A8"; x.fillText("ASÍ ME FUE ESTA SEMANA",P+2*r+28,cy-14);
+  ajusta(nom,800,76,W-P-(P+2*r+28)); x.fillStyle="#ECEFE7"; x.fillText(recorta(nom,W-P-(P+2*r+28)),P+2*r+28,cy+56);
+  y+=2*r+44;
+  // el dato grande
+  const L=S.filter(s=>s.eti!=="Lo que viene"), h0=L.find(s=>s.img)||L[0], R=L.filter(s=>s!==h0).slice(0,6);
+  if(h0){ const hh=R.length>4?400:460; x.fillStyle=h0.fondo; x.beginPath(); x.roundRect(P,y,W-2*P,hh,36); x.fill();
+    x.fillStyle="rgba(0,0,0,.14)"; x.beginPath(); x.roundRect(P,y+hh-90,W-2*P,90,[0,0,36,36]); x.fill();
+    const claro=perfLum(h0.fondo)>140, tx1=claro?"#13201B":"#fff", tx2=claro?"rgba(19,32,27,.72)":h0.c;   // fondo claro (p. ej. amarillo del Guadalajara): letras oscuras
+    x.font=Fn(700,40); x.fillStyle=tx2; x.fillText(h0.eti.toUpperCase(),P+44,y+76);
+    const s=ajusta(h0.grande,800,210,W-2*P-88); x.fillStyle=tx1; x.fillText(h0.grande,P+44,y+76+s*.92);
+    x.font=Fn(400,40,"Barlow"); x.fillStyle=claro?"#13201B":"#ECEFE7"; x.fillText(recorta(h0.txt,W-2*P-88),P+44,y+hh-130);
+    x.font=Fn(700,36); x.fillStyle=tx2; x.fillText(recorta(h0.sub||"",W-2*P-88),P+44,y+hh-32);
+    y+=hh+28; }
+  // tarjetas
+  const abajo=H-210, col=2, gap=24, cw=(W-2*P-gap)/col, filas=Math.ceil(R.length/col)||1, ch=Math.min(330,Math.floor((abajo-y-gap*(filas-1))/filas)); y+=Math.max(0,Math.floor((abajo-y-ch*filas-gap*(filas-1))/2));   // con pocas tarjetas van al centro
+  R.forEach((s,i)=>{ const cx0=P+(i%col)*(cw+gap), cy0=y+Math.floor(i/col)*(ch+gap), ancho=(R.length%2&&i===R.length-1)?W-2*P:cw;
+    x.fillStyle="rgba(255,255,255,.07)"; x.beginPath(); x.roundRect(cx0,cy0,ancho,ch,28); x.fill();
+    x.fillStyle=s.fondo; x.beginPath(); x.roundRect(cx0,cy0,14,ch,[28,0,0,28]); x.fill();
+    x.font=Fn(700,30); x.fillStyle=s.c; x.fillText(recorta(s.eti.toUpperCase(),ancho-60),cx0+40,cy0+56);
+    const gs=ajusta(s.grande,800,Math.min(120,ch*.42),ancho-70); x.fillStyle="#ECEFE7"; x.fillText(s.grande,cx0+40,cy0+56+gs*.95);
+    x.font=Fn(400,Math.min(28,ch*.1),"Barlow"); x.fillStyle="#C9D6CF"; x.fillText(recorta(s.txt,ancho-70),cx0+40,cy0+ch-36); });
+  x.textAlign="center"; x.font=Fn(800,56); x.fillStyle="#F2D466"; x.fillText("¿Me ganas la próxima?",W/2,H-110); x.font=Fn(400,34,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("Juega gratis en lapizarra.mx",W/2,H-58);
+  return await new Promise(r=>c.toBlob(r,"image/png"));
+}
 function vidaHistCierra(){ const H=VIDA.story; if(!H) return; clearTimeout(H.t); H.el.hidden=true; H.el.innerHTML=""; VIDA.story=null; document.documentElement.classList.remove("vsinscroll"); }
 document.addEventListener("click",ev=>{ const H=VIDA.story; if(!H||!ev.target.closest?.("#vstory")) return;
   if(ev.target.closest(".vsx")) return vidaHistCierra();
-  if(ev.target.closest(".vsshare")){ const S=H.S, p=S.find(s=>s.img)?.img, st=S.filter(s=>!s.img&&s.eti!=="Tu mejor pick").slice(0,3).map(s=>[s.grande.length>7?s.grande.split(" ")[0]:s.grande,s.eti]);
-    vidaHistCierra(); pzCompartir({titulo:`Mi semana en La Pizarra · ${H.rango}`,grande:p?.grande||`${VIDA.log?.T.size||0}`,sub:p?.sub||"logros",lineas:p?[p.t]:[],stats:st},"mi-semana"); return; }
+  if(ev.target.closest(".vsshare")){ const S=H.S, rg=H.rango, h0=S.find(s=>s.img)||S[0]; vidaHistCierra();
+    (async()=>{ let b=null; try{ b=await vidaImagen(S,rg); }catch(e){}
+      pzCompartir(b?null:{titulo:`Mi semana en La Pizarra · ${rg}`,grande:h0?.grande||"",sub:h0?.eti||"",lineas:[],stats:[]},"mi-semana",{blob:b||undefined,titulo:"Comparte tu semana",texto:`Así me fue esta semana en La Pizarra: ${h0?`${h0.eti} ${h0.grande}`:""}. ¿Me ganas? https://lapizarra.mx`}); })(); return; }
   if(ev.target.closest(".vstap.izq")){ H.i=Math.max(0,H.i-1); return vidaHistPinta(); }
   if(ev.target.closest(".vstap.der")){ if(H.i<H.S.length-1){ H.i++; vidaHistPinta(); } return; }
 });
@@ -7997,9 +8039,20 @@ function perfSinTocar(){ const p=perfMio(); if(!p) return false; let d; try{ d=p
 const perfNudgeOff=()=>{ try{ return localStorage.getItem("pz_perfnudge")==="1"; }catch(e){ return false; } };
 function perfNudgeHTML(){ if(!(typeof amOk==="function"&&amOk())||!perfSinTocar()||perfNudgeOff()) return "";
   return `<div class="pfnudge">${perfAvatar(perfMio(),56)}<span><b>Haz tuya tu playera</b><small>Escoge tus colores, el diseño, tu número y una frase. Así te reconocen tus amigos.</small></span><button class="btn" data-pfnudge="1">Editar mi perfil</button><button class="pfnx" data-pfnudgex="1" aria-label="Ahora no">×</button></div>`; }
-function perfNudgePinta(){ const el=$("#hoyPf"); if(el) el.innerHTML=perfNudgeHTML(); }
+function perfNudgePinta(){ const el=$("#hoyPf"); if(el) el.innerHTML=perfNudgeHTML()||sufNudgeHTML(); }
+// 3 nov 2026: mucha gente no ha visto el Sufrómetro (vive en Favoritos, a media página). Tarjeta en Hoy hasta que lo vea o la cierre.
+const sufVisto=()=>{ try{ return localStorage.getItem("pz_suf_visto")==="1"||localStorage.getItem("pz_sufnudge")==="1"; }catch(e){ return true; } };
+function sufNudgeHTML(){ if(sufVisto()) return ""; const tiene=Object.keys(FAV.eq||{}).length+Object.keys(FAV.jug||{}).filter(k=>"rt".includes(k[0])).length;
+  return `<div class="pfnudge sufnudge"><span class="sufic" aria-hidden="true">😭</span><span><b>${tiene?"¿Cuánto sufres con tus equipos?":"¿Cuánto sufres con tu equipo?"}</b><small>${tiene?"El Sufrómetro te dice qué tan ganadores son tus equipos, de 0% (puro gozo) a 100% (puro sufrimiento). Compáralo con tus amigos.":"Escoge tus equipos y el Sufrómetro te dice qué tan ganadores son, de 0% (puro gozo) a 100% (puro sufrimiento)."}</small></span><button class="btn" data-sufnudge="${tiene?1:0}">${tiene?"Ver mi Sufrómetro":"Escoger mis equipos"}</button><button class="pfnx" data-sufnudgex="1" aria-label="Ahora no">×</button></div>`; }
+function sufMarcaVisto(){ try{ localStorage.setItem("pz_suf_visto","1"); }catch(e){} document.querySelectorAll(".sufnudge").forEach(x=>x.remove()); }
+function sufObserva(){ const el=$("#fvSuf"); if(!el||sufVisto()||!("IntersectionObserver" in window)) return;
+  const io=new IntersectionObserver(E=>{ if(E.some(e=>e.isIntersecting)){ io.disconnect(); setTimeout(sufMarcaVisto,1500); pzTrack("sufrometro_visto",{}); } },{threshold:.35}); io.observe(el); }
+function sufIr(){ FAVS.dep="todo"; FAVS.sufH=false; showSport("favs");
+  let n=0; const t=setInterval(()=>{ const el=$("#fvSuf"); if(el||++n>20){ clearInterval(t); if(el){ el.scrollIntoView({behavior:PZ_RM()?"auto":"smooth",block:"start"}); el.classList.add("sufbrilla"); setTimeout(()=>el.classList.remove("sufbrilla"),2400); sufObserva(); } } },150); }
 document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
   if(t.closest("[data-pfnudge]")){ pzTrack("perfil_nudge",{}); return perfAbre(); }
+  const sn=t.closest("[data-sufnudge]"); if(sn){ pzTrack("sufrometro_nudge",{f:+sn.dataset.sufnudge}); return sn.dataset.sufnudge==="1"?sufIr():favAbre(); }
+  if(t.closest("[data-sufnudgex]")){ pzTrack("sufrometro_nudge_x",{}); try{ localStorage.setItem("pz_sufnudge","1"); }catch(e){} document.querySelectorAll(".sufnudge").forEach(x=>x.remove()); return; }
   if(t.closest("[data-pfnudgex]")){ try{ localStorage.setItem("pz_perfnudge","1"); }catch(e){} document.querySelectorAll(".pfnudge").forEach(x=>x.remove()); } });
 function perfMio(){ if(PERF.yo) return PERF.yo; try{ const x=JSON.parse(localStorage.getItem("pz_perfil")||"null"); if(x) PERF.yo=perfLimpia(x); }catch(e){} return PERF.yo; }
 const perfTitulo=p=>PERF_TIT.find(t=>t[0]===p?.ti&&t[0])?.[1]||"";
@@ -9357,7 +9410,7 @@ function favsRender(){
     ${V.length?favsHero(V[0]):""}
     ${tiles.length?sec(FAVS.dep==="todo"?"Tus equipos y atletas":"Tus favoritos",`<div class="fvrail">${tiles.join("")}<button class="fvtile fvmas" data-hact="fav"><span class="amplus">+</span><span>Agregar</span></button></div>`):""}
     ${V.length>1?sec("Agenda",favsAgenda(V.slice(1,9))):""}
-    ${suf?sec("El Sufrómetro",suf):""}
+    ${suf?sec("El Sufrómetro",suf).replace('<section class="hsec fvsec"','<section class="hsec fvsec" id="fvSuf"'):""}
     ${R.length?sec("Resultados",`<div class="fvresl">${R.slice(0,8).map(favsRes).join("")}</div>`):""}
     ${jug.length?sec("Tus futbolistas",`<div class="hfjl">${jug.map(([k,x])=>`<button data-jf="${hoyEsc(k)}"><i>${favIni(x.n)}</i>${hoyEsc(x.n)}</button>`).join("")}</div>`):""}
     ${notas.length?sec("Lo último de tus equipos",`<div class="fvnotas">${notas.map(n=>{ const [tl]=ULT_TIPO[n.tipo]||["Nota"]; const ab=n.nid?` data-nid="${hoyEsc(n.nid)}"`:n.fx&&LEAGUES[n.liga]&&comercial(LEAGUES[n.liga])?` data-hk="${n.liga}" data-hid="${hoyEsc(String(n.fx))}"`:"";
@@ -10706,9 +10759,10 @@ const BS_FUERTE=/\b(sources?|fuentes?|breaking|[uú]ltim[ao] hora|report(?:ed|ed
 // v4 (3 nov 2026, con una muestra real): fuera transmisiones en vivo, horarios, previas, ruedas de prensa y política;
 // AS y The Athletic (medios serios) solo necesitan hablar de un equipo grande; NFL y NBA solo si hablan de ese deporte.
 const BS_SERIOS=new Set(["as.com","theathletic.com"]);
+const BS_APUESTA=/(\bodds\b|best bets|\bparlay|sportsbook|betting|apuestas?\b|momios)/i;
 const BS_LIVE=/(en vivo|en directo|sigue (?:el|en|la|aqu)|minuto a minuto|ya en juego|segunda parte|primera parte|descanso|\bfinal en\b|\blive\b|live blog|how to watch|where to watch|c[oó]mo ver|d[oó]nde ver|horario|alineaciones probables|previa\b|rueda de prensa|press conference|on ?this ?day|mailbag|vibe check|election|governor|senate|democrat|republican|pollster|\bpolls?\b|\bvote\b|voting)/i;
-const BS_NFL_CTX=/(\bnfl\b|quarterback|\bqb\b|touchdown|receiver|\bwr\b|\brb\b|running back|tight end|linebacker|cornerback|\bsafety\b|kicker|injured reserve|\bir\b|practice squad|chiefs|eagles|cowboys|giants|commanders|bills|dolphins|patriots|jets|ravens|bengals|browns|steelers|texans|colts|jaguars|titans|broncos|raiders|chargers|packers|bears|lions|vikings|falcons|panthers|saints|buccaneers|bucs|cardinals|rams|49ers|niners|seahawks)/i;
-const BS_NBA_CTX=/(\bnba\b|two-way|g league|lakers|celtics|warriors|knicks|nets|76ers|sixers|raptors|bulls|cavaliers|cavs|pistons|pacers|bucks|hawks|hornets|heat|magic|wizards|nuggets|timberwolves|wolves|thunder|blazers|jazz|clippers|suns|kings|mavericks|mavs|rockets|grizzlies|pelicans|spurs)/i;
+const BS_NFL_CTX=/\b(\bnfl\b|quarterback|\bqb\b|touchdown|receiver|\bwr\b|\brb\b|running back|tight end|linebacker|cornerback|\bsafety\b|kicker|injured reserve|\bir\b|practice squad|chiefs|eagles|cowboys|giants|commanders|bills|dolphins|patriots|jets|ravens|bengals|browns|steelers|texans|colts|jaguars|titans|broncos|raiders|chargers|packers|bears|lions|vikings|falcons|panthers|saints|buccaneers|bucs|cardinals|rams|49ers|niners|seahawks)\b/i;
+const BS_NBA_CTX=/\b(\bnba\b|two-way|g league|lakers|celtics|warriors|knicks|nets|76ers|sixers|raptors|bulls|cavaliers|cavs|pistons|pacers|bucks|hawks|hornets|heat|magic|wizards|nuggets|timberwolves|wolves|thunder|blazers|jazz|clippers|suns|kings|mavericks|mavs|rockets|grizzlies|pelicans|spurs)\b/i;
 const BS_SOCCER=/(premier league|champions league|la ?liga|serie a|bundesliga|ligue 1|f[uú]tbol|soccer|\bfc\b|\bcf\b|uefa|fifa|nottingham|forest|arsenal|chelsea|liverpool|tottenham|real madrid|barcelona|bayern|juventus|\bmls\b|usmnt)/i;
 const BS_FUT_CTX=/(f[uú]tbol|football|soccer|\bgol(?:es)?\b|\bgoals?\b|partido|\bmatch|club|t[eé]cnico|entrenador|\bdt\b|manager|head coach|futbolista|player|jugador|delantero|striker|forward|portero|goalkeeper|defensa|defender|mediocampista|midfielder|fichaje|transfer|traspaso|champions|premier|laliga|la liga|liga mx|serie a|bundesliga|ligue 1|mundial|world cup|selecci[oó]n|plantilla|squad|estadio|stadium|liguilla|jornada|matchday|torneo|copa|cl[aá]sico|derbi|derby|lesi[oó]n|injur|hat-?trick|penal|vestidor|dressing room|afici[oó]n|fans)/i;
 const BS_FUT_GRANDES=/(real madrid|barcelona|bar[cç]a|atl[eé]tico|manchester (?:united|city)|man (?:utd|united|city)|liverpool|arsenal|chelsea|tottenham|spurs|newcastle|bayern|dortmund|psg|paris saint|juventus|inter(?:\s|$|\b)|milan|napoli|am[eé]rica|chivas|guadalajara|pumas|cruz azul|tigres|monterrey|rayados|toluca|selecci[oó]n mexicana|el tri\b|tricolor|liga mx|mbapp[eé]|vin[ií]cius|bellingham|yamal|haaland|salah|kane|messi|ronaldo|ra[uú]l jim[eé]nez|santiago gim[eé]nez|edson [aá]lvarez|lozano|champions league|premier league|laliga|la liga)/i;
@@ -10729,9 +10783,11 @@ async function bsPinta(){ const el=$("#hoyBs"); if(!el) return; const k=BS.f;
         if((P.labels||[]).length||(A?.labels||[]).some(l=>/porn|sexual|nudity|graphic|spam/.test(l.val))) return false;
         const serio=BS_SERIOS.has(A?.handle);
         if(t.length<50||!bsVerif(A)||BS_NO.test(t)||BS_LIVE.test(t)) return false;
-        if(!BS_FUERTE.test(t)&&!(serio&&k==="fut")) return false;
-        if(k==="nfl"&&(!BS_NFL_CTX.test(t)||BS_SOCCER.test(t))) return false;
-        if(k==="nba"&&(!BS_NBA_CTX.test(t)||BS_SOCCER.test(t))) return false;
+        if(BS_APUESTA.test(t)) return false;
+        if(!BS_FUERTE.test(t)&&!serio) return false;   // los medios serios (AS, The Athletic) pasan si hablan del deporte correcto
+        if(k==="nfl"&&(!BS_NFL_CTX.test(t)||BS_SOCCER.test(t)||(serio&&BS_NBA_CTX.test(t)))) return false;
+        if(k==="nba"&&(!BS_NBA_CTX.test(t)||BS_SOCCER.test(t)||(serio&&BS_NFL_CTX.test(t)))) return false;
+        const tk=t.toLowerCase().replace(/https?:\S+|\S+\.\S+\/\S*/g,"").slice(0,70); if(visto.has(tk)) return false; visto.add(tk);   // sin repetidas
         if(k==="fut"&&!BS_FUT_GRANDES.test(t)&&!fav.some(n=>t.toLowerCase().includes(n.split(" ")[0]))) return false;
         if(k==="fut"&&/\b(nfl|nba|touchdown|quarterback|lakers|celtics)\b/i.test(t)) return false;
         if(k==="fut"&&!BS_FUT_CTX.test(t)) return false;   // tiene que hablar de fútbol (no de la ciudad o del país)
