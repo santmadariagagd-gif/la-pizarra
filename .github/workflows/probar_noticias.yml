@@ -1,0 +1,22 @@
+name: Probar noticias
+# Muestra de lo que pasa por el filtro de Noticias (Bluesky) → bitacora/bs_muestra.json. Solo a mano.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probar:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python probar_bluesky.py
+      - name: Guardar la muestra
+        run: |
+          git config user.name "La Pizarra bot"
+          git config user.email "actions@github.com"
+          git add bitacora/bs_muestra.json
+          git diff --cached --quiet || git commit -m "Muestra de noticias"
+          git pull --rebase -q && git push
