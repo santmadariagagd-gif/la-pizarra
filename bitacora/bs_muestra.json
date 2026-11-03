@@ -1,5 +1,5 @@
 {
- "al": "2026-11-03T19:27:10.746175+00:00",
+ "al": "2026-11-03T19:34:40.255053+00:00",
  "fuentes": {
   "fut:thefootymuseum.bsky.social": 100,
   "fut:philippeauclair.bsky.social": 100,
@@ -36,11 +36,6 @@
     {
      "@": "as.com",
      "t": "El Barcelona está en busca de un central para apuntalar su defensa. dozz.es/alebm4 ",
-     "ver": true
-    },
-    {
-     "@": "as.com",
-     "t": "El Barcelona está en busca de un central para apuntalar su defensa. dozz.es/0g5dz4 ",
      "ver": true
     },
     {
@@ -327,7 +322,8 @@
      "t": "Fecha, horario, cómo ver en vivo y en directo en televisión y cómo seguir online el Atlético de Madrid - Bayern, fase liga de la Champions League. dozz.es/o1_hz1 ",
      "ver": true,
      "por": [
-      "en vivo/horario/política"
+      "en vivo/horario/política",
+      "repetida"
      ]
     },
     {
@@ -335,7 +331,8 @@
      "t": "Fecha, horario, cómo ver en vivo y en directo en televisión y cómo seguir online el Barcelona - Aston Villa, jornada 4 de la fase liga de la Champions League. dozz.es/clgs14 ",
      "ver": true,
      "por": [
-      "en vivo/horario/política"
+      "en vivo/horario/política",
+      "repetida"
      ]
     },
     {
@@ -397,6 +394,14 @@
     },
     {
      "@": "as.com",
+     "t": "El Barcelona está en busca de un central para apuntalar su defensa. dozz.es/0g5dz4 ",
+     "ver": true,
+     "por": [
+      "repetida"
+     ]
+    },
+    {
+     "@": "as.com",
      "t": "Ambos coincidieron en el Tottenham e hicieron grandes migas. dozz.es/dniea4 ",
      "ver": true,
      "por": [
@@ -420,17 +425,9 @@
       "sin equipo grande",
       "no habla de fútbol"
      ]
-    },
-    {
-     "@": "as.com",
-     "t": "El portero alcanza hoy los 553 partidos de Adelardo con la rojiblanca, un récord inalcanzable 46 años, hasta Koke. dozz.es/43eqa5 ",
-     "ver": true,
-     "por": [
-      "sin equipo grande"
-     ]
     }
    ],
-   "total": 228
+   "total": 402
   },
   "nfl": {
    "pasan": [
@@ -448,9 +445,32 @@
      "@": "news.optimusfantasy.com",
      "t": "⚠️⚠️⚠️ INJURY NEWS ⚠️⚠️⚠️\n\nAfter an estimated DNP on Monday, Bhayshul Tuten (ankle/foot) was NOT spotted at the open portion of practice on Tuesday.\n\nThe Jaguars play TNF.\n\nPer Michael DiRocco.",
      "ver": true
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Across the land, the Ben Johnson-Caleb Williams whistle-stop tour is a resounding success. Adding Jeffery Simmons helping Bears' bona fides. www.nytimes.com/athletic/775...",
+     "ver": true
+    },
+    {
+     "@": "theathletic.com",
+     "t": "The highest-paid NFL coaches make $20 million. Brian Schottenheimer's salary is estimated between $5 million and $8 million. www.nytimes.com/athletic/775...",
+     "ver": true
+    },
+    {
+     "@": "theathletic.com",
+     "t": "The Lions head coach provided the update on Jack Campbell during a radio appearance Tuesday morning. www.nytimes.com/athletic/774...",
+     "ver": true
     }
    ],
    "casi": [
+    {
+     "@": "acosta32jp.bsky.social",
+     "t": "Thought on the Seahawks' offense and what's going wrong: they're not explosive enough on runs against light boxes. Last season the Seahawks' rushing success rate against light boxes their success rate was about similar to this year, but in ",
+     "ver": true,
+     "por": [
+      "no es noticia fuerte"
+     ]
+    },
     {
      "@": "insidenflnews.bsky.social",
      "t": "‼️ Rap: Jeremiyah Love (high-ankle sprain) to be placed on IR; will miss at least 4-5 weeks.",
@@ -488,7 +508,7 @@
      "t": "The Bears are on the move in the odds to win the Super Bowl, but they aren't quite favored in the NFC yet. www.nytimes.com/athletic/775...",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "apuestas"
      ]
     },
     {
@@ -496,15 +516,7 @@
      "t": "The NFL MVP race is finally heating up with five candidates who have 10-to-1 or better odds. www.nytimes.com/athletic/766...",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Across the land, the Ben Johnson-Caleb Williams whistle-stop tour is a resounding success. Adding Jeffery Simmons helping Bears' bona fides. www.nytimes.com/athletic/775...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
+      "apuestas"
      ]
     },
     {
@@ -512,23 +524,72 @@
      "t": "Austin Mock went 5-0 last week and is 20-10 overall with his NFL best bets this season. He has several picks ready for Week 9. www.nytimes.com/athletic/775...",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "apuestas"
      ]
     },
     {
      "@": "theathletic.com",
-     "t": "The highest-paid NFL coaches make $20 million. Brian Schottenheimer's salary is estimated between $5 million and $8 million. www.nytimes.com/athletic/775...",
+     "t": "Kanzler is an outside-the-box hire for the Mariners, who also considered former Astros manager Joe Espada. www.nytimes.com/athletic/773...",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "no es NFL"
      ]
     },
     {
      "@": "theathletic.com",
-     "t": "The Lions head coach provided the update on Jack Campbell during a radio appearance Tuesday morning. www.nytimes.com/athletic/774...",
+     "t": "The Clippers held a 97-83 lead with 9:47 left before the Raptors completed a 47-point fourth quarter to win 125-118. www.nytimes.com/athletic/774...",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "no es NFL"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Zach Harper catches you up on the latest NBA news in our newsletter. www.nytimes.com/athletic/775...",
+     "ver": true,
+     "por": [
+      "promo/no",
+      "no es NFL"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "DeMarco led the Liberty to the semifinals, but being swept by the Dream and a timeout debacle didn't inspire confidence in his return. www.nytimes.com/athletic/768...",
+     "ver": true,
+     "por": [
+      "no es NFL"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "The NWSL's lack of owned and operated venues is only part of the problem. www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NFL"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "From Avdija, there was no complaining. No attitude. And no tension. Just a simple question: 'Micah, how is this going to work?' www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NFL"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Exploring the many reasons why goals are coming at a much faster rate in the competition than in the Premier League www.nytimes.com/athletic/773...",
+     "ver": true,
+     "por": [
+      "no es NFL"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Our weekly performance-based ranking of all 20 Premier League teams. It's not good reading for Pierre Sage... www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NFL"
      ]
     },
     {
@@ -538,9 +599,33 @@
      "por": [
       "no es NFL"
      ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Old assumptions about intelligence largely ignored the complexity of a profession that requires players to develop faster in so many ways www.nytimes.com/athletic/769...",
+     "ver": true,
+     "por": [
+      "no es NFL"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "It is tempting to argue City's newfound vulnerability comes from their off-pitch problems, but the reality is far more straightforward www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NFL"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "As they meet at Anfield, how are these two teams supposed to feel about the Premier League's City judgment? www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NFL"
+     ]
     }
    ],
-   "total": 106
+   "total": 162
   },
   "nba": {
    "pasan": [
@@ -552,6 +637,11 @@
     {
      "@": "mikeascotto.bsky.social",
      "t": "The Minnesota Timberwolves and Norchad Omier have agreed to a two-way deal, league sources told HoopsHype. Omier averaged 18.3 points on 59.2% shooting from the field, 11.4 rebounds, and 2.5 assists in the G League last season.",
+     "ver": true
+    },
+    {
+     "@": "theathletic.com",
+     "t": "The Clippers held a 97-83 lead with 9:47 left before the Raptors completed a 47-point fourth quarter to win 125-118. www.nytimes.com/athletic/774...",
      "ver": true
     }
    ],
@@ -616,18 +706,109 @@
     },
     {
      "@": "theathletic.com",
-     "t": "The NFL MVP race is finally heating up with five candidates who have 10-to-1 or better odds. www.nytimes.com/athletic/766...",
+     "t": "The Bears are on the move in the odds to win the Super Bowl, but they aren't quite favored in the NFC yet. www.nytimes.com/athletic/775...",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "apuestas",
+      "no es NBA"
      ]
     },
     {
      "@": "theathletic.com",
-     "t": "The Clippers held a 97-83 lead with 9:47 left before the Raptors completed a 47-point fourth quarter to win 125-118. www.nytimes.com/athletic/774...",
+     "t": "The NFL MVP race is finally heating up with five candidates who have 10-to-1 or better odds. www.nytimes.com/athletic/766...",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "apuestas",
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Across the land, the Ben Johnson-Caleb Williams whistle-stop tour is a resounding success. Adding Jeffery Simmons helping Bears' bona fides. www.nytimes.com/athletic/775...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Austin Mock went 5-0 last week and is 20-10 overall with his NFL best bets this season. He has several picks ready for Week 9. www.nytimes.com/athletic/775...",
+     "ver": true,
+     "por": [
+      "apuestas",
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Kanzler is an outside-the-box hire for the Mariners, who also considered former Astros manager Joe Espada. www.nytimes.com/athletic/773...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "The highest-paid NFL coaches make $20 million. Brian Schottenheimer's salary is estimated between $5 million and $8 million. www.nytimes.com/athletic/775...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Zach Harper catches you up on the latest NBA news in our newsletter. www.nytimes.com/athletic/775...",
+     "ver": true,
+     "por": [
+      "promo/no"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "The Lions head coach provided the update on Jack Campbell during a radio appearance Tuesday morning. www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "DeMarco led the Liberty to the semifinals, but being swept by the Dream and a timeout debacle didn't inspire confidence in his return. www.nytimes.com/athletic/768...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "The NWSL's lack of owned and operated venues is only part of the problem. www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "From Avdija, there was no complaining. No attitude. And no tension. Just a simple question: 'Micah, how is this going to work?' www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Exploring the many reasons why goals are coming at a much faster rate in the competition than in the Premier League www.nytimes.com/athletic/773...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Our weekly performance-based ranking of all 20 Premier League teams. It's not good reading for Pierre Sage... www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NBA"
      ]
     },
     {
@@ -637,9 +818,33 @@
      "por": [
       "no es NBA"
      ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Old assumptions about intelligence largely ignored the complexity of a profession that requires players to develop faster in so many ways www.nytimes.com/athletic/769...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "It is tempting to argue City's newfound vulnerability comes from their off-pitch problems, but the reality is far more straightforward www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
+    },
+    {
+     "@": "theathletic.com",
+     "t": "As they meet at Anfield, how are these two teams supposed to feel about the Premier League's City judgment? www.nytimes.com/athletic/774...",
+     "ver": true,
+     "por": [
+      "no es NBA"
+     ]
     }
    ],
-   "total": 96
+   "total": 155
   }
  }
 }
