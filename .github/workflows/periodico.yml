@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install nflreadpy firebase-admin pandas pyarrow   # pyarrow: lo pide polars para pasar los datos a pandas
+      - run: pip install nflreadpy firebase-admin pandas pyarrow pillow   # pyarrow: lo pide polars; pillow: la portada para WhatsApp
       - run: python periodico.py
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # llave de la API de Claude

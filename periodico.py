@@ -412,28 +412,33 @@ Reglas firmes:
 """
 FORMATO = """Devuelve exactamente este JSON:
 {
- "titular": "titular principal estilo periódico popular mexicano (máx. 70 caracteres)",
- "subtitulo": "una línea con 2 o 3 datos de la semana",
- "resumen": "un párrafo de 4-6 frases que repase todos los matchups con mucho sabor",
+ "titular": "titular principal estilo periódico popular mexicano, que duela (máx. 70 caracteres)",
+ "subtitulo": "una línea con 2 o 3 datos de la semana, con veneno",
+ "resumen": "3-4 frases que repasen la semana; cada frase con su chiste",
  "partidos": [ {"id": <id del matchup>, "etiqueta": "NOTA ROJA|CHISME|ESPECTÁCULOS|DEPORTES|ÚLTIMA HORA",
-               "titular": "máx. 80 caracteres, estilo nota roja", "bajada": "una frase corta y graciosa",
-               "historia": ["párrafo 1: la jugada clave del partido", "párrafo 2: el ganador jugador por jugador", "párrafo 3: el perdedor jugador por jugador y su banca", "párrafo 4: remate y qué sigue para los dos"],
-               "cita": "una frase inventada del ganador después del partido"} ],
- "banca": "2-3 frases sobre la tabla de puntos dejados en la banca (quién dejó más)",
- "sospecha": "si hay dato de 'sospecha', un párrafo estilo citatorio de la dirección de la escuela; si no, null",
- "premios": {"snell": "2-3 frases", "pitts": "2-3 frases", "foles": "2-3 frases", "burrow": "2-3 frases"},
+               "titular": "máx. 80 caracteres, estilo nota roja", "bajada": "una frase corta que remate",
+               "historia": ["párrafo 1 (máx. 60 palabras): qué pasó y la jugada clave", "párrafo 2 (máx. 60 palabras): carrilla directa al perdedor por su nombre de usuario (y al ganador si ganó de suerte)"],
+               "pregunta": "la pregunta incómoda que un reportero le haría al manager perdedor en la conferencia de prensa (1 frase)",
+               "cita": "una frase inventada del ganador después del partido, presumiendo"} ],
+ "roast": [ {"eq": "nombre exacto del equipo", "texto": "1-2 frases de roast de comedia sobre su semana o su temporada"} ],
+ "banca": "2 frases sobre quién dejó más puntos en la banca",
+ "sospecha": "si hay dato de 'sospecha', un párrafo corto estilo citatorio de la dirección de la escuela; si no, null",
+ "premios": {"snell": "1-2 frases", "pitts": "1-2 frases", "foles": "1-2 frases", "burrow": "1-2 frases"},
  "loteria": [ {"eq": "nombre exacto del equipo", "carta": "una carta de la lista", "verso": "un verso corto estilo gritón de lotería sobre su semana"} ],
- "obituarios": [ {"n": "nombre del jugador", "texto": "2-3 frases estilo esquela"} ],
+ "obituarios": [ {"n": "nombre del jugador", "texto": "2 frases estilo esquela"} ],
  "avisos": [ {"titulo": "SE BUSCA / SE VENDE / SE RENTA / SE PERDIÓ / etc.", "texto": "1-2 frases", "pie": "remate corto"} ]  (4 avisos)
 }
 - Un objeto en "partidos" por cada matchup, en el mismo orden que te los doy.
-- Las crónicas son lo más importante del periódico: 4 párrafos cada una (unas 250-350 palabras por partido). Analiza el partido
-  jugador por jugador con los datos de "g_titulares"/"p_titulares" (puntos contra proyección), "g_en_banca"/"p_en_banca" y
-  "g_cambio"/"p_cambio" (el cambio que no hizo). Menciona por lo menos 5 jugadores con sus números en cada crónica: quién salvó la
-  semana, quién no se presentó, quién le quedó a deber a su proyección, qué puntos se quedaron sentados en la banca y por cuánto
-  habría cambiado el resultado. Usa la racha, el récord y el historial de cada equipo para el contexto de la temporada.
-- Molesta mucho: háblale directo al manager perdedor por su nombre de usuario ("mada, ¿qué estamos haciendo?"), échale en cara
-  sus decisiones de alineación con números, y tampoco perdones al ganador si ganó de suerte. Cada crónica con chistes distintos.
+- Las crónicas son CORTAS y pegan duro: 2 párrafos, máximo 120 palabras en total. No es un reporte de estadísticas: usa solo 2 o 3
+  números por crónica, los más humillantes (el que dejaste en la banca, el titular que no se presentó, la diferencia que habría
+  cambiado el resultado). Los números completos ya salen aparte en una tabla, no los repitas.
+- MÁS CARRILLA: cada frase tiene que tener un chiste, una comparación o un apodo. Prohibido el relleno de cronista neutro
+  ("fue una semana donde…", "en resumen", "sin duda", "cabe destacar", "un partido de dos caras"). Háblale directo al manager
+  ("mada, ¿qué estamos haciendo?"). Compara sus decisiones con cosas cotidianas de México (el microbús, la fila del SAT, el
+  recalentado, el tío que siempre llega tarde, el Ángel de la Independencia en día de partido de la Selección). No perdones al
+  ganador si ganó de suerte. No repitas chistes, apodos ni remates entre crónicas.
+- "roast": un objeto por CADA equipo de la tabla, en el orden de la tabla. Roast de comedia: corto, ingenioso y con el dato que
+  más le duele (récord, racha, lugar en la tabla, puntos en la banca). Al líder también se le carrillea.
 - "loteria": un objeto por cada equipo del power ranking, en ese orden; cada equipo con una carta DISTINTA de esta lista: {cartas}."""
 
 def escribir(datos, liga_nombre, w, picante="normal"):
@@ -578,10 +583,22 @@ th{font:600 13px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:
 .btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px}.btns .compartir{margin-top:0}
 .pdf{display:inline-block;background:var(--yellow);color:#15241F;border:0;cursor:pointer;font:700 17px var(--disp);letter-spacing:.04em;padding:12px 22px;border-radius:999px}
 .pdfmini{position:absolute;top:12px;right:14px;z-index:3;background:rgba(0,0,0,.25);color:var(--chalk);border:1px solid var(--line);border-radius:999px;font:600 12px var(--disp);letter-spacing:.08em;padding:6px 12px;cursor:pointer}
+.indice{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:10px 16px;margin:10px -24px 0;background:rgba(21,36,31,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.indice::-webkit-scrollbar{display:none}.indice a{flex:none;color:var(--chalk);text-decoration:none;font:600 14px var(--disp);letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--board2)}
+@media(max-width:640px){.indice{margin:10px -16px 0}}section{scroll-margin-top:60px}
+.preg{margin:12px 0;padding:10px 14px;border-left:4px solid var(--blue);background:rgba(156,199,230,.08);font:500 17px/1.4 var(--body);font-style:italic}.preg span{display:block;font:700 12px var(--disp);letter-spacing:.12em;text-transform:uppercase;color:var(--blue);font-style:normal;margin-bottom:2px}
+.lupa{margin:10px 0 4px;border:1px dashed var(--line);border-radius:10px;padding:6px 12px}.lupa summary{cursor:pointer;font:700 14px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:var(--yellow);padding:4px 0}
+.lados{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}@media(max-width:640px){.lados{grid-template-columns:1fr}}.lados h6{margin:0 0 4px;font:700 16px var(--disp)}
+.nums{list-style:none;margin:0;padding:0;font-size:14px}.nums li{display:grid;grid-template-columns:1fr 44px 44px;gap:6px;padding:3px 0;border-bottom:1px dotted var(--line)}.nums li b,.nums li small{text-align:right}
+.nums .cab{font:600 11px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}.nums small.up{color:var(--green)}.nums small.dn{color:var(--red)}.bnc{font-size:13px;color:var(--dim);margin:6px 0 0}
+.mandar{display:inline-flex;align-items:center;gap:6px;margin:10px 0 0;background:#25D366;color:#0b2b17;border:0;border-radius:999px;font:700 15px var(--disp);letter-spacing:.03em;padding:9px 16px;cursor:pointer}
+.mandar.mini{margin:0;padding:6px 10px;font-size:16px;align-self:start}
+.roasts{display:grid;gap:10px}.roast{display:grid;grid-template-columns:1fr auto;gap:4px 10px;background:var(--board2);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:10px 12px}
+.roast>div{grid-column:1}.roast b{font:700 18px var(--disp)}.roast small{margin-left:8px;color:var(--dim);font:600 12px var(--disp);letter-spacing:.08em}.roast p{grid-column:1;margin:0;font-size:16px;line-height:1.45}.roast .mandar{grid-column:2;grid-row:1/span 2}
 @media print{@page{size:letter;margin:0}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 html,body{background:var(--board)!important}.hoja{margin:0!important;max-width:none!important;border-radius:0!important;box-shadow:none!important;border-width:10px!important}
-.noprint,.cta,.pdfmini{display:none!important}
+.noprint,.cta,.pdfmini{display:none!important}.lupa{display:none!important}
 .prev,.carta,.esq,.premio,.rec,.post,.tx,.marc,.ficha,.caja,.cita,.mc{break-inside:avoid}h3.sec{break-after:avoid}}
 """
 JUGADA = ('<svg class="jug" style="{pos}" width="150" height="90" viewBox="0 0 150 90" fill="none" stroke="#ECEFE7" stroke-width="2.5" stroke-linecap="round">'
@@ -593,6 +610,95 @@ PREMIOS = [("snell", "😶", "Premio «Ni sus luces»", "El titular que no hizo 
            ("foles", "🪑", "Premio «¿Pa' qué lo banqueas?»", "La mejor actuación desde la banca"),
            ("burrow", "💀", "Premio «Murió en la raya»", "La mejor puntuación en una derrota")]
 
+JS = r"""
+(function(){
+ var TT=document.title;
+ function lineas(x,t,max){ var w=String(t||"").split(/\s+/),L=[],s=""; for(var i=0;i<w.length;i++){ var p=s?s+" "+w[i]:w[i]; if(x.measureText(p).width>max&&s){ L.push(s); s=w[i]; } else s=p; } if(s) L.push(s); return L; }
+ async function imagen(d){
+  var W=1080,H=1350,c=document.createElement("canvas"); c.width=W; c.height=H; var x=c.getContext("2d");
+  try{ await Promise.all(['700 80px "Cabin Sketch"','700 60px "Barlow Condensed"','500 40px "Barlow"'].map(function(f){return document.fonts.load(f);})); }catch(e){}
+  var F=function(w,s,f){ return w+" "+s+"px "+(f||'"Barlow Condensed", "Arial Narrow", Arial, sans-serif'); };
+  x.fillStyle="#7A5232"; x.fillRect(0,0,W,H); var g=x.createRadialGradient(300,200,50,540,600,900); g.addColorStop(0,"#2a443c"); g.addColorStop(1,"#1F332D"); x.fillStyle=g; x.fillRect(22,22,W-44,H-44);
+  var P=80,y=120; x.textAlign="center"; x.fillStyle="#A8B8AF"; x.font=F(600,30); x.fillText("LA PIZARRA PRESENTA",W/2,y);
+  y+=96; x.fillStyle="#ECEFE7"; x.font=F(700,92,'"Cabin Sketch", "Barlow Condensed", sans-serif'); x.fillText((TT.split(" · ")[0]||"El Pizarrón").split(" de ")[0],W/2,y);
+  y+=50; x.fillStyle="#F2D466"; x.font=F(600,34); x.fillText((TT.split(" · ")[1]||"").toUpperCase(),W/2,y);
+  y+=36; x.strokeStyle="rgba(236,239,231,.35)"; x.setLineDash([12,10]); x.lineWidth=3; x.beginPath(); x.moveTo(P,y); x.lineTo(W-P,y); x.stroke(); x.setLineDash([]);
+  x.textAlign="left"; y+=70; x.font=F(700,30); var et=String(d.et||"").toUpperCase(), ew=x.measureText(et).width+30; x.fillStyle="#F29C8C"; x.fillRect(P,y-34,ew,46); x.fillStyle="#1B2A38"; x.fillText(et,P+15,y);
+  y+=30; var s=78; x.font=F(700,s); var L=lineas(x,String(d.t||"").toUpperCase(),W-2*P); while(L.length>4&&s>44){ s-=6; x.font=F(700,s); L=lineas(x,String(d.t||"").toUpperCase(),W-2*P); }
+  x.fillStyle="#F2D466"; L.forEach(function(l){ y+=s*1.02; x.fillText(l,P,y); });
+  if(d.rec){ y+=44; x.font=F(600,32); x.fillStyle="#A8B8AF"; x.fillText(d.rec,P,y); }
+  if(d.b){ y+=26; var bs=40; x.font=F(500,bs,'"Barlow", Arial, sans-serif'); var B=lineas(x,d.b,W-2*P); while(B.length>7&&bs>28){ bs-=3; x.font=F(500,bs,'"Barlow", Arial, sans-serif'); B=lineas(x,d.b,W-2*P); } B=B.slice(0,8); x.fillStyle="#ECEFE7"; B.forEach(function(l){ y+=bs*1.3; x.fillText(l,P,y); }); }
+  if(d.g){ y+=50; x.fillStyle="rgba(0,0,0,.25)"; x.beginPath(); x.roundRect(P,y,W-2*P,120,18); x.fill(); x.font=F(700,40); x.fillStyle="#ECEFE7"; x.fillText(String(d.g).slice(0,18),P+24,y+52); x.fillStyle="#A8B8AF"; x.fillText(String(d.p).slice(0,18),P+24,y+100);
+    x.textAlign="right"; x.fillStyle="#F2D466"; x.fillText(String(d.gp),W-P-24,y+52); x.fillStyle="#A8B8AF"; x.fillText(String(d.pp),W-P-24,y+100); x.textAlign="left"; y+=120; }
+  var q=d.q||d.c; if(q&&y<H-260){ y+=56; x.font=F(600,24); x.fillStyle="#9CC7E6"; x.fillText(d.q?"🎤 LA PREGUNTA INCÓMODA":"LO DIJO EL GANADOR",P,y); x.font=F(500,34,'"Barlow", Arial, sans-serif'); x.fillStyle="#ECEFE7";
+    lineas(x,"“"+q+"”",W-2*P).slice(0,Math.max(1,Math.floor((H-200-y)/46))).forEach(function(l){ y+=46; x.fillText(l,P,y); }); }
+  x.textAlign="center"; x.fillStyle="#F2D466"; x.font=F(700,40); x.fillText("Léelo completo en lapizarra.mx",W/2,H-80);
+  return await new Promise(function(r){ c.toBlob(r,"image/png"); });
+ }
+ document.addEventListener("click",async function(ev){ var b=ev.target.closest&&ev.target.closest("[data-sh]"); if(!b) return; var d; try{ d=JSON.parse(b.getAttribute("data-sh")); }catch(e){ return; }
+  var t0=b.innerHTML; b.disabled=true; b.textContent="Preparando…";
+  try{ var bl=await imagen(d), f=new File([bl],"el-pizarron.png",{type:"image/png"}), tx=(d.t||"")+" · "+location.href;
+    if(navigator.canShare&&navigator.canShare({files:[f]})){ try{ await navigator.share({files:[f],text:tx}); }catch(e){} }
+    else{ var a=document.createElement("a"); a.href=URL.createObjectURL(bl); a.download="el-pizarron.png"; document.body.appendChild(a); a.click(); a.remove(); }
+  }catch(e){ console.warn(e); }
+  b.disabled=false; b.innerHTML=t0; });
+})();
+"""
+
+def portada(ruta, titulo, w, tit, sub):
+    """3 nov 2026: la imagen 1200x630 que sale cuando mandan el link por WhatsApp (og:image)."""
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except Exception as ex:
+        print("Periódico: sin Pillow, no hay portada:", repr(ex)); return
+    def fuente(nombre, tam):
+        c = os.path.join(AQUI, ".cache_fuentes"); os.makedirs(c, exist_ok=True); f = os.path.join(c, nombre)
+        if not os.path.exists(f):
+            try:
+                b = urllib.request.urlopen(f"https://github.com/google/fonts/raw/main/ofl/{nombre.split('-')[0].lower()}/{nombre}", timeout=30).read()
+                if len(b) > 10000: open(f, "wb").write(b)
+            except Exception as ex: print("Periódico: no se bajó la fuente", nombre, repr(ex))
+        for g in (f, "DejaVuSans-Bold.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"):
+            try:
+                if g and (os.path.exists(g) or not g.startswith("/")): return ImageFont.truetype(g, tam)
+            except Exception: pass
+        return ImageFont.load_default()
+    W, H = 1200, 630
+    im = Image.new("RGB", (W, H), "#7A5232"); d = ImageDraw.Draw(im); d.rectangle([16, 16, W - 17, H - 17], fill="#1F332D")
+    gis, cond = (lambda t: fuente("CabinSketch-Bold.ttf", t)), (lambda t: fuente("BarlowCondensed-Bold.ttf", t))
+    nom = titulo.split(" de ")[0] if " de " in titulo else titulo
+    d.text((W // 2, 70), "LA PIZARRA PRESENTA", font=cond(26), fill="#A8B8AF", anchor="mm")
+    d.text((W // 2, 140), nom, font=gis(84), fill="#ECEFE7", anchor="mm")
+    d.text((W // 2, 205), f"SEMANA {w}" + (f" · {titulo.split(' de ', 1)[1].upper()}" if " de " in titulo else ""), font=cond(32), fill="#F2D466", anchor="mm")
+    for x0 in range(70, W - 70, 26): d.line([(x0, 240), (x0 + 14, 240)], fill="#5d7369", width=3)
+    t = tit.upper(); tam = 78
+    while tam > 40:
+        f = cond(tam); pal, L, s = t.split(), [], ""
+        for p_ in pal:
+            q = (s + " " + p_).strip()
+            if d.textlength(q, font=f) > W - 140 and s: L.append(s); s = p_
+            else: s = q
+        if s: L.append(s)
+        if len(L) <= 3: break
+        tam -= 6
+    y = 270 + (3 - len(L)) * tam // 2
+    for l in L[:4]: d.text((W // 2, y), l, font=f, fill="#F2D466", anchor="ma"); y += int(tam * 1.02)
+    if sub: d.text((W // 2, H - 70), sub[:80], font=cond(30), fill="#ECEFE7", anchor="mm")
+    im.save(ruta, optimize=True); print("Periódico: portada", ruta)
+
+
+def lupa(m):
+    """Los números completos de un partido (datos reales), escondidos detrás de 'Ver los números'."""
+    def lado(pre, eq):
+        tit = m.get(pre + "_titulares") or []; ban = [b for b in (m.get(pre + "_en_banca") or []) if (b.get("pts") or 0) > 0][:3]; cam = m.get(pre + "_cambio")
+        f = lambda x: (f"<li><span>{esc(x['n'])} <small>{esc(x['pos'])}</small></span><b>{x['pts']}</b>"
+                       + (f"<small class='{'up' if (x['pts'] or 0) >= (x['proj'] or 0) else 'dn'}'>{x['proj']}</small>" if x.get("proj") is not None else "<small></small>") + "</li>")
+        s = f"<div><h6>{esc(eq)}</h6><ul class='nums'><li class='cab'><span>Titular</span><b>Pts</b><small>Proy.</small></li>{''.join(f(x) for x in tit)}</ul>"
+        if ban: s += "<p class='bnc'>En la banca: " + ", ".join(f"{esc(b['n'])} {b['pts']}" for b in ban) + "</p>"
+        if cam: s += f"<p class='bnc'>El cambio que no hizo: {esc(cam['banca'])} ({cam['banca_pts']}) por {esc(cam['titular'])} ({cam['titular_pts']}), +{cam['dif']}</p>"
+        return s + "</div>"
+    return f"<details class='lupa'><summary>Ver los números</summary><div class='lados'>{lado('g', m['ganador'])}{lado('p', m['perdedor'])}</div></details>"
+
 def render(liga_nombre, titulo, w, fecha, D, T, url):
     S = T or {}
     P = {p.get("id"): p for p in (S.get("partidos") or []) if isinstance(p, dict)}
@@ -602,6 +708,8 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
     fonts = "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Cabin+Sketch:wght@700&family=Caveat:wght@500;600&display=swap"
     h = [f"<!doctype html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>",
          f"<title>{esc(titulo)} · Semana {w}</title><meta property='og:title' content='{esc(titulo)} · Semana {w}'><meta property='og:description' content='{esc(tit)}'>",
+         f"<meta property='og:type' content='article'><meta property='og:url' content='{esc(url)}'><meta property='og:image' content='{esc(url.rsplit('.html', 1)[0])}.png'>"
+         f"<meta property='og:image:width' content='1200'><meta property='og:image:height' content='630'><meta name='twitter:card' content='summary_large_image'><meta name='description' content='{esc(tit)}'>",
          f"<link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='{fonts}' rel='stylesheet'>",
          f"<style>{CSS}</style></head><body><div class='hoja'>",
          "<header class='cab' style='position:relative'><button class='pdfmini noprint' onclick='window.print()'>PDF ⤓</button>" + JUGADA.replace("{pos}", "top:18px;left:16px") + JUGADA.replace("{pos}", "top:18px;right:16px;transform:scaleX(-1)"),
@@ -611,6 +719,7 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
          f"<div class='ed'>Semana {w} · {esc(fecha)} · Edición con gis y sin filtro</div></header><div class='pad'>",
          f"<div class='tit'>{esc(tit)}</div><p class='sub'>{esc(sub)}</p>"]
     if S.get("resumen"): h.append(f"<p class='res'>{esc(S['resumen'])}</p>")
+    h.append("<!--S:marc-->")
     h.append("<h3 class='sec'>Los marcadores</h3><div class='marcs'>")
     for m in M:
         x = P.get(m["id"], {}); baj = f"<i>{esc(x['bajada'])}</i>" if x.get("bajada") else ""
@@ -622,19 +731,23 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
             ("🏆 La más alta", a["g_pts"], a["ganador"]), ("🥶 La más baja", b["p_pts"], b["perdedor"]),
             ("😰 De panzazo", f"{c['margen']}", f"{c['ganador']} sobrevivió"), ("🔨 La madriza", f"{p['margen']}", f"{p['ganador']} no tuvo piedad"),
             ("📊 Promedio", D["promedio"], "de la liga")]) + "</div>")
+    h.append("<!--S:tabla-->")
     h.append("<h3 class='sec'>La tabla</h3><table><thead><tr><th class='l'>#</th><th class='l'>Equipo</th><th>G-P</th><th>Esta semana</th><th>Racha</th></tr></thead><tbody>")
     for t in D.get("tabla", []):
         r = t["racha"]; rc = f"<span class='up'>▲ {r}</span>" if r > 0 else f"<span class='dn'>▼ {-r}</span>" if r < 0 else "–"
         h.append(f"<tr><td class='l'>{t['lugar']}</td><td class='l'>{esc(t['eq'])}</td><td>{t['g']}-{t['p']}{'-'+str(t['e']) if t['e'] else ''}</td><td>{r1(t['sem'])}</td><td>{rc}</td></tr>")
     h.append("</tbody></table>")
+    h.append("<!--S:honor-->")
     if D.get("honor"):
         h.append("<h3 class='sec'>Cuadro de honor</h3><p class='nota'>Los titulares que más anotaron, de cualquier equipo</p><div class='fichas'>")
         h += [f"<div class='ficha'><span class='est'>★</span><b>{esc(x['n'])}</b><small>{x['pos']} · {esc(x['eq'])}</small><div class='v'>{x['pts']}</div><small>{'Proyección: '+str(x['proj']) if x['proj'] is not None else ''}</small></div>" for x in D["honor"]]
         h.append("</div>")
+    h.append("<!--S:reprob-->")
     if D.get("castigados"):
         h.append("<h3 class='sec'>Los reprobados</h3><p class='nota'>Los titulares que más le quedaron a deber a su proyección</p><div class='fichas'>")
         h += [f"<div class='ficha mal'><b>{esc(x['n'])}</b><small>{x['pos']} · {esc(x['eq'])}</small><div class='v'>{x['dif']}</div><span class='sello'>REPROBADO</span><small>Debía {x['proj']} · Hizo {x['pts']}</small></div>" for x in D["castigados"]]
         h.append("</div>")
+    h.append("<!--S:banca-->")
     bt = [x for x in D.get("banca_total", []) if x["pts"] > 0]
     if bt:
         mx = max(x["pts"] for x in bt)
@@ -645,6 +758,7 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
             cam = x.get("cambio"); det = f"<small>{esc(cam['banca'])} ({cam['banca_pts']}) en la banca y {esc(cam['titular'])} ({cam['titular_pts']}) de titular</small>" if cam else ""
             h.append(f"<div class='b'><span>{esc(x['eq'])}</span><i style='width:{max(4, x['pts']/mx*100):.0f}%'></i><em>{x['pts']}</em>{det}</div>")
         h.append("</div>")
+    h.append("<!--S:cron-->")
     if S.get("partidos"):
         h.append("<h3 class='sec'>Crónicas de la jornada</h3>")
         for m in M:
@@ -656,11 +770,28 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
                      f"<div class='marc'><div><b>{esc(m['ganador'])}</b><small>{m['g_record']} · {m['g_pts']}</small></div><span class='m'>+{m['margen']}</span>"
                      f"<div style='text-align:right'><b>{esc(m['perdedor'])}</b><small>{m['p_record']} · {m['p_pts']}</small></div></div>")
             h += [f"<p>{esc(par)}</p>" for par in (x.get("historia") or []) if par]
+            if x.get("pregunta"): h.append(f"<div class='preg'><span>🎤 La pregunta incómoda para {esc(m.get('perdedor_manager') or m['perdedor'])}</span>{esc(x['pregunta'])}</div>")
             if x.get("cita"): h.append(f"<div class='cita'>“{esc(x['cita'])}”<small>— {esc(m['ganador'])}, saliendo del estadio</small></div>")
+            h.append(lupa(m))
+            sh = dict(et=et, t=x.get("titular") or "", b=" ".join(s for s in [x.get("bajada") or "", ((x.get("historia") or [""])[0] or "")] if s), g=m["ganador"], gp=m["g_pts"], p=m["perdedor"], pp=m["p_pts"], q=x.get("pregunta") or "", c=x.get("cita") or "")
+            h.append(f"<button class='mandar noprint' data-sh='{esc(json.dumps(sh, ensure_ascii=False))}'>📲 Mandar esta nota al grupo</button>")
             h.append("</div>")
+        if S.get("roast"):
+            h.append("<!--S:roast-->")
+            h.append("<h3 class='sec'>El roast de la semana</h3><p class='nota'>Nadie se salva. Ni el líder.</p><div class='roasts'>")
+            pos = {t["eq"]: t for t in D.get("tabla", [])}
+            for r in S["roast"]:
+                if not isinstance(r, dict) or not r.get("texto"): continue
+                t = pos.get(r.get("eq"), {}); rec = f"{t.get('lugar','')}º · {t.get('g','')}-{t.get('p','')}" if t else ""
+                sh = dict(et="EL ROAST", t=r.get("eq") or "", b=r["texto"], rec=rec)
+                h.append(f"<div class='roast'><div><b>{esc(r.get('eq'))}</b><small>{esc(rec)}</small></div><p>{esc(r['texto'])}</p><button class='mandar mini noprint' data-sh='{esc(json.dumps(sh, ensure_ascii=False))}' aria-label='Mandar al grupo'>📲</button></div>")
+            h.append("</div>")
+    h.append("<!--S:cita-->")
     if S.get("sospecha") and D.get("sospecha"):
         sp = D["sospecha"]
-        h.append(f"<div class='papel'><h4>📋 Citatorio a la dirección</h4><p><b>{esc(sp['eq'])}</b>: de {sp['antes']} a {sp['ahora']} puntos en una semana.</p><p>{esc(S['sospecha'])}</p></div>")
+        sh = dict(et="CITATORIO A LA DIRECCIÓN", t=sp["eq"], b=f"De {sp['antes']} a {sp['ahora']} puntos en una semana. " + S["sospecha"])
+        h.append(f"<div class='papel'><h4>📋 Citatorio a la dirección</h4><p><b>{esc(sp['eq'])}</b>: de {sp['antes']} a {sp['ahora']} puntos en una semana.</p><p>{esc(S['sospecha'])}</p><button class='mandar noprint' data-sh='{esc(json.dumps(sh, ensure_ascii=False))}'>📲 Mandar el citatorio</button></div>")
+    h.append("<!--S:premios-->")
     pr, PT = D.get("premios") or {}, S.get("premios") or {}
     cards = []
     for k, ic, nom, desc in PREMIOS:
@@ -669,6 +800,7 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
         dato = (f"{d['n']} ({d['eq']}): {d['pts']} pts" if "n" in d else f"{d['eq']}: {d['pts']} pts y perdió por {d['margen']}")
         cards.append(f"<div class='premio'><div class='ic'>{ic}</div><h5>{nom}</h5><i>{desc}</i><p><b>{esc(dato)}</b>{('<br>'+esc(PT[k])) if PT.get(k) else ''}</p></div>")
     if cards: h.append("<h3 class='sec'>Premios de la semana</h3><div class='premios'>" + "".join(cards) + "</div>")
+    h.append("<!--S:loteria-->")
     if D.get("power"):
         LT = {x.get("eq"): x for x in (S.get("loteria") or []) if isinstance(x, dict)}
         h.append("<h3 class='sec'>La lotería del power ranking</h3><p class='nota'>¡Corre y se va corriendo! El orden es nuestro power ranking de la semana</p><div class='lot'>")
@@ -677,6 +809,7 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
             h.append(f"<div class='carta'><span class='n'>{i+1}</span><div class='nom'>{esc(L2.get('carta') or carta_fija(i, len(D['power'])))}</div>"
                      f"<div class='eq'>{esc(x['eq'])}</div>{'<div class=ver>'+esc(L2.get('verso'))+'</div>' if L2.get('verso') else ''}<small>{x['g']}-{x['p']} · {esc(x.get('linea',''))}</small></div>")
         h.append("</div>")
+    h.append("<!--S:dos-->")
     OT = {o.get("n"): o.get("texto") for o in (S.get("obituarios") or []) if isinstance(o, dict)}
     col1 = ["<h3 class='sec'>Minuto de silencio</h3>"] + [f"<div class='esq'>🕯️<br><b>{esc(o['n'])}</b><small>{'Se esperaban '+str(o['proj'])+' · ' if o['proj'] is not None else ''}Dio {o['pts']}</small>"
                                                           f"{esc(OT.get(o['n']) or ('Se nos fue con '+str(o['pts'])+' puntos. Lo llora '+o['eq']+'.'))}</div>" for o in D.get("obituarios", [])]
@@ -701,20 +834,30 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
         rec.append(f"<div class='rec'><div><small>{nom.upper()}</small>{'<span class=nuevo>¡NUEVO!</span>' if x.get('nuevo') else ''}<br>{det}</div><div class='v'>{('+' if k in ('paliza','cerrado') else '')}{x['v']}</div></div>")
     if rec: (col2 if col2 else col1).extend(["<h3 class='sec'>Libro de récords</h3>"] + rec)
     h.append(f"<div class='dos'><div>{''.join(col1)}</div><div>{''.join(col2)}</div></div>")
+    h.append("<!--S:tianguis-->")
     if D.get("intercambios"):
         h.append("<h3 class='sec'>El tianguis de intercambios</h3>")
         for lados in D["intercambios"]:
             if len(lados) != 2: continue
             ul = lambda l: "<ul>" + "".join(f"<li>{esc(r['n'])} <small class='pe'>{esc(r['pe'])}</small></li>" for r in l["recibe"]) + "</ul>"
             h.append(f"<div class='tx'><div><b>{esc(lados[0]['eq'])}</b> se lleva{ul(lados[0])}</div><div class='fl'>⇄</div><div><b>{esc(lados[1]['eq'])}</b> se lleva{ul(lados[1])}</div></div>")
+    h.append("<!--S:clasif-->")
     if S.get("avisos"):
         h.append("<h3 class='sec'>Clasificados</h3><div class='posts'>" + "".join(f"<div class='post'><b>{esc(x.get('titulo'))}</b>{esc(x.get('texto'))}<i>{esc(x.get('pie'))}</i></div>" for x in S["avisos"] if isinstance(x, dict)) + "</div>")
+    h.append("<!--S:fin-->")
     wa = "https://wa.me/?text=" + urllib.request.quote(f"{titulo} · Semana {w}: {tit} {url}")
     h.append(f"<div class='cta'><b>¿Ya lo viste? Pásalo al grupo</b><div class='btns'><a class='compartir' href='{wa}' target='_blank' rel='noopener'>Compartir por WhatsApp</a><button class='pdf' onclick='window.print()'>Descargar PDF</button></div>"
              f"<p class='pie'>¿Quieres El Pizarrón para tu liga? Pídelo en <a href='https://lapizarra.mx'>lapizarra.mx</a></p></div>")
     h.append("<p class='pie'>Hecho con los datos reales de la liga por La Pizarra. Los textos los escribe una IA con mucha carrilla; los números son reales. La Pizarra no está afiliada a la NFL ni a las plataformas de fantasy. <a href='https://lapizarra.mx/terminos.html'>Términos</a> · <a href='https://lapizarra.mx/privacidad.html'>Privacidad</a></p>")
-    h.append("</div></div></body></html>")
-    return "\n".join(h)
+    h.append("</div></div>")
+    # 3 nov 2026: lo más leído primero (crónicas y roast) y un índice para brincar a cada sección
+    doc = "\n".join(h); partes = re.split(r"<!--S:(\w+)-->", doc)
+    top, sec = partes[0], {partes[i]: partes[i + 1] for i in range(1, len(partes) - 1, 2)}
+    orden = ["marc", "cron", "roast", "cita", "premios", "tabla", "honor", "reprob", "banca", "loteria", "dos", "tianguis", "clasif"]
+    NOM = dict(marc="Marcadores", cron="Crónicas", roast="Roast", premios="Premios", tabla="Tabla", banca="La banca", loteria="Lotería", dos="Récords", clasif="Clasificados")
+    nav = "".join(f"<a href='#s-{k}'>{NOM[k]}</a>" for k in orden if k in NOM and sec.get(k, "").strip())
+    cuerpo = "".join(f"<section id='s-{k}'>{sec[k]}</section>" for k in orden if sec.get(k, "").strip())
+    return top + (f"<nav class='indice noprint' aria-label='Secciones'>{nav}</nav>" if nav else "") + cuerpo + sec.get("fin", "") + f"<script>{JS}</script></body></html>"
 
 
 # ---------------------------------------------------------------- Principal
@@ -748,6 +891,8 @@ def main():
             url = f"https://lapizarra.mx/periodico/{lid}/{season}-{w}.html"
             fecha = datetime.now(timezone.utc).strftime("%d/%m/%Y")
             doc = render(nombre, titulo, w, fecha, D, T, url)
+            a0 = D.get("alta") or {}
+            portada(os.path.join(carpeta, f"{season}-{w}.png"), titulo, w, (T or {}).get("titular") or f"¡{a0.get('ganador','')} se la llevó con {a0.get('g_pts','')}!", (T or {}).get("subtitulo") or "")
             for f in (f"{season}-{w}.html", "index.html"):
                 open(os.path.join(carpeta, f), "w", encoding="utf-8").write(doc)
             json.dump(dict(w=w, temporada=season, titulo=titulo, titular=(T or {}).get("titular") or "", url=f"/periodico/{lid}/{season}-{w}.html"),
