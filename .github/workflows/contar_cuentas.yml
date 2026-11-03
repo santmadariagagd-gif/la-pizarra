@@ -1,0 +1,25 @@
+name: Contar cuentas
+# Cuántas cuentas y cuánta gente juega (solo números) → bitacora/cuentas.json. Solo a mano.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  contar:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install firebase-admin
+      - run: python contar_cuentas.py
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+      - name: Guardar
+        run: |
+          git config user.name "La Pizarra bot"
+          git config user.email "actions@github.com"
+          git add bitacora/cuentas.json
+          git diff --cached --quiet || git commit -m "Conteo de cuentas"
+          git pull --rebase -q && git push
