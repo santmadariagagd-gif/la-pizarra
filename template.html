@@ -1853,6 +1853,14 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .bspost p{margin:0;font-size:14px;line-height:1.45;overflow-wrap:anywhere}.bsimg{width:100%;max-height:260px;object-fit:cover;border-radius:10px}.bsver{color:#7FB8E8;font-size:12px}
 .rdopc{display:flex;flex-direction:column;gap:5px}.rdb span small{display:block;font:600 11px var(--body);color:var(--muted);text-align:right}
 .rdamL{display:flex;flex-wrap:wrap;gap:5px;padding-left:6px}.rdamc{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid var(--line)}.rdamc b{font-size:13px}
+dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background:var(--bg);color:var(--ink);width:min(440px,94vw);max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 40px)}dialog#pdlg::backdrop{background:rgba(0,0,0,.6)}
+.pushpide .x{width:40px;height:40px}
+.pushpide{text-align:center;max-width:420px;margin:0 auto}.pushpide h2{font:800 26px/1.1 var(--display);margin:6px 0 8px}.pushpide>p{color:var(--muted);margin:0 0 14px}
+.pushbell{font-size:44px;display:block;margin-top:6px}.pushbt{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:16px}.pushbt .btn{min-width:220px;min-height:48px;font-size:17px}
+.pushej{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin:0 auto;max-width:320px}.pushej>span:first-child{font-size:26px}.pushej span:last-child{display:flex;flex-direction:column}.pushej small{color:var(--muted);font-size:12px}
+.pushpasos{list-style:none;padding:0;margin:0 0 10px;text-align:left;display:flex;flex-direction:column;gap:10px}.pushpasos li{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.pushpasos svg{vertical-align:-4px;color:#7FB8E8}.pushn{flex:none;width:30px;height:30px;border-radius:15px;background:#F2D466;color:#13201B;font:800 17px/30px var(--display);text-align:center}
+.pushnudge{background:linear-gradient(120deg,#2f4a5e,var(--surface))}
 .pushc{padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
 .pushh{display:flex;align-items:center;gap:12px}.pushh>span,.pushp>span{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.pushh small,.pushp small{color:var(--muted);font-size:12px}
 .pushsw{width:52px;height:30px;border-radius:15px;border:0;background:var(--line);position:relative;padding:0;flex-shrink:0;cursor:pointer}.pushsw:disabled{opacity:.6}
@@ -6510,7 +6518,7 @@ document.addEventListener("click",ev=>{
   const go=t.closest("[data-qmxj]"); if(go){ QMX.j=+go.dataset.qmxj; qmxRender(); return; }
   const b=t.closest("[data-qmx]"); if(b&&!b.disabled){ const j=QMX.j, x=qmxMios(j), f=b.dataset.qmx;
     if(qmxD().J[j].pr<=Date.now()/1000){ qmxRender(); return; }
-    x.p={...x.p}; if(x.p[f]===b.dataset.k) delete x.p[f]; else x.p[f]=b.dataset.k; qmxGuarda(j,x); pzTrack("qmx_pick",{}); vidaAct("p"); const y=window.scrollY; qmxRender(true); window.scrollTo(0,y); return; }
+    x.p={...x.p}; if(x.p[f]===b.dataset.k) delete x.p[f]; else x.p[f]=b.dataset.k; qmxGuarda(j,x); pzTrack("qmx_pick",{}); clearTimeout(window.__qmxPP); window.__qmxPP=setTimeout(()=>pushPide("qmx"),6000); vidaAct("p"); const y=window.scrollY; qmxRender(true); window.scrollTo(0,y); return; }
   if(t.closest("#qmxShare")){ (async()=>{ const j=QMX.j, J=qmxD().J[j], mios=qmxMios(j), R=J.p.map(r=>qmxRes(r,QMX.vivo));
       const celdas=J.p.map((r,i)=>R[i].susp?null:mios.p[r[0]]?mios.p[r[0]]===R[i].r:false), ac=celdas.filter(x=>x===true).length, n=J.p.filter((r,i)=>!R[i].susp).length;
       const G=await qmxTablaGen(), yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null, st=[];
@@ -6817,7 +6825,7 @@ async function smxGuarda(j,e){
   const jid=qmxJid(j), L=smxLs(); L[jid]=e; smxLsSet(L); await smxRender();
   if(!(typeof acctOk==="function"&&acctOk())) return;
   try{ await ACCT.db.doc(`smx_picks/${jid}_${ACCT.user.uid}`).set({uid:ACCT.user.uid,jid,j,s:qmxD().s,e,t:grFV().serverTimestamp()});
-    $("#smxMsg")&&($("#smxMsg").innerHTML=pzOk(`Vas con ${hoyEsc(qmxEq(e).n)}. Guardado en tu cuenta.`)); pzTrack("smx_pick",{j});
+    $("#smxMsg")&&($("#smxMsg").innerHTML=pzOk(`Vas con ${hoyEsc(qmxEq(e).n)}. Guardado en tu cuenta.`)); pzTrack("smx_pick",{j}); setTimeout(()=>pushPide("smx"),2000);
     if(typeof amPublica==="function") amPublica(`smx-${jid}`,{g:"mx",tx:`ya escogió su equipo del survivor para la jornada ${j}`,big:"🛡️",det:"Survivor Liga MX · se ve cuando cierre"}); }
   catch(x){ console.warn("Survivor MX: no se guardó",x?.code||x); $("#smxMsg")&&($("#smxMsg").textContent=x?.code==="permission-denied"?"No se pudo guardar: ya cerró la jornada o faltan los permisos nuevos de Firebase.":"No se pudo guardar en tu cuenta. Intenta de nuevo."); }
 }
@@ -8039,7 +8047,7 @@ function perfSinTocar(){ const p=perfMio(); if(!p) return false; let d; try{ d=p
 const perfNudgeOff=()=>{ try{ return localStorage.getItem("pz_perfnudge")==="1"; }catch(e){ return false; } };
 function perfNudgeHTML(){ if(!(typeof amOk==="function"&&amOk())||!perfSinTocar()||perfNudgeOff()) return "";
   return `<div class="pfnudge">${perfAvatar(perfMio(),56)}<span><b>Haz tuya tu playera</b><small>Escoge tus colores, el diseño, tu número y una frase. Así te reconocen tus amigos.</small></span><button class="btn" data-pfnudge="1">Editar mi perfil</button><button class="pfnx" data-pfnudgex="1" aria-label="Ahora no">×</button></div>`; }
-function perfNudgePinta(){ const el=$("#hoyPf"); if(el) el.innerHTML=perfNudgeHTML()||sufNudgeHTML(); }
+function perfNudgePinta(){ const el=$("#hoyPf"); if(el) el.innerHTML=perfNudgeHTML()||(typeof pushNudgeHTML==="function"?pushNudgeHTML():"")||sufNudgeHTML(); }
 // 3 nov 2026: mucha gente no ha visto el Sufrómetro (vive en Favoritos, a media página). Tarjeta en Hoy hasta que lo vea o la cierre.
 const sufVisto=()=>{ try{ return localStorage.getItem("pz_suf_visto")==="1"||localStorage.getItem("pz_sufnudge")==="1"; }catch(e){ return true; } };
 function sufNudgeHTML(){ if(sufVisto()) return ""; const tiene=Object.keys(FAV.eq||{}).length+Object.keys(FAV.jug||{}).filter(k=>"rt".includes(k[0])).length;
@@ -8601,7 +8609,7 @@ async function rdResponde(r){
   catch(e){ console.warn("Reto del día:",e?.code||e); pzAviso("No se guardó","¿Ya empezó el partido? Intenta de nuevo"); return rdPinta(); }
   const L=rdLs(); L[f]=r; try{ localStorage.setItem("pz_rd",JSON.stringify(L)); }catch(e){} RD.mias[f]=r;
   ACCT.db.doc(`rd_cnt/${f}`).set({[r]:grFV().increment(1)},{merge:true}).catch(()=>{});
-  pzTrack("reto_dia",{q:c.q}); vidaAct?.("p"); RD.k=1; await rdPinta(); pzAviso("¡Listo!","Mañana sale la respuesta");
+  pzTrack("reto_dia",{q:c.q}); vidaAct?.("p"); RD.k=1; await rdPinta(); pzAviso("¡Listo!","Mañana sale la respuesta"); setTimeout(()=>pushPide("rd"),2500);
 }
 async function rdSemana(){
   const D_=await rdDatos(), f=rdHoy(), lun=rdMas(f,-((new Date(f+"T12:00:00Z").getUTCDay()+6)%7)), h=await rdMiHash();
@@ -8732,7 +8740,7 @@ async function duReta(o){
   if(o.cierre<=Date.now()/1000) return pzAviso("Ya cerró","Escoge otra");
   const ms=o.cierre*1000, ci=firebase.firestore.Timestamp?.fromMillis?firebase.firestore.Timestamp.fromMillis(ms):new Date(ms);
   try{ await ACCT.db.doc(`duelos/${o.id}`).set({u,de:yo,tipo:o.tipo,k:o.k,e:o.e,n:{[yo]:(perfMio()?.a||q5AliasDef()||"Jugador").slice(0,24),[uid]:String(nom).slice(0,24)},cierre:ci,est:"pend",t:grFV().serverTimestamp()});
-    pzTrack("duelo_reta",{tipo:o.tipo}); pzAviso("¡Reto enviado!",`Si ${nom.split(" ")[0]} acepta antes del cierre, empieza el duelo`); }
+    pzTrack("duelo_reta",{tipo:o.tipo}); pzAviso("¡Reto enviado!",`Si ${nom.split(" ")[0]} acepta antes del cierre, empieza el duelo`); setTimeout(()=>pushPide("du"),2500); }
   catch(e){ console.warn("Duelos: retar",e?.code||e); pzAviso("No se pudo mandar","Intenta de nuevo en un momento"); }
   await duCarga(true); duElegir(uid); duPinta();
 }
@@ -10195,7 +10203,7 @@ function favRepinta(){ clearTimeout(FAV_RT); FAV_RT=setTimeout(()=>{   // los da
 function favToggle(k,dat){
   const grupo=favGrupo(k), on=!FAV[grupo][k];
   if(on) FAV[grupo][k]=dat; else delete FAV[grupo][k];
-  pzTrack("fav",{k,on}); favGuarda(); return on;
+  pzTrack("fav",{k,on}); favGuarda(); if(on&&k[0]==="f"&&dat?.n) setTimeout(()=>pushPide("fav",dat.n),800); return on;
 }
 // Apodos para encontrar a los equipos como les dice la gente (29 oct 2026)
 const FAV_APODO={2278:"chivas rebano",2287:"aguilas america",2286:"pumas unam universidad",2295:"la maquina cementeros",2279:"tigres felinos",2282:"rayados",2283:"zorros rojinegros",2281:"diablos rojos",2285:"guerreros",2292:"tuzos",2289:"la fiera esmeraldas",2280:"xolos",2290:"gallos blancos",2291:"la franja camoteros",2288:"rayos",2314:"san luis",2298:"bravos",2312:"potros de hierro",14002:"canoneros",
@@ -11143,6 +11151,55 @@ async function pushRefresca(){   // una vez al día confirma la clave (Firebase 
   const L=pushLs(); if(!L.on||!amOk()||L.u!==ACCT.user.uid||!("Notification" in window)||Notification.permission!=="granted"||Date.now()-(L.d||0)<864e5) return;
   try{ const tk=await pushToken(); const n=await pushDoc(d=>({tk:[...(d.tk||[]).filter(x=>x!==tk&&x!==L.tk),tk].slice(-5),p:d.p||L.p||PUSH_P0})); pushGuardaLs({...L,tk,p:n.p,d:Date.now()}); }catch(e){}
 }
+// ----- Invitar a prender los avisos (3 nov 2026): solo 1 de 17 los tenía. El interruptor vivía escondido en la campanita. -----
+// Ahora se ofrece justo cuando sirve (al hacer picks, retar, escoger un equipo) y en una tarjeta en Hoy. En iPhone, si la página
+// no está en la pantalla de inicio, se explica paso a paso cómo agregarla (Apple solo deja mandar avisos así).
+const PUSHP_K="pz_pushpide", pushPideLs=()=>{ try{ return JSON.parse(localStorage.getItem(PUSHP_K)||"{}")||{}; }catch(e){ return {}; } };
+const pushPideSet=o=>{ try{ localStorage.setItem(PUSHP_K,JSON.stringify({...pushPideLs(),...o})); }catch(e){} };
+function pushPuedePedir(fuerza){ if(!amOk()||pushOn()) return false; const e=pushEstado(); if(e!=="ok"&&e!=="ios") return false;
+  if(e==="ok"&&Notification.permission==="granted"&&pushLs().on) return false;
+  const L=pushPideLs(); if((L.no||0)>=3) return false; return fuerza||Date.now()-(L.t||0)>4*864e5; }
+const PUSH_MOT={
+  qmx:["¿Te avisamos antes de que cierre la jornada?","Para que nunca se te pase meter tus picks, y el resultado de tus equipos al final."],
+  smx:["¿Te avisamos si tu equipo te salva o te elimina?","Y antes de que cierre la jornada, para que no te quedes sin escoger."],
+  du:["¿Te avisamos cuando acepte tu reto?","También cuando alguien te rete a ti o comente lo que publicas."],
+  rd:["¿Te recordamos el reto de mañana?","Y te avisamos los goles de tus equipos aunque no tengas la página abierta."],
+  fav:n=>[`¿Te avisamos los goles de ${n}?`,"Cuando está por empezar, cada gol y el resultado final. Aunque no tengas la página abierta."],
+  app:["¡Ya tienes La Pizarra en tu inicio!","Último paso: prende los avisos para enterarte de los goles de tus equipos, los retos de tus amigos y los cierres de tus quinielas."],
+  hoy:["Que no se te pase nada","Goles de tus equipos, retos de tus amigos y aviso antes de que cierren tus quinielas. Tú escoges qué te llega."] };
+const PUSH_IOS_PASOS=`<ol class="pushpasos">
+  <li><span class="pushn">1</span><span>Abajo en Safari, toca <b>Compartir</b> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="(el cuadrito con flecha hacia arriba)"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></span></li>
+  <li><span class="pushn">2</span><span>Baja y escoge <b>Agregar a inicio</b> (o "Agregar a pantalla de inicio")</span></li>
+  <li><span class="pushn">3</span><span>Abre La Pizarra desde el <b>ícono nuevo</b> en tu pantalla y aquí mismo te pedimos prender los avisos</span></li></ol>
+  <p class="note">Apple solo deja mandar avisos a las páginas que están en tu pantalla de inicio. Si usas Chrome en el iPhone, el botón Compartir está arriba a la derecha.</p>`;
+function pushPide(mot,arg,fuerza){ if(!pushPuedePedir(fuerza)) return; const M=typeof PUSH_MOT[mot]==="function"?PUSH_MOT[mot](arg):PUSH_MOT[mot]; if(!M) return;
+  pushPideSet({t:Date.now()});   // aunque no se llegue a mostrar, no se vuelve a intentar en 4 días
+  let n=0; const iv=setInterval(()=>{ if(document.querySelector("dialog[open]")&&++n<60) return; clearInterval(iv); if(n>=60||pushOn()) return; pushPideMuestra(mot,M); },500); }
+function pushPideMuestra(mot,[tit,sub]){ const ios=pushEstado()==="ios";
+  let d=$("#pdlg"); if(!d){ d=document.createElement("dialog"); d.id="pdlg"; d.setAttribute("aria-label","Avisos en tu teléfono"); document.body.append(d);
+    d.addEventListener("click",ev=>{ if(ev.target===d){ pushPideNo(); d.close(); } }); d.addEventListener("cancel",()=>pushPideNo()); }
+  d.innerHTML=`<div class="dlg pushpide"><button class="x" data-pp="no" aria-label="Ahora no">×</button><span class="pushbell" aria-hidden="true">🔔</span><h2>${hoyEsc(ios?"Para recibir avisos en tu iPhone":tit)}</h2>
+    <p>${hoyEsc(ios?"Agrega La Pizarra a tu pantalla de inicio (tarda 10 segundos):":sub)}</p>${ios?PUSH_IOS_PASOS:`<div class="pushej"><span>⚽</span><span><b>¡GOOOL de tu equipo!</b><small>Así te llega, como un mensaje</small></span></div>`}
+    <div class="pushbt">${ios?`<button class="btn" data-pp="ios">Ya entendí</button>`:`<button class="btn" data-pp="si">Sí, avísame</button>`}<button class="q5link" data-pp="no">Ahora no</button></div><p class="pushmsg"></p></div>`;
+  d.dataset.mot=mot; if(!d.open) d.showModal(); pzTrack("avisos_pide",{m:mot,ios:ios?1:0}); }
+function pushPideNo(){ const L=pushPideLs(); pushPideSet({no:(L.no||0)+1,t:Date.now()}); }
+document.addEventListener("click",async ev=>{ const b=ev.target.closest?.("#pdlg [data-pp]"); if(!b) return; const d=$("#pdlg"), a=b.dataset.pp, m=d.querySelector(".pushmsg");
+  if(a==="no"){ pushPideNo(); pzTrack("avisos_pide_no",{m:d.dataset.mot}); return d.close(); }
+  if(a==="ios"){ pzTrack("avisos_pide_ios",{m:d.dataset.mot}); return d.close(); }
+  b.disabled=true; m.textContent="Pidiendo permiso…";
+  try{ const r=await pushActiva(); if(r==="ok"){ pzTrack("avisos_push",{m:d.dataset.mot}); pushPideSet({si:Date.now()}); document.querySelectorAll(".pushnudge").forEach(x=>x.remove());
+      d.querySelector(".pushpide").innerHTML=`<span class="pushbell" aria-hidden="true">✅</span><h2>¡Listo!</h2><p>Ya te van a llegar los avisos. Puedes escoger cuáles en la campanita de arriba.</p><div class="pushbt"><button class="btn" onclick="this.closest('dialog').close()">Va</button></div>`; return; }
+    m.textContent=r==="denied"?"Tu teléfono bloqueó los avisos. Puedes prenderlos en la configuración del navegador, en Notificaciones.":"No diste permiso. Si cambias de opinión, toca la campanita de arriba."; pushPideNo(); }
+  catch(e){ m.textContent="No se pudo activar. Intenta de nuevo en un rato."; }
+  b.disabled=false; });
+// tarjeta en Hoy (se cierra con la × y vuelve en una semana)
+function pushNudgeHTML(){ if(!amOk()||pushOn()) return ""; const e=pushEstado(); if(e!=="ok"&&e!=="ios") return ""; const L=pushPideLs(); if(Date.now()-(L.x||0)<7*864e5) return "";
+  const [t,s]=PUSH_MOT.hoy; return `<div class="pfnudge pushnudge"><span class="sufic" aria-hidden="true">🔔</span><span><b>${t}</b><small>${e==="ios"?"En iPhone: agrega La Pizarra a tu pantalla de inicio y prende los avisos.":s}</small></span><button class="btn" data-pushnudge="1">${e==="ios"?"Ver cómo":"Prender avisos"}</button><button class="pfnx" data-pushnudgex="1" aria-label="Ahora no">×</button></div>`; }
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
+  if(t.closest("[data-pushnudge]")){ pzTrack("avisos_nudge",{}); pushPideMuestra("hoy",PUSH_MOT.hoy); return; }
+  if(t.closest("[data-pushnudgex]")){ pushPideSet({x:Date.now()}); document.querySelectorAll(".pushnudge").forEach(x=>x.remove()); } });
+// si acaba de abrirla desde el ícono del iPhone (o Android instalada) y no tiene avisos: se lo pedimos de una vez
+setTimeout(()=>{ try{ if(pushApp()&&amOk()&&!pushOn()&&!pushPideLs().app){ pushPideSet({app:1}); pushPide("app",null,true); } }catch(e){} },6000);
 document.addEventListener("change",async ev=>{ const c=ev.target.closest?.("[data-pushp]"); if(!c) return;
   const k=c.dataset.pushp, v=c.checked; c.disabled=true;
   try{ const n=await pushDoc(d=>({tk:d.tk||[],p:{...PUSH_P0,...(d.p||{}),[k]:v?1:0}})); pushGuardaLs({...pushLs(),p:n.p}); }
