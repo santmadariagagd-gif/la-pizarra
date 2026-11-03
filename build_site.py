@@ -2226,6 +2226,11 @@ def _qmx():
         for j in cerr:
             P=J[str(j)]["p"]; JJ[str(j)]=dict(fin=all(r[6] in FIN+("PST","CANC","ABD") for r in P),goles=sum((r[4] or 0)+(r[5] or 0) for r in P if r[6] in FIN))
         alias=lambda uid:_alias_uid(db,uid)
+        # Premios de la jornada (3 nov 2026): cuántos escogieron cada opción, para "El Valiente" (el acierto que menos gente tenía)
+        CU={}
+        for uid,M in U.items():
+            for j,x in M.items():
+                for rid,k in (x.get("p") or {}).items(): CU.setdefault((j,str(rid)),{}).setdefault(k,0); CU[(j,str(rid))][k]+=1
         T={}
         for uid,M in U.items():
             jj={}
@@ -2233,7 +2238,12 @@ def _qmx():
                 x=M.get(j)
                 if not x: continue
                 p=x.get("p") or {}
-                jj[str(j)]=[sum(1 for r in J[str(j)]["p"] if res(r) and p.get(str(r[0]))==res(r)),x.get("g")]
+                ok=[r for r in J[str(j)]["p"] if res(r) and p.get(str(r[0]))==res(r)]
+                v=None
+                for r in ok:
+                    c=CU.get((j,str(r[0])),{}); tot=sum(c.values()) or 1; sh=round(100*c.get(res(r),0)/tot)
+                    if v is None or sh<v[0]: v=[sh,r[0],res(r)]
+                jj[str(j)]=[len(ok),x.get("g")]+([v] if v else [])
             T[hashlib.sha256(uid.encode()).hexdigest()[:12]]=dict(a=alias(uid),j=jj)
         # Llave: 1 punto por cada equipo que aciertas que pasa a semis, 3 por cada finalista y 5 por el campeón (máximo 15)
         if LLAVE and LLAVE.get("pr") and ahora>=LLAVE["pr"]:
@@ -2253,6 +2263,19 @@ def _qmx():
                     if j not in M: continue
                     a=sum(1 for r in P if res(r) and (M[j].get("p") or {}).get(str(r[0]))==res(r))
                     if _feed_post(db,uid,f"qmxr-{slug}-{j}","mx",f"le atinó a {a} de {n} en la jornada {j}",f"{a}/{n}","Quiniela Liga MX"): pub+=1
+                # premios de la jornada entre todos (con 3 jugadores o más): El Profeta, El Valiente y El Salado
+                E=[(uid,T[hashlib.sha256(uid.encode()).hexdigest()[:12]]["j"].get(str(j))) for uid in U if j in U[uid]]
+                E=[(u,x) for u,x in E if x]
+                if len(E)>=3:
+                    gl=JJ[str(j)]["goles"]; dg=lambda x:abs(x[1]-gl) if x[1] is not None else 99
+                    pro=sorted(E,key=lambda e:(-e[1][0],dg(e[1])))[0]
+                    sal=sorted(E,key=lambda e:(e[1][0],-dg(e[1])))[0]
+                    va=sorted([e for e in E if len(e[1])>2],key=lambda e:e[1][2][0])
+                    if pro[1][0]>0 and _feed_post(db,pro[0],f"qmxpro-{slug}-{j}","mx",f"es «El Profeta» de la jornada {j}: {pro[1][0]} aciertos, el mejor de todos","🔮","Premios de la jornada · Quiniela Liga MX"): pub+=1
+                    if va and va[0][1][2][0]<=34:
+                        v=va[0][1][2]; rr=next((r for r in P if r[0]==v[1]),None)
+                        if rr and _feed_post(db,va[0][0],f"qmxval-{slug}-{j}","mx",f"es «El Valiente» de la jornada {j}: le atinó a un resultado que solo escogió el {v[0]}%","🦁","Premios de la jornada · Quiniela Liga MX"): pub+=1
+                    if sal[0]!=pro[0] and _feed_post(db,sal[0],f"qmxsal-{slug}-{j}","mx",f"se llevó «El Salado» de la jornada {j} con {sal[1][0]} aciertos 🧂","🧂","Premios de la jornada · Quiniela Liga MX"): pub+=1
             if pub: print(f"Amigos: {pub} resultados de la Quiniela Liga MX publicados")
         except Exception as ex: _pz_err("Amigos: resultados de la Quiniela Liga MX",ex)
         _r=os.path.join(aqui,'docs','datos','qmx_tabla.json'); os.makedirs(os.path.dirname(_r),exist_ok=True)

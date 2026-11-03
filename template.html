@@ -1862,6 +1862,9 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .rdamL{display:flex;flex-wrap:wrap;gap:5px;padding-left:6px}.rdamc{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid var(--line)}.rdamc b{font-size:13px}
 dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background:var(--bg);color:var(--ink);width:min(440px,94vw);max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 40px)}dialog#pdlg::backdrop{background:rgba(0,0,0,.6)}
 .pushpide .x{width:40px;height:40px}
+.qprem{max-width:640px;margin:4px 0 18px}.qprem h3{margin:0 0 8px}.qprs{display:grid;gap:8px}
+.qpr{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:linear-gradient(110deg,color-mix(in srgb,var(--c) 22%,transparent),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--c) 45%,var(--line))}
+.qpric{font-size:30px;line-height:1;flex:none}.qpr>span:last-child{display:flex;flex-direction:column;min-width:0}.qpr small{font:700 12px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--c)}.qpr b{font:800 20px/1.15 var(--display)}.qpr em{font-style:normal;font-size:13px;color:var(--muted)}
 .bienv{position:relative;padding:16px;border-radius:18px;background:linear-gradient(135deg,#3E5A3A,#263D36 60%,#2f4a5e);border:1px solid var(--mark);margin:0 0 16px;max-width:640px}
 .bienv>b{display:block;font:800 24px/1.1 var(--display);padding-right:30px}.bienv ul{list-style:none;padding:0;margin:12px 0 14px;display:grid;gap:8px}.bienv li{display:flex;gap:10px;align-items:center;font-size:15px}.bienv li span{font-size:20px;width:26px;text-align:center}
 .bienvb{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.bienvb .btn{min-height:46px;font-size:17px}.bienvb small{color:var(--muted);font-size:13px}
@@ -6612,6 +6615,19 @@ async function qmxVivoYa(js){ const now=Date.now()/1000, ids=[];
   for(const j of js) for(const r of qmxD().J[j].p){ const R=qmxRes(r,QMX.vivo); if(r[1]<=now&&!R.fin&&!R.susp) ids.push(r[0]); }
   for(let i=0;i<ids.length;i+=20){ try{ const R=await afList("fixtures",`ids=${ids.slice(i,i+20).join("-")}`);
     for(const f of R) QMX.vivo[f.fixture.id]={gl:f.goals?.home,gv:f.goals?.away,st:f.fixture?.status?.short,min:f.fixture?.status?.elapsed}; }catch(e){} } }
+// ---- Premios de la jornada (3 nov 2026): El Profeta (más aciertos; desempate goles), El Valiente (el acierto que menos gente
+// escogió) y El Salado (menos aciertos). Con 3 jugadores o más. En la General salen de datos/qmx_tabla.json; en tus grupos, de sus picks.
+function qmxPremiosHTML(j,L,goles,titulo){
+  L=L.filter(x=>x&&x.a!=null); if(L.length<3) return "";
+  const dg=x=>x.g==null?99:Math.abs(x.g-goles), pro=[...L].sort((a,b)=>b.a-a.a||dg(a)-dg(b))[0], sal=[...L].sort((a,b)=>a.a-b.a||dg(b)-dg(a))[0];
+  const va=L.filter(x=>x.v).sort((a,b)=>a.v[0]-b.v[0])[0], r=va&&qmxD().J[j]?.p.find(r=>String(r[0])===String(va.v[1]));
+  const que=r?(va.v[2]==="E"?`el empate ${qmxEq(r[2]).n}–${qmxEq(r[3]).n}`:`la victoria de ${qmxEq(r[va.v[2]==="L"?2:3]).n}`):"";
+  const nom=x=>`${acctEsc(x.n)}${x.yo?" (tú)":""}`;
+  const t=(ic,k,x,txt,c)=>`<div class="qpr" style="--c:${c}"><span class="qpric" aria-hidden="true">${ic}</span><span><small>${k}</small><b>${nom(x)}</b><em>${txt}</em></span></div>`;
+  return `<section class="qprem"><h3>${titulo||`Premios de la jornada ${j}`}</h3><div class="qprs">
+    ${t("🔮","El Profeta",pro,`${pro.a} aciertos${pro.g!=null?` · dijo ${pro.g} goles y fueron ${goles}`:""}`,"#C9A7F0")}
+    ${va&&va.v[0]<=34&&r?t("🦁","El Valiente",va,`Le atinó a ${hoyEsc(que)}: solo el ${va.v[0]}% lo escogió`,"#F2D466"):""}
+    ${sal!==pro&&sal.a<pro.a?t("🧂","El Salado",sal,`${sal.a} ${sal.a===1?"acierto":"aciertos"}. La próxima será`,"#9FB4C9"):""}</div></section>`; }
 async function qmxGeneral(el){
   const box=el||$("#qmxBody"); box.innerHTML=pzSkel(4);
   const G=await qmxTablaGen(); if(QMX.vista!=="tabla"||QMX.tab!=="gen") return;
@@ -6624,7 +6640,8 @@ async function qmxGeneral(el){
   const hayLl=Object.values(G.t).some(x=>x.ll!=null);
   const F=Object.entries(G.t).map(([h,x])=>({h,a:x.a,pts:js.reduce((s,j)=>s+(x.j[j]?.[0]||0),0)+(x.ll||0),ll:x.ll,u:x.j[ult]?.[0],g:gan[h]||0,r:racha(x)})).sort((a,b)=>b.pts-a.pts||b.g-a.g);
   const al=pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"long",hour:"numeric",minute:"2-digit"}).format(new Date(G.al.replace("Z",":00Z")));
-  box.innerHTML=`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ult}</th>${hayLl?"<th>Llave</th>":""}<th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map((x,i)=>`<tr${x.h===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${x.h===yo?" (tú)":""}${vidaFlama(x.r)}</td><td><b>${x.pts}</b></td><td>${x.u??"–"}</td>${hayLl?`<td>${x.ll??"–"}</td>`:""}<td>${x.g}</td></tr>`).join("")}</tbody></table></div>
+  const jf=[...js].reverse().find(j=>G.j[j].fin), prem=jf==null?"":qmxPremiosHTML(jf,Object.entries(G.t).filter(([,x])=>x.j[jf]).map(([h,x])=>({n:x.a,a:x.j[jf][0],g:x.j[jf][1],v:x.j[jf][2],yo:h===yo})),G.j[jf].goles,`Premios de la jornada ${jf} · entre todos`);
+  box.innerHTML=`${prem}<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ult}</th>${hayLl?"<th>Llave</th>":""}<th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map((x,i)=>`<tr${x.h===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${x.h===yo?" (tú)":""}${vidaFlama(x.r)}</td><td><b>${x.pts}</b></td><td>${x.u??"–"}</td>${hayLl?`<td>${x.ll??"–"}</td>`:""}<td>${x.g}</td></tr>`).join("")}</tbody></table></div>
     <p class="note">${F.length} jugadores. Cuentan las jornadas desde la ${js[0]}. Se actualiza cada mañana (última vez: ${al}); los puntos de la jornada en juego los ves en tus grupos y en Mis picks.</p>`;
 }
 // Retas v2 (29 oct 2026): "Tabla" = la general y tus grupos como botones en la misma vista; "Chat" = el chat de cada grupo.
@@ -6654,7 +6671,7 @@ async function qmxGrRender(){
 }
 async function qmxTabla(g){
   const box=$("#qmxTabla"); const ms=await ACCT.db.collection(`grupos/${g.id}/miembros`).get().catch(()=>null); if(!ms) { box.innerHTML=`<p class="note">No pudimos cargar el grupo.</p>`; return; }
-  const M=ms.docs.map(d=>({uid:d.id,...d.data()})), J=qmxD().J, now=Date.now()/1000;
+  QMX.prem=null; const M=ms.docs.map(d=>({uid:d.id,...d.data()})), J=qmxD().J, now=Date.now()/1000;
   const desde=13, Ls=qmxJornadas().filter(j=>j>=desde&&J[j].pr<=now);
   const T=Object.fromEntries(M.map(m=>[m.uid,{n:m.nombre||"Jugador",pts:0,gan:0,err:0,ult:null}]));
   const [Gen,H]=await Promise.all([qmxTablaGen(),Promise.all(M.map(m=>q5Hash(m.uid))),qmxVivoYa(Ls)]); M.forEach((m,i)=>m.h=H[i]);
@@ -6667,12 +6684,17 @@ async function qmxTabla(g){
       if(term) T[m.uid].err+=pk?.g!=null?Math.abs(pk.g-goles):50; }
     if(term){ const mx=Math.max(...M.map(m=>S[m.uid].a)); const top=M.filter(m=>S[m.uid].a===mx);
       const best=top.sort((a,b)=>(S[a.uid].pk?.g!=null?Math.abs(S[a.uid].pk.g-goles):99)-(S[b.uid].pk?.g!=null?Math.abs(S[b.uid].pk.g-goles):99))[0]; if(best&&mx>0) T[best.uid].gan++; }
+    if(term){ const C={}; for(const m of M){ for(const [rid,k] of Object.entries(S[m.uid].pk?.p||{})){ C[rid]=C[rid]||{}; C[rid][k]=(C[rid][k]||0)+1; } }
+      QMX.prem={j,goles,L:M.map(m=>{ const pk=S[m.uid].pk; if(!pk||!Object.keys(pk.p||{}).length) return null; let v=null;
+        P.forEach((r,i)=>{ const k=pk.p[r[0]]; if(!R[i].fin||k!==R[i].r) return; const c=C[r[0]]||{}, tot=Object.values(c).reduce((s,n)=>s+n,0)||1, sh=Math.round(100*(c[k]||0)/tot); if(!v||sh<v[0]) v=[sh,r[0],k]; });
+        return {n:(m.nombre||"Jugador").split(" ")[0],a:S[m.uid].a,g:pk.g??null,v,yo:m.uid===ACCT.user.uid}; })}; }
     ultJ=j; ultP=S; }
   if(Gen&&Gen.s===qmxD().s) for(const m of M){ const ll=Gen.t?.[m.h]?.ll; if(ll) T[m.uid].pts+=ll; }   // puntos de la llave de la Liguilla (los cuenta GitHub)
   const F=Object.entries(T).sort((a,b)=>b[1].pts-a[1].pts||b[1].gan-a[1].gan||a[1].err-b[1].err), yo=ACCT.user.uid, mv=pzMov("qmx_"+g.id,String(ultJ),F.map(([u])=>u));
   const P=ultJ!=null?J[ultJ].p:[];
   box.innerHTML=Ls.length?`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ultJ}</th><th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map(([u,x],i)=>`<tr${u===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.n)}${u===yo?" (tú)":""}${mv(u)}</td><td><b>${x.pts}</b></td><td>${x.ult??"–"}</td><td>${x.gan}</td></tr>`).join("")}</tbody></table></div>
     ${M.length<2?`<p class="note"><b>Solo tú estás en este grupo.</b> Tus amigos tienen que abrir el link de invitación y tocar «Unirme» (si primero crean su cuenta, la invitación los espera). Mientras, todos salen en la pestaña General.</p>`:""}
+    ${QMX.prem&&Ls.includes(QMX.prem.j)?qmxPremiosHTML(QMX.prem.j,QMX.prem.L,QMX.prem.goles,`Premios de la jornada ${QMX.prem.j} en «${acctEsc(g.nombre)}»`):""}
     <h3 style="margin:18px 0 6px">Picks de la jornada ${ultJ}</h3><div class="tbl qmxpk"><table><thead><tr><th class="l">Partido</th>${M.map(m=>`<th>${acctEsc((m.nombre||"").split(" ")[0])}</th>`).join("")}</tr></thead><tbody>${P.map(r=>{ const R=qmxRes(r,QMX.vivo);
       return `<tr><td class="l">${hoyEsc(qmxEq(r[2]).ab||qmxEq(r[2]).n)} ${R.gl!=null&&(R.fin||R.vivo)?`${R.gl}-${R.gv}`:"vs"} ${hoyEsc(qmxEq(r[3]).ab||qmxEq(r[3]).n)}</td>${M.map(m=>{ const k=ultP[m.uid]?.pk?.p?.[r[0]]; return `<td class="${R.fin&&k?(k===R.r?"ok":"mal"):""}">${k||"–"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>
     <p class="note">Desempate de cada jornada: goles más cercanos. En la tabla, empate en puntos: más jornadas ganadas.</p>`
