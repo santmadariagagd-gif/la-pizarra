@@ -8,6 +8,7 @@ sus equipos favoritos (usuarios/{uid}.fav) y lo nuevo en Firebase, y manda notif
   · Goles (p.gol): cada gol de un partido de tus equipos de fútbol.
   · Amigos (p.soc): solicitudes de amistad, solicitudes aceptadas y comentarios en tus posts.
   · Retos (p.ret): cuando un amigo te reta a un duelo.
+  · Los lunes en la mañana, tu resumen de la semana (también con p.cie).
   · Recordatorios de cierre (p.cie): la quiniela de Liga MX, el Survivor o el reto del día cierran pronto y no has jugado.
   · Sufrimiento ajeno (p.riv): cuando pierde el rival de toda la vida de tu equipo (América-Pumas, Real Madrid-Barça…).
 Los textos cambian según cómo va el partido (remontadas, goles al final, goleadas, penales).
@@ -216,6 +217,67 @@ class Avisos:
     # ---------- recordatorios de cierre (29 oct 2026) ----------
     # Si algo cierra en la próxima hora y media y no has hecho tus picks, te avisa una vez. Solo a quien ya juega:
     # quiniela Liga MX (hizo picks la jornada anterior), Survivor (sigue vivo) y reto del día (contestó ayer: cuida su racha).
+    # ---------- resumen de la semana (3 nov 2026) ----------
+    # Los lunes entre 9 am y 12 pm (CDMX), un aviso con lo tuyo de la semana; al tocarlo se abre "Tu semana en La Pizarra".
+    def semanal(self):
+        ahora = datetime.now(MX)
+        if ahora.weekday() != 0 or not (9 <= ahora.hour < 12): return
+        sem = ahora.date().isoformat()
+        sha = lambda u: hashlib.sha256(u.encode()).hexdigest()[:12]
+        def lee(n):
+            try: return json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "datos", n), encoding="utf-8"))
+            except Exception: return {}
+        Q, RT, SV, FU, FM = lee("qmx_tabla.json"), lee("rd_tabla.json"), lee("smx_tabla.json"), lee("fan_ucl.json"), lee("fan_mx.json")
+        jq = sorted([int(j) for j, x in (Q.get("j") or {}).items() if x.get("fin")])
+        tot = {h: sum((v or [0])[0] for v in (x.get("j") or {}).values()) for h, x in (Q.get("t") or {}).items()}
+        rank = sorted(tot, key=lambda h: -tot[h])
+        def fan_ult(F):
+            ks = [k for k, x in (F.get("j") or {}).items() if x.get("fin")]
+            return max(ks, key=lambda k: F["j"][k].get("pr", 0)) if ks else None
+        for uid in self.subs:
+            h = sha(uid); P = []
+            q = (Q.get("t") or {}).get(h)
+            if q and jq and str(jq[-1]) in (q.get("j") or {}):
+                P.append(f"{q['j'][str(jq[-1])][0]} aciertos en la J{jq[-1]}" + (f", vas {rank.index(h) + 1}º de {len(rank)}" if h in rank and len(rank) > 1 else ""))
+            r = (RT.get("t") or {}).get(h)
+            if r and (r.get("w") or [0, 0])[1]: P.append(f"reto del día: {r['w'][0]} de {r['w'][1]}" + (f" (racha de {r['r']})" if r.get("r", 0) >= 2 else ""))
+            sv = (SV.get("t") or {}).get(h)
+            if sv: P.append("sigues vivo en el Survivor" if sv.get("c") is None else f"caíste en el Survivor en la J{sv['c']}")
+            for F, nom in ((FM, "Fantasy Liga MX"), (FU, "Fantasy Champions")):
+                k = fan_ult(F); x = (F.get("tabla") or {}).get(h)
+                if k and x and k in (x.get("j") or {}): P.append(f"{nom}: {x['j'][k]} pts")
+            b = " · ".join(P[:3]) if P else "Mira cómo les fue a tus equipos y lo que viene esta semana."
+            self.manda(uid, "cie", "📊 Tu semana en La Pizarra", b[:1].upper() + b[1:], "/?sem=1", f"sem-{sem}-{uid[:8]}")
+
+    # ---------- respaldo del periódico (3 nov 2026) ----------
+    # GitHub a veces se salta la corrida programada del martes. De martes a jueves, si alguna liga no tiene publicado el
+    # periódico de la última semana terminada (D.week de la página), se dispara "Periódico de las ligas" (máx. cada 3 h).
+    def periodico(self):
+        ahora = datetime.now(MX)
+        if ahora.weekday() not in (1, 2, 3) or ahora.hour < 7: return
+        tok, repo = os.environ.get("GH_TOKEN", ""), os.environ.get("GITHUB_REPOSITORY", "")
+        if not tok or not repo: return
+        if time.time() - self.E.get("per_t", 0) < 3 * 3600: return
+        aqui = os.path.dirname(os.path.abspath(__file__))
+        try:
+            import re as _re
+            t = open(os.path.join(aqui, "docs", "index.html"), encoding="utf-8").read()
+            m = _re.search(r'"week":\s*(\d+)', t); w = int(m.group(1)) if m else 0
+            ligas = [str(x.get("liga")) for x in json.load(open(os.path.join(aqui, "periodico.json"), encoding="utf-8")).get("ligas") or [] if x.get("liga")]
+        except Exception as e:
+            print("Periódico: no se pudo revisar", e); return
+        falta = []
+        for lg in ligas:
+            try: u = json.load(open(os.path.join(aqui, "docs", "periodico", lg, "ultimo.json"), encoding="utf-8")).get("w", 0)
+            except Exception: u = 0
+            if w and u < w: falta.append(lg)
+        if not falta: return
+        req = urllib.request.Request(f"https://api.github.com/repos/{repo}/actions/workflows/periodico.yml/dispatches", data=json.dumps({"ref": "main"}).encode(),
+                                     headers={"Authorization": f"Bearer {tok}", "Accept": "application/vnd.github+json"}, method="POST")
+        try: urllib.request.urlopen(req, timeout=20); print(f"Periódico: faltaba la semana {w} en {falta}; se disparó la corrida")
+        except Exception as e: print("Periódico: no se pudo disparar", e)
+        self.E["per_t"] = int(time.time())
+
     def cierres(self):
         lo, hi = self.now, self.now + 90 * 60
         sha = lambda u: hashlib.sha256(u.encode()).hexdigest()[:12]
@@ -418,6 +480,10 @@ class Avisos:
         except Exception as e: print("Amigos/retos:", e)
         try: self.cierres()
         except Exception as e: print("Cierres:", e)
+        try: self.semanal()
+        except Exception as e: print("Resumen semanal:", e)
+        try: self.periodico()
+        except Exception as e: print("Periódico:", e)
         F = self.favoritos()
         inicio = time.time()
         while True:

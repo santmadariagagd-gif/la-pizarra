@@ -7778,6 +7778,11 @@ function vidaLogrosAbre(){
 }
 
 // ---- Resumen semanal tipo historia ----
+// 3 nov 2026: el aviso de los lunes abre lapizarra.mx/?sem=1 → se calcula todo y se abre la historia
+(()=>{ try{ const q=new URLSearchParams(location.search); if(q.get("sem")!=="1") return; q.delete("sem");
+  history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash);
+  let n=0; const iv=setInterval(async()=>{ n++; if(n>40){ clearInterval(iv); return; } if(typeof ACCT!=="undefined"&&D.fb&&!ACCT.ready&&n<16) return;
+    clearInterval(iv); try{ await vidaLogrosCalc(true); await vidaHistoria(); pzTrack("resumen_semana_aviso",{}); }catch(e){ console.warn("Tu semana:",e); } },500); }catch(e){} })();
 function vidaSlides(){
   const G=VIDA.log; if(!G) return []; const S=[], Q=G.Q;
   const jq=Object.keys(Q).map(Number).filter(j=>Q[j].cerrada&&Q[j].fin).sort((a,b)=>b-a)[0];
@@ -7808,6 +7813,15 @@ function vidaSlides(){
     sub:[A.p?`${A.p} picks`:"",A.r?`${A.r} reacciones`:"",A.c?`${A.c} mensajes en tus grupos`:""].filter(Boolean).join(" · ")||"¡Ven más seguido!",c:"#9FD3A8",fondo:"#2f5a4a",tam:130});
   { const ahora=Date.now()/1000, v=Object.keys(FAV.eq).filter(k=>k[0]==="f").map(k=>[k,D.eq_info?.[k.slice(1)]?.p]).filter(([,p])=>p&&p[1]>ahora&&p[1]<ahora+8*86400).sort((a,b)=>a[1][1]-b[1][1])[0];
     if(v){ const [k,p]=v, riv=esTeam(p[4]); S.push({eti:"Lo que viene",grande:`${p[5]?"vs":"en"} ${riv}`,txt:`${FAV.eq[k].n} · ${qmxHora(p[1])}`,sub:LEAGUES[p[2]]?.label||"",c:"#F2D466",fondo:(vidaColEq(k)||["#3d6b5a"])[0],tam:riv.length>8?54:72}); } }
+  // Reto del día de esta semana
+  try{ const rt=RD.h&&RD.t?.t?.[RD.h]; if(rt&&rt.w?.[1]) S.push({eti:"Reto del día",grande:`${rt.w[0]}/${rt.w[1]}`,txt:rt.w[1]===1?"reto contestado esta semana":"aciertos esta semana",sub:rt.r>=2?`Racha de ${rt.r} seguidas · tu mejor: ${rt.m}`:`Tu mejor racha: ${rt.m||0}`,c:"#C9A7F0",fondo:"#3f2f6b",tam:118}); }catch(e){}
+  // Survivor (Liga MX y NFL)
+  try{ if(D.qmx&&Object.keys(smxLs()).length){ const C=smxCamino(smxMio); S.push({eti:"Survivor Liga MX",grande:C.vivo?"Vivo":"Fuera",txt:C.vivo?`${C.n} ${C.n===1?"jornada":"jornadas"} aguantando`:`Caíste en la jornada ${C.cae}`,sub:C.vivo?"Escoge bien tu próximo equipo":(C.mot?`Tu equipo ${C.mot}`:""),c:C.vivo?"#9FD3A8":"#FF9C80",fondo:C.vivo?"#2f5a3f":"#5a2f2f",tam:120}); } }catch(e){}
+  try{ const M=svMine(); if(Object.keys(M).length){ const w=+(qnCache?.week||D.gweek), r=svRun(x=>M[x]||null,1,SV_DESDE,w); S.push({eti:"Survivor NFL",grande:r.out!=null?"Fuera":"Vivo",txt:r.out!=null?`Te eliminaron en la semana ${r.out}`:`Sigues en pie en la semana ${w}`,sub:"",c:r.out!=null?"#FF9C80":"#9FD3A8",fondo:r.out!=null?"#5a2f2f":"#2f5a3f",tam:120}); } }catch(e){}
+  // Duelos que terminaron esta semana
+  try{ const yo=ACCT.user?.uid, lim=Date.now()/1000-7*86400, T=(DU.L||[]).filter(d=>d.res?.p&&(d.ci||0)>lim-3*86400);
+    if(yo&&T.length){ const g=T.filter(d=>d.res.g===yo).length, p=T.filter(d=>d.res.g&&d.res.g!==yo).length, e=T.length-g-p, x=T.find(d=>d.res.g===yo)||T[0];
+      S.push({eti:"Tus duelos",grande:`${g}-${p}${e?`-${e}`:""}`,txt:g>p?"¡Ganaste más de los que perdiste!":g<p?"Esta semana te ganaron más":"Semana pareja",sub:`${x.res.g===yo?"Le ganaste a":x.res.g?"Perdiste con":"Empataste con"} ${duNom(x).split(" ")[0]} · ${duT(x)[0]}`,c:"#F2D466",fondo:"#5a4a2f",tam:118}); } }catch(e){}
   if(S.length&&G.racha>0) S.push({eti:"Tu racha",grande:`${G.racha}`,txt:G.racha===1?"jornada seguida con picks":"jornadas seguidas con picks",sub:`${G.T.size} de ${VIDA_LOGROS.length} logros desbloqueados`,c:"#FF9C80",fondo:"#6b3a2f",tam:130});
   return S;
 }
@@ -7815,7 +7829,9 @@ async function vidaHistoria(){
   if(VIDA.abriendo) return; VIDA.abriendo=1;
   try{ for(const [k,x] of Object.entries(FAV.jug)){ if(k[0]==="r") favxPide("_f1",favxF1); if(k[0]==="t"){ const tr=x.tour||"atp"; favxPide("_ten_"+tr,()=>favxTenis(tr)); } }
     for(const k of Object.keys(FAV.eq)) if(k[0]==="b") favxPide(k,()=>favxNbaEq(k.slice(1)));
-    const P=Object.values(FAVX.p); if(P.length) await Promise.race([Promise.allSettled(P),new Promise(r=>setTimeout(r,2500))]); }finally{ VIDA.abriendo=0; }
+    const P=Object.values(FAVX.p); if(P.length) await Promise.race([Promise.allSettled(P),new Promise(r=>setTimeout(r,2500))]);
+    // 3 nov 2026: reto del día, survivor y duelos también entran en tu semana
+    await Promise.race([Promise.allSettled([typeof rdDatos==="function"?rdDatos():null,typeof rdMiHash==="function"?rdMiHash():null,typeof duCarga==="function"&&amOk()?duCarga():null]),new Promise(r=>setTimeout(r,3000))]); }finally{ VIDA.abriendo=0; }
   const S=vidaSlides(); if(!S.length) return; pzTrack("resumen_semana",{n:S.length});
   let el=$("#vstory"); if(!el){ el=document.createElement("div"); el.id="vstory"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true"); el.setAttribute("aria-label","Tu semana en La Pizarra"); document.body.append(el); }
   const ini=new Date(Date.now()-6*864e5), fmt=d=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"short"}).format(d).replace(".","");
@@ -11016,7 +11032,7 @@ function ntPinta(){
 // ----- Avisos al teléfono (29 oct 2026) -----
 // Se pide permiso, Firebase Cloud Messaging da una clave de este aparato y se guarda en avisos_tk/{uid} (solo tú la lees).
 // El robot avisos.py (GitHub, cada 10 min) manda los avisos; sw.js los muestra aunque la página esté cerrada.
-const PUSH_K="pz_push", PUSH_P={eq:["Partidos de tus equipos","Cuando están por empezar y el resultado final"],gol:["Goles","Cada gol de tus equipos de fútbol"],soc:["Amigos","Solicitudes y comentarios en tus posts"],ret:["Retos","Cuando un amigo te reta a un duelo"],riv:["Sufrimiento ajeno","Cuando pierde el rival de toda la vida de tu equipo"],cie:["Recordatorios de cierre","Si está por cerrar la quiniela, el survivor o el reto del día y no has jugado"]};
+const PUSH_K="pz_push", PUSH_P={eq:["Partidos de tus equipos","Cuando están por empezar y el resultado final"],gol:["Goles","Cada gol de tus equipos de fútbol"],soc:["Amigos","Solicitudes y comentarios en tus posts"],ret:["Retos","Cuando un amigo te reta a un duelo"],riv:["Sufrimiento ajeno","Cuando pierde el rival de toda la vida de tu equipo"],cie:["Recordatorios y resumen","Si está por cerrar algo y no has jugado, y tu semana cada lunes"]};
 const pushLs=()=>{ try{ return JSON.parse(localStorage.getItem(PUSH_K)||"{}")||{}; }catch(e){ return {}; } };
 const pushGuardaLs=o=>{ try{ localStorage.setItem(PUSH_K,JSON.stringify(o)); }catch(e){} };
 const pushIOS=()=>/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);

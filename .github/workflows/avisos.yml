@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: write   # para disparar el periódico si GitHub se saltó su corrida del martes
 concurrency:
   group: avisos
   cancel-in-progress: false
@@ -24,3 +25,4 @@ jobs:
         env:
           FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          GH_TOKEN: ${{ github.token }}
