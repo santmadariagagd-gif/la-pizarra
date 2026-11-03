@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#1F332D">
 <script>/* Invitaciones (3 nov 2026): quién te mandó el link (?amigo=UID o ?de=UID en los links de grupos). Se guarda la primera vez. */
-try{ var q=new URLSearchParams(location.search), iv=q.get("de")||q.get("amigo"); if(iv&&/^[A-Za-z0-9]{20,40}$/.test(iv)&&!localStorage.getItem("pz_invpor")) localStorage.setItem("pz_invpor",iv); }catch(e){}
+try{ var q=new URLSearchParams(location.search), iv=q.get("de")||q.get("amigo"); if(iv&&/^[A-Za-z0-9]{20,40}$/.test(iv)&&!localStorage.getItem("pz_invpor")){ localStorage.setItem("pz_invpor",iv); var dn=(q.get("dn")||"").replace(/[<>"&]/g,"").slice(0,24); if(dn) localStorage.setItem("pz_invnom",dn); } }catch(e){}
 </script>
 <script>/* Personalización (28 oct 2026): los colores de la app según tu equipo se ponen antes de pintar */
 try{ var T=JSON.parse(localStorage.getItem("pz_tema")||"null"); if(T&&T.v){ var R=document.documentElement.style; for(var k in T.v) if(/^#[0-9a-fA-F]{6}$/.test(T.v[k])) R.setProperty("--"+k,T.v[k]); document.querySelector('meta[name="theme-color"]').content=T.v.bg; } }catch(e){}
@@ -1331,7 +1331,7 @@ nav.tabs button .depch{vertical-align:-2px;margin-left:2px;transition:transform 
 .q5new{display:flex;gap:8px;flex-wrap:wrap;max-width:640px;margin:6px 0 0}.q5new input{flex:1 1 220px;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 16px var(--body)}
 .q5link{background:none;border:0;color:var(--mark);font:600 15px var(--body);cursor:pointer;padding:6px 0;text-decoration:underline}
 /* ---------- Más vida (27 oct 2026): portada, partido grande, cierre de picks, reacciones, logros, resumen y detalles ---------- */
-#hoyPor:empty{display:none}
+#hoyPor:empty,#hoyBv:empty{display:none}
 .vpor{position:relative;overflow:hidden;border-radius:24px;margin:4px 0 18px;border:1px solid var(--line);background:var(--surface);isolation:isolate}
 .vfondo{position:absolute;inset:0;z-index:-1;background-image:radial-gradient(70% 90% at 12% 0%,color-mix(in srgb,var(--c1) 62%,transparent) 0%,transparent 62%),radial-gradient(70% 90% at 95% 20%,color-mix(in srgb,var(--c2) 70%,transparent) 0%,transparent 66%),linear-gradient(180deg,#2c4a40,#1F332D);background-size:220% 220%;animation:vderiva 16s ease-in-out infinite}
 .vfondo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,32,28,.18),rgba(20,32,28,.55))}
@@ -1862,6 +1862,9 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .rdamL{display:flex;flex-wrap:wrap;gap:5px;padding-left:6px}.rdamc{display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;border-radius:999px;background:rgba(0,0,0,.18);border:1px solid var(--line)}.rdamc b{font-size:13px}
 dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background:var(--bg);color:var(--ink);width:min(440px,94vw);max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 40px)}dialog#pdlg::backdrop{background:rgba(0,0,0,.6)}
 .pushpide .x{width:40px;height:40px}
+.bienv{position:relative;padding:16px;border-radius:18px;background:linear-gradient(135deg,#3E5A3A,#263D36 60%,#2f4a5e);border:1px solid var(--mark);margin:0 0 16px;max-width:640px}
+.bienv>b{display:block;font:800 24px/1.1 var(--display);padding-right:30px}.bienv ul{list-style:none;padding:0;margin:12px 0 14px;display:grid;gap:8px}.bienv li{display:flex;gap:10px;align-items:center;font-size:15px}.bienv li span{font-size:20px;width:26px;text-align:center}
+.bienvb{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.bienvb .btn{min-height:46px;font-size:17px}.bienvb small{color:var(--muted);font-size:13px}
 .invc{padding:14px;border-radius:18px;background:linear-gradient(135deg,#1f4a35,var(--surface));border:1px solid #25D36666;margin:0 0 16px;position:relative;max-width:640px}
 .invh{display:flex;gap:12px;align-items:center}.invh>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.invh b{font:800 20px/1.1 var(--display)}.invh small{color:var(--muted);font-size:13px}.invic{font-size:34px;line-height:1}
 .invbar{position:relative;height:10px;border-radius:5px;background:rgba(255,255,255,.1);margin:16px 6px 14px}.invbar i{position:absolute;inset:0 auto 0 0;border-radius:5px;background:linear-gradient(90deg,#25D366,#F2D466);transition:width .6s}
@@ -2118,6 +2121,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <!-- PORTADA: HOY EN LA PIZARRA (5 oct 2026) -->
 <section class="panel" id="hoy">
   <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hoyacc"><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div><button class="hcfgbtn" id="hoyCfg" aria-label="Personalizar tu portada" title="Personalizar tu portada"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div></div>
+  <div id="hoyBv"></div>
   <div id="hoyPor"></div>
   <div id="hoyPf"></div>
   <div id="hoyRd"></div>
@@ -6407,7 +6411,7 @@ async function q5GrRender(){
 async function q5JoinRender(){
   const id=Q5.join; let el=$("#q5Join"); if(!id){ el?.remove(); return; }
   if(!el){ el=document.createElement("div"); el.id="q5Join"; el.className="qgate"; el.style.maxWidth="640px"; $("#q5Body").before(el); }
-  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de La Quinteta</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
+  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>${invNom()?`${hoyEsc(invNom())} te invitó a su grupo de La Quinteta`:"Te invitaron a un grupo de La Quinteta"}</b><span>Arma tu quinteta de la NBA y compite contra ellos en su propia tabla. Es gratis: entra con Google en 10 segundos y quedas dentro del grupo.</span><button class="btn" data-acct>Entrar y unirme</button>`; return; }
   if(Q5.ids().includes(id)){ Q5.join=pzInv('q5',null); el.remove(); return; }
   let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); console.warn("Quinteta: invitación",errQ); return null; });
   if(!I&&errQ){ el.innerHTML=`<b>No pudimos abrir la invitación</b><span>Intenta de nuevo en un momento. Si sigue igual, avísale a quien te invitó (código: ${acctEsc(errQ)}).</span><button class="q5link" id="q5NoUnir">Cerrar</button>`; return; }
@@ -6677,7 +6681,7 @@ async function qmxTabla(g){
 async function qmxJoinRender(){
   const id=QMX.join; let el=$("#qmxJoin"); if(!id){ el?.remove(); return; }
   if(!el){ el=document.createElement("div"); el.id="qmxJoin"; el.className="qgate"; el.style.maxWidth="640px"; $("#qmxBody").before(el); }
-  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de la Quiniela Liga MX</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
+  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>${invNom()?`${hoyEsc(invNom())} te invitó a su grupo de la Quiniela Liga MX`:"Te invitaron a un grupo de la Quiniela Liga MX"}</b><span>Escoge quién gana cada partido y compite contra ellos en su propia tabla. Es gratis: entra con Google en 10 segundos y quedas dentro del grupo.</span><button class="btn" data-acct>Entrar y unirme</button>`; return; }
   if(qmxIds().includes(id)){ QMX.join=pzInv('qmx',null); el.remove(); return; }
   let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); console.warn("Quiniela MX: invitación",errQ); return null; });
   if(!I&&errQ){ el.innerHTML=`<b>No pudimos abrir la invitación</b><span>Intenta de nuevo en un momento. Si sigue igual, avísale a quien te invitó (código: ${acctEsc(errQ)}).</span><button class="q5link" id="qmxNoUnir">Cerrar</button>`; return; }
@@ -7149,7 +7153,7 @@ document.addEventListener("input",ev=>{ if(ev.target.id!=="fanQ") return; FAN.q=
 async function fanJoinRender(){
   const id=FAN.join; let el=$("#fanJoin"); if(!id){ el?.remove(); return; }
   if(!el){ el=document.createElement("div"); el.id="fanJoin"; el.className="qgate"; el.style.maxWidth="640px"; $("#fanBody").before(el); }
-  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>Te invitaron a un grupo de Fantasy</b><span>Entra con tu cuenta para unirte.</span><button class="btn" data-acct>Entrar</button>`; return; }
+  if(!(typeof acctOk==="function"&&acctOk())){ el.innerHTML=`<b>${invNom()?`${hoyEsc(invNom())} te invitó a su grupo de Fantasy`:"Te invitaron a un grupo de Fantasy"}</b><span>Arma tu once y compite contra ellos en su propia tabla. Es gratis: entra con Google en 10 segundos y quedas dentro del grupo.</span><button class="btn" data-acct>Entrar y unirme</button>`; return; }
   if(fanIds().includes(id)){ FAN.join=pzInv('fan',null); el.remove(); return; }
   let errQ=""; const I=await grInfo(id).catch(e=>{ errQ=e?.code||String(e); return null; });
   el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo de Fantasy (Champions y Liga MX): tabla y mano a mano cada jornada.</span><span><button class="btn" id="fanUnir">Unirme</button> <button class="q5link" id="fanNoUnir">Ahora no</button></span>`
@@ -8070,7 +8074,13 @@ function perfSinTocar(){ const p=perfMio(); if(!p) return false; let d; try{ d=p
 const perfNudgeOff=()=>{ try{ return localStorage.getItem("pz_perfnudge")==="1"; }catch(e){ return false; } };
 function perfNudgeHTML(){ if(!(typeof amOk==="function"&&amOk())||!perfSinTocar()||perfNudgeOff()) return "";
   return `<div class="pfnudge">${perfAvatar(perfMio(),56)}<span><b>Haz tuya tu playera</b><small>Escoge tus colores, el diseño, tu número y una frase. Así te reconocen tus amigos.</small></span><button class="btn" data-pfnudge="1">Editar mi perfil</button><button class="pfnx" data-pfnudgex="1" aria-label="Ahora no">×</button></div>`; }
-function perfNudgePinta(){ const el=$("#hoyPf"); if(el) el.innerHTML=perfNudgeHTML()||(typeof pushNudgeHTML==="function"?pushNudgeHTML():"")||sufNudgeHTML()||(typeof invNudgeHTML==="function"?invNudgeHTML():""); if(typeof invCarga==="function"&&amOk()&&!INV.L) invCarga().then(()=>{ if(!el.innerHTML.trim()) el.innerHTML=invNudgeHTML(); }); }
+// 3 nov 2026: quien llega sin cuenta (muchas veces por un link de un amigo) ve qué es La Pizarra y cómo entrar
+function bienvHTML(){ if(typeof acctOk!=="function"||acctOk()||!D.fb?.apiKey) return ""; try{ if(sessionStorage.getItem("pz_bienvx")) return ""; }catch(e){} const n=invNom();
+  return `<div class="bienv"><button class="pfnx" data-bienvx="1" aria-label="Cerrar">×</button><b>${n?`${hoyEsc(n)} te invitó a La Pizarra`:"Juega con tus amigos, gratis"}</b>
+    <ul><li><span>🏆</span>Quinielas de Liga MX y NFL</li><li><span>🛡️</span>Survivor: un equipo por jornada, sin repetir</li><li><span>⚽</span>Fantasy de Champions y Liga MX</li><li><span>❓</span>Un reto nuevo cada día</li></ul>
+    <span class="bienvb"><button class="btn" data-acct>${n?"Entrar y jugar con "+hoyEsc(n.split(" ")[0]):"Crear mi cuenta"}</button><small>Con Google, en 10 segundos. Sin costo.</small></span></div>`; }
+document.addEventListener("click",ev=>{ if(ev.target.closest?.("[data-bienvx]")){ try{ sessionStorage.setItem("pz_bienvx","1"); }catch(e){} ev.target.closest(".bienv")?.remove(); pzTrack("bienvenida_x",{}); } });
+function perfNudgePinta(){ const bv=$("#hoyBv"); if(bv) bv.innerHTML=bienvHTML(); const el=$("#hoyPf"); if(el) el.innerHTML=perfNudgeHTML()||(typeof pushNudgeHTML==="function"?pushNudgeHTML():"")||sufNudgeHTML()||(typeof invNudgeHTML==="function"?invNudgeHTML():""); if(typeof invCarga==="function"&&amOk()&&!INV.L) invCarga().then(()=>{ if(!el.innerHTML.trim()) el.innerHTML=invNudgeHTML(); }); }
 // 3 nov 2026: mucha gente no ha visto el Sufrómetro (vive en Favoritos, a media página). Tarjeta en Hoy hasta que lo vea o la cierre.
 const sufVisto=()=>{ try{ return localStorage.getItem("pz_suf_visto")==="1"||localStorage.getItem("pz_sufnudge")==="1"; }catch(e){ return true; } };
 function sufNudgeHTML(){ if(sufVisto()) return ""; const tiene=Object.keys(FAV.eq||{}).length+Object.keys(FAV.jug||{}).filter(k=>"rt".includes(k[0])).length;
@@ -8261,7 +8271,7 @@ async function amSugeridos(){
   await Promise.all([...M.keys()].slice(0,20).map(perfCargaP));
   AM.sug=[...M.entries()].slice(0,20).map(([uid,n])=>({uid,n})); return AM.sug;
 }
-const amLink=()=>`https://lapizarra.mx/?amigo=${ACCT.user.uid}`;
+const amLink=()=>`https://lapizarra.mx/?amigo=${ACCT.user.uid}${pzDn()}`;
 // ---- publicar ----
 async function amPublica(clave,o){
   if(!amOk()) return; const yo=ACCT.user.uid, pid=`${yo}_${clave}`.replace(/[^A-Za-z0-9_-]/g,"-").slice(0,140);
@@ -9584,7 +9594,7 @@ function acctSlHint(){
   const p=$("#slAcct"), show=!!(D.fb&&ACCT.ready&&!ACCT.user&&SL.user);
   p.hidden=!show; p.innerHTML=show?`<button class="alink" data-acct>Entra a tu cuenta</button> para que tu liga se abra sola en cualquier dispositivo.`:"";
 }
-function acctBtn(){
+function acctBtn(){ try{ if(acctOk()&&$("#hoyBv")) $("#hoyBv").innerHTML=""; }catch(e){}
   const b=$("#acctBtn"), u=ACCT.user; b.hidden=!(ACCT.ready||(D.fb?.apiKey&&!ACCT_INI)); b.classList.toggle("in",!!u); if(typeof amBadge==="function") amBadge();
   if(!u){b.textContent="Entrar"; b.setAttribute("aria-label","Entrar a tu cuenta"); return;}
   const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase(), pf=typeof perfMio==="function"&&perfMio();
@@ -9897,7 +9907,7 @@ async function grRender(){
   const box=$("#grBody"); if(!box) return;
   if(!D.fb){box.innerHTML=`<p class="note">Muy pronto.</p>`; return;}
   if(!ACCT.ready&&ACCT_INI){box.innerHTML=`<p class="note">Cargando…</p>`; return;}
-  if(!ACCT.user){box.innerHTML=`<p class="note">${GR.join?"Te invitaron a un grupo de quiniela. ":""}Para crear un grupo o unirte a uno, <button class="alink" data-acct>entra a tu cuenta</button>.</p>`; return;}
+  if(!ACCT.user){box.innerHTML=`<p class="note">${GR.join?(invNom()?`${hoyEsc(invNom())} te invitó a su grupo de quiniela NFL. `:"Te invitaron a un grupo de quiniela. "):""}Para crear un grupo o unirte a uno, <button class="alink" data-acct>entra a tu cuenta</button>.</p>`; return;}
   if(!acctOk()){box.innerHTML=`<p class="note">Para usar los grupos, primero <button class="alink" data-acct>confirma tu correo</button>.</p>`; return;}
   if(!GR.loaded) await grLoadIds();
   let h="";
@@ -11316,7 +11326,9 @@ $("#pzBack").onclick=()=>{ if(history.state?.n>0) history.back(); else showSport
 (()=>{try{const g=new URLSearchParams(location.search).get("g"); if(g&&/^[A-Za-z0-9]{10,40}$/.test(g)){GR.join=g; history.replaceState(null,"",location.pathname+location.hash); showSport("qn","nflq"); qnSetView("grupos");}}catch(e){}})();
 // Invitaciones pendientes (27 oct 2026): se guardan en el navegador hasta que te unes o dices "Ahora no",
 // para que no se pierdan si primero tienes que crear tu cuenta o confirmar tu correo.
-const pzDe=()=>{ try{ return ACCT?.user?.uid?`&de=${ACCT.user.uid}`:""; }catch(e){ return ""; } };
+const pzDn=()=>{ try{ const a=(perfMio()?.a||ACCT?.user?.displayName||"").trim().slice(0,24); return a?`&dn=${encodeURIComponent(a)}`:""; }catch(e){ return ""; } };
+const pzDe=()=>{ try{ return ACCT?.user?.uid?`&de=${ACCT.user.uid}${pzDn()}`:""; }catch(e){ return ""; } };
+const invNom=()=>{ try{ return (localStorage.getItem("pz_invnom")||"").replace(/[<>"&]/g,"").slice(0,24); }catch(e){ return ""; } };
 function pzInv(k,v){ try{ if(v) localStorage.setItem("pz_inv_"+k,v); else localStorage.removeItem("pz_inv_"+k); }catch(e){} return v; }
 (()=>{ try{ if(location.search) return; const q=localStorage.getItem("pz_inv_qmx"), f=localStorage.getItem("pz_inv_fan"), c=localStorage.getItem("pz_inv_q5");
   if(q){ QMX.join=q; QMX.vista="grupos"; } if(f){ FAN.join=f; FAN.vista="grupos"; } if(c) Q5.join=c;
@@ -11347,7 +11359,7 @@ function pzInv(k,v){ try{ if(v) localStorage.setItem("pz_inv_"+k,v); else localS
   const caja=$("#pzInst"), ios=/iP(hone|ad|od)/.test(navigator.userAgent)&&!/CriOS|FxiOS|EdgiOS/.test(navigator.userAgent);
   let aviso=null, visitas=0, cerrado=0;
   try{ visitas=+(localStorage.getItem("pz_visitas")||0)+1; localStorage.setItem("pz_visitas",visitas); cerrado=+(localStorage.getItem("pz_inst_no")||0); }catch(e){}
-  const puede=()=>visitas>=2&&Date.now()-cerrado>30*864e5&&matchMedia("(max-width:720px)").matches;
+  const puede=()=>visitas>=2&&Date.now()-cerrado>30*864e5&&matchMedia("(max-width:720px)").matches&&!$("#hoyBv .bienv");   // sin cuenta, primero la bienvenida
   const muestra=()=>{ if(!puede()) return; caja.hidden=false; pzTrack("instalar_invita",{ios}); };
   addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); aviso=e; setTimeout(muestra,4000); });
   if(ios) setTimeout(muestra,4000);
