@@ -123,6 +123,8 @@ td.rk{color:var(--muted);width:2.5em}
 .leader .v{font:700 40px/1 var(--display);margin:4px 0 2px;color:var(--mark)}
 .leader .w{font-weight:600}
 .leader{display:grid;grid-template-columns:64px 1fr;gap:2px 14px;align-items:center}
+.leader>*{min-width:0}.leader .w{overflow-wrap:anywhere}
+@media (max-width:360px){.leaders{grid-template-columns:1fr!important}}
 .leader .ph{grid-row:span 3;width:64px;height:64px;border-radius:50%;background:var(--line);overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
 .leader .ph img{width:100%;height:100%;object-fit:cover;object-position:top}
 .leader .ph img.crest{object-fit:contain;padding:10px;object-position:center}
@@ -212,7 +214,7 @@ hr.rule{border:0;border-top:2px solid var(--ink);margin:34px 0 28px}
 .subnav button[aria-current="page"]{color:var(--ink);border-bottom-color:var(--mark)}
 .subnav[data-for=qn]{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.subnav[data-for=qn]::-webkit-scrollbar{display:none}.subnav[data-for=qn] button{white-space:nowrap;flex:none}
 .subnav .league{font:700 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--bg);background:var(--ink);padding:5px 8px;border-radius:5px}
-.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:16px}
 .game{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
 .game .when{display:flex;justify-content:space-between;font:600 14px var(--display);letter-spacing:.02em;color:var(--muted)}
 .game .when b{color:var(--ink)}
@@ -615,6 +617,8 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 .hoyhead .hd{display:none}
 .hoyhead p{color:var(--muted);margin:4px 0 0;font-size:15px}
 .hseg{display:flex;gap:3px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:3px}
+.hh>.hseg{max-width:100%;min-width:0;overflow-x:auto;scrollbar-width:none}.hh>.hseg::-webkit-scrollbar{display:none}.hh>.hseg>button{flex:none}
+#hoyFiltro{min-width:0;overflow-x:auto;scrollbar-width:none}#hoyFiltro::-webkit-scrollbar{display:none}#hoyFiltro>button{flex:none}.hoyacc{min-width:0;max-width:100%}
 .hseg button{min-height:34px;padding:0 13px;border-radius:18px;border:0;background:none;color:var(--muted);font:600 16px var(--display);cursor:pointer;white-space:nowrap}
 .hseg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .hsec{margin-top:24px}
@@ -3056,9 +3060,13 @@ try{localStorage.removeItem("pizarra_espn"); localStorage.removeItem("pizarra_fs
   const u=localStorage.getItem("pizarra_sleeper"); if(u){$("#slUser").value=u;slConnect();}}catch(e){}
 
 // ---------- Utilidades de partidos ----------
+// 3 nov 2026: crear un Intl.DateTimeFormat es caro (~0.1 ms) y la portada lo hacía miles de veces (casi 1 s en celulares
+// medianos). Se guardan y se reusan por idioma + opciones.
+const PZ_DTF=new Map();
+function pzDTF(l,o){ const k=l+"|"+JSON.stringify(o||{}); let f=PZ_DTF.get(k); if(!f){ f=new Intl.DateTimeFormat(l,o); PZ_DTF.set(k,f); } return f; }
 const TZ="America/Mexico_City";
-const fDay=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(d);
-const fHour=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,hour:"numeric",minute:"2-digit"}).format(d);
+const fDay=d=>pzDTF("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(d);
+const fHour=d=>pzDTF("es-MX",{timeZone:TZ,hour:"numeric",minute:"2-digit"}).format(d);
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 const mlTxt=m=>m==null?"–":(m>0?"+":"")+Math.round(m);
 const imp=m=>m==null?null:(m<0?-m/(-m+100):100/(m+100));
@@ -4010,7 +4018,7 @@ async function afSeasonEvents(key){
   // Nations League de la Concacaf: "League A - 2" es el grupo 2 de la Liga A (no la jornada).
   if(lg.mayores){ const J=/\bU-?\d{2}\b|olymp|women|femen/i; ev=ev.filter(e=>!e.competitions[0].competitors.some(c=>J.test(c.team?.displayName||""))); }
   if(lg.ventana){ const now=Date.now(), [a,b]=lg.ventana; ev=ev.filter(e=>{ const t=+new Date(e.date); return t>=now-a*864e5&&t<=now+b*864e5; }); }
-  if(lg.mayores) ev.forEach(e=>{ e._stage=cap(new Intl.DateTimeFormat("es-MX",{timeZone:TZ,month:"long",year:"numeric"}).format(new Date(e.date))); e._round=e._stage; e._ko=false; });
+  if(lg.mayores) ev.forEach(e=>{ e._stage=cap(pzDTF("es-MX",{timeZone:TZ,month:"long",year:"numeric"}).format(new Date(e.date))); e._round=e._stage; e._ko=false; });
   if(lg.cnl) ev.forEach(e=>{ const m=/^League ([A-Z])$/i.exec(e._stage||""); if(m&&/^\d+$/.test(e._round||"")){ e._grp=`Liga ${m[1].toUpperCase()} · Grupo ${e._round}`; e._stage=e._grp; e._round=e._grp; e._ko=false; } });
   // Champions: fuera las rondas clasificatorias (todo lo que no es de fase de liga/grupos y se jugó antes de que empezara)
   if(lg.sinPrevias){ const g=ev.filter(e=>/^\d+$/.test(e._round||"")); if(g.length){ const t0=Math.min(...g.map(e=>+new Date(e.date))); ev=ev.filter(e=>/^\d+$/.test(e._round||"")||+new Date(e.date)>=t0); } }
@@ -4456,9 +4464,9 @@ async function pintaTemporadas(){
 // partido del domingo 9:10 p.m. en México ya es lunes en UTC, y agruparlo por UTC lo mandaba a la
 // semana siguiente aunque en la tarjeta se viera "domingo". Por eso primero se saca la fecha local
 // (YYYY-MM-DD) y de ahí se calcula el lunes de esa semana, siempre en términos de calendario, nunca de hora.
-const mxLocalYMD=d=>new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(d));
+const mxLocalYMD=d=>pzDTF("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(d));
 const mxWeekStart=d=>{const noon=new Date(mxLocalYMD(d)+"T12:00:00Z"); const wd=(noon.getUTCDay()+6)%7; noon.setUTCDate(noon.getUTCDate()-wd); return noon.toISOString().slice(0,10);};
-const fDateShort=d=>new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",day:"numeric",month:"long"}).format(d);
+const fDateShort=d=>pzDTF("es-MX",{timeZone:"UTC",day:"numeric",month:"long"}).format(d);
 function mxGroups(ev,playoffAware,allTeams){
   const ids=e=>(e.competitions?.[0]?.competitors||[]).map(c=>c.team?.id).filter(Boolean);
   const cnt={}; ev.forEach(e=>ids(e).forEach(t=>cnt[t]=(cnt[t]||0)+1));
@@ -4500,7 +4508,7 @@ function mxGroups(ev,playoffAware,allTeams){
     byWeek.get(wk).push(e);
   }
   if(porJornada){
-    const fd=t=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,day:"numeric",month:"long"}).format(new Date(t));
+    const fd=t=>pzDTF("es-MX",{timeZone:TZ,day:"numeric",month:"long"}).format(new Date(t));
     const weeks=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([n,games])=>{
       const ts=games.map(e=>+new Date(e.date)).filter(t=>t), a=fd(Math.min(...ts)), b=fd(Math.max(...ts));
       return {games,label:`Jornada ${n} · ${a===b?a:`${a} – ${b}`}`};});
@@ -4717,7 +4725,7 @@ function mxPreviaHTML(sm,H,A){
     return `<h4 class="stat-cat">${lg(c)}${nm(c)} <span class="fchips">${[...t.events].reverse().map(x=>`<i class="fchip ${R[x.gameResult]?.[1]||""}">${R[x.gameResult]?.[0]||"–"}</i>`).join("")}</span></h4><ul class="qinj">${[...t.events].reverse().map(x=>{
       const home=String(x.homeTeamId)===String(c.team?.id), gf=home?x.homeTeamScore:x.awayTeamScore, gc=home?x.awayTeamScore:x.homeTeamScore;
       const comp=/liga|premier|la ?liga|serie a|bundesliga|ligue 1|champions/i.test(x.competitionName||"")?"":` · ${x.competitionName}`;
-      return `<li><span class="qp">${new Intl.DateTimeFormat("es-MX",{timeZone:TZ,day:"numeric",month:"short"}).format(new Date(x.gameDate))}</span><span>${home?"vs":"en"} ${esTeam(x.opponent?.displayName||"")}${comp}</span><span class="qs"><b>${gf}-${gc}</b> ${R[x.gameResult]?.[0]||""}</span></li>`;}).join("")}</ul>`;};
+      return `<li><span class="qp">${pzDTF("es-MX",{timeZone:TZ,day:"numeric",month:"short"}).format(new Date(x.gameDate))}</span><span>${home?"vs":"en"} ${esTeam(x.opponent?.displayName||"")}${comp}</span><span class="qs"><b>${gf}-${gc}</b> ${R[x.gameResult]?.[0]||""}</span></li>`;}).join("")}</ul>`;};
   const f=forma(H)+forma(A);
   if(f) h+=`<h3>Forma (últimos 5, del más reciente al más viejo)</h3>${f}`;
   const S=(sm.seasonseries||[]).find(x=>x.type==="head-to-head")||sm.seasonseries?.[0];
@@ -4740,7 +4748,7 @@ function mxPreviaHTML(sm,H,A){
   if(l) h+=`<h3>Líderes de la temporada</h3>${l}`;
   const BJ=(sm._bajas||[]).filter(x=>x.bajas.length);
   if(BJ.length){
-    const fr=d=>d?new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",day:"numeric",month:"short"}).format(new Date(d+"T12:00:00Z")):"";
+    const fr=d=>d?pzDTF("es-MX",{timeZone:"UTC",day:"numeric",month:"short"}).format(new Date(d+"T12:00:00Z")):"";
     h+=`<h3>Bajas</h3>${BJ.map(x=>`<h4 class="stat-cat">${logoImg(x.team.logo,"tlogo")}${esTeam(x.team.shortDisplayName||x.team.displayName)}</h4><ul class="qinj">${x.bajas.map(b=>`<li><span class="qp">${b.tipo}</span><span>${b.n}</span><span class="qs">${b.fin?`regresa aprox. ${fr(b.fin)}`:""}</span></li>`).join("")}</ul>`).join("")}`;
   }
   return h;
@@ -5073,7 +5081,7 @@ let selSqLoaded=false;
 // Partidos de esa convocatoria (D.sel_conv): "Convocados para los partidos contra Chile (13 oct) y …"
 function selConvTxt(){
   const C=D.sel_conv||[]; if(!C.length) return "Última convocatoria.";
-  const f=d=>new Intl.DateTimeFormat("es-MX",{day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(d+"T12:00:00Z")).replace(".","");
+  const f=d=>pzDTF("es-MX",{day:"numeric",month:"short",timeZone:"UTC"}).format(new Date(d+"T12:00:00Z")).replace(".","");
   const L=C.map(c=>`${hoyEsc(esTeam(c.rival))} (${f(c.fecha)}, ${c.gm}-${c.gr})`);
   return `Convocados en ${C.length>1?"los partidos":"el partido"} contra ${L.length>1?L.slice(0,-1).join(", ")+" y "+L.at(-1):L[0]}.`;
 }
@@ -5758,7 +5766,7 @@ function frkRender(){
   R=R.map((x,i)=>({...x,lug:FRK.pos==="FLEX"?i+1:x.pr,d:frkDueno(x)}));
   if(liga&&FRK.ver!=="todos") R=R.filter(x=>x.d===FRK.ver);
   const mx=Math.max(1,...R.map(x=>x.peor||0));
-  box.innerHTML=`<div class="frkh"><div><h2>Rankings de la semana ${F.w}</h2><p class="note">Consenso de los expertos de FantasyPros, formato PPR. Actualizado el ${new Intl.DateTimeFormat("es-MX",{day:"numeric",month:"long"}).format(new Date(F.fecha+"T12:00:00"))}.</p></div></div>
+  box.innerHTML=`<div class="frkh"><div><h2>Rankings de la semana ${F.w}</h2><p class="note">Consenso de los expertos de FantasyPros, formato PPR. Actualizado el ${pzDTF("es-MX",{day:"numeric",month:"long"}).format(new Date(F.fecha+"T12:00:00"))}.</p></div></div>
     <div class="hseg frkpos" role="group" aria-label="Posición">${FRK_POS.map(([k,n])=>`<button data-frkp="${k}" aria-pressed="${FRK.pos===k}">${n}</button>`).join("")}</div>
     ${liga?`<div class="hseg frkver" role="group" aria-label="Qué jugadores">${[["todos","Todos"],["tuyo","Mis jugadores"],["libre","Libres en mi liga"]].map(([k,n])=>`<button data-frkv="${k}" aria-pressed="${FRK.ver===k}">${n}</button>`).join("")}</div>`:`<p class="note frknl">Conecta tu liga en Matchup para ver cuáles son tuyos y cuáles están libres.</p>`}
     <div class="frkl">${R.slice(0,FRK.pos==="FLEX"?60:40).map(x=>`<div class="frkr${x.d==="tuyo"?" tuyo":""}"><b class="frkn">${x.lug??"–"}</b>
@@ -5846,7 +5854,7 @@ function fmInj(p,INJ){
 function fmCard(sid,pts,w,INJ,side,slot){
   if(!sid||sid==="0") return {html:`<div class="fmp ${side}"><span class="fmnm fmempty">Vacío</span></div>`,empty:true};
   const p=slPlayer(sid), t=fmTm(p.t), G=fmGame(t,w), I=fmInj(p,INJ), T=NT[t]||{};
-  const when=G.bye?"Descansa":G.st==="post"?"Final":G.st==="in"?(G.clock||"En juego"):G.ko?`${cap(new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"short"}).format(G.ko)).replace(".","")} ${fHour(G.ko)}`:"";
+  const when=G.bye?"Descansa":G.st==="post"?"Final":G.st==="in"?(G.clock||"En juego"):G.ko?`${cap(pzDTF("es-MX",{timeZone:TZ,weekday:"short"}).format(G.ko)).replace(".","")} ${fHour(G.ko)}`:"";
   const tag=I?`<span class="fmtag${FM_BAD.has(I.st)?" bad":""}">${QN_ST[I.st]||I.st}</span>`:"";
   const X=fmWk(sid,p)||espnX(sid);
   const html=`<div class="fmp ${side}"><span class="fmnm">${logoImg(T.logo,"fmlg")}<span class="fmn">${fmShort(p.n)}</span>${X&&G.st==="pre"&&!(I&&FM_BAD.has(I.st))?fmGrade(X[1]):""}</span><span class="fmmeta">${slot&&!FM_ELIG[slot]?.length||slot&&FM_ELIG[slot].length===1?"":p.p+" · "}${tag||t||"–"} · <span class="${G.st==="in"?"fmlive":G.bye?"fmbye":""}">${when}</span></span></div>`;
@@ -5975,7 +5983,7 @@ async function fmTxLoad(){
   if(SL.league?.league_id!==lid) return;
   if(!L.length){box.innerHTML=`<h3>Movimientos de la liga</h3><p class="note">No hubo movimientos en las semanas ${w>1?`${w-1} y ${w}`:w}.</p>`; return;}
   const R=id=>SL.rosters.find(r=>r.roster_id===id), nm=sid=>{const p=slPlayer(sid); return `<b>${p.n}</b>${p.p==="DEF"?"":` <small>${p.p} ${fmTm(p.t)}</small>`}`;};
-  const ord=n=>`${n}ª`, day=t=>t?cap(new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"short",day:"numeric",month:"short"}).format(new Date(t))).replace(/\./g,""):"";
+  const ord=n=>`${n}ª`, day=t=>t?cap(pzDTF("es-MX",{timeZone:TZ,weekday:"short",day:"numeric",month:"short"}).format(new Date(t))).replace(/\./g,""):"";
   box.innerHTML=`<h3>Movimientos de la liga</h3><ul class="fmtx">${L.map(t=>{
     const when=day(t.status_updated||t.created);
     if(t.type==="trade"){
@@ -6034,11 +6042,11 @@ const nbaAb=a=>NBA_AB[a]||a;
 const NBA_ID={ATL:1,BOS:2,NOP:3,CHI:4,CLE:5,DAL:6,DEN:7,DET:8,GSW:9,HOU:10,IND:11,LAC:12,LAL:13,MIA:14,MIL:15,MIN:16,BKN:17,NYK:18,ORL:19,PHI:20,PHX:21,POR:22,SAC:23,SAS:24,OKC:25,UTA:26,WAS:27,TOR:28,MEM:29,CHA:30};
 const NBA_ESPN=Object.fromEntries(Object.entries(NBA_AB).filter(([e,k])=>!["PHO","BRK","CHO"].includes(e)).map(([e,k])=>[k,e]));
 const nbaLogoUrl=k=>NBA.eq?.[k]?.logo||`https://a.espncdn.com/i/teamlogos/nba/500/${(NBA_ESPN[k]||k).toLowerCase()}.png`;
-const nbaHoy=()=>new Intl.DateTimeFormat("en-CA",{timeZone:NBA_TZ}).format(new Date());          // AAAA-MM-DD en CDMX
-const nbaFecha=iso=>new Intl.DateTimeFormat("en-CA",{timeZone:NBA_TZ}).format(new Date(iso));
+const nbaHoy=()=>pzDTF("en-CA",{timeZone:NBA_TZ}).format(new Date());          // AAAA-MM-DD en CDMX
+const nbaFecha=iso=>pzDTF("en-CA",{timeZone:NBA_TZ}).format(new Date(iso));
 const nbaMas=(f,n)=>{const d=new Date(f+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10);};
-const nbaHora=iso=>new Intl.DateTimeFormat("es-MX",{timeZone:NBA_TZ,hour:"numeric",minute:"2-digit"}).format(new Date(iso)).replace(/\s?([ap])\.?\s?m\.?/i,(m,x)=>` ${x.toLowerCase()}m`);
-const nbaDiaTxt=f=>{const s=new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",weekday:"long",day:"numeric",month:"long"}).format(new Date(f+"T12:00:00Z")); return s[0].toUpperCase()+s.slice(1);};
+const nbaHora=iso=>pzDTF("es-MX",{timeZone:NBA_TZ,hour:"numeric",minute:"2-digit"}).format(new Date(iso)).replace(/\s?([ap])\.?\s?m\.?/i,(m,x)=>` ${x.toLowerCase()}m`);
+const nbaDiaTxt=f=>{const s=pzDTF("es-MX",{timeZone:"UTC",weekday:"long",day:"numeric",month:"long"}).format(new Date(f+"T12:00:00Z")); return s[0].toUpperCase()+s.slice(1);};
 const NBA={dia:null,cache:{},eq:null,eqP:null,conf:"East",st:null,stP:null,vivo:null,lock:null,sched:{}};
 function nbaEquipos(){   // ESPN: id, nombre y logo de los 30 (para el horario de cada equipo y los logos del juego)
   if(!NBA.eqP) NBA.eqP=fetch(`${NBA_API}/teams`).then(r=>r.json()).then(j=>{ const E={};
@@ -6234,7 +6242,7 @@ const Q5_CAMBIOS="2026-12-01", q5Mes=()=>nbaHoy().slice(0,7);
 const q5PuedeCambiar=q=>nbaHoy()>=Q5_CAMBIOS&&q.c!==q5Mes();
 const q5Tramos=e=>[...(e.p||[]).map(([eq,d,h])=>({eq,d,h})),{eq:e.eq,d:e.d,h:null}];
 const q5PtsDe=(e,H)=>q5Tramos(e).reduce((s,t)=>s+t.eq.reduce((s2,k)=>s2+(H[k]||[]).filter(x=>x.fin&&x.gano&&x.f>=t.d&&(!t.h||x.f<t.h)).length,0),0);
-const q5MesTxt=m=>new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",month:"long"}).format(new Date(m+"-15T12:00:00Z"));
+const q5MesTxt=m=>pzDTF("es-MX",{timeZone:"UTC",month:"long"}).format(new Date(m+"-15T12:00:00Z"));
 // Retas v2 (29 oct 2026): La Quinteta también con Jugar · Tabla · Chat
 async function q5Render(){
   const v=Q5.vista||"jugar"; document.querySelectorAll("#q5View button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.q5v===v)));
@@ -6483,7 +6491,7 @@ async function qmxVivo(j){
   }catch(e){}
   clearTimeout(QMX.vt); QMX.vt=setTimeout(()=>{ if(!document.hidden&&!$("#qmx").classList.contains("hidden")) qmxVivo(j); },60e3);
 }
-const qmxHora=ts=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000)).replace(/\.,?/g,"").replace(/^(\w)/,c=>c.toUpperCase());
+const qmxHora=ts=>pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"short",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000)).replace(/\.,?/g,"").replace(/^(\w)/,c=>c.toUpperCase());
 function qmxRender(sinRed){
   const box=$("#qmxBody"); if(!box) return;
   if(QMX.vista==="general"){ QMX.vista="tabla"; QMX.tab="gen"; } if(QMX.vista==="grupos") QMX.vista="tabla"; if(QMX.vista==="surv") QMX.vista="picks";
@@ -6611,7 +6619,7 @@ async function qmxGeneral(el){
   const racha=x=>{ let n=0; for(const j of js.slice().reverse()){ if(x.j[j]) n++; else break; } return n; };
   const hayLl=Object.values(G.t).some(x=>x.ll!=null);
   const F=Object.entries(G.t).map(([h,x])=>({h,a:x.a,pts:js.reduce((s,j)=>s+(x.j[j]?.[0]||0),0)+(x.ll||0),ll:x.ll,u:x.j[ult]?.[0],g:gan[h]||0,r:racha(x)})).sort((a,b)=>b.pts-a.pts||b.g-a.g);
-  const al=new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"long",hour:"numeric",minute:"2-digit"}).format(new Date(G.al.replace("Z",":00Z")));
+  const al=pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"long",hour:"numeric",minute:"2-digit"}).format(new Date(G.al.replace("Z",":00Z")));
   box.innerHTML=`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ult}</th>${hayLl?"<th>Llave</th>":""}<th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map((x,i)=>`<tr${x.h===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${x.h===yo?" (tú)":""}${vidaFlama(x.r)}</td><td><b>${x.pts}</b></td><td>${x.u??"–"}</td>${hayLl?`<td>${x.ll??"–"}</td>`:""}<td>${x.g}</td></tr>`).join("")}</tbody></table></div>
     <p class="note">${F.length} jugadores. Cuentan las jornadas desde la ${js[0]}. Se actualiza cada mañana (última vez: ${al}); los puntos de la jornada en juego los ves en tus grupos y en Mis picks.</p>`;
 }
@@ -6797,7 +6805,7 @@ async function smxRender(){
   else est=`<div class="smxest"><b>${C.n?`Sigues vivo · ${C.n} ${C.n===1?"jornada":"jornadas"}`:"Estás en la pelea"}</b><span>Escoge un equipo que gane. Si empata o pierde, quedas fuera. No puedes repetir equipo.</span></div>`;
   let pick="";
   if(ab!=null&&C.vivo&&!(empezo&&nunca)){ const yo=smxMio(ab);
-    const dia=ts=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"short"}).format(new Date(ts*1000)).replace(".","");
+    const dia=ts=>pzDTF("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"short"}).format(new Date(ts*1000)).replace(".","");
     const t0=Math.min(...J[ab].p.map(r=>r[1])), t1=Math.max(...J[ab].p.map(r=>r[1])), rango=dia(t0)===dia(t1)?dia(t0):`${dia(t0).split(" ")[0]} al ${dia(t1)}`;
     pick=`<h3 class="smxh">Jornada ${ab} · del ${hoyEsc(rango)} · cierra ${hoyEsc(qmxHora(J[ab].pr).toLowerCase())}</h3>
       ${cuenta?"":`<div class="qgate"><b>El survivor necesita cuenta</b><span>Entra para que tu pick cuente y para verte en la tabla.</span><button class="btn" data-acct>Entrar</button></div>`}
@@ -6872,7 +6880,7 @@ const fanAbierta=()=>fanJ().find(k=>FAN.D.j[k].pr>Date.now()/1000)||null;
 const fanCerradas=()=>fanJ().filter(k=>FAN.D.j[k].pr<=Date.now()/1000);
 const fanJug=id=>FAN.D?.jm?.[id];
 const fanEq=tid=>FAN.D.eq[tid]||["","",""];
-const fanCuando=ts=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"long",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000));
+const fanCuando=ts=>pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"long",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000));
 async function fanCarga(){
   if(FAN.D&&Date.now()-FAN.t<10*60e3) return FAN.D;
   const C=FAN_CFG[FAN.L], L0=FAN.L;
@@ -6997,7 +7005,7 @@ const fanTodas=()=>Object.entries(FAN.D.j).sort((a,b)=>a[1].pr-b[1].pr).map(([k]
 const fanPtsDe=k=>(fanEnJuego(k)&&FAN.vivo[k]?.T)||FAN.D.pts?.[k]||null;
 function fanMarcadores(k){ const V=FAN.vivo[k]; if(!V) return "";
   const chip=x=>{ const E1=fanEq(x.h), E2=fanEq(x.a), vivo=FAN_VIVOS.includes(x.st), fin=FAN_FIN.includes(x.st);
-    return `<span class="${vivo?"v":""}">${fanEsc(E1[1])} ${fin||vivo?`<b>${x.gh}-${x.ga}</b>`:"vs"} ${fanEsc(E2[1])}<small>${vivo?`${x.min||""}'`:fin?"Final":new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",hour:"numeric",minute:"2-digit"}).format(new Date(x.ts*1000))}</small></span>`; };
+    return `<span class="${vivo?"v":""}">${fanEsc(E1[1])} ${fin||vivo?`<b>${x.gh}-${x.ga}</b>`:"vs"} ${fanEsc(E2[1])}<small>${vivo?`${x.min||""}'`:fin?"Final":pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"short",hour:"numeric",minute:"2-digit"}).format(new Date(x.ts*1000))}</small></span>`; };
   const ya=V.fx.filter(x=>FAN_VIVOS.includes(x.st)||FAN_FIN.includes(x.st)), luego=V.fx.filter(x=>!ya.includes(x));
   return `${ya.length?`<div class="fanmarc">${ya.map(chip).join("")}</div>`:""}${luego.length?`<details class="fanmarcd"><summary>Faltan ${luego.length} partidos</summary><div class="fanmarc">${luego.map(chip).join("")}</div></details>`:""}`; }
 async function fanPuntos(sinRed){
@@ -7154,7 +7162,7 @@ const ESPN_SITE="https://site.api.espn.com/apis/site/v2/sports", ESPN_V2="https:
 const MAS={f1:{},ten:{tour:"atp",vista:"hoy"},c:{}};
 async function espnJ(u,ttl=60e3){ const c=MAS.c[u]; if(c&&Date.now()-c.t<ttl) return c.d;
   const d=await fetch(u).then(r=>r.ok?r.json():null).catch(()=>null); if(d) MAS.c[u]={d,t:Date.now()}; return d||c?.d||null; }
-const masHora=(iso,o={weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",...o}).format(new Date(iso));
+const masHora=(iso,o={weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})=>pzDTF("es-MX",{timeZone:"America/Mexico_City",...o}).format(new Date(iso));
 const masFlag=a=>{ const f=a?.flag; const u=typeof f==="string"?(f.startsWith("http")?f:""):f?.href||""; return u?`<img class="masflag" src="${u}" alt="" loading="lazy" onerror="this.remove()">`:""; };
 const masMx=a=>{ const f=a?.flag; const t=(typeof f==="string"?f:f?.alt||"")+" "+(a?.flagAltText||"")+" "+(f?.href||""); return /mexico|\/mex\.png/i.test(t); };
 const masYmd=d=>d.toISOString().slice(0,10).replace(/-/g,"");
@@ -7272,7 +7280,7 @@ async function eqFicha(id,nueva=true){
     return `<div class="eqpos"><b data-pzc="eq${id}-${lg.id}">${r.rank}º</b><span><b>${hoyEsc(fichaComp(lg.name))}</b><small>${grp&&!/^(liga|league|premier|serie|bundes|ligue|primera)/i.test(grp)&&grp!==lg.name?hoyEsc(grp)+" · ":""}${r.points} pts · ${a.win}G ${a.draw}E ${a.lose}P · ${a.goals?.for}-${a.goals?.against}</small></span>${r.form?`<span class="eqforma">${[...r.form.slice(-5)].map(c=>`<i class="${c==="W"?"g":c==="L"?"p":"e"}">${c==="W"?"G":c==="L"?"P":"E"}</i>`).join("")}</span>`:""}</div>`; }).join("");
   const fila=(f,fut)=>{ const h=f.teams?.home, a=f.teams?.away, local=String(h?.id)===id, riv=local?a:h, gl=f.goals||{}, k=fichaLg(f.league?.id);
     const mio=local?gl.home:gl.away, suyo=local?gl.away:gl.home, res=fut||mio==null?"":mio>suyo?"g":mio<suyo?"p":"e";
-    const fecha=new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",day:"numeric",month:"short",...(fut?{hour:"numeric",minute:"2-digit"}:{})}).format(new Date(f.fixture.timestamp*1000));
+    const fecha=pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"short",day:"numeric",month:"short",...(fut?{hour:"numeric",minute:"2-digit"}:{})}).format(new Date(f.fixture.timestamp*1000));
     const abre=k&&(comercial(LEAGUES[k])||LEAGUES[k].nat)?` data-hk="${k}" data-hid="${f.fixture.id}"`:"";
     return `<${abre?"button":"div"} class="eqp"${abre}><span class="eqpf">${hoyEsc(fecha)}<small>${hoyEsc(fichaComp(f.league?.name))}</small></span><span class="eqpr">${local?"vs":"en"} ${riv?.logo&&SM_ESCUDOS?logoImg(riv.logo,"tlogo"):""}<b data-eqf="${riv?.id}">${hoyEsc(esTeam(afNombre(riv)))}</b></span>${fut?"":`<span class="eqpm ${res}">${mio??"–"}-${suyo??"–"}</span>`}</${abre?"button":"div"}>`; };
   const ult=(U||[]).slice().sort((a,b)=>b.fixture.timestamp-a.fixture.timestamp), prox=(P||[]).slice().sort((a,b)=>a.fixture.timestamp-b.fixture.timestamp);
@@ -7355,7 +7363,7 @@ function pzGoles(root){
 var PZ_CASC=0;
 const PZ_LISTAS=["#gbody","#q5Body","#hoyVivo","#hoyMarc","#mxGames","#nflGames","#qmxBody","#fanBody","#f1Body","#tenBody","#favsBody","#qGames"];
 const pzObs=typeof MutationObserver!=="undefined"?new MutationObserver(M=>{ const vistos=new Set(M.map(m=>m.target));
-  for(const t of vistos){ pzGoles(t); pzAplica(t); pzCuenta(t); vidaBote(t); if(Date.now()<PZ_CASC&&!PZ_RM()){ t.classList.remove("pzcasc"); void t.offsetWidth; t.classList.add("pzcasc"); clearTimeout(t._pzc); t._pzc=setTimeout(()=>t.classList.remove("pzcasc"),1400); } } }):null;
+  for(const t of vistos){ pzGoles(t); pzAplica(t); pzCuenta(t); vidaBote(t); if(Date.now()<PZ_CASC&&!PZ_RM()){ t.classList.remove("pzcasc"); requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add("pzcasc"))); clearTimeout(t._pzc); t._pzc=setTimeout(()=>t.classList.remove("pzcasc"),1400); } } }):null;
 function pzObserva(){ if(!pzObs) return; for(const s of PZ_LISTAS){ const el=$(s); if(el&&!el._pzo){ el._pzo=1; pzObs.observe(el,{childList:true}); } } }
 // Esqueletos de carga (en lugar de "Cargando…")
 const pzSkel=(n=4)=>`<div class="pzskel" aria-label="Cargando" role="status">${Array.from({length:n},()=>`<div><i style="width:40%"></i><i style="width:70%;height:16px"></i><i style="width:55%;height:16px"></i></div>`).join("")}</div>`;
@@ -7475,7 +7483,7 @@ function chatAbre(el,g,sis=[]){
 }
 function chatPinta(){
   const L=$("#chatL"); if(!L) return; const yo=ACCT.user?.uid, oc=chatOcultos(), abajo=L.scrollHeight-L.scrollTop-L.clientHeight<60;
-  const hora=ts=>{ const d=ts?.toDate?ts.toDate():ts?new Date(ts):null; return d?new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",hour:"numeric",minute:"2-digit"}).format(d):""; };
+  const hora=ts=>{ const d=ts?.toDate?ts.toDate():ts?new Date(ts):null; return d?pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"short",hour:"numeric",minute:"2-digit"}).format(d):""; };
   const color=uid=>["#E07A3F","#4F7BB5","#8A63B8","#3E9C7A","#C2507A","#B58A2E"][[...String(uid)].reduce((s,c)=>s+c.charCodeAt(0),0)%6];
   const M=CHAT.msgs.filter(m=>!oc.has(m.id));
   L.innerHTML=CHAT.sis.map(t=>`<div class="pzc-sis">${t}</div>`).join("")
@@ -7599,10 +7607,10 @@ const vidaNomEq=id=>typeof AF_EQ!=="undefined"&&AF_EQ[id]?qmxEq(id).n:esTeam(VID
 const vidaAb=id=>(typeof AF_EQ!=="undefined"&&AF_EQ[id]?.[1])||goNorm(vidaNomEq(id)).replace(/[^a-z]/g,"").slice(0,3).toUpperCase();
 const vidaColEq=k=>{ if(!k) return null; if(k[0]==="n"){ const t=NT[k.slice(1)]; return t?.c?[t.c,"#1F332D"]:null; } return PZ_COL[k.slice(1)]||null; };
 function vidaColFav(){ for(const k of Object.keys(FAV.eq)){ const c=vidaColEq(k); if(c) return c; } return null; }
-function vidaParte(){ const p=new Intl.DateTimeFormat("en-US",{timeZone:"America/Mexico_City",hour:"numeric",hourCycle:"h23",weekday:"short"}).formatToParts(new Date());
+function vidaParte(){ const p=pzDTF("en-US",{timeZone:"America/Mexico_City",hour:"numeric",hourCycle:"h23",weekday:"short"}).formatToParts(new Date());
   return {h:+(p.find(x=>x.type==="hour")?.value||12)%24,d:p.find(x=>x.type==="weekday")?.value||""}; }
-const vidaDia=ts=>cap(new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"long"}).format(new Date(ts*1000)));
-const vidaHora=ts=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000));
+const vidaDia=ts=>cap(pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"long"}).format(new Date(ts*1000)));
+const vidaHora=ts=>pzDTF("es-MX",{timeZone:"America/Mexico_City",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000));
 const VIDA_FLAMA=`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.4 1.2-3.8 2.3-5 .2 1.6 1 2.6 2 3-.6-3 .2-6 .7-9z"/></svg>`;
 const vidaFlama=n=>n>=3?`<span class="vfl" title="${n} jornadas seguidas con picks">${VIDA_FLAMA}${n}</span>`:"";
 
@@ -7858,7 +7866,7 @@ async function vidaHistoria(){
     await Promise.race([Promise.allSettled([typeof rdDatos==="function"?rdDatos():null,typeof rdMiHash==="function"?rdMiHash():null,typeof duCarga==="function"&&amOk()?duCarga():null]),new Promise(r=>setTimeout(r,3000))]); }finally{ VIDA.abriendo=0; }
   const S=vidaSlides(); if(!S.length) return; pzTrack("resumen_semana",{n:S.length});
   let el=$("#vstory"); if(!el){ el=document.createElement("div"); el.id="vstory"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true"); el.setAttribute("aria-label","Tu semana en La Pizarra"); document.body.append(el); }
-  const ini=new Date(Date.now()-6*864e5), fmt=d=>new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"short"}).format(d).replace(".","");
+  const ini=new Date(Date.now()-6*864e5), fmt=d=>pzDTF("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"short"}).format(d).replace(".","");
   VIDA.story={S,i:0,k:0,el,rango:`${fmt(ini)} – ${fmt(new Date())}`}; document.documentElement.classList.add("vsinscroll"); vidaHistPinta(); el.hidden=false; el.querySelector(".vsx")?.focus({preventScroll:true});
 }
 function vidaHistPinta(){
@@ -8274,7 +8282,7 @@ async function amFeed(forzar){
 }
 function amHace(t){ const ms=t?.toDate?t.toDate().getTime():t?.seconds?t.seconds*1000:Date.now(), s=(Date.now()-ms)/1000;
   if(s<60) return "Ahora"; if(s<3600) return `Hace ${Math.floor(s/60)} min`; if(s<86400) return `Hace ${Math.floor(s/3600)} h`; if(s<172800) return "Ayer";
-  return cap(new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"long",day:"numeric",month:"short"}).format(new Date(ms))); }
+  return cap(pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"long",day:"numeric",month:"short"}).format(new Date(ms))); }
 function amPost(p){
   const yo=ACCT.user.uid, mio=amMio()[p.id]||{}, man=AM_MAN.has(p.g), G=man?[AM_MANT[p.g]||"","#C9D6CF"]:AM_G[p.g]||["",""], ab=AM.abierto===p.id, C=AM.coms[p.id];
   return `<div class="ampost${man?" amman":""}" data-pid="${hoyEsc(p.id)}"><div class="amph"><button class="amav" data-amper="${hoyEsc(p.uid)}" aria-label="Ver perfil">${amAv(p.uid,40)}</button>
@@ -8583,7 +8591,7 @@ document.addEventListener("input",ev=>{ if(ev.target.id!=="amQ") return; clearTi
 // lo revisan las reglas) y en el navegador (pz_rd). Conteo de respuestas: rd_cnt/{fecha} = {a, b, c}. Para contestar hay que
 // tener cuenta. Las respuestas de tus amigos se ven en cuanto contestas tú.
 const RD={d:null,t:null,dt:0,mias:{},cnt:{},am:{},k:0};
-const rdHoy=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Mexico_City"}).format(new Date());
+const rdHoy=()=>pzDTF("en-CA",{timeZone:"America/Mexico_City"}).format(new Date());
 const rdMas=(f,n)=>{ const d=new Date(f+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); };
 const rdLs=()=>{ try{ return JSON.parse(localStorage.getItem("pz_rd")||"{}")||{}; }catch(e){ return {}; } };
 async function rdDatos(forzar){
@@ -8595,7 +8603,7 @@ async function rdDatos(forzar){
 function rdTexto(c){
   const nm=(id,n)=>AF_EQ[id]?qmxEq(id).n:esTeam(afNombre({id,name:n}));
   const fut=c.tipo==="fut", H=fut?nm(c.h,c.hn):(NT[c.h]?.n||c.h), A=fut?nm(c.a,c.an):(NT[c.a]?.n||c.a);
-  const liga=fut?(LEAGUES[c.k]?.label||""):"NFL", hora=new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",hour:"numeric",minute:"2-digit"}).format(new Date(c.ts*1000));
+  const liga=fut?(LEAGUES[c.k]?.label||""):"NFL", hora=pzDTF("es-MX",{timeZone:"America/Mexico_City",hour:"numeric",minute:"2-digit"}).format(new Date(c.ts*1000));
   let q,ops;
   if(fut&&c.q==="gana"){ q=`¿Quién gana el ${H} vs ${A}?`; ops=[["a",H],["b","Empate"],["c",A]]; }
   else if(fut&&c.q==="goles"){ q=`¿Habrá 3 goles o más en el ${H} vs ${A}?`; ops=[["a","Sí, 3 o más"],["b","No, 2 o menos"]]; }
@@ -8689,7 +8697,7 @@ setInterval(()=>{ if(!document.hidden&&$("#hoyRd [data-rdcd]")) rdTick(); },1000
 const DU={L:null,lt:0,p:null,fan:null,ft:0,sc:{},rr:{},ops:null,con:null};
 const DU_T={mx:["Quiniela Liga MX","#F2D466"],fan:["Fantasy Champions","#9FD3A8"],rd:["Reto del día","#C9A7F0"]};
 const duTs=x=>x?.toMillis?x.toMillis()/1000:x?.seconds!=null?x.seconds:x instanceof Date?x.getTime()/1000:(+x||0);
-const duCuando=ts=>cap(new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",weekday:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000)));
+const duCuando=ts=>cap(pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(new Date(ts*1000)));
 const duNom=d=>amNom(d.otro,{n:d.n||{}});
 const duHasta=d=>duCuando(d.tipo==="rd"?d.ci-60:d.ci).toLowerCase();
 async function duCarga(forzar){
@@ -8711,7 +8719,7 @@ async function duOpciones(){
   try{ const Q=qmxD(), j=Q?qmxAbierta():null; if(j!=null&&j>=13) O.push({tipo:"mx",k:qmxJid(j),e:`Jornada ${j}`,cierre:Q.J[j].pr,det:"Gana quien le atine a más partidos. Desempate: los goles más cercanos."}); }catch(e){}
   for(const Lg of ["ucl","mx"]) try{ const F=await duFanD(Lg); if(F?.j){ const ks=Object.entries(F.j).sort((a,b)=>a[1].pr-b[1].pr).map(([k])=>k), L=ks.filter((k,i)=>i>=Math.max(0,ks.indexOf(F.desde)));
     const k=L.find(k=>F.j[k].pr>now); if(k) O.push({tipo:"fan",k:`${F.slug||"UCL"+F.s}-${k}`,e:F.j[k].n||k,cierre:F.j[k].pr,det:"Gana quien haga más puntos con su once en esa jornada."}); } }catch(e){}
-  const m=rdMas(rdHoy(),1), fm=new Intl.DateTimeFormat("es-MX",{timeZone:"UTC",weekday:"long",day:"numeric"}).format(new Date(m+"T12:00:00Z"));
+  const m=rdMas(rdHoy(),1), fm=pzDTF("es-MX",{timeZone:"UTC",weekday:"long",day:"numeric"}).format(new Date(m+"T12:00:00Z"));
   O.push({tipo:"rd",k:m,e:`7 retos desde el ${fm}`,cierre:Date.parse(m+"T06:00:00Z")/1000,det:"Gana quien le atine a más retos del día en una semana. Empieza mañana."});
   return O;
 }
@@ -10031,8 +10039,8 @@ const HOY_FILAS=6;   // renglones por competencia antes de "Ver los N"
 const HOY={ev:new Map(),dia:null,extra:new Map(),otros:new Map(),abiertos:new Set(),pedido:{},init:false,busy:false,tab:null,mx:null,prh:null,
   f:(()=>{try{return localStorage.getItem("pz_hoyf")||"todo";}catch(e){return "todo";}})()};
 const AF_KEY=Object.fromEntries(Object.entries(LEAGUES).filter(([,L])=>L.af).map(([k,L])=>[L.af,k]));
-const hoyYmd=(t=Date.now())=>new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(t));
-const fWeekday=d=>new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long"}).format(d);
+const hoyYmd=(t=Date.now())=>pzDTF("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(t));
+const fWeekday=d=>pzDTF("es-MX",{timeZone:TZ,weekday:"long"}).format(d);
 const hoyEsc=x=>String(x??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const hoyNom=t=>esTeam(t?.shortDisplayName||t?.displayName||"");
 const hoyHora=d=>fHour(d).replace(/\s*([ap])\.\s*m\./i,(m,x)=>" "+x.toLowerCase()+"m").replace(":00 "," ");
@@ -10222,7 +10230,7 @@ function hoyMarcHTML(){
   let d=dias.find(x=>x.k===HOY.mdia); if(!d) d=dias.find(x=>x.k==="hoy")||dias.find(x=>x.k==="man")||dias[0];
   const ligas=marcLigas(d); let L=ligas.find(x=>x.k===HOY.mliga?.[d.k]); if(!L) L=ligas.find(x=>x.vivo)||ligas[0];
   const ab=HOY.abiertos.has("m"+d.k+L.k), filas=hoyUlt(ab?L.filas:L.filas.slice(0,MARC_MAX));
-  const fecha=new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(new Date(d.fecha+"T12:00:00-06:00"));
+  const fecha=pzDTF("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(new Date(d.fecha+"T12:00:00-06:00"));
   const ver=L.k==="nfl"?`<button class="hlink" data-hact="nfl" data-w="${(L.et.match(/\d+/)||[])[0]||""}">Ver semana</button>`
     :`<button class="hlink" data-hact="liga" data-hk="${L.k}">${LEAGUES[L.k]?.tipo==="liga"&&/^Jornada/.test(L.et)?"Ver jornada":"Ver partidos"}</button>`;
   return `<section class="hsec hmarc"><div class="hh"><h3>Partidos<small>${fecha}</small></h3><div class="hseg">${dias.map(x=>`<button data-md="${x.k}" aria-pressed="${x===d}">${x.lab}</button>`).join("")}</div></div>
@@ -10343,7 +10351,7 @@ function favJugLiga(lg){
   if(FAV_JF[lg]!==undefined||FAV_JFP[lg]) return;
   FAV_JFP[lg]=fetch(`datos/jugadores_${lg}.json`).then(r=>r.ok?r.json():null).catch(()=>null).then(j=>{ FAV_JF[lg]=j; favRepinta(); });
 }
-const favCuando=ts=>{ const d=new Date(ts*1000); return `${cap(new Intl.DateTimeFormat("es-MX",{weekday:"short",timeZone:TZ}).format(d).replace(".",""))} · ${hoyHora(d)}`; };
+const favCuando=ts=>{ const d=new Date(ts*1000); return `${cap(pzDTF("es-MX",{weekday:"short",timeZone:TZ}).format(d).replace(".",""))} · ${hoyHora(d)}`; };
 const favForma=f=>f?`<span class="fo">${[...f].map(r=>`<s class="${r}">${r}</s>`).join("")}</span>`:"";
 function favNota(fn){ const n=(D.noticias||[]).find(fn); if(!n) return "";
   const [tl]=ULT_TIPO[n.tipo]||["Nota"]; return `<span class="nt"><span class="utag u-${n.tipo}">${tl}</span><span>${hoyEsc(n.tit)}</span></span>`; }
@@ -10554,7 +10562,7 @@ async function favFichaPinta(id,x){
   $("#gbody").innerHTML=`<div class="jfi">${fichaVolver()}<div class="eqhead">${foto?`<img class="jfoto" src="${foto}" alt="" onerror="this.remove()">`:""}<div><h2>${hoyEsc(x.n)}</h2><p class="sub">${tidN?`<button class="filink" data-eqf="${tidN}">${hoyEsc(clubN)}</button>`:hoyEsc(clubN)}${hoyEsc([posTxt,P?.player?.age?`${P.player.age} años`:"",P?.player?.nationality?esTeam(P.player.nationality):""].filter(Boolean).map(s=>" · "+s).join(""))}</p></div></div>
     ${fichaStar(k,{n:x.n,club:nomClub,lg:x.lg||""},"al jugador")}
     ${(()=>{ const b=(LJ||[]).slice().sort((a,b)=>b.fixture.timestamp-a.fixture.timestamp)[0]; if(!b||b.fixture.timestamp*1000<Date.now()-12*86400e3) return "";
-      return `<div class="jbaja"><b>${hoyEsc(bajaEs(b.player.reason,b.player.type))}</b><span>Reportado como baja para el partido del ${new Intl.DateTimeFormat("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"long"}).format(new Date(b.fixture.timestamp*1000))}.</span></div>`; })()}
+      return `<div class="jbaja"><b>${hoyEsc(bajaEs(b.player.reason,b.player.type))}</b><span>Reportado como baja para el partido del ${pzDTF("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"long"}).format(new Date(b.fixture.timestamp*1000))}.</span></div>`; })()}
     ${st?`<h4 class="stat-cat">${filas.length?"Esta temporada · todas las competiciones":"Esta temporada · liga"}</h4><div class="jfg">${st}</div>`:`<p class="note">Todavía no tenemos sus estadísticas de esta temporada.</p>`}
     ${desglose}${extra?`<div class="jfx" style="margin-top:14px">${extra}</div>`:""}</div>`;
 }
@@ -10595,7 +10603,7 @@ function goRender(){
   $("#goMsg").textContent="";
   if(GO.tab==="bota"){
     const falt=(B.faltan||[]).length?`<p class="gonota">Datos incompletos de: ${hoyEsc(B.faltan.join(", "))}. Algún goleador de esas ligas puede no aparecer.</p>`:"";
-    $("#goBody").innerHTML=`<div class="gohead"><div><h3>Bota de Oro ${hoyEsc(B.temp||"")}</h3><small>Puntos = goles de liga × factor de la liga${B.al?` · al ${new Intl.DateTimeFormat("es-MX",{day:"numeric",month:"long",timeZone:"UTC"}).format(new Date(B.al+"T12:00:00Z"))}`:""}</small></div></div>
+    $("#goBody").innerHTML=`<div class="gohead"><div><h3>Bota de Oro ${hoyEsc(B.temp||"")}</h3><small>Puntos = goles de liga × factor de la liga${B.al?` · al ${pzDTF("es-MX",{day:"numeric",month:"long",timeZone:"UTC"}).format(new Date(B.al+"T12:00:00Z"))}`:""}</small></div></div>
       <details class="goreg"><summary>¿Cómo se cuenta?</summary>
         <p><b class="f2">×2</b> · Premier, LaLiga, Serie A, Bundesliga y Ligue 1 (las 5 mejores del ranking UEFA).</p>
         <p><b class="f15">×1.5</b> · De la 6ª a la 22ª del ranking: Portugal, Países Bajos, Bélgica, Turquía, Chequia, Grecia, Polonia, Dinamarca, Noruega, Chipre, Suiza, Austria, Escocia, Suecia, Croacia, Israel y Hungría.</p>
