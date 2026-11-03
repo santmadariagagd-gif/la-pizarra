@@ -10,6 +10,9 @@ on:
       sin_ia:
         description: "Escribe 1 para probar sin gastar en la IA"
         required: false
+      solo_armar:
+        description: "Escribe 1 para volver a armar la página con los textos que ya escribió la IA (no gasta)"
+        required: false
 permissions:
   contents: write
 jobs:
@@ -27,6 +30,7 @@ jobs:
           FIREBASE_SA: ${{ secrets.FIREBASE_SA }}               # para leer las proyecciones guardadas
           SEMANA: ${{ github.event.inputs.semana }}
           SIN_IA: ${{ github.event.inputs.sin_ia }}
+          SOLO_ARMAR: ${{ github.event.inputs.solo_armar }}
       - name: Publicar los periódicos
         run: |
           git config user.name "La Pizarra bot"

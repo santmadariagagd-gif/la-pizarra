@@ -598,7 +598,7 @@ th{font:600 13px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:
 @media print{@page{size:letter;margin:0}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 html,body{background:var(--board)!important}.hoja{margin:0!important;max-width:none!important;border-radius:0!important;box-shadow:none!important;border-width:10px!important}
-.noprint,.cta,.pdfmini{display:none!important}.lupa{display:none!important}
+.noprint,.cta,.pdfmini{display:none!important}.lupa .lados{display:none!important}
 .prev,.carta,.esq,.premio,.rec,.post,.tx,.marc,.ficha,.caja,.cita,.mc{break-inside:avoid}h3.sec{break-after:avoid}}
 """
 JUGADA = ('<svg class="jug" style="{pos}" width="150" height="90" viewBox="0 0 150 90" fill="none" stroke="#ECEFE7" stroke-width="2.5" stroke-linecap="round">'
@@ -683,7 +683,10 @@ def portada(ruta, titulo, w, tit, sub):
         tam -= 6
     y = 270 + (3 - len(L)) * tam // 2
     for l in L[:4]: d.text((W // 2, y), l, font=f, fill="#F2D466", anchor="ma"); y += int(tam * 1.02)
-    if sub: d.text((W // 2, H - 70), sub[:80], font=cond(30), fill="#ECEFE7", anchor="mm")
+    if sub:
+        f2, s2 = cond(30), sub
+        while d.textlength(s2, font=f2) > W - 140 and " " in s2: s2 = s2.rsplit(" ", 1)[0].rstrip(",;·:") + "…" if not s2.endswith("…") else s2[:-1].rsplit(" ", 1)[0].rstrip(",;·:") + "…"
+        d.text((W // 2, H - 70), s2, font=f2, fill="#ECEFE7", anchor="mm")
     im.save(ruta, optimize=True); print("Periódico: portada", ruta)
 
 
@@ -697,7 +700,7 @@ def lupa(m):
         if ban: s += "<p class='bnc'>En la banca: " + ", ".join(f"{esc(b['n'])} {b['pts']}" for b in ban) + "</p>"
         if cam: s += f"<p class='bnc'>El cambio que no hizo: {esc(cam['banca'])} ({cam['banca_pts']}) por {esc(cam['titular'])} ({cam['titular_pts']}), +{cam['dif']}</p>"
         return s + "</div>"
-    return f"<details class='lupa'><summary>Ver los números</summary><div class='lados'>{lado('g', m['ganador'])}{lado('p', m['perdedor'])}</div></details>"
+    return f"<div class='lados'>{lado('g', m['ganador'])}{lado('p', m['perdedor'])}</div>"
 
 def render(liga_nombre, titulo, w, fecha, D, T, url):
     S = T or {}
@@ -769,10 +772,13 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
                      f"{'<div class=baj>'+esc(x.get('bajada'))+'</div>' if x.get('bajada') else ''}"
                      f"<div class='marc'><div><b>{esc(m['ganador'])}</b><small>{m['g_record']} · {m['g_pts']}</small></div><span class='m'>+{m['margen']}</span>"
                      f"<div style='text-align:right'><b>{esc(m['perdedor'])}</b><small>{m['p_record']} · {m['p_pts']}</small></div></div>")
-            h += [f"<p>{esc(par)}</p>" for par in (x.get("historia") or []) if par]
+            hs = [p_ for p_ in (x.get("historia") or []) if p_]
+            vis, resto = (hs[-1:], hs[:-1]) if len(hs) >= 2 else (hs, [])   # a la vista: la carrilla (el último párrafo)
+            h += [f"<p>{esc(par)}</p>" for par in vis]
             if x.get("pregunta"): h.append(f"<div class='preg'><span>🎤 La pregunta incómoda para {esc(m.get('perdedor_manager') or m['perdedor'])}</span>{esc(x['pregunta'])}</div>")
-            if x.get("cita"): h.append(f"<div class='cita'>“{esc(x['cita'])}”<small>— {esc(m['ganador'])}, saliendo del estadio</small></div>")
-            h.append(lupa(m))
+            mas = "".join(f"<p>{esc(par)}</p>" for par in resto)
+            if x.get("cita"): mas += f"<div class='cita'>“{esc(x['cita'])}”<small>— {esc(m['ganador'])}, saliendo del estadio</small></div>"
+            h.append(f"<details class='lupa'><summary>Leer más y ver los números</summary>{mas}{lupa(m)}</details>")
             sh = dict(et=et, t=x.get("titular") or "", b=" ".join(s for s in [x.get("bajada") or "", ((x.get("historia") or [""])[0] or "")] if s), g=m["ganador"], gp=m["g_pts"], p=m["perdedor"], pp=m["p_pts"], q=x.get("pregunta") or "", c=x.get("cita") or "")
             h.append(f"<button class='mandar noprint' data-sh='{esc(json.dumps(sh, ensure_ascii=False))}'>📲 Mandar esta nota al grupo</button>")
             h.append("</div>")
@@ -886,10 +892,18 @@ def main():
             if not D.get("matchups"): print(f"Periódico: {lid} sin matchups en la semana {w}"); continue
             nombre = L.league.get("name") or "Tu liga"
             titulo = cfgl.get("titulo") or f"El Pizarrón de {nombre}"
-            T, costo = escribir(D, nombre, w, cfgl.get("picante", "normal")); total += costo
+            _fj = os.path.join(AQUI, "docs", "periodico", lid, f"{season}-{w}.datos.json")
+            if os.environ.get("SOLO_ARMAR") == "1" and os.path.exists(_fj): T, costo = None, 0
+            else: T, costo = escribir(D, nombre, w, cfgl.get("picante", "normal"))
+            total += costo
             carpeta = os.path.join(AQUI, "docs", "periodico", lid); os.makedirs(carpeta, exist_ok=True)
             url = f"https://lapizarra.mx/periodico/{lid}/{season}-{w}.html"
             fecha = datetime.now(timezone.utc).strftime("%d/%m/%Y")
+            fuente_json = os.path.join(carpeta, f"{season}-{w}.datos.json")
+            if os.environ.get("SOLO_ARMAR") == "1" and os.path.exists(fuente_json):   # vuelve a armar con los textos ya escritos (sin IA)
+                G = json.load(open(fuente_json, encoding="utf-8")); T, fecha = G.get("T"), G.get("fecha", fecha)
+            else:
+                json.dump(dict(T=T, fecha=fecha), open(fuente_json, "w", encoding="utf-8"), ensure_ascii=False)
             doc = render(nombre, titulo, w, fecha, D, T, url)
             a0 = D.get("alta") or {}
             portada(os.path.join(carpeta, f"{season}-{w}.png"), titulo, w, (T or {}).get("titular") or f"¡{a0.get('ganador','')} se la llevó con {a0.get('g_pts','')}!", (T or {}).get("subtitulo") or "")
