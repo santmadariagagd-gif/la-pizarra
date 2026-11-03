@@ -1,16 +1,10 @@
 {
- "al": "2026-11-03T19:22:17.563166+00:00",
+ "al": "2026-11-03T19:27:10.746175+00:00",
  "fuentes": {
-  "fut:brazikowski.eurosky.social": "HTTP Error 400: Bad Request",
   "fut:thefootymuseum.bsky.social": 100,
   "fut:philippeauclair.bsky.social": 100,
   "fut:as.com": 50,
-  "fut:marca.com": "HTTP Error 400: Bad Request",
-  "fut:record.com.mx": "HTTP Error 400: Bad Request",
-  "fut:mediotiempo.com": "HTTP Error 400: Bad Request",
   "fut:theathletic.com": 50,
-  "fut:skysports.com": "HTTP Error 400: Bad Request",
-  "fut:goal.com": "HTTP Error 400: Bad Request",
   "nfl:minakimes.bsky.social": 98,
   "nfl:theathletic.com": 50,
   "nba:mikevorkunov.bsky.social": 98,
@@ -20,13 +14,83 @@
   "fut": {
    "pasan": [
     {
-     "@": "cadizcf.com",
-     "t": "| 0-0 | Ya en juego la segunda parte▶️\n\n🔴💛 #MallorcaCádiz #LaLigaHypermotion",
+     "@": "as.com",
+     "t": "Gran partido rojiblanco para tumbar al Bayern. Diez puntos de doce y tres victorias consecutivas. dozz.es/38qr23 ",
      "ver": true
     },
     {
      "@": "as.com",
-     "t": "Sigue en vivo y en directo la última hora del Barcelona - Aston Villa de la jornada 4 de la fase liga de la Champions. dozz.es/q_2mc4 ",
+     "t": "El técnico del Real Madrid criticó que la gente no se sepa el reglamento. dozz.es/4rlvv2 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "El Balón de Oro llegó al Barcelona para aportar el equilibrio que compensara el vértigo de Flick en partidos grandes, pero su gestión de minutos desconcierta. dozz.es/9flkc4 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "Manolo Rueda, entrenador de Lamini Fati en el Leganés Sub-19, habla con AS para dar a conocer en profundidad a la perla defensiva del Real Madrid. dozz.es/c89wz1 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "El Barcelona está en busca de un central para apuntalar su defensa. dozz.es/alebm4 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "El Barcelona está en busca de un central para apuntalar su defensa. dozz.es/0g5dz4 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "El entrenador del Real Madrid se cansó de las continuas protestas de los jugadores del Racing. dozz.es/kkafg4 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "Aún no ha podido dejar a cero su portería en los 12 partidos de Champions que ha jugado, dentro de la pésima racha de 18 partidos recibiendo goles del Barça. dozz.es/vw_aa4 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "Barça, Atleti y Villarreal alcanzan hoy el ecuador de la fase liga con partidos durísimos dozz.es/6ev0h2 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "El crack del Bayern, entre algodones por unas molestias de rodilla, es famoso por sus goles y su carácter pasota a partes iguales. dozz.es/4dh4k2 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "El asturiano es el técnico el que más partidos ha ganado con el PSG (127) tras superar a Blanc. dozz.es/2g21r2 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "La derrota del Inter en el derbi contra el Milan ha dado lugar a días de análisis y reflexión, en busca de una respuesta positiva ya en De Kuip, en la Champions League. dozz.es/km7ef1 ",
+     "ver": true
+    },
+    {
+     "@": "as.com",
+     "t": "El Atlético necesita ganar si quiere meterse entre los ocho primeros en Champions. dozz.es/v3bki3 ",
+     "ver": true
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Exploring the many reasons why goals are coming at a much faster rate in the competition than in the Premier League www.nytimes.com/athletic/773...",
+     "ver": true
+    },
+    {
+     "@": "theathletic.com",
+     "t": "Our weekly performance-based ranking of all 20 Premier League teams. It's not good reading for Pierre Sage... www.nytimes.com/athletic/774...",
+     "ver": true
+    },
+    {
+     "@": "theathletic.com",
+     "t": "As they meet at Anfield, how are these two teams supposed to feel about the Premier League's City judgment? www.nytimes.com/athletic/774...",
      "ver": true
     }
    ],
@@ -65,19 +129,12 @@
      ]
     },
     {
-     "@": "outsidewrite.co.uk",
-     "t": "#OnThisDay in football, 3 Nov \n\n1887 - Académica de Coimbra formed 🇵🇹\n\n1903 - Newell's Old Boys founded 🇦🇷\n\n1993 - \"Welcome to Hell\" (Galatasaray v Man Utd) 🇹🇷\n\n2006 - Alberto Spencer died 🇪🇨🇺🇾\n\nBorn:\n\n1945 - Gerd Müller 🇩🇪\n\n1963 - Ian Wrig",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
      "@": "mattdoyle.bsky.social",
      "t": "AtlasIntel was the most accurate pollster in 2024, fwiw. Last year they significantly underestimated Dem margins in NJ & Va.",
      "ver": false,
      "por": [
       "no verificado",
+      "en vivo/horario/política",
       "sin equipo grande",
       "no habla de fútbol"
      ]
@@ -99,6 +156,14 @@
      ]
     },
     {
+     "@": "cadizcf.com",
+     "t": "| 0-0 | Ya en juego la segunda parte▶️\n\n🔴💛 #MallorcaCádiz #LaLigaHypermotion",
+     "ver": true,
+     "por": [
+      "en vivo/horario/política"
+     ]
+    },
+    {
      "@": "claptoncfc.co.uk",
      "t": "Midfielder Ross Broadway scored his first goal for the Clapton CFC Men's First Team in injury time to seal an impressive home win against Ilford.",
      "ver": true,
@@ -116,6 +181,48 @@
     },
     {
      "@": "as.com",
+     "t": "“El brazalete le hace mirar alrededor de una manera diferente”, añade. dozz.es/_mq7j5 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande",
+      "no habla de fútbol"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "Un periodista le hizo una pregunta al mediocentro francés y no hbabía manera de que le entendiera. dozz.es/402u84 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande",
+      "no habla de fútbol"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "Pese a contar con dos refuerzos mediáticos, Ebrima Tunkara y Hamza Abdelkarim, el Barça se dejó voltear un 2-0 y sólo pudo salvar un punto sobre la hora (3-3). dozz.es/i7jqv3 ",
+     "ver": true,
+     "por": [
+      "no habla de fútbol"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "Después de coronarse como campeón en Viena, el español afronta sus tres últimos retos de la temporada: Masters 1.000 de París, ATP Finals y Copa Davis. dozz.es/i8mcr2 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "“No habría entendido que Vinicius pidiese salir en verano, es madridista desde niño”, añade. dozz.es/nc3ir1 ",
+     "ver": true,
+     "por": [
+      "no habla de fútbol"
+     ]
+    },
+    {
+     "@": "as.com",
      "t": "El fútbol se une en la tragedia, los equipos dedican un minuto de silencio por la muerte de Jesús de Miguel durante un partido, en la segunda división. dozz.es/_9ec51 ",
      "ver": true,
      "por": [
@@ -124,10 +231,19 @@
     },
     {
      "@": "as.com",
-     "t": "Gran partido rojiblanco para tumbar al Bayern. Diez puntos de doce y tres victorias consecutivas. dozz.es/38qr23 ",
+     "t": "Siga en vivo y en directo el partido entre el Shakhtar y el Sporting de Portugal, correspondiente a la jornada 4 de la fase liga de la Champions. dozz.es/n2eb93 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "en vivo/horario/política",
+      "sin equipo grande"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "Brighton, Villarreal o Atlético de Madrid entre otros le medirán el pulso al conjunto de Bordalás en los próximos 30 días. dozz.es/o7hbu4 ",
+     "ver": true,
+     "por": [
+      "no habla de fútbol"
      ]
     },
     {
@@ -135,7 +251,7 @@
      "t": "Sigue en directo el Galatasaray - Stuttgart, partido correspondiente a la cuarta jornada de la fase liga de la Champions League que se disputará hoy en el Ali Sami Yen a partir de las 18:45 horas. dozz.es/6t2fh2 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "en vivo/horario/política"
      ]
     },
     {
@@ -143,7 +259,7 @@
      "t": "Camavinga y Mourinho en directo: rueda de prensa previa al AEK Atenas - Real Madrid de Champions dozz.es/5n_gp3 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "en vivo/horario/política"
      ]
     },
     {
@@ -151,7 +267,51 @@
      "t": "Fecha, horario, cómo ver en vivo y en directo en televisión y cómo seguir online el AEK - Real Madrid, correspondiente a la cuarta jornada de la Champions League. dozz.es/2d_mo1 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "en vivo/horario/política"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "El doblete de Saúl Rodríguez y Moussá Traoré sentencian un duelo contra uno de los favoritos al título. dozz.es/4clm83 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande",
+      "no habla de fútbol"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "La trágica noticia del fallecimiento del futbolista Jesús de Miguel marca la llegada del Betis a Alemania. dozz.es/9d5b_3 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "El heredero al trono de la corona británica es seguidor del Aston Villa y ha viajado junto a su hijo Jorge. dozz.es/bzsez4 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande",
+      "no habla de fútbol"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "Apela a la afición para afrontar lo que califica de un “desafío”. dozz.es/cg9rp2 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "Mourinho ofreció la lista para visitar al AEK, con la novedad de la ausencia de los dos centrocampistas por descanso. dozz.es/4vmfi4 ",
+     "ver": true,
+     "por": [
+      "en vivo/horario/política",
+      "sin equipo grande",
+      "no habla de fútbol"
      ]
     },
     {
@@ -159,7 +319,7 @@
      "t": "Sigue en vivo y en directo el Atlético - Bayern, partido de la jornada 4 de la fase liga de la Champions League que se disputa hoy a las 21:00 horas. dozz.es/v44jg1 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "en vivo/horario/política"
      ]
     },
     {
@@ -167,15 +327,7 @@
      "t": "Fecha, horario, cómo ver en vivo y en directo en televisión y cómo seguir online el Atlético de Madrid - Bayern, fase liga de la Champions League. dozz.es/o1_hz1 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "as.com",
-     "t": "El técnico del Real Madrid criticó que la gente no se sepa el reglamento. dozz.es/4rlvv2 ",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
+      "en vivo/horario/política"
      ]
     },
     {
@@ -183,23 +335,56 @@
      "t": "Fecha, horario, cómo ver en vivo y en directo en televisión y cómo seguir online el Barcelona - Aston Villa, jornada 4 de la fase liga de la Champions League. dozz.es/clgs14 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "en vivo/horario/política"
      ]
     },
     {
      "@": "as.com",
-     "t": "El Balón de Oro llegó al Barcelona para aportar el equilibrio que compensara el vértigo de Flick en partidos grandes, pero su gestión de minutos desconcierta. dozz.es/9flkc4 ",
+     "t": "Sigue en vivo y en directo la última hora del Barcelona - Aston Villa de la jornada 4 de la fase liga de la Champions. dozz.es/q_2mc4 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "en vivo/horario/política"
      ]
     },
     {
      "@": "as.com",
-     "t": "Manolo Rueda, entrenador de Lamini Fati en el Leganés Sub-19, habla con AS para dar a conocer en profundidad a la perla defensiva del Real Madrid. dozz.es/c89wz1 ",
+     "t": "Los jugadores y staff técnico al completo del conjunto blanco guardó el luto por el reciente fallecimiento del delantero del CD Tenerife tras el choque sufrido el pasado lunes durante el partido contra el Andorra. dozz.es/8t8ir1 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "sin equipo grande"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "Joe Burrow contra Bijan Robinson. La NFL refresá al Bernabéu, este domingo, en un encuentro clave para la temporada. dozz.es/6s14o5 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande",
+      "no habla de fútbol"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "Una cámara de DAZN captó la conversación al final del partido entre árbitro y entrenador del Racing sobre la acción polémica. dozz.es/ffd0d6 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "El presidente del Betis habla de una relación excelente con su técnico y avisa sobre el futuro del Villamarín: “Queremos un estadio en precio”. dozz.es/_zciu3 ",
+     "ver": true,
+     "por": [
+      "sin equipo grande"
+     ]
+    },
+    {
+     "@": "as.com",
+     "t": "Tras el enésimo descalabro, a Carrick se le agota el crédito, y a la hinchada del Manchester United la paciencia. dozz.es/o2qjz4 ",
+     "ver": true,
+     "por": [
+      "no habla de fútbol"
      ]
     },
     {
@@ -207,47 +392,24 @@
      "t": "El entrenador español del PSG se deshizo en elogios hacia su homólogo en el Villarreal CF en la previa del partido que enfrentará a ambos en La Cerámica en Champions League. dozz.es/kszd22 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "en vivo/horario/política"
      ]
     },
     {
      "@": "as.com",
-     "t": "El Barcelona está en busca de un central para apuntalar su defensa. dozz.es/alebm4 ",
+     "t": "Ambos coincidieron en el Tottenham e hicieron grandes migas. dozz.es/dniea4 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
+      "no habla de fútbol"
      ]
     },
     {
      "@": "as.com",
-     "t": "El Barcelona está en busca de un central para apuntalar su defensa. dozz.es/0g5dz4 ",
+     "t": "Recién llegado desde el Castellón, es el máximo goleador del Juvenil A: nueve tantos, uno cada 66′. dozz.es/kl3sm3 ",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "as.com",
-     "t": "El entrenador del Real Madrid se cansó de las continuas protestas de los jugadores del Racing. dozz.es/kkafg4 ",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "as.com",
-     "t": "Aún no ha podido dejar a cero su portería en los 12 partidos de Champions que ha jugado, dentro de la pésima racha de 18 partidos recibiendo goles del Barça. dozz.es/vw_aa4 ",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "as.com",
-     "t": "Barça, Atleti y Villarreal alcanzan hoy el ecuador de la fase liga con partidos durísimos dozz.es/6ev0h2 ",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
+      "sin equipo grande",
+      "no habla de fútbol"
      ]
     },
     {
@@ -261,75 +423,10 @@
     },
     {
      "@": "as.com",
-     "t": "El crack del Bayern, entre algodones por unas molestias de rodilla, es famoso por sus goles y su carácter pasota a partes iguales. dozz.es/4dh4k2 ",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "as.com",
-     "t": "El asturiano es el técnico el que más partidos ha ganado con el PSG (127) tras superar a Blanc. dozz.es/2g21r2 ",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "as.com",
-     "t": "Es la segunda vez en la historia que un campeón de la Champions vigente visita La Cerámica. dozz.es/2rl4n2 ",
+     "t": "El portero alcanza hoy los 553 partidos de Adelardo con la rojiblanca, un récord inalcanzable 46 años, hasta Koke. dozz.es/43eqa5 ",
      "ver": true,
      "por": [
       "sin equipo grande"
-     ]
-    },
-    {
-     "@": "as.com",
-     "t": "La derrota del Inter en el derbi contra el Milan ha dado lugar a días de análisis y reflexión, en busca de una respuesta positiva ya en De Kuip, en la Champions League. dozz.es/km7ef1 ",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "as.com",
-     "t": "El Atlético necesita ganar si quiere meterse entre los ocho primeros en Champions. dozz.es/v3bki3 ",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Exploring the many reasons why goals are coming at a much faster rate in the competition than in the Premier League www.nytimes.com/athletic/773...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Our weekly performance-based ranking of all 20 Premier League teams. It's not good reading for Pierre Sage... www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "The Portuguese's departure from Forest was confirmed in an email that landed two minutes before the expiry of a clause in his contract www.nytimes.com/athletic/773...",
-     "ver": true,
-     "por": [
-      "sin equipo grande",
-      "no habla de fútbol"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "As they meet at Anfield, how are these two teams supposed to feel about the Premier League's City judgment? www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
      ]
     }
    ],
@@ -351,41 +448,15 @@
      "@": "news.optimusfantasy.com",
      "t": "⚠️⚠️⚠️ INJURY NEWS ⚠️⚠️⚠️\n\nAfter an estimated DNP on Monday, Bhayshul Tuten (ankle/foot) was NOT spotted at the open portion of practice on Tuesday.\n\nThe Jaguars play TNF.\n\nPer Michael DiRocco.",
      "ver": true
-    },
-    {
-     "@": "acosta32jp.bsky.social",
-     "t": "\"Hey Grey Zabel, thanks for moving from left to right guard to make room for our All-Pro trade! First game is against Jeffrey Simmons: good luck.\"",
-     "ver": true
-    },
-    {
-     "@": "theathletic.com",
-     "t": "The Portuguese's departure from Forest was confirmed in an email that landed two minutes before the expiry of a clause in his contract www.nytimes.com/athletic/773...",
-     "ver": true
     }
    ],
    "casi": [
-    {
-     "@": "dennycarter.bsky.social",
-     "t": "uh, florida\n\nprojects.gelliottmorris.com/2026-early-v...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
     {
      "@": "insidenflnews.bsky.social",
      "t": "‼️ Rap: Jeremiyah Love (high-ankle sprain) to be placed on IR; will miss at least 4-5 weeks.",
      "ver": false,
      "por": [
       "no verificado"
-     ]
-    },
-    {
-     "@": "patrickclaybon.bsky.social",
-     "t": "My plan for Sunday's show is to get some khakis and stand at the monitor and say the teams that score the most points will eventually win",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
      ]
     },
     {
@@ -397,96 +468,16 @@
      ]
     },
     {
-     "@": "dirtbagqueer.rocks",
-     "t": "you ever think about how less than a decade ago brianna wu and cenk uyghur started a PAC together",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "aaronschatz.com",
-     "t": "In general, 20% of PDs will turn into INTs. Looking at this ratio can be a guide to which teams we might expect to have more or fewer INTs the rest of the season.\n\nLikely to have fewer INT offense: ATL, NE, LAC, LAR\nLikely to have more INT ",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "rotopat.bsky.social",
-     "t": "I'm not sure anyone truly knows what has gone so wrong with American politics, but it probably doesn't help that we've had:\n\nZero presidents born after the assassination of JFK\nZero presidents born after the moon landing \nZero presidents bo",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "danpizzuta.bsky.social",
-     "t": "Was absolutely thrilled and honored to get to fill in on this week's Hangover.",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "dirtbagqueer.rocks",
-     "t": "i get why lefties complain about electoralism but the main reason to keep voting is that it’s fun. you get to go to the place and say hi to the old ladies working and fill out your little scantron. it’s neat",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
      "@": "acosta32jp.bsky.social",
-     "t": "Nice work on the backside of this zone run by Quenton Nelson, Josh Jones (#74) and AJ Barner",
+     "t": "\"Hey Grey Zabel, thanks for moving from left to right guard to make room for our All-Pro trade! First game is against Jeffrey Simmons: good luck.\"",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "acosta32jp.bsky.social",
-     "t": "Watch TJ Edwards (#53) and Noah Sewell (#44) on this play. Sewell is the EMOL, so he's gonna face the fullback on this power run. He squares it up and keeps outside leverage, forcing this run inside. Then Edwards spills the pulling guard, f",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "ftnfantasy.com",
-     "t": "College Basketball is HERE 🏀\n\n5 key ATS betting categories to break down the top national title contenders & market edges  🧐\n\n📌 High floor for Dan Hurley's UConn Huskies\n📌 Bill Self & Kansas set up for a deep March run\n📌 Why the market is o",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "rotopat.bsky.social",
-     "t": "Carson Wentz being an insane upgrade for Justin Jefferson is like something an @dennycarter.bsky.social AI bot would spit out",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
+      "no es NFL"
      ]
     },
     {
      "@": "acosta32jp.bsky.social",
      "t": "Quenton Nelson (#53) firing off the ball hard on the first play of his Seahawks career",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "nickbaumgardner.bsky.social",
-     "t": "just a microcosm for the entire Grant Hill era in Detroit: \n\ndominates the stat sheet, near triple-double, Stackhouse with several highlights ... and an L\n\nhave never love/hated something in sports as much as I loved/hated Grant Hill as a P",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "acosta32jp.bsky.social",
-     "t": "Hell of a block by Rome Odunze and Jonah Jackson, both create the alley that Kalif Raymond gets through on this screen. Raymond was MOVIN man",
      "ver": true,
      "por": [
       "no es noticia fuerte"
@@ -526,23 +517,7 @@
     },
     {
      "@": "theathletic.com",
-     "t": "Kanzler is an outside-the-box hire for the Mariners, who also considered former Astros manager Joe Espada. www.nytimes.com/athletic/773...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
      "t": "The highest-paid NFL coaches make $20 million. Brian Schottenheimer's salary is estimated between $5 million and $8 million. www.nytimes.com/athletic/775...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "The Clippers held a 97-83 lead with 9:47 left before the Raptors completed a 47-point fourth quarter to win 125-118. www.nytimes.com/athletic/774...",
      "ver": true,
      "por": [
       "no es noticia fuerte"
@@ -558,70 +533,14 @@
     },
     {
      "@": "theathletic.com",
-     "t": "DeMarco led the Liberty to the semifinals, but being swept by the Dream and a timeout debacle didn't inspire confidence in his return. www.nytimes.com/athletic/768...",
+     "t": "The Portuguese's departure from Forest was confirmed in an email that landed two minutes before the expiry of a clause in his contract www.nytimes.com/athletic/773...",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "The NWSL's lack of owned and operated venues is only part of the problem. www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "From Avdija, there was no complaining. No attitude. And no tension. Just a simple question: 'Micah, how is this going to work?' www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Exploring the many reasons why goals are coming at a much faster rate in the competition than in the Premier League www.nytimes.com/athletic/773...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Our weekly performance-based ranking of all 20 Premier League teams. It's not good reading for Pierre Sage... www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Old assumptions about intelligence largely ignored the complexity of a profession that requires players to develop faster in so many ways www.nytimes.com/athletic/769...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "It is tempting to argue City's newfound vulnerability comes from their off-pitch problems, but the reality is far more straightforward www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "As they meet at Anfield, how are these two teams supposed to feel about the Premier League's City judgment? www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
+      "no es NFL"
      ]
     }
    ],
-   "total": 105
+   "total": 106
   },
   "nba": {
    "pasan": [
@@ -634,22 +553,9 @@
      "@": "mikeascotto.bsky.social",
      "t": "The Minnesota Timberwolves and Norchad Omier have agreed to a two-way deal, league sources told HoopsHype. Omier averaged 18.3 points on 59.2% shooting from the field, 11.4 rebounds, and 2.5 assists in the G League last season.",
      "ver": true
-    },
-    {
-     "@": "theathletic.com",
-     "t": "The Portuguese's departure from Forest was confirmed in an email that landed two minutes before the expiry of a clause in his contract www.nytimes.com/athletic/773...",
-     "ver": true
     }
    ],
    "casi": [
-    {
-     "@": "herhoopstats.com",
-     "t": "Vibe check from the 2026 WNBA Champions Golden State Valkyries exit interviews, and more with @mingemi.bsky.social and @richardcohen.bsky.social.\n\n🍎 bit.ly/3TmlbAy\n📺 bit.ly/4aDRJfp",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
     {
      "@": "yourmandevine.bsky.social",
      "t": "Thought this was interesting work by @shaxnba.bsky.social on when signal starts to outpace noise in the NBA calendar: shaxnba.substack.com/p/when-does-...",
@@ -659,24 +565,8 @@
      ]
     },
     {
-     "@": "jimowczarski.bsky.social",
-     "t": "I can’t recall the last time I used Google as an actual “search” service….Not good for them, been just fine for me.",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
      "@": "omarisankofa.bsky.social",
      "t": "No day off for the Pistons despite flying in from Charlotte in the early AM. Practice just wrapped at the PPC.",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "fredkatz.bsky.social",
-     "t": "Jordan Clarkson on Mike Brown saying he's the best teammate he's been around: \"That's a great compliment, especially he's been around a lot of guys, a lot of players & been on great teams. But I'm just here trying to support the group. We'r",
      "ver": true,
      "por": [
       "no es noticia fuerte"
@@ -695,7 +585,8 @@
      "t": "SURPRISE!\n\nWalking Bucket returns.\n\nWith Chris DeMarco being fired, the New York Liberty can't mess this hire up.\n\nI highlight 5 coaches who make perfect sense for the role.\n\nwalking-bucket.ghost.io/130-5-candid...\n\n#WNBA",
      "ver": false,
      "por": [
-      "no verificado"
+      "no verificado",
+      "no es NBA"
      ]
     },
     {
@@ -707,35 +598,12 @@
      ]
     },
     {
-     "@": "jxlorenzi.bsky.social",
-     "t": "Received some (understandably) tough questions for this early-year mailbag. What’s up with Matas? How should Bulls balance Caleb’s development with vets? Might Tiago tweak the starters? Will Bulls defense ever be good with Giddey? \n\nMail is",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "omarisankofa.bsky.social",
-     "t": "\"Shoot it. When it doesn’t feel good, shoot it. When it feels good, shoot it. Either way, just shoot it no matter what.\"\n\nTalked to Ausar Thompson about embracing a new habit.\n\nwww.freep.com/story/sports...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
      "@": "velodus.bsky.social",
      "t": "Hopefully we can all agree that Michigan has the coolest shape of any US state. It's a dolphin on top of an oven mitt - which makes it incredibly easy to identify it on a map.",
      "ver": false,
      "por": [
-      "no verificado"
-     ]
-    },
-    {
-     "@": "zenakeita.bsky.social",
-     "t": "ICYMI…\n\nHear my take on the Draymond situation from last night here:",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
+      "no verificado",
+      "no es NBA"
      ]
     },
     {
@@ -747,64 +615,8 @@
      ]
     },
     {
-     "@": "johnhollinger.bsky.social",
-     "t": "Brice Turang finishing in the top 3 in NL MVP voting really cements that banger of a decision to leave him off the All-Star team. Shades of Tony LaRussa selecting Devon White  over Robin Yount in 1989.",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "johnhollinger.bsky.social",
-     "t": "Haven't seen much national discussion on this, but really curious what happens in Georgia governor's race. Could KLB really lose in a year where her party's Senate candidate is like +10?",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "The Bears are on the move in the odds to win the Super Bowl, but they aren't quite favored in the NFC yet. www.nytimes.com/athletic/775...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
      "@": "theathletic.com",
      "t": "The NFL MVP race is finally heating up with five candidates who have 10-to-1 or better odds. www.nytimes.com/athletic/766...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Across the land, the Ben Johnson-Caleb Williams whistle-stop tour is a resounding success. Adding Jeffery Simmons helping Bears' bona fides. www.nytimes.com/athletic/775...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Austin Mock went 5-0 last week and is 20-10 overall with his NFL best bets this season. He has several picks ready for Week 9. www.nytimes.com/athletic/775...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Kanzler is an outside-the-box hire for the Mariners, who also considered former Astros manager Joe Espada. www.nytimes.com/athletic/773...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "The highest-paid NFL coaches make $20 million. Brian Schottenheimer's salary is estimated between $5 million and $8 million. www.nytimes.com/athletic/775...",
      "ver": true,
      "por": [
       "no es noticia fuerte"
@@ -820,78 +632,14 @@
     },
     {
      "@": "theathletic.com",
-     "t": "The Lions head coach provided the update on Jack Campbell during a radio appearance Tuesday morning. www.nytimes.com/athletic/774...",
+     "t": "The Portuguese's departure from Forest was confirmed in an email that landed two minutes before the expiry of a clause in his contract www.nytimes.com/athletic/773...",
      "ver": true,
      "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "DeMarco led the Liberty to the semifinals, but being swept by the Dream and a timeout debacle didn't inspire confidence in his return. www.nytimes.com/athletic/768...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "The NWSL's lack of owned and operated venues is only part of the problem. www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "From Avdija, there was no complaining. No attitude. And no tension. Just a simple question: 'Micah, how is this going to work?' www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Exploring the many reasons why goals are coming at a much faster rate in the competition than in the Premier League www.nytimes.com/athletic/773...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Our weekly performance-based ranking of all 20 Premier League teams. It's not good reading for Pierre Sage... www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "Old assumptions about intelligence largely ignored the complexity of a profession that requires players to develop faster in so many ways www.nytimes.com/athletic/769...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "It is tempting to argue City's newfound vulnerability comes from their off-pitch problems, but the reality is far more straightforward www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
-     ]
-    },
-    {
-     "@": "theathletic.com",
-     "t": "As they meet at Anfield, how are these two teams supposed to feel about the Premier League's City judgment? www.nytimes.com/athletic/774...",
-     "ver": true,
-     "por": [
-      "no es noticia fuerte"
+      "no es NBA"
      ]
     }
    ],
-   "total": 97
+   "total": 96
   }
  }
 }
