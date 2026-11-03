@@ -1,5 +1,5 @@
 {
-  "nota": "Ligas que reciben El Pizarrón. liga = número de la liga en Sleeper (sale en el link: sleeper.com/leagues/NUMERO). hasta = último día de la prueba o del pago (AAAA-MM-DD). picante = familiar | normal | albur. titulo es opcional.",
+  "nota": "Ligas que reciben El Pizarrón. liga = número de la liga en Sleeper (sale en el link: sleeper.com/leagues/NUMERO). hasta = último día de la prueba o del pago (AAAA-MM-DD). picante = familiar | normal | pesada | albur (si la liga lo escogió en la página, manda lo de la página). titulo es opcional.",
   "ligas": [
     {
       "plataforma": "sleeper",

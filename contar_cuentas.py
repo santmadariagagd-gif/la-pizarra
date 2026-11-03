@@ -27,6 +27,7 @@ out = {
     "con_avisos_al_telefono": cuenta("avisos_tk"),
     "juegan": {"quiniela_liga_mx": uids("qmx_picks"), "survivor_liga_mx": uids("smx_picks"), "fantasy": uids("fan_ucl"),
                "reto_del_dia": uids("rd_resp"), "duelos": cuenta("duelos"), "posts": cuenta("posts")},
+    "pizarron_pedidos": int(db.collection("pizarron").where("est", "==", "pedido").count().get()[0][0].value),
 }
 os.makedirs("bitacora", exist_ok=True)
 json.dump(out, open("bitacora/cuentas.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)

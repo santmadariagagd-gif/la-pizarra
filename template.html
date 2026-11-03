@@ -1865,6 +1865,10 @@ dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background
 .qprem{max-width:640px;margin:4px 0 18px}.qprem h3{margin:0 0 8px}.qprs{display:grid;gap:8px}
 .qpr{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:linear-gradient(110deg,color-mix(in srgb,var(--c) 22%,transparent),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--c) 45%,var(--line))}
 .qpric{font-size:30px;line-height:1;flex:none}.qpr>span:last-child{display:flex;flex-direction:column;min-width:0}.qpr small{font:700 12px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--c)}.qpr b{font:800 20px/1.15 var(--display)}.qpr em{font-style:normal;font-size:13px;color:var(--muted)}
+.pzpide{width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.pzp h2{margin:0 0 8px}.pzp>p{color:var(--muted)}.pzpl{display:flex;flex-direction:column;gap:4px;margin:12px 0;font-weight:600;font-size:14px}.pzpl input,.pzpl textarea{font:inherit;font-weight:400;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.pzpn{display:grid;gap:8px}.pzpo{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer}.pzpo:has(input:checked){border-color:var(--mark);background:#33493F}
+.pzpo input{margin-top:4px;accent-color:#F2D466}.pzpo span{display:flex;flex-direction:column;gap:2px}.pzpo b{font:800 18px var(--display)}.pzpo small{color:var(--muted);font-size:13px}.pzpo i{font-size:13px;color:#C9D6CF;margin-top:2px}
 .bienv{position:relative;padding:16px;border-radius:18px;background:linear-gradient(135deg,#3E5A3A,#263D36 60%,#2f4a5e);border:1px solid var(--mark);margin:0 0 16px;max-width:640px}
 .bienv>b{display:block;font:800 24px/1.1 var(--display);padding-right:30px}.bienv ul{list-style:none;padding:0;margin:12px 0 14px;display:grid;gap:8px}.bienv li{display:flex;gap:10px;align-items:center;font-size:15px}.bienv li span{font-size:20px;width:26px;text-align:center}
 .bienvb{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.bienvb .btn{min-height:46px;font-size:17px}.bienvb small{color:var(--muted);font-size:13px}
@@ -2373,6 +2377,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <p class="note sloff">Conecta tu liga de Sleeper para ver la tabla, la fuerza de cada roster y los movimientos de tu liga.</p>
   <div class="sldash" hidden>
     <a id="slPaper" class="paper" hidden></a>
+    <button class="paper pzpide" data-pzpide="1" id="slPide"><span>📰</span><div><b>El Pizarrón para tu liga</b><small>El periódico semanal de tu liga, con la carrilla que tú escojas</small></div><em>Ver ›</em></button>
     <div class="kpis" id="slKpis"></div>
     <div class="grid2">
       <div><h3>Tabla</h3><div class="tbl"><table id="slStand"></table></div></div>
@@ -3023,6 +3028,43 @@ function slStand(stand,pts){
   $("#slStand").innerHTML=`<thead><tr><th class="l" aria-label="Lugar"></th><th class="l">Equipo</th><th>Récord</th><th>PF</th><th>PC</th></tr></thead><tbody>${stand.map((r,i)=>{const s=r.settings||{};
     return `<tr class="${r===SL.mine?"me":""}"><td class="rk">${i+1}</td><td class="l"><span class="nm">${teamName(r)}</span></td><td>${s.wins||0}-${s.losses||0}${s.ties?"-"+s.ties:""}</td><td>${fmt(pts(r),1)}</td><td>${fmt(pa(r),1)}</td></tr>`;}).join("")}</tbody>`;
 }
+// ---- Pedir El Pizarrón (3 nov 2026) ----
+// pizarron/{ligaSleeper} = {uid, liga, nom, picante, titulo, evitar, est:"pedido"|"activo", t}. Lo crea quien lo pide y solo esa persona
+// lo puede cambiar (reglas de Firebase). periodico.py lo lee cada martes: así cada liga escoge qué tan dura es la carrilla.
+// Que la liga reciba el periódico lo sigue decidiendo periodico.json (la prueba o el pago se dan de alta a mano).
+const PZP_NIV=[["familiar","Familiar","Carrilla sana, sin groserías. Para la liga de la oficina o con la familia.","«Mada alineó a Lamar con 0.0: hasta el recalentado de ayer rindió más.»"],
+  ["normal","Con carrilla","Groserías suaves y algo de doble sentido.","«Mada, ¿qué estamos haciendo? Lamar te dio 0.0 y tú lo viste como quien ve llover: no manches.»"],
+  ["pesada","Carrilla pesada","Groserías mexicanas sin miedo, sin albures.","«Mada, ¿neta pusiste a Lamar? Te dio 0.0 y una cagada así ni el América en el Clásico.»"],
+  ["albur","Pesada con albur","Lo más picante: groserías y albures chilangos (ingeniosos, nada explícito).","«A Mada le dejaron la banca llena y el tablero vacío: entre más le pica, menos se sienta.»"]];
+async function pzpAbre(){ pzTrack("pizarron_abre",{});
+  if(!(typeof acctOk==="function"&&acctOk())){ $("#gbody").innerHTML=`<div class="pzp"><h2>El Pizarrón para tu liga</h2><p>Cada martes, un periódico de tu liga de fantasy con los marcadores, crónicas, premios, el roast de cada equipo y mucha carrilla.</p><p class="note">Entra con tu cuenta para pedirlo.</p><button class="btn" data-acct>Entrar</button></div>`; if(!dlg.open) dlg.showModal(); return; }
+  const lg=SL.league, id=lg?String(lg.league_id):"", ya=id?await ACCT.db.doc(`pizarron/${id}`).get().catch(()=>null):null, X=ya?.exists&&ya.data().uid===ACCT.user.uid?ya.data():null, ajeno=ya?.exists&&!X;
+  const niv=X?.picante||"normal";
+  $("#gbody").innerHTML=`<div class="pzp"><h2>El Pizarrón para tu liga</h2>
+    <p>Cada martes, después del Monday Night, tu liga recibe su periódico: marcadores, crónicas, el roast de cada equipo, premios, la lotería del power ranking y la previa de la semana. ${id?"":"Conecta tu liga de Sleeper en Fantasy → Mi liga para pedirlo."}</p>
+    <a class="q5link" href="/periodico/1383551364243660800/" target="_blank" rel="noopener">Ver un ejemplo ›</a>
+    ${id?`<label class="pzpl">Tu liga<input value="${hoyEsc(lg.name||id)}" disabled></label>`:`<label class="pzpl">Número de tu liga en Sleeper<input id="pzpLiga" inputmode="numeric" placeholder="Sale en el link: sleeper.com/leagues/NÚMERO"></label>`}
+    ${ajeno?`<p class="note">Alguien más de tu liga ya lo pidió. Si quieres cambiar algo, pídeselo a esa persona.</p>`:`
+    <h3 class="pet">¿Qué tan dura quieres la carrilla?</h3><div class="pzpn" role="radiogroup">${PZP_NIV.map(([k,n,d,e])=>`<label class="pzpo"><input type="radio" name="pzpniv" value="${k}"${k===niv?" checked":""}><span><b>${n}</b><small>${d}</small><i>${e}</i></span></label>`).join("")}</div>
+    <label class="pzpl">Nombre del periódico (opcional)<input id="pzpTit" maxlength="40" placeholder="Ej. El Pizarrón de Los Compas" value="${hoyEsc(X?.titulo||"")}"></label>
+    <label class="pzpl">Temas con los que NO se debe meter (opcional)<textarea id="pzpEvi" maxlength="200" rows="2" placeholder="Ej. nada de chistes del divorcio de Pepe">${hoyEsc(X?.evitar||"")}</textarea></label>
+    <p class="note">La carrilla siempre es solo sobre el fantasy: nunca sobre el físico, la familia, el dinero o el trabajo de nadie.</p>
+    <button class="btn" id="pzpGo"${id?"":" data-sinliga=1"}>${X?"Guardar cambios":"Pedir El Pizarrón"}</button><p class="note" id="pzpMsg">${X?(X.est==="activo"?"Tu liga ya lo recibe. Los cambios salen en la próxima edición.":"Ya lo pediste: te escribimos pronto para activarlo."):""}</p>`}</div>`;
+  if(!dlg.open) dlg.showModal(); }
+document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) return;
+  if(t.closest("[data-pzpide]")){ ev.preventDefault(); return pzpAbre(); }
+  const b=t.closest("#pzpGo"); if(!b) return; const m=$("#pzpMsg");
+  const id=SL.league?String(SL.league.league_id):($("#pzpLiga")?.value||"").replace(/\D/g,"");
+  if(!/^\d{6,25}$/.test(id)){ m.textContent="Escribe el número de tu liga (sale en el link de Sleeper)."; return; }
+  const picante=document.querySelector("[name=pzpniv]:checked")?.value||"normal", titulo=($("#pzpTit").value||"").replace(/[<>]/g,"").trim().slice(0,40), evitar=($("#pzpEvi").value||"").replace(/[<>]/g,"").trim().slice(0,200);
+  b.disabled=true; m.textContent="Guardando…";
+  try{ const ref=ACCT.db.doc(`pizarron/${id}`), s=await ref.get().catch(()=>null), ya=s?.exists?s.data():null;
+    if(ya&&ya.uid!==ACCT.user.uid){ m.textContent="Alguien más de tu liga ya lo pidió."; b.disabled=false; return; }
+    await ref.set({uid:ACCT.user.uid,liga:id,nom:String(SL.league?.name||"").slice(0,60),picante,titulo,evitar,est:ya?.est||"pedido",t:grFV().serverTimestamp()});
+    pzTrack(ya?"pizarron_cambia":"pizarron_pide",{p:picante}); m.textContent=ya?"Listo: los cambios salen en la próxima edición.":"¡Listo! Te escribimos pronto para activar el periódico de tu liga."; b.textContent="Guardar cambios";
+  }catch(e){ console.warn("Pizarrón:",e?.code||e); m.textContent=e?.code==="permission-denied"?"No se pudo guardar: puede que alguien más de tu liga ya lo haya pedido.":"No se pudo guardar. Intenta de nuevo."; }
+  b.disabled=false; });
+(()=>{ try{ if(new URLSearchParams(location.search).get("pizarron")==="1") setTimeout(()=>{ let n=0; const iv=setInterval(()=>{ if(typeof acctOk==="function"&&(acctOk()||++n>12)){ clearInterval(iv); pzpAbre(); } },500); },800); }catch(e){} })();
 // El periódico de la liga (lo publica periodico.py cada martes en /periodico/{liga}/; ultimo.json dice cuál es el más reciente)
 async function slPaperLoad(){
   const a=$("#slPaper"); a.hidden=true; if(!SL.league) return;
