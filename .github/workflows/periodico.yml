@@ -1,7 +1,7 @@
 name: Periódico de las ligas
 on:
   schedule:
-    - cron: "0 12 * * 2"   # martes 6:00 am CDMX (después del Monday Night)
+    - cron: "30 14 * * 2"  # martes 8:30 am CDMX (después del Monday Night y de la actualización de las 7 am, que guarda las proyecciones de la previa)
   workflow_dispatch:        # botón "Run workflow"
     inputs:
       semana:

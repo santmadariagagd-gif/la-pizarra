@@ -254,7 +254,7 @@ class Avisos:
     # periódico de la última semana terminada (D.week de la página), se dispara "Periódico de las ligas" (máx. cada 3 h).
     def periodico(self):
         ahora = datetime.now(MX)
-        if ahora.weekday() not in (1, 2, 3) or ahora.hour < 7: return
+        if ahora.weekday() not in (1, 2, 3) or (ahora.weekday() == 1 and ahora.hour < 10) or ahora.hour < 7: return   # el martes, el normal sale 8:30
         tok, repo = os.environ.get("GH_TOKEN", ""), os.environ.get("GITHUB_REPOSITORY", "")
         if not tok or not repo: return
         if time.time() - self.E.get("per_t", 0) < 3 * 3600: return

@@ -124,6 +124,38 @@ def cargar_ids():
         print(f"Periódico: tabla de IDs sleeper→gsis con {len(S2G)} jugadores")
     except Exception as ex: print("Periódico: no se pudo cargar la tabla de IDs:", repr(ex))
 
+def proyecciones_directo(season, w):
+    """3 nov 2026: respaldo para la previa. El periódico corre el martes temprano y a veces build_site.py todavía no guarda
+    las proyecciones de la semana que sigue. Aquí se bajan directo del consenso de FantasyPros (nflreadpy), con las mismas
+    llaves (gsis_id, "DEF:EQ" o "n|nombre|equipo"), solo si ese consenso ya es de la semana w."""
+    try:
+        import nflreadpy as nfl
+        r = nfl.load_ff_rankings("week").to_pandas()
+        r = r[r.page.isin(["qb", "ppr-rb", "ppr-wr", "ppr-te", "k", "dst"])]
+        if not len(r): return {}
+        sd = str(r.scrape_date.iloc[0])[:10]
+        s = nfl.load_schedules([season]).to_pandas(); s = s[(s.game_type == "REG") & (s.gameday >= sd)]
+        if not len(s) or int(s.week.min()) != w:
+            print(f"Periódico: el consenso de FantasyPros ({sd}) no es de la semana {w}"); return {}
+        ids = nfl.load_ff_playerids().to_pandas()[["fantasypros_id", "gsis_id"]].dropna()
+        g_of = {}
+        for a, b in zip(ids.fantasypros_id, ids.gsis_id):
+            try: g_of[int(a)] = str(b)
+            except Exception: pass
+        out = {}
+        for x in r.itertuples():
+            if x.r2p_pts != x.r2p_pts or x.r2p_pts is None: continue
+            tm = TFIX.get(x.team, x.team); v = round(float(x.r2p_pts), 1)
+            if x.pos == "DST": out["DEF:" + str(tm)] = v; continue
+            try: g = g_of.get(int(x.fantasypros_id))
+            except Exception: g = None
+            out[g if g else f"n|{norm(x.player_name)}|{tm}"] = v
+        print(f"Periódico: proyecciones de la semana {w} directo de FantasyPros: {len(out)} jugadores")
+        return out
+    except Exception as ex:
+        print("Periódico: no se pudieron bajar las proyecciones directo:", repr(ex)); return {}
+
+
 def proy(D, j):
     """Proyección de un jugador: primero por gsis, luego por nombre|equipo."""
     if not j: return None
@@ -478,7 +510,7 @@ p.nota{color:var(--dim);font-style:italic;margin:-6px 0 12px;font-size:15px}
 .mc .r{display:flex;justify-content:space-between;gap:10px;font:600 19px/1.35 var(--disp)}.mc .r.g b{color:var(--yellow)}.mc .r.p{color:var(--dim)}
 .mc i{display:block;font:500 20px/1.2 var(--mano);color:var(--blue);margin-top:4px}
 table{width:100%;border-collapse:collapse;font-size:16px}th,td{padding:8px 6px;border-bottom:1px dashed var(--line);text-align:right}
-th{font:600 13px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}td.l,th.l{text-align:left}
+th{font:600 13px var(--disp);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}td.l,th.l{text-align:left}td{white-space:nowrap}td.l+td.l{white-space:normal;width:100%}
 .up{color:var(--green);font-weight:700}.dn{color:var(--red);font-weight:700}
 .cajas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}
 .caja{border:2px solid rgba(236,239,231,.55);border-radius:12px;text-align:center;padding:12px 8px}
@@ -700,6 +732,7 @@ def main():
     print(f"Periódico: temporada {season}, semana {w}, {len(ligas)} liga(s)")
     P = get(f"{SLEEPER}/players/nfl"); cargar_ids()
     PROJ, PROJ_SIG = proyecciones(season, w), proyecciones(season, w + 1)
+    if not PROJ_SIG: PROJ_SIG = proyecciones_directo(season, w + 1)   # para que la previa salga aunque build_site no haya corrido
     print(f"Periódico: proyecciones semana {w}: {len(PROJ)} jugadores; semana {w+1}: {len(PROJ_SIG)}")
     total = 0.0
     for cfgl in ligas:
