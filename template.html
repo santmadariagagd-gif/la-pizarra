@@ -5783,6 +5783,15 @@ $("#mxpSearch").oninput=e=>{mxpState.q=e.target.value;mxpState.render();};
 // créditos de ninguna API. NFL: marcador y reloj en las tarjetas y en la ventana de detalle; las
 // estadísticas completas siguen llegando de nflverse al día siguiente. Fútbol: tarjetas y detalle completo.
 const NFL_AB={WSH:"WAS",LAR:"LA"};
+// 4 nov 2026: si la página se queda abierta días (app en el celular en segundo plano), al volver se veía "en vivo" un partido
+// de la semana pasada: el último dato de ESPN era de cuando se estaba jugando. Ahora un "en vivo" de hace más de 20 min se
+// olvida, y si la página lleva más de 3 horas abierta se vuelve a cargar sola al regresar (con los datos del día).
+const PZ_CARGA=Date.now();
+function pzFrescura(recarga){ for(const [id,L] of Object.entries(NLIVE)) if(L.live&&Date.now()-(L.t||0)>20*60e3) delete NLIVE[id];
+  const ocupado=document.querySelector("dialog[open]")||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||"");
+  if(recarga&&Date.now()-PZ_CARGA>3*36e5&&!ocupado){ location.reload(); return true; } return false; }
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&!pzFrescura(true)&&typeof hoyPaint==="function"&&!$("#hoy").classList.contains("hidden")) try{ hoyPaint(); }catch(e){} });
+setInterval(()=>{ if(!document.hidden) pzFrescura(); },5*60e3);
 const ORD=["","1º","2º","3º","4º"];
 function nflClock(st){const t=st?.type?.name||"", p=st?.period||0, c=st?.displayClock||"";
   if(/HALFTIME/.test(t)) return "Medio tiempo"; if(/END_PERIOD/.test(t)) return p>=4?"Fin del 4º cuarto":`Fin del ${ORD[p]||p+"º"} cuarto`;
@@ -5800,7 +5809,7 @@ async function nflLiveUpdate(force,wk=curW){
     const s=e.status?.type?.state; if(s!=="in"&&s!=="post"){delete NLIVE[x.id]; continue;}
     const si=c.situation||{}, pos=si.possession?(String(si.possession)===String(H.id)?ab(H.team):String(si.possession)===String(A.id)?ab(A.team):null):null;
     NEID[x.id]=e.id;
-    NLIVE[x.id]={as:+A.score||0,hs:+H.score||0,live:s==="in",done:s==="post",st:s==="in"?nflClock(e.status):"Final",
+    NLIVE[x.id]={t:Date.now(),as:+A.score||0,hs:+H.score||0,live:s==="in",done:s==="post",st:s==="in"?nflClock(e.status):"Final",
       sit:s==="in"?{pos,dd:si.downDistanceText||si.shortDownDistanceText||"",rz:!!si.isRedZone,last:si.lastPlay?.text||"",pt:si.possessionText||"",dist:si.distance??null}:null};
   }
   if(wk===curW) renderNflWeek(); return true;
