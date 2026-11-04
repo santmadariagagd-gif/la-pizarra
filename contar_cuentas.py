@@ -83,6 +83,7 @@ try:
     h.append(dict(d=hoy.isoformat(), c=len(U), a1=act1, a7=out["activas_7d"], p=out["con_avisos_al_telefono"], j=sum(out["juegan"][k] for k in ("quiniela_liga_mx", "survivor_liga_mx", "fantasy", "reto_del_dia"))))
     ref.set(dict(al=out["al"], n=out, altas=serie, a1=act1, qmx=ult_n(qmx, 6), smx=ult_n(smx, 6), fan=ult_n(fan, 6), rd=rd14,
                  inv=invit, invitados=sum(inv.values()), nuevas=rec, pizarron=piz, h=h[-180:]))
-    print(f"Tablero: guardado ({len(h)} días de historial)")
+    print(f"Tablero: guardado ({len(h)} días de historial)"); est = dict(ok=True, dias=len(h), altas=len(serie), qmx=len(qmx), pizarron=len(piz))
 except Exception as ex:
-    print("Tablero: no se pudo guardar:", repr(ex))
+    print("Tablero: no se pudo guardar:", repr(ex)); est = dict(ok=False, error=repr(ex)[:300])
+json.dump(dict(al=out["al"], **est), open("bitacora/tablero_estado.json", "w", encoding="utf-8"), ensure_ascii=False)

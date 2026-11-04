@@ -22,6 +22,6 @@ jobs:
         run: |
           git config user.name "La Pizarra bot"
           git config user.email "actions@github.com"
-          git add bitacora/cuentas.json
+          git add bitacora/cuentas.json bitacora/tablero_estado.json
           git diff --cached --quiet || git commit -m "Conteo de cuentas"
           git pull --rebase -q && git push
