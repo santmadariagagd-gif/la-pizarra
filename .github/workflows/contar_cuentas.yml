@@ -1,6 +1,8 @@
 name: Contar cuentas
-# Cuántas cuentas y cuánta gente juega (solo números) → bitacora/cuentas.json. Solo a mano.
+# Cuántas cuentas y cuánta gente juega: bitacora/cuentas.json (solo números) y el tablero privado (Firestore admin/tablero).
 on:
+  schedule:
+    - cron: "40 12 * * *"   # todos los días 6:40 am CDMX
   workflow_dispatch:
 permissions:
   contents: write
