@@ -1,5 +1,5 @@
 {
- "al": "2026-11-03T19:25:14.276339+00:00",
+ "al": "2026-11-04T20:15:33.477479+00:00",
  "cuentas": 17,
  "verificadas": 17,
  "nuevas_7d": 4,
@@ -18,8 +18,9 @@
   "quiniela_liga_mx": 3,
   "survivor_liga_mx": 1,
   "fantasy": 3,
-  "reto_del_dia": 6,
+  "reto_del_dia": 7,
   "duelos": 6,
-  "posts": 18
- }
+  "posts": 21
+ },
+ "pizarron_pedidos": 0
 }
