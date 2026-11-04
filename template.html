@@ -1865,6 +1865,13 @@ dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background
 .qprem{max-width:640px;margin:4px 0 18px}.qprem h3{margin:0 0 8px}.qprs{display:grid;gap:8px}
 .qpr{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:linear-gradient(110deg,color-mix(in srgb,var(--c) 22%,transparent),var(--surface) 70%);border:1px solid color-mix(in srgb,var(--c) 45%,var(--line))}
 .qpric{font-size:30px;line-height:1;flex:none}.qpr>span:last-child{display:flex;flex-direction:column;min-width:0}.qpr small{font:700 12px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--c)}.qpr b{font:800 20px/1.15 var(--display)}.qpr em{font-style:normal;font-size:13px;color:var(--muted)}
+.tb h2{margin:0 0 4px}.tb h3{margin:22px 0 8px;font:800 19px var(--display)}.tbks{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:12px}
+.tbk{padding:12px 14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column}.tbk small{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}.tbk b{font:800 30px/1.1 var(--display)}.tbk span{color:var(--muted);font-size:13px}
+.tbch{position:relative;touch-action:pan-y}.tbch svg{width:100%;height:auto;display:block}.tbg{stroke:var(--line);stroke-width:1}.tbt{fill:var(--muted);font-size:11px}.tbln{fill:none;stroke:var(--mark);stroke-width:2.5;stroke-linejoin:round}.tbpt,.tbh{fill:var(--mark);stroke:var(--bg);stroke-width:2}.tbx{stroke:var(--muted);stroke-dasharray:3 3}
+.tbtip{position:absolute;top:0;transform:translateX(-50%);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-size:13px;white-space:nowrap;pointer-events:none}
+.tbbar{display:grid;gap:6px}.tbbar>div{display:grid;grid-template-columns:minmax(90px,38%) 1fr 36px;gap:8px;align-items:center;font-size:14px}.tbbar i{height:14px;border-radius:0 4px 4px 0;background:var(--mark);display:block}.tbbar b{text-align:right}
+.tbcol{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;height:130px;align-items:end}.tbcol>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px}.tbcol i{width:100%;max-width:26px;background:var(--mark);border-radius:4px 4px 0 0;display:block}.tbcol span{color:var(--muted);margin-top:3px}.tbcol b{font-size:11px;margin-bottom:2px}
+.tbdos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 18px}
 .pzpide{width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}
 .pzp h2{margin:0 0 8px}.pzp>p{color:var(--muted)}.pzpl{display:flex;flex-direction:column;gap:4px;margin:12px 0;font-weight:600;font-size:14px}.pzpl input,.pzpl textarea{font:inherit;font-weight:400;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .pzpn{display:grid;gap:8px}.pzpo{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer}.pzpo:has(input:checked){border-color:var(--mark);background:#33493F}
@@ -3028,6 +3035,56 @@ function slStand(stand,pts){
   $("#slStand").innerHTML=`<thead><tr><th class="l" aria-label="Lugar"></th><th class="l">Equipo</th><th>Récord</th><th>PF</th><th>PC</th></tr></thead><tbody>${stand.map((r,i)=>{const s=r.settings||{};
     return `<tr class="${r===SL.mine?"me":""}"><td class="rk">${i+1}</td><td class="l"><span class="nm">${teamName(r)}</span></td><td>${s.wins||0}-${s.losses||0}${s.ties?"-"+s.ties:""}</td><td>${fmt(pts(r),1)}</td><td>${fmt(pa(r),1)}</td></tr>`;}).join("")}</tbody>`;
 }
+// ---- Tablero de estadísticas (4 nov 2026): lapizarra.mx/?tablero=1. Firestore admin/tablero (lo arma contar_cuentas.py cada
+// mañana). Las reglas solo dejan leerlo a la cuenta del dueño; a cualquier otra persona le sale "solo el dueño".
+const TB_F=d=>{ const [y,m,dd]=String(d).split("-").map(Number); return pzDTF("es-MX",{day:"numeric",month:"short",timeZone:"UTC"}).format(Date.UTC(y,m-1,dd)).replace(".",""); };
+function tbLinea(id,P,nom){ // P=[[fecha, valor]] · una sola serie, con línea de tiempo al tocar
+  if(P.length<2) return `<p class="note">Todavía hay pocos días de historial: la gráfica aparece en cuanto haya dos.</p>`;
+  TB_LAST[id]={P};
+  const W=360,H=170,l=30,r=8,t=12,b=22, v=P.map(p=>p[1]), mn=Math.min(0,...v), mx=Math.max(...v,1), X=i=>l+i*(W-l-r)/(P.length-1), Y=x=>t+(H-t-b)*(1-(x-mn)/(mx-mn||1));
+  const ticks=[mn,Math.round((mn+mx)/2),mx].filter((x,i,A)=>A.indexOf(x)===i);
+  const d=P.map((p,i)=>`${i?"L":"M"}${X(i).toFixed(1)},${Y(p[1]).toFixed(1)}`).join("");
+  const xt=[0,Math.floor((P.length-1)/2),P.length-1];
+  return `<div class="tbch" data-tbl="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${hoyEsc(nom)}: de ${v[0]} a ${v[v.length-1]}">
+    ${ticks.map(x=>`<line x1="${l}" x2="${W-r}" y1="${Y(x)}" y2="${Y(x)}" class="tbg"/><text x="${l-6}" y="${Y(x)+4}" text-anchor="end" class="tbt">${x}</text>`).join("")}
+    ${xt.map(i=>`<text x="${X(i)}" y="${H-6}" text-anchor="${i?i===P.length-1?"end":"middle":"start"}" class="tbt">${TB_F(P[i][0])}</text>`).join("")}
+    <path d="${d}" class="tbln"/><circle cx="${X(P.length-1)}" cy="${Y(v[v.length-1])}" r="4.5" class="tbpt"/>
+    <line class="tbx" x1="0" x2="0" y1="${t}" y2="${H-b}" visibility="hidden"/><circle class="tbh" r="5" visibility="hidden"/></svg><div class="tbtip" hidden></div></div>`; }
+function tbBarras(P,fmt){ const mx=Math.max(...P.map(p=>p[1]),1);
+  return `<div class="tbbar">${P.map(([k,v])=>`<div title="${hoyEsc(k)}: ${v}"><span>${hoyEsc(fmt?fmt(k):k)}</span><i style="width:${Math.max(2,v/mx*100)}%"></i><b>${v}</b></div>`).join("")}</div>`; }
+function tbCols(P){ const mx=Math.max(...P.map(p=>p[1]),1);
+  return `<div class="tbcol">${P.map(([d,v])=>`<div title="${TB_F(d)}: ${v}"><b>${v||""}</b><i style="height:${v?Math.max(4,v/mx*100):0}%"></i><span>${TB_F(d).split(" ")[0]}</span></div>`).join("")}</div>`; }
+async function tbAbre(){
+  $("#gbody").innerHTML=pzSkel(4); if(!dlg.open) dlg.showModal(); pzTrack("tablero_abre",{});
+  if(!(typeof acctOk==="function"&&acctOk())){ $("#gbody").innerHTML=`<p class="note">Entra con tu cuenta para ver el tablero.</p><button class="btn" data-acct>Entrar</button>`; return; }
+  let X=null; try{ const s=await ACCT.db.doc("admin/tablero").get(); X=s.exists?s.data():null; }catch(e){ $("#gbody").innerHTML=`<p class="note">El tablero es solo para el dueño de La Pizarra.</p>`; return; }
+  if(!X){ $("#gbody").innerHTML=`<p class="note">El tablero se arma cada mañana; todavía no hay datos.</p>`; return; }
+  try{ localStorage.setItem("pz_admin","1"); }catch(e){}
+  const n=X.n||{}, J=n.juegan||{}, h=X.h||[], al=pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"long",day:"numeric",month:"long",hour:"numeric",minute:"2-digit"}).format(new Date(X.al));
+  const tile=(k,v,s)=>`<div class="tbk"><small>${k}</small><b>${v}</b>${s?`<span>${s}</span>`:""}</div>`;
+  const nomJ=s=>{ const m=/-(\w+)$/.exec(s); return m?(m[1]==="llave"?"Llave":`J${m[1]}`):s; };
+  const tabla=(cab,F)=>F.length?`<div class="tbl"><table><thead><tr>${cab.map((c,i)=>`<th${i?"":' class="l"'}>${c}</th>`).join("")}</tr></thead><tbody>${F.map(r=>`<tr>${r.map((c,i)=>`<td${i?"":' class="l"'}>${hoyEsc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`:`<p class="note">Nada todavía.</p>`;
+  $("#gbody").innerHTML=`<div class="tb"><h2>Tablero de La Pizarra</h2><p class="note">Se actualiza cada mañana · último: ${hoyEsc(al)}. Solo tú lo ves.</p>
+    <div class="tbks">${tile("Cuentas",n.cuentas,`+${n.nuevas_7d} esta semana`)}${tile("Entraron hoy",X.a1??"–",`${n.activas_7d} en 7 días`)}${tile("Avisos al teléfono",n.con_avisos_al_telefono,`de ${n.cuentas}`)}${tile("Llegaron invitados",X.invitados||0,"con el link de alguien")}${tile("Pedidos del Pizarrón",n.pizarron_pedidos||0,"por activar")}</div>
+    <h3>Cuentas en total · últimos 60 días</h3>${tbLinea("c",(X.altas||[]).map(a=>[a[0],a[2]]),"Cuentas en total")}
+    <h3>Gente que entró en los últimos 7 días</h3>${tbLinea("a",h.map(x=>[x.d,x.a7]),"Activas en 7 días")}
+    <h3>¿Quién juega qué?</h3><p class="note">Personas distintas que alguna vez jugaron cada cosa.</p>${tbBarras([["Reto del día",J.reto_del_dia||0],["Quiniela Liga MX",J.quiniela_liga_mx||0],["Fantasy",J.fantasy||0],["Survivor Liga MX",J.survivor_liga_mx||0],["Duelos (retos)",J.duelos||0],["Publicaciones en Amigos",J.posts||0]])}
+    <h3>Reto del día · respuestas por día</h3>${tbCols(X.rd||[])}
+    <div class="tbdos"><div><h3>Quiniela Liga MX por jornada</h3>${tbBarras(X.qmx||[],nomJ)}</div><div><h3>Survivor por jornada</h3>${tbBarras(X.smx||[],nomJ)}</div><div><h3>Fantasy por jornada</h3>${tbBarras(X.fan||[],nomJ)}</div></div>
+    <h3>Cuentas nuevas</h3>${tabla(["Apodo","Se registró","Entró con","Última vez"],(X.nuevas||[]).map(r=>[r[0],TB_F(r[1]),r[2]==="google"?"Google":r[2]==="password"?"Correo":r[2],r[3]?TB_F(r[3]):"–"]))}
+    <h3>Quién trae más gente</h3>${tabla(["Invitó","Se unieron"],(X.inv||[]).map(r=>[r[0],String(r[1])]))}
+    <h3>Pedidos de El Pizarrón</h3>${tabla(["Liga","Carrilla","Pidió","Fecha","Estado"],(X.pizarron||[]).map(p=>[p.nom||p.liga,p.picante,p.quien,p.f?TB_F(p.f):"",p.est==="activo"?"Activo":"Por activar"]))}
+    <p class="note">Las visitas sin cuenta (cuánta gente abre la página) están en Google Analytics.</p></div>`;
+}
+document.addEventListener("pointermove",ev=>{ const c=ev.target.closest?.(".tbch"); if(!c) return; const sv=c.querySelector("svg"), r=sv.getBoundingClientRect(), id=c.dataset.tbl;
+  const X=TB_LAST[id]; if(!X) return; const vb=sv.viewBox.baseVal, x=(ev.clientX-r.left)/r.width*vb.width, P=X.P, l=30, rr=8, i=Math.max(0,Math.min(P.length-1,Math.round((x-l)/((vb.width-l-rr)/(P.length-1)))));
+  const px=l+i*(vb.width-l-rr)/(P.length-1);
+  const v=P.map(p=>p[1]), mn=Math.min(0,...v), mx=Math.max(...v,1), py=12+(vb.height-12-22)*(1-(P[i][1]-mn)/(mx-mn||1));
+  const ln=c.querySelector(".tbx"), h=c.querySelector(".tbh"); ln.setAttribute("x1",px); ln.setAttribute("x2",px); ln.setAttribute("visibility","visible"); h.setAttribute("cx",px); h.setAttribute("cy",py); h.setAttribute("visibility","visible");
+  const tip=c.querySelector(".tbtip"); tip.hidden=false; tip.innerHTML=`<b>${P[i][1]}</b> · ${TB_F(P[i][0])}`; tip.style.left=`${Math.min(85,Math.max(5,px/vb.width*100))}%`; });
+document.addEventListener("pointerleave",ev=>{ const c=ev.target.closest?.(".tbch"); if(!c) return; c.querySelectorAll(".tbx,.tbh").forEach(e=>e.setAttribute("visibility","hidden")); c.querySelector(".tbtip").hidden=true; },true);
+const TB_LAST={};
+(()=>{ try{ if(new URLSearchParams(location.search).get("tablero")==="1"){ let n=0; const iv=setInterval(()=>{ if(typeof acctOk==="function"&&(acctOk()||++n>16)){ clearInterval(iv); tbAbre(); } },500); } }catch(e){} })();
 // ---- Pedir El Pizarrón (3 nov 2026) ----
 // pizarron/{ligaSleeper} = {uid, liga, nom, picante, titulo, evitar, est:"pedido"|"activo", t}. Lo crea quien lo pide y solo esa persona
 // lo puede cambiar (reglas de Firebase). periodico.py lo lee cada martes: así cada liga escoge qué tan dura es la carrilla.
