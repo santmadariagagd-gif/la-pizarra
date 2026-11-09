@@ -6730,6 +6730,40 @@
       "BUF@MIN": 3.5,
       "CIN@ATL": 2.5
      }
+    },
+    {
+     "cuando": "2026-11-09 14:44",
+     "motivo": "diaria",
+     "lineas": {
+      "BUF@MIN": {
+       "draftkings": 3.5,
+       "fanduel": 3.0,
+       "betus": 3.0,
+       "betonlineag": 3.5,
+       "lowvig": 3.5,
+       "betrivers": 3.5,
+       "mybookieag": 3.0,
+       "betmgm": 3.5,
+       "bovada": 3.5
+      }
+     },
+     "espn": {
+      "DAL@IND": 5.5,
+      "CLE@NO": -2.5,
+      "NYG@PHI": 3.5,
+      "DEN@CAR": 2.5,
+      "HOU@LAC": 4.5,
+      "LV@SF": -9.5,
+      "ARI@SEA": -10.5,
+      "TB@CHI": -5.5,
+      "JAX@BAL": 9.5,
+      "NYJ@KC": -9.5,
+      "DET@MIA": 6.5,
+      "LA@WAS": 5.5,
+      "GB@NE": -2.5,
+      "BUF@MIN": 3.5,
+      "CIN@ATL": 2.5
+     }
     }
    ],
    "primera_vez": "2026-11-03T21:49+00:00"
