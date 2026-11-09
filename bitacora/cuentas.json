@@ -1,17 +1,17 @@
 {
- "al": "2026-11-08T18:04:06.140943+00:00",
- "cuentas": 17,
- "verificadas": 17,
- "nuevas_7d": 0,
- "nuevas_30d": 7,
- "activas_7d": 7,
- "activas_30d": 13,
+ "al": "2026-11-09T22:40:39.438230+00:00",
+ "cuentas": 18,
+ "verificadas": 18,
+ "nuevas_7d": 1,
+ "nuevas_30d": 8,
+ "activas_7d": 8,
+ "activas_30d": 14,
  "por_forma_de_entrar": {
-  "google.com": 15,
+  "google.com": 16,
   "password": 2
  },
- "perfiles": 12,
- "amistades": 11,
+ "perfiles": 13,
+ "amistades": 12,
  "grupos": 6,
  "con_avisos_al_telefono": 1,
  "juegan": {
@@ -20,7 +20,7 @@
   "fantasy": 3,
   "reto_del_dia": 7,
   "duelos": 6,
-  "posts": 29
+  "posts": 31
  },
  "pizarron_pedidos": 0
 }
