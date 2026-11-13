@@ -3369,13 +3369,14 @@ function lpzRecord(mode,onlyWeek){
   return R;
 }
 // Análisis corto del pick (desde la v3, semana 11 de 2026): por qué escogió así. build_site guarda m, L, ap (cuánto cubrió
-// cada uno la semana pasada [local, visita]), qb ({equipo: [titular, el que juega]}), ds/dd (visita descansada) y cl (clima).
+// cada uno la semana pasada [local, visita]), qb ({equipo: [titular, el que juega, puntos que le cambia a nuestra línea]}), ds/dd (visita descansada) y cl (clima).
 function lpzPor(x,a,h,sp){
   if(!x||(x.v||0)<3) return "";
   const N=t=>(NT[t]||{n:t}).n, n=v=>String(Math.round(Math.abs(v)*2)/2).replace(".5","½"), hf=+(D.qmodel?.hfa||0), out=[];
+  if(x.qb) for(const [t,q] of Object.entries(x.qb)){ const d=+q[2]||0;
+    out.push(`Sin ${q[0]} (juega ${q[1]||"otro QB"}), nuestra línea ${Math.abs(d)<0.25?"casi no cambia para":d<0?`le baja ${n(d)} ${Math.abs(d)<1.25?"punto":"puntos"} a`:`le sube ${n(d)} ${Math.abs(d)<1.25?"punto":"puntos"} a`} ${N(t)}.`); }
   if(sp&&x.L!=null){
-    if(x.qb) for(const [t,q] of Object.entries(x.qb)) out.push(`${N(t)} juega con ${q[1]||"otro QB"} en lugar de ${q[0]}: aquí no usamos nuestra línea, que no sabe de lesiones.`);
-    else if(x.m!=null){ const e=(x.m+x.L)-hf;
+    if(!x.qb&&x.m!=null){ const e=(x.m+x.L)-hf;
       out.push(Math.abs(e)<1?"Nuestra línea casi coincide con la oficial.":`Nuestro modelo ve a ${N(e>0?h:a)} ${n(e)} ${Math.abs(e)<1.25?"punto":"puntos"} mejor de lo que dice la línea.`); }
     const [ph,pa]=x.ap||[0,0], [bt,bv]=Math.abs(ph)>=Math.abs(pa)?[h,ph]:[a,pa];
     if(Math.abs(bv)>=7) out.push(bv>0?`${N(bt)} cubrió por ${n(bv)} la semana pasada, y después de algo así la línea suele exagerar.`:`${N(bt)} quedó ${n(bv)} abajo de la línea la semana pasada, y después de algo así la línea suele castigarlo de más.`);
@@ -3427,7 +3428,7 @@ function lpzRender(P){
     </div>
     <div class="lpznav"><button class="lpzarr" data-lw="-1" aria-label="Semana anterior" ${w<=ws[0]?"disabled":""}>‹</button><h3>Semana ${w}</h3><button class="lpzarr" data-lw="1" aria-label="Semana siguiente" ${w>=ws[ws.length-1]?"disabled":""}>›</button></div>
     <ul class="hon lpzl">${rows||`<li><div class="hn"><small>Sin picks esta semana.</small></div></li>`}</ul>
-    <p class="note" style="margin-top:12px">${sp?`Cada pick se califica con la línea con la que se hizo (la oficial de los grupos).${+D.season===2026&&w>=11?" Desde la semana 11 escoge distinto: ya no le suma ventaja al local (las líneas ya la cobran), va contra el equipo que cubrió por mucho la semana anterior, no usa nuestra línea si un equipo juega sin su QB titular y le da 2 puntos a la visita que llega con 3 días más de descanso.":""} `:""}Los picks se revisan cada mañana hasta el día del primer partido de la semana (normalmente el jueves); desde esa mañana quedan fijos, igual que las líneas.${late?" Esta semana se calculó después, solo con datos hasta la semana anterior y la línea de cierre de Las Vegas.":""}</p>`;
+    <p class="note" style="margin-top:12px">${sp?`Cada pick se califica con la línea con la que se hizo (la oficial de los grupos).${+D.season===2026&&w>=11?" Desde la semana 11 escoge distinto: ya no le suma ventaja al local (las líneas ya la cobran), va contra el equipo que cubrió por mucho la semana anterior, ajusta nuestra línea cuando un equipo juega sin su QB titular (según qué tan bueno es cada QB) y le da 2 puntos a la visita que llega con 3 días más de descanso.":""} `:""}Los picks se revisan cada mañana hasta el día del primer partido de la semana (normalmente el jueves); desde esa mañana quedan fijos, igual que las líneas.${late?" Esta semana se calculó después, solo con datos hasta la semana anterior y la línea de cierre de Las Vegas.":""}</p>`;
 }
 $("#qLpz").addEventListener("click",e=>{const b=e.target.closest?.("[data-lw]"); if(!b||b.disabled) return; lpzWeek+=+b.dataset.lw; qnGet().then(lpzRender);});
 // ---------- Survivor (hecho el 5 oct 2026) ----------

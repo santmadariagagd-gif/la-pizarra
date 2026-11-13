@@ -1143,6 +1143,38 @@ def _lpz():
             for t_,q_ in ((hh,hq),(aa,aq)):
                 if q_ and isinstance(q_,str): cnt.setdefault(t_,{}); cnt[t_][q_]=cnt[t_].get(q_,0)+1
         return {t_:max(c_,key=c_.get) for t_,c_ in cnt.items()}
+    # QB que no es el titular (13 nov 2026, v3.1): nuestra línea APRENDE cuánto vale el cambio. Calidad de cada QB = EPA por
+    # jugada de pase (dropback) en esta temporada y la pasada, jalada hacia el nivel de un suplente (−0.12) con 250 jugadas
+    # de peso (así un novato sin jugadas cuenta como suplente). Backtest 2015-22: cada 0.1 de EPA/jugada de diferencia
+    # vale 1.83 puntos de margen (2023-26 lo confirmó: 2.7). Con el ajuste, nuestra línea atina 66.1% de ganadores en
+    # esos partidos (sin ajuste 63.4%). Va a la línea, al pick sin spread y al survivor. Contra el spread, en esos partidos
+    # el pick se decide por las demás señales: aun ajustada, nuestra línea ahí atinó 48.9% y sin ella 50.5%.
+    QB_PTS,QB_PRIOR,QB_K=18.3,-0.12,250
+    _abq=lambda n:None if not isinstance(n,str) or not n.strip() else (n.split()[0][0]+"."+" ".join(n.split()[1:])).replace(" Jr.","").replace(" Sr.","").replace(" III","").replace(" II","")
+    def _qbdf(pp):
+        try:
+            x_=pp[(pp.qb_dropback==1)&pp.epa.notna()][['week','passer_player_name','rusher_player_name','epa']].copy()
+            x_['q']=x_.passer_player_name.fillna(x_.rusher_player_name); return x_
+        except Exception as ex_: print("QB: sin datos de pase:",ex_); return None
+    QBP_C=_qbdf(pbp_all); QBP_P=_qbdf(pbp_prev) if pbp_prev is not None else None
+    QBC={}
+    def qb_cal(nom,w):
+        n_=_abq(nom)
+        if n_ is None: return QB_PRIOR
+        if (n_,w) not in QBC:
+            S_=0.0; N_=0
+            for X_,todo in ((QBP_C,False),(QBP_P,True)):
+                if X_ is None: continue
+                y_=X_[(X_.q==n_)&(True if todo else X_.week<w)]; S_+=float(y_.epa.sum()); N_+=len(y_)
+            QBC[(n_,w)]=(S_+QB_PRIOR*QB_K)/(N_+QB_K)
+        return QBC[(n_,w)]
+    def qb_ajuste(key,w,TIT):
+        """(puntos a sumar al margen del local, {equipo: [titular, el que juega, puntos]})."""
+        _,hq,aq,_,_=QBR.get(key,(0,None,None,None,None)); a_,h_=key.split('@'); pts=0.0; info={}
+        for t_,q_,sg in ((h_,hq,1),(a_,aq,-1)):
+            if q_ and isinstance(q_,str) and TIT.get(t_) and q_!=TIT[t_]:
+                d_=QB_PTS*(qb_cal(q_,w)-qb_cal(TIT[t_],w)); pts+=sg*d_; info[t_]=[TIT[t_],q_,round(d_,1)]
+        return pts,info
     def ats_prev(w):
         r={}
         for g_ in sorted((g_ for g_ in sched if g_['w']<w and g_.get('hs') is not None and g_.get('as_') is not None),key=lambda g_:g_['w']):
@@ -1171,6 +1203,10 @@ def _lpz():
             nh,na=N.get(g['h']),N.get(g['a'])
             if nh is None or na is None or (isinstance(nh,float) and math.isnan(nh)) or (isinstance(na,float) and math.isnan(na)): continue
             m=k*(nh-na)+hf
+            qinfo={}
+            if w>=LPZ_V2 and not fija:
+                try: qa,qinfo=qb_ajuste(key,w,TIT); m+=qa
+                except Exception as ex_: print("QB:",key,ex_)
             pv=None
             ia,ih=imp(g.get('aml')),imp(g.get('hml'))
             if ia is not None and ih is not None: pv=ih/(ia+ih)
@@ -1180,9 +1216,8 @@ def _lpz():
                 if w>=LPZ_V2:
                     contra=-0.4*(AP.get(g['h'],0)-AP.get(g['a'],0)); v=(m+L)-hf+contra; x['v']=3
                     _,hq,aq,hr,ar=QBR.get(key,(0,None,None,None,None))
-                    sinqb=[t_ for t_,q_ in ((g['h'],hq),(g['a'],aq)) if q_ and TIT.get(t_) and q_!=TIT[t_]]
-                    if sinqb:      # equipo sin su QB titular: nuestra línea no sirve aquí
-                        v=contra+1e-9; x['qb']={t_:[TIT[t_],hq if t_==g['h'] else aq] for t_ in sinqb}
+                    if qinfo:      # equipo sin su QB titular: la línea ya trae el ajuste; el pick con spread va por las demás señales
+                        v=contra+1e-9; x['qb']=qinfo
                     x['ap']=[round(AP.get(g['h'],0),1),round(AP.get(g['a'],0),1)]
                     if hr is not None and ar is not None:
                         try: x['dd']=int(float(ar)-float(hr))
@@ -1210,7 +1245,11 @@ def _lpz():
     def prob(N,g,vegas):
         nh,na=N.get(g['h']),N.get(g['a'])
         if nh is None or na is None: return None
-        ph=phi((k*(nh-na)+hf)/13.45)
+        mm=k*(nh-na)+hf
+        if vegas:
+            try: mm+=qb_ajuste(f"{g['a']}@{g['h']}",g['w'],qb_tit(g['w']))[0]
+            except Exception: pass
+        ph=phi(mm/13.45)
         if vegas:
             ia,ih=imp(g.get('aml')),imp(g.get('hml'))
             if ia is not None and ih is not None: ph=(ph+ih/(ia+ih))/2
