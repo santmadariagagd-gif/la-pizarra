@@ -883,6 +883,36 @@ def render(liga_nombre, titulo, w, fecha, D, T, url):
 
 
 # ---------------------------------------------------------------- Principal
+EJ_EQ = ["Los Compadres", "Tacos de Ojo FC", "La Banca Rota", "Atlético Godínez", "Club Recalentado", "Real Garnacha",
+         "Sporting Microbús", "Deportivo Tráfico", "Los Hijos del Waiver", "Tlacoyos FC", "Inter de Iztapalapa", "Los Sin Suerte",
+         "Chilaquiles United", "La Quincena FC"]
+EJ_MAN = ["elcompa", "pepe_tacos", "lagüera", "memo87", "ruthie", "chuy.godinez", "elinge", "paco_mx", "laura.d", "beto_ws",
+          "cesar10", "nacho", "la_tía_toña", "don_ramiro"]
+
+
+def anonimiza(D, L):
+    """13 nov 2026: periódico de EJEMPLO (botón "Ver un ejemplo" de lapizarra.mx/?pizarron=1). Usa los números reales de una
+    liga pero cambia nombres de equipos y de managers por inventados, para no exhibir a nadie. Los jugadores de la NFL se quedan."""
+    import re as _re
+    s = json.dumps(D, ensure_ascii=False)
+    eqs = []
+    for t in D.get("tabla") or []:
+        if t.get("eq") and t["eq"] not in eqs: eqs.append(t["eq"])
+    mans = []
+    for m in D.get("matchups") or []:
+        for k in ("ganador_manager", "perdedor_manager", "g_manager", "p_manager"):
+            if m.get(k) and m[k] not in mans and m[k] not in eqs: mans.append(m[k])
+    for u in (getattr(L, "users", None) or {}).values():
+        for n in ((u or {}).get("display_name"), ((u or {}).get("metadata") or {}).get("team_name")):
+            if n and n not in mans and n not in eqs: mans.append(n)
+    mapa = {**{e: EJ_EQ[i % len(EJ_EQ)] for i, e in enumerate(eqs)}, **{m: EJ_MAN[i % len(EJ_MAN)] for i, m in enumerate(mans)}}
+    for viejo in sorted(mapa, key=len, reverse=True):
+        nuevo = json.dumps(mapa[viejo], ensure_ascii=False)[1:-1]
+        s = _re.sub(r"(?<![\w])" + _re.escape(json.dumps(viejo, ensure_ascii=False)[1:-1]) + r"(?![\w])", nuevo, s)
+    print(f"Periódico de ejemplo: {len(eqs)} equipos y {len(mans)} managers cambiados")
+    return json.loads(s)
+
+
 def main():
     cfg = json.load(open(os.path.join(AQUI, "periodico.json"), encoding="utf-8"))
     ligas = [l for l in cfg.get("ligas", []) if l.get("plataforma", "sleeper") == "sleeper"]
@@ -900,16 +930,21 @@ def main():
     if not PROJ_SIG: PROJ_SIG = proyecciones_directo(season, w + 1)   # para que la previa salga aunque build_site no haya corrido
     print(f"Periódico: proyecciones semana {w}: {len(PROJ)} jugadores; semana {w+1}: {len(PROJ_SIG)}")
     total = 0.0
+    EJ = os.environ.get("EJEMPLO") == "1"
+    if EJ: ligas = ligas[:1]
     for cfgl in ligas:
         lid = str(cfgl["liga"])
         cfgl = {**cfgl, **config_liga(lid)}   # lo que la liga escogió en la página manda sobre periodico.json
+        if EJ: cfgl = {**cfgl, "picante": "normal", "titulo": "El Pizarrón de la Liga de Ejemplo", "evitar": ""}
         if cfgl.get("picante") not in PICANTE: cfgl["picante"] = "normal"
         try:
             L = Liga(lid, season, w, P)
             D = calcular(L, PROJ, PROJ_SIG)
             if not D.get("matchups"): print(f"Periódico: {lid} sin matchups en la semana {w}"); continue
             nombre = L.league.get("name") or "Tu liga"
+            if EJ: D = anonimiza(D, L); nombre = "Liga de Ejemplo"
             titulo = cfgl.get("titulo") or f"El Pizarrón de {nombre}"
+            if EJ: lid = "ejemplo"
             _fj = os.path.join(AQUI, "docs", "periodico", lid, f"{season}-{w}.datos.json")
             if os.environ.get("SOLO_ARMAR") == "1" and os.path.exists(_fj): T, costo = None, 0
             else: T, costo = escribir(D, nombre, w, cfgl.get("picante", "normal"), cfgl.get("evitar", ""))

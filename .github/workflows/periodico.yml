@@ -10,6 +10,9 @@ on:
       sin_ia:
         description: "Escribe 1 para probar sin gastar en la IA"
         required: false
+      ejemplo:
+        description: "Escribe 1 para hacer el periódico de EJEMPLO (nombres inventados, carrilla normal)"
+        required: false
       solo_armar:
         description: "Escribe 1 para volver a armar la página con los textos que ya escribió la IA (no gasta)"
         required: false
@@ -31,6 +34,7 @@ jobs:
           SEMANA: ${{ github.event.inputs.semana }}
           SIN_IA: ${{ github.event.inputs.sin_ia }}
           SOLO_ARMAR: ${{ github.event.inputs.solo_armar }}
+          EJEMPLO: ${{ github.event.inputs.ejemplo }}
       - name: Publicar los periódicos
         run: |
           git config user.name "La Pizarra bot"

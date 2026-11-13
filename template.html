@@ -3107,7 +3107,7 @@ async function pzpAbre(){ pzTrack("pizarron_abre",{});
   const niv=X?.picante||"normal";
   $("#gbody").innerHTML=`<div class="pzp"><h2>El Pizarrón para tu liga</h2>
     <p>Cada martes, después del Monday Night, tu liga recibe su periódico: marcadores, crónicas, el roast de cada equipo, premios, la lotería del power ranking y la previa de la semana. ${id?"":"Conecta tu liga de Sleeper en Fantasy → Mi liga para pedirlo."}</p>
-    <a class="q5link" href="/periodico/1383551364243660800/" target="_blank" rel="noopener">Ver un ejemplo ›</a>
+    <a class="q5link" href="/periodico/ejemplo/" target="_blank" rel="noopener">Ver un ejemplo ›</a>
     ${id?`<label class="pzpl">Tu liga<input value="${hoyEsc(lg.name||id)}" disabled></label>`:`<label class="pzpl">Número de tu liga en Sleeper<input id="pzpLiga" inputmode="numeric" placeholder="Sale en el link: sleeper.com/leagues/NÚMERO"></label>`}
     ${ajeno?`<p class="note">Alguien más de tu liga ya lo pidió. Si quieres cambiar algo, pídeselo a esa persona.</p>`:`
     <h3 class="pet">¿Qué tan dura quieres la carrilla?</h3><div class="pzpn" role="radiogroup">${PZP_NIV.map(([k,n,d,e])=>`<label class="pzpo"><input type="radio" name="pzpniv" value="${k}"${k===niv?" checked":""}><span><b>${n}</b><small>${d}</small><i>${e}</i></span></label>`).join("")}</div>
