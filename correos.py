@@ -223,6 +223,9 @@ class Correos:
         duenos = [u for u, (e, _) in self.quien().items() if hashlib.sha256(e.strip().lower().encode()).hexdigest()[:16] == "bbd57af465240ba7"]
         print(f"Correo de prueba al dueño: {len(duenos)} cuenta(s)")
         self.semanal(solo=duenos)
+        for uid in duenos:      # y el de cierre, con unos cuartos de final de mentiritas a 5 horas
+            h_, t_ = self.correo_cierre(self.quien()[uid][1], "los cuartos de final", time.time() + 5 * 3600 + 120)
+            self.manda(uid, f"cie-prueba{int(time.time())}-{uid[:10]}", "⏰ (Prueba) Te faltan tus picks: los cuartos de final cierran hoy", h_, t_)
 
     def corre(self):
         if os.environ.get("CORREO_PRUEBA") == "1":
