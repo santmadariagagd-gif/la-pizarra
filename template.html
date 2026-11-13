@@ -278,7 +278,10 @@ input[type=search].hq{width:100%;max-width:440px}
 .lpzl .qlg{width:34px;height:34px;flex:none}
 .lpzst{text-align:right;flex:none}
 .lpzl li:has(.lpzpq){flex-wrap:wrap}
-.lpzl small.lpzpq{flex:1 0 100%;box-sizing:border-box;margin:2px 0 0;padding-left:46px;font-size:12.5px;line-height:1.4;color:var(--muted);white-space:normal}
+.lpzl .lpzpq{flex:1 0 100%;box-sizing:border-box;margin:6px 0 2px;padding-left:46px;display:flex;flex-direction:column;gap:6px}
+.lpzr{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:var(--muted)}
+.lpzc{flex:none;display:inline-flex;align-items:center;gap:4px;min-width:84px;box-sizing:border-box;padding:2px 8px 2px 5px;border-radius:999px;background:rgba(242,212,102,.12);border:1px solid rgba(242,212,102,.28);color:var(--ink);font-weight:600;font-size:11.5px;white-space:nowrap}
+.lpzc i{font-style:normal;font-size:13px}
 .lpzst small{display:block;color:var(--muted);font-size:12px;margin-top:2px;white-space:nowrap}
 @media (max-width:560px){.lpzrec{gap:6px}.lpzrec>div{padding:10px}.lpzrec b{font-size:24px}.lpzrec span,.lpzrec small{font-size:12px}}
 .qdisc{margin:0 0 14px;padding:12px 14px;background:var(--hl);border:1px solid var(--line);border-left:4px solid var(--mark);border-radius:10px;font-size:15px;line-height:1.45;color:var(--ink)}
@@ -616,6 +619,14 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
 /* ---------- Portada "Hoy en La Pizarra" (rediseño 6 oct 2026) ---------- */
 .hoyhead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding:8px 0 2px}
 .hoyhead h2{font:700 36px/1 var(--display);margin:0}
+/* Estilo pizarrón (13 nov 2026): subrayado de gis amarillo, jugada dibujada en el encabezado de Hoy y borrones de gis en el fondo */
+.hoyhead{position:relative}
+.hoyhead::before{content:"";position:absolute;right:-4px;top:-6px;width:190px;height:96px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 110' fill='none' stroke='%23ECEFE7' stroke-width='3' stroke-linecap='round'%3E%3Cfilter id='g'%3E%3CfeTurbulence baseFrequency='.8' numOctaves='1' seed='5'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='2.5'/%3E%3C/filter%3E%3Cg filter='url(%23g)'%3E%3Ccircle cx='40' cy='88' r='9'/%3E%3Ccircle cx='75' cy='88' r='9'/%3E%3Ccircle cx='110' cy='88' r='9'/%3E%3Ccircle cx='145' cy='88' r='9'/%3E%3Cpath d='M30 40 l14 14 M44 40 l-14 14 M95 34 l14 14 M109 34 l-14 14 M160 40 l14 14 M174 40 l-14 14'/%3E%3Cpath d='M40 78 C 30 50, 38 30, 55 12 M55 12 l-11 2 M55 12 l-1 11' stroke-dasharray='7 5'/%3E%3Cpath d='M110 78 C 120 50, 150 30, 196 22 M196 22 l-10 -5 M196 22 l-8 8' stroke='%23F2D466'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain;opacity:.16;pointer-events:none}
+.hoyhead h2 .hm,.hoyhead h2 .hd{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cfilter id='g'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='1' seed='3'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='2.2'/%3E%3C/filter%3E%3Cpath filter='url(%23g)' d='M3 6 C 22 2.5, 42 8.5, 62 5 S 100 3, 117 6.5' fill='none' stroke='%23F2D466' stroke-width='3.2' stroke-linecap='round' stroke-dasharray='9 1.6' opacity='.9'/%3E%3C/svg%3E") no-repeat 0 100%/100% 9px;padding-bottom:10px}
+.hoyhead .hm{display:inline-block}
+.hh h3{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cfilter id='g'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='1' seed='3'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='2.2'/%3E%3C/filter%3E%3Cpath filter='url(%23g)' d='M3 6 C 22 2.5, 42 8.5, 62 5 S 100 3, 117 6.5' fill='none' stroke='%23F2D466' stroke-width='3.2' stroke-linecap='round' stroke-dasharray='9 1.6' opacity='.9'/%3E%3C/svg%3E") no-repeat 0 100%/54px 7px;padding-bottom:9px}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(60% 40% at 15% 10%,rgba(255,255,255,.035),transparent 70%),radial-gradient(50% 35% at 85% 55%,rgba(255,255,255,.03),transparent 70%),radial-gradient(70% 40% at 30% 95%,rgba(255,255,255,.025),transparent 70%)}
+
 .hoyhead .hd{display:none}
 .hoyhead p{color:var(--muted);margin:4px 0 0;font-size:15px}
 .hseg{display:flex;gap:3px;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:3px}
@@ -1032,7 +1043,7 @@ footer{margin:40px 0 30px;padding-top:14px;border-top:2px solid var(--ink);color
   .hsem .hx:not(.on){display:none}
 }
 @media (min-width:721px){
-  .hoyhead .hm{display:none}.hoyhead .hd{display:inline}.hoyhead h2{font-size:50px}.hoyhead p{font-size:17px}
+  .hoyhead .hm{display:none}.hoyhead .hd{display:inline-block}.hoyhead h2{font-size:50px}.hoyhead p{font-size:17px}
   .hstrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));overflow:visible;margin-right:0;padding-right:0}.hv{flex:none}
   .hoygrid{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
   .hoymain{flex:999 1 560px;min-width:0}.hoyside{flex:1 1 300px;min-width:0}
@@ -1769,7 +1780,12 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .penov b{color:var(--mark)}.penov span{font-size:13px;color:#DCE4DE}
 
 /* Llave de la Liguilla (28 oct 2026) */
-.llave{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start;margin:12px 0}
+.llave{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:stretch;margin:12px 0}
+.llcol{display:flex;flex-direction:column;min-width:0}.llbody{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:4px}
+.llser{position:relative}.llcol:not(:last-child) .llser::after{content:"";position:absolute;right:-23px;top:50%;width:22px;border-top:2px dashed rgba(242,212,102,.5)}
+.llser .ab{display:none}.llser.vacio{border-style:dashed;background:transparent}
+.llph{min-height:44px;display:flex;align-items:center;padding:0 10px;border-radius:10px;border:1.5px dashed var(--line);color:var(--muted);font:600 13px var(--body)}
+.llcol:last-child .llbody{justify-content:center;gap:14px}.lltro{font-size:26px;line-height:1}.llcamp.vacio{background:transparent;border-style:dashed;border-color:var(--line)}
 .llcol h4{margin:0 0 8px;font:700 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .llser{display:flex;flex-direction:column;gap:4px;padding:6px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-bottom:10px}
 .llser button{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 10px;border-radius:10px;border:1.5px solid transparent;background:var(--bg);color:var(--ink);font:600 15px var(--body);text-align:left;cursor:pointer}
@@ -1779,7 +1795,10 @@ button.nbag{width:100%;text-align:left;color:var(--ink);font:inherit;cursor:poin
 .llser button:disabled{cursor:default}
 .llcamp{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:linear-gradient(120deg,rgba(242,212,102,.3),var(--surface));border:1px solid var(--mark)}
 .llcamp span{display:flex;flex-direction:column}.llcamp small{font-size:12px;color:var(--muted)}.llcamp b{font:800 20px var(--display)}
-@media (max-width:720px){.llave{grid-template-columns:1fr}}
+@media (max-width:720px){.llave{gap:12px}.llcol:not(:last-child) .llser::after{right:-13px;width:12px}
+  .llser{padding:4px;border-radius:12px}.llser button{gap:5px;padding:0 6px;min-height:40px;font-size:13px}.llser button .qmxl{width:20px;height:20px}
+  .llser .nm{display:none}.llser .ab{display:inline}.llph{min-height:40px;padding:0 6px;font-size:11.5px}
+  .llcamp{flex-direction:column;text-align:center;gap:4px;padding:10px 6px}.llcamp b{font-size:16px}.llcol h4{font-size:11.5px}}
 
 /* Amigos (28 oct 2026) */
 .ambtn{position:relative;flex:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-right:8px}
@@ -3372,19 +3391,21 @@ function lpzRecord(mode,onlyWeek){
 // cada uno la semana pasada [local, visita]), qb ({equipo: [titular, el que juega, puntos que le cambia a nuestra línea]}), ds/dd (visita descansada) y cl (clima).
 function lpzPor(x,a,h,sp){
   if(!x||(x.v||0)<3) return "";
-  const N=t=>(NT[t]||{n:t}).n, n=v=>String(Math.round(Math.abs(v)*2)/2).replace(".5","½"), hf=+(D.qmodel?.hfa||0), out=[];
+  // Cada razón con su ícono (chip) para leerse de un vistazo: [ícono, etiqueta corta, frase]
+  const N=t=>(NT[t]||{n:t}).n, n=v=>String(Math.round(Math.abs(v)*2)/2).replace(".5","½"), pt=v=>`${n(v)} ${Math.abs(v)<1.25?"punto":"puntos"}`, hf=+(D.qmodel?.hfa||0), out=[];
   if(x.qb) for(const [t,q] of Object.entries(x.qb)){ const d=+q[2]||0;
-    out.push(`Sin ${q[0]} (juega ${q[1]||"otro QB"}), nuestra línea ${Math.abs(d)<0.25?"casi no cambia para":d<0?`le baja ${n(d)} ${Math.abs(d)<1.25?"punto":"puntos"} a`:`le sube ${n(d)} ${Math.abs(d)<1.25?"punto":"puntos"} a`} ${N(t)}.`); }
+    out.push(["🩹","QB",`Sin ${q[0]} (juega ${q[1]||"otro QB"}), nuestra línea ${Math.abs(d)<0.25?"casi no cambia para":d<0?`le baja ${pt(d)} a`:`le sube ${pt(d)} a`} ${N(t)}.`]); }
   if(sp&&x.L!=null){
     if(!x.qb&&x.m!=null){ const e=(x.m+x.L)-hf;
-      out.push(Math.abs(e)<1?"Nuestra línea casi coincide con la oficial.":`Nuestro modelo ve a ${N(e>0?h:a)} ${n(e)} ${Math.abs(e)<1.25?"punto":"puntos"} mejor de lo que dice la línea.`); }
+      out.push(["📐","Línea",Math.abs(e)<1?"Nuestra línea casi coincide con la oficial.":`Nuestro modelo ve a ${N(e>0?h:a)} ${pt(e)} mejor de lo que dice la línea.`]); }
     const [ph,pa]=x.ap||[0,0], [bt,bv]=Math.abs(ph)>=Math.abs(pa)?[h,ph]:[a,pa];
-    if(Math.abs(bv)>=7) out.push(bv>0?`${N(bt)} cubrió por ${n(bv)} la semana pasada, y después de algo así la línea suele exagerar.`:`${N(bt)} quedó ${n(bv)} abajo de la línea la semana pasada, y después de algo así la línea suele castigarlo de más.`);
-    if(x.ds) out.push(`${N(a)} llega con ${x.dd} días más de descanso.`);
+    if(Math.abs(bv)>=7) out.push(bv>0?["📈","Inflado",`${N(bt)} cubrió por ${n(bv)} la semana pasada, y después de algo así la línea suele exagerar.`]:["📉","Castigado",`${N(bt)} quedó ${n(bv)} abajo de la línea la semana pasada, y después de algo así la línea suele castigarlo de más.`]);
+    if(x.ds) out.push(["😴","Descanso",`${N(a)} llega con ${x.dd} días más de descanso.`]);
   }
-  if(x.cl&&!x.cl.techo){ let c=`Clima: ${x.cl.t} °C y viento de ${x.cl.v} km/h${x.cl.nv?", con nieve":x.cl.ll>=50?`, ${x.cl.ll}% de lluvia`:""}.`;
-    if(x.cl.v>=25) c+=" Con ese viento suelen meterse menos puntos."; out.push(c); }
-  return out.length?`<small class="lpzpq">${out.join(" ")}</small>`:"";
+  if(x.cl&&!x.cl.techo){ const c=x.cl, ic=c.nv?"❄️":c.v>=25?"🌬️":c.ll>=50?"🌧️":c.t<=2?"🥶":"🌤️";
+    out.push([ic,`${c.t}°`,`${c.t} °C y viento de ${c.v} km/h${c.nv?", con nieve":c.ll>=50?`, ${c.ll}% de lluvia`:""}.${c.v>=25?" Con ese viento suelen meterse menos puntos.":""}`]); }
+  if(!out.length) return "";
+  return `<div class="lpzpq">${out.map(([i,l,t])=>`<div class="lpzr"><span class="lpzc"><i aria-hidden="true">${i}</i>${l}</span><span>${t}</span></div>`).join("")}</div>`;
 }
 function lpzRender(P){
   const box=$("#qLpz"); if(!box||box.hidden) return;
@@ -3562,7 +3583,7 @@ function qnMineBox(P){
   const box=$("#qMine"); if(qnMode==="surv"){svMineBox(P); return;}
   const mode=qnMode, wk=P.week, W=(qnPicksAll()[D.season]||{})[wk]||{}, n=Object.values(W).filter(v=>v[mode]).length;
   const Rw=qnRecord(mode,wk), Rs=qnRecord(mode), lbl=mode==="ats"?"contra el spread":"sin spread", Lw=lpzRecord(mode,wk), Ls=lpzRecord(mode);
-  box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${Ls.w+Ls.l+Ls.p?`<span class="qvs">La Pizarra: ${Lw.w+Lw.l+Lw.p?`${qnRecTxt(Lw)} esta semana · `:""}${qnRecTxt(Ls)} en la temporada. <button class="alink" data-qview="lpz">Ver sus picks</button></span>`:""}${grMineTxt()}${n?(acctHint(true)?`<small>${acctHint(true)}</small>`:""):`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. ${acctHint(false)}</small>`}</div>`;
+  box.innerHTML=`<div class="qmine"><b>Tus picks ${lbl}</b><span>${P.label}: ${n} de ${P.games.length} elegidos${Rw.w+Rw.l+Rw.p?` · ${qnRecTxt(Rw)}`:""}</span><span>Temporada: ${Rs.w+Rs.l+Rs.p?qnRecTxt(Rs):"todavía sin resultados"}${Rs.pend?` · ${Rs.pend} por jugarse`:""}</span>${Ls.w+Ls.l+Ls.p?`<span class="qvs">La Pizarra: ${Lw.w+Lw.l+Lw.p?`${qnRecTxt(Lw)} esta semana · `:""}${qnRecTxt(Ls)} en la temporada. <button class="alink" data-qview="lpz">Ver sus picks</button></span>`:""}${grMineTxt()}${n?`<span><button class="alink" id="qnShare">📸 Compartir mis picks</button></span>`:""}${n?(acctHint(true)?`<small>${acctHint(true)}</small>`:""):`<small>Toca un equipo para escogerlo; tócalo otra vez para quitarlo. ${acctHint(false)}</small>`}</div>`;
 }
 // Para hacer picks hay que entrar con cuenta y correo confirmado (decisión del 5 oct 2026: así todos los picks
 // llegan a la cuenta y a los grupos). Si no, el toque se guarda como pendiente, se abre "Entrar" y, al entrar, se aplica.
@@ -6684,7 +6705,7 @@ function qmxRender(sinRed){
   box.innerHTML=`<div class="qmxj"><button id="qmxPrev" aria-label="Jornada anterior"${L[0]===j?" disabled":""}>‹</button>
       <div><b>${qmxNomJ(j)}</b><small>${cerrada?(todos&&fin?"Terminada":fin?`En juego · van ${fin} de ${J.p.length}`:"Cerrada · en juego"):`Cierra ${qmxHora(J.pr).toLowerCase()}`}</small></div>
       <div class="qmxc">${cab}</div><button id="qmxNext" aria-label="Jornada siguiente"${L[L.length-1]===j?" disabled":""}>›</button></div>
-    ${!cerrada?`<div class="qmxtools"><span>L = gana el local · E = empate · V = gana la visita</span><button class="q5link" id="qmxCopia">Copiar a La Pizarra</button></div>`:""}
+    ${!cerrada?`<div class="qmxtools"><span>L = gana el local · E = empate · V = gana la visita</span><button class="q5link" id="qmxCopia">Copiar a La Pizarra</button>${hechos?`<button class="q5link" id="qmxShare">📸 Compartir mis picks</button>`:""}</div>`:hechos?`<div class="qmxtools"><button class="q5link" id="qmxShare">📸 Compartir mis picks</button></div>`:""}
     ${cerrada&&!hechos?`<p class="note">No guardaste picks para esta jornada (ni en este navegador ni en tu cuenta). El borde verde marca el resultado real.</p>`:""}
     ${(qmxD().L?.sem||[]).length===8?`<button class="rjcard" data-qvgo="llave"><span>🏆</span><span><b>Llave de la Liguilla</b><small>${qmxD().L.pr>now?"Escoge quién pasa a semis, los finalistas y el campeón":"Mira cómo va tu llave"}</small></span><i>›</i></button>`:""}
     <div class="qmxlist">${filas}</div>
@@ -6736,17 +6757,19 @@ async function qmxLlave(sinRed){
   const q=[0,1,2,3].map(i=>Array.isArray(P.q)&&P.q[i]!=null?+P.q[i]:null), s=[0,1].map(i=>Array.isArray(P.s)&&P.s[i]!=null?+P.s[i]:null), c=P.c!=null?+P.c:null;
   const semis=qmxLlaveSemis(sem,q), bloq=cerrada||sinHora;
   const eq=(id,grupo,i,elegido,decidido,gano)=>{ const E=qmxEq(id), on=elegido===id, ok=decidido&&on&&gano===id, mal=decidido&&on&&gano!==id, res=decidido&&gano===id;
-    return `<button data-ll="${grupo}:${i}:${id}" aria-pressed="${on}"${bloq?" disabled":""} class="${ok?"ok":mal?"mal":res?"res":""}"><i>${sem.indexOf(id)+1}</i>${hoyLogo(E.logo,"qmxl")}<span>${hoyEsc(E.n)}</span></button>`; };
+    return `<button data-ll="${grupo}:${i}:${id}" aria-pressed="${on}"${bloq?" disabled":""} class="${ok?"ok":mal?"mal":res?"res":""}"><i>${sem.indexOf(id)+1}</i>${hoyLogo(E.logo,"qmxl")}<span class="nm">${hoyEsc(E.n)}</span><span class="ab" title="${hoyEsc(E.n)}">${hoyEsc(E.ab||E.n.slice(0,3).toUpperCase())}</span></button>`; };
+  const vacio=(t1,t2)=>`<div class="llser vacio"><div class="llph">${t1}</div><div class="llph">${t2}</div></div>`;
   const qfDec=pair=>pair.find(t=>R.q.includes(t))??null, sfDec=pair=>pair.find(t=>R.s.includes(t))??null;
   const cuartos=LLAVE_QF.map(([a,b],i)=>{ const pair=[sem[a],sem[b]], g=qfDec(pair); return `<div class="llser">${eq(pair[0],"q",i,q[i],g!=null,g)}${eq(pair[1],"q",i,q[i],g!=null,g)}</div>`; }).join("");
-  const semisH=semis?semis.map((pair,i)=>{ const g=sfDec(pair); return `<div class="llser">${eq(pair[0],"s",i,s[i],g!=null||!!R.s.length&&R.s.length===2,g)}${eq(pair[1],"s",i,s[i],g!=null||R.s.length===2,g)}</div>`; }).join(""):`<p class="note">Escoge los cuatro de cuartos.</p>`;
-  const finalH=semis&&s[0]!=null&&s[1]!=null?`<div class="llser">${eq(s[0],"c",0,c,R.c!=null,R.c)}${eq(s[1],"c",0,c,R.c!=null,R.c)}</div>`:`<p class="note">Escoge a tus dos finalistas.</p>`;
+  const semisH=semis?semis.map((pair,i)=>{ const g=sfDec(pair); return `<div class="llser">${eq(pair[0],"s",i,s[i],g!=null||!!R.s.length&&R.s.length===2,g)}${eq(pair[1],"s",i,s[i],g!=null||R.s.length===2,g)}</div>`; }).join(""):vacio("Ganador","Ganador")+vacio("Ganador","Ganador");
+  const finalH=semis&&s[0]!=null&&s[1]!=null?`<div class="llser">${eq(s[0],"c",0,c,R.c!=null,R.c)}${eq(s[1],"c",0,c,R.c!=null,R.c)}</div>`:vacio("Finalista","Finalista");
   const hechos=q.filter(t=>t!=null).length+s.filter(t=>t!=null).length+(c!=null?1:0), pts=qmxLlavePts({q,s,c},R);
   box.innerHTML=`<div class="qmxj"><span></span><div><b>Llave de la Liguilla</b><small>${cerrada?(R.c!=null?"Terminada":"Cerrada · en juego"):sinHora?"Se abre en cuanto haya horarios de cuartos":`Cierra ${qmxHora(L.pr).toLowerCase()}`}</small></div>
       <div class="qmxc">${cerrada?`<b>${pts}</b><span>puntos</span>`:`<b>${hechos}/7</b><span>picks</span>`}</div><span></span></div>
     ${sinHora?`<p class="note">Ya están los 8 de la Liguilla. Podrás escoger en cuanto se publiquen los horarios de cuartos (normalmente un día después de la jornada 17).</p>`:""}
     ${cerrada&&!hechos?`<p class="note">No llenaste tu llave a tiempo.</p>`:""}
-    <div class="llave"><div class="llcol"><h4>Cuartos</h4>${cuartos}</div><div class="llcol"><h4>Semifinales</h4>${semisH}</div><div class="llcol"><h4>Final</h4>${finalH}${c!=null?`<div class="llcamp">${hoyLogo(qmxEq(c).logo,"qmxl")}<span><small>Tu campeón</small><b>${hoyEsc(qmxEq(c).n)}</b></span></div>`:""}</div></div>
+    <div class="llave"><div class="llcol"><h4>Cuartos</h4><div class="llbody">${cuartos}</div></div><div class="llcol"><h4>Semis</h4><div class="llbody">${semisH}</div></div><div class="llcol"><h4>Final</h4><div class="llbody">${finalH}<div class="llcamp${c!=null?"":" vacio"}"><span class="lltro" aria-hidden="true">🏆</span>${c!=null?`${hoyLogo(qmxEq(c).logo,"qmxl")}<span><small>Tu campeón</small><b>${hoyEsc(qmxEq(c).n)}</b></span>`:`<span><small>Tu campeón</small><b>?</b></span>`}</div></div></div></div>
+    <p class="note">En semis se reacomoda: el mejor de la tabla que pase juega contra el peor.</p>
     <p class="note" id="qmxGuardo"></p>${reglas}`;
 }
 document.addEventListener("click",ev=>{ const b=ev.target.closest?.("[data-ll]"); if(!b||b.disabled) return;
@@ -7629,6 +7652,55 @@ async function pzImagen(o){
   x.font=F(400,36,"Barlow"); x.fillStyle="#A8B8AF"; x.fillText("¿Me ganas? lapizarra.mx",P,H-80);
   return await new Promise(r=>c.toBlob(r,"image/png"));
 }
+// ---------- Tarjeta para compartir tus picks (13 nov 2026) ----------
+// Imagen 1080 de ancho con tus picks de la jornada (Liga MX) o la semana (NFL), con el estilo pizarrón (gis y subrayado
+// amarillo). Sin logos (las imágenes de otros dominios no se pueden pasar al canvas): abreviaturas.
+// filas: [{a, b, k}] → a y b = equipos (local, visita en Liga MX; visita @ local en NFL), k = "a" | "b" | "E" (lo que escogiste), x = texto extra (línea)
+async function picksImagen(kick,titulo,filas,modo){
+  const W=1080, n=filas.length, rh=n>10?74:n>6?96:110, H=Math.max(1350,430+n*rh+230), c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  try{ await Promise.all(['800 100px "Barlow Condensed"','700 40px "Barlow Condensed"','400 40px "Barlow"'].map(f=>document.fonts.load(f))); }catch(e){}
+  const Fn=(w,sz,fam="Barlow Condensed")=>`${w} ${sz}px "${fam}", "Arial Narrow", Arial, sans-serif`, P=72;
+  x.fillStyle="#1F332D"; x.fillRect(0,0,W,H);
+  for(const [cx,cy,r,a] of [[180,160,420,.05],[900,H*.55,460,.04],[300,H-120,380,.035]]){ const g=x.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,`rgba(255,255,255,${a})`); g.addColorStop(1,"rgba(255,255,255,0)"); x.fillStyle=g; x.fillRect(0,0,W,H); }
+  const gis=(pts,col,w=6)=>{ x.strokeStyle=col; x.lineWidth=w; x.lineCap="round"; for(let k=0;k<2;k++){ x.globalAlpha=k?.45:.8; x.beginPath(); pts.forEach(([px,py],i)=>{ const j=()=>(Math.random()-.5)*2.4; i?x.lineTo(px+j(),py+j()):x.moveTo(px+j(),py+j()); }); x.stroke(); } x.globalAlpha=1; };
+  const curva=(p0,p1,p2,m=24)=>Array.from({length:m+1},(_,i)=>{const t=i/m; return [(1-t)**2*p0[0]+2*(1-t)*t*p1[0]+t*t*p2[0],(1-t)**2*p0[1]+2*(1-t)*t*p1[1]+t*t*p2[1]];});
+  // jugada de gis arriba a la derecha
+  x.globalAlpha=.5; for(const ox of [760,820,880,940]){ gis(Array.from({length:21},(_,i)=>[ox+16*Math.cos(i/20*6.283),150+16*Math.sin(i/20*6.283)]),"#ECEFE7",4); }
+  for(const [ox,oy] of [[770,82],[870,72],[970,86]]){ gis([[ox-14,oy-14],[ox+14,oy+14]],"#ECEFE7",4); gis([[ox-14,oy+14],[ox+14,oy-14]],"#ECEFE7",4); }
+  gis(curva([880,132],[900,60],[1010,34]),"#F2D466",5); x.globalAlpha=1;
+  let y=120; x.font=Fn(700,60); x.fillStyle="#ECEFE7"; x.fillText("La",P,y); x.fillStyle="#F2D466"; x.fillText("Pizarra",P+x.measureText("La ").width,y);
+  y+=74; x.font=Fn(700,34); x.fillStyle="#A8B8AF"; x.fillText(kick.toUpperCase(),P,y);
+  y+=82; x.font=Fn(800,84); x.fillStyle="#ECEFE7"; x.fillText(titulo,P,y); const tw=Math.min(x.measureText(titulo).width,W-2*P);
+  gis(curva([P,y+22],[P+tw/2,y+12],[P+tw,y+24]),"#F2D466",7);
+  y+=72;
+  const box=(bx,by,bw,bh,on,txt,sz)=>{ x.beginPath(); x.roundRect(bx,by,bw,bh,bh/2.6); if(on){ x.fillStyle="#F2D466"; x.fill(); } else { x.strokeStyle="rgba(236,239,231,.28)"; x.lineWidth=2.5; x.stroke(); }
+    x.font=Fn(800,sz); x.fillStyle=on?"#15241F":"rgba(236,239,231,.62)"; x.textAlign="center"; x.fillText(txt,bx+bw/2,by+bh/2+sz*.36); x.textAlign="left"; };
+  filas.forEach((f,i)=>{ const yy=y+i*rh, bh=rh-26, sz=Math.round(bh*.5);
+    if(i%2===0){ x.fillStyle="rgba(255,255,255,.04)"; x.beginPath(); x.roundRect(P-18,yy-6,W-2*P+36,rh-8,22); x.fill(); }
+    if(modo==="mx"){ const bw=(W-2*P-110-40)/2;
+      box(P,yy+4,bw,bh,f.k==="a",f.a,sz); box(P+bw+20,yy+4,110,bh,f.k==="E","E",sz); box(P+bw+150,yy+4,bw,bh,f.k==="b",f.b,sz);
+      // marca de "vs"
+      x.font=Fn(700,Math.round(sz*.55)); x.fillStyle="rgba(168,184,175,.7)"; }
+    else { const bw=(W-2*P-80)/2;
+      box(P,yy+4,bw,bh,f.k==="a",f.a+(f.k==="a"&&f.x?` ${f.x}`:""),sz); x.font=Fn(700,Math.round(sz*.7)); x.fillStyle="#A8B8AF"; x.textAlign="center"; x.fillText("@",W/2,yy+4+bh/2+sz*.25); x.textAlign="left";
+      box(W-P-bw,yy+4,bw,bh,f.k==="b",f.b+(f.k==="b"&&f.x?` ${f.x}`:""),sz); } });
+  const yb=H-150; x.textAlign="center"; x.font=Fn(800,62); x.fillStyle="#F2D466"; x.fillText("¿Me ganas?",W/2,yb); x.font=Fn(400,36,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("Haz tus picks gratis en lapizarra.mx",W/2,yb+58); x.textAlign="left";
+  return await new Promise(r=>c.toBlob(r,"image/png"));
+}
+async function picksCompartirMx(){
+  const j=QMX.j, J=qmxD().J[j], mios=qmxMios(j); if(!J) return;
+  const F=J.p.map(r=>{ const [fid,,hid,vid]=r, H=qmxEq(hid), A=qmxEq(vid), k=mios.p[fid]; return {a:H.ab||H.n.slice(0,3).toUpperCase(),b:A.ab||A.n.slice(0,3).toUpperCase(),k:k==="L"?"a":k==="V"?"b":k==="E"?"E":null}; });
+  const nom=qmxNomJ(j); pzTrack("compartir_picks",{q:"mx"});
+  pzCompartir(null,"mis-picks",{blob:await picksImagen("Quiniela Liga MX · mis picks",nom[0].toUpperCase()+nom.slice(1),F,"mx"),titulo:"Comparte tus picks",texto:`Mis picks de ${nom} en la Quiniela Liga MX. ¿Me ganas? https://lapizarra.mx/#quinielamx`});
+}
+async function picksCompartirNfl(){
+  const P=await qnGet(), mode=qnMode==="ats"?"ats":"su", W=(qnPicksAll()[D.season]||{})[P.week]||{};
+  const F=P.games.map(g=>{ const v=W[`${g.a}@${g.h}`]?.[mode], t=v?.t, L=mode==="ats"?(v?.L??g.L):null;
+    return {a:g.a,b:g.h,k:t===g.a?"a":t===g.h?"b":null,x:mode==="ats"&&t&&L!=null?qnLine(t===g.h?L:-L):""}; });
+  pzTrack("compartir_picks",{q:"nfl",modo:mode});
+  pzCompartir(null,"mis-picks",{blob:await picksImagen(`Quiniela NFL · ${mode==="ats"?"contra el spread":"sin spread"}`,P.label,F,"nfl"),titulo:"Comparte tus picks",texto:`Mis picks de la ${P.label.toLowerCase()} de la NFL. ¿Me ganas? https://lapizarra.mx`});
+}
+document.addEventListener("click",ev=>{ if(ev.target.closest?.("#qmxShare")) picksCompartirMx(); else if(ev.target.closest?.("#qnShare")) picksCompartirNfl(); });
 async function pzCompartir(o,nombre,op={}){
   $("#gbody").innerHTML=pzSkel(2); if(!dlg.open) dlg.showModal(); pzTrack("compartir_abre",{t:nombre});
   const b=op.blob||await pzImagen(o), TX=op.texto||"¿Me ganas? https://lapizarra.mx"; if(!b){ $("#gbody").innerHTML=`<p class="note">No se pudo hacer la imagen en este navegador.</p>`; return; }
