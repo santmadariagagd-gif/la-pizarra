@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "*/10 * * * *"
   workflow_dispatch:
+    inputs:
+      prueba_correo:
+        description: "Escribe 1 para mandarle al dueño un correo de prueba"
+        required: false
 permissions:
   contents: read
   actions: write   # para disparar el periódico si GitHub se saltó su corrida del martes
@@ -26,3 +30,5 @@ jobs:
           FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           GH_TOKEN: ${{ github.token }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}   # correos de recordatorio (correos.py)
+          CORREO_PRUEBA: ${{ github.event.inputs.prueba_correo }}

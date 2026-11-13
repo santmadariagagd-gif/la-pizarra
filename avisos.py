@@ -219,10 +219,8 @@ class Avisos:
     # quiniela Liga MX (hizo picks la jornada anterior), Survivor (sigue vivo) y reto del día (contestó ayer: cuida su racha).
     # ---------- resumen de la semana (3 nov 2026) ----------
     # Los lunes entre 9 am y 12 pm (CDMX), un aviso con lo tuyo de la semana; al tocarlo se abre "Tu semana en La Pizarra".
-    def semanal(self):
-        ahora = datetime.now(MX)
-        if ahora.weekday() != 0 or not (9 <= ahora.hour < 12): return
-        sem = ahora.date().isoformat()
+    def lineas_semana(self, uids=None):
+        """{uid: [renglones]} con cómo le fue a cada quien la semana pasada (lo usan el aviso y el correo del lunes)."""
         sha = lambda u: hashlib.sha256(u.encode()).hexdigest()[:12]
         def lee(n):
             try: return json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "datos", n), encoding="utf-8"))
@@ -231,14 +229,16 @@ class Avisos:
         jq = sorted([int(j) for j, x in (Q.get("j") or {}).items() if x.get("fin")])
         tot = {h: sum((v or [0])[0] for v in (x.get("j") or {}).values()) for h, x in (Q.get("t") or {}).items()}
         rank = sorted(tot, key=lambda h: -tot[h])
+        nj = lambda j: {18: "los cuartos", 19: "las semis", 20: "la final"}.get(j, f"la J{j}")
         def fan_ult(F):
             ks = [k for k, x in (F.get("j") or {}).items() if x.get("fin")]
             return max(ks, key=lambda k: F["j"][k].get("pr", 0)) if ks else None
-        for uid in self.subs:
+        R = {}
+        for uid in (uids if uids is not None else self.subs):
             h = sha(uid); P = []
             q = (Q.get("t") or {}).get(h)
             if q and jq and str(jq[-1]) in (q.get("j") or {}):
-                P.append(f"{q['j'][str(jq[-1])][0]} aciertos en la J{jq[-1]}" + (f", vas {rank.index(h) + 1}º de {len(rank)}" if h in rank and len(rank) > 1 else ""))
+                P.append(f"{q['j'][str(jq[-1])][0]} aciertos en {nj(jq[-1])}" + (f", vas {rank.index(h) + 1}º de {len(rank)}" if h in rank and len(rank) > 1 else ""))
             r = (RT.get("t") or {}).get(h)
             if r and (r.get("w") or [0, 0])[1]: P.append(f"reto del día: {r['w'][0]} de {r['w'][1]}" + (f" (racha de {r['r']})" if r.get("r", 0) >= 2 else ""))
             sv = (SV.get("t") or {}).get(h)
@@ -246,6 +246,24 @@ class Avisos:
             for F, nom in ((FM, "Fantasy Liga MX"), (FU, "Fantasy Champions")):
                 k = fan_ult(F); x = (F.get("tabla") or {}).get(h)
                 if k and x and k in (x.get("j") or {}): P.append(f"{nom}: {x['j'][k]} pts")
+            R[uid] = P
+        return R
+
+    def lo_que_viene(self):
+        """Renglones de lo que cierra en los próximos 8 días (para el correo del lunes)."""
+        from correos import cuando, NJ
+        L = []
+        for jd in sorted(self.db.rango("qmx_jornadas", "primero", self.now, self.now + 8 * 86400), key=lambda x: x["_ts"]):
+            j = jd.get("j"); n = NJ.get(j, f"la jornada {j}")
+            L.append(f"Quiniela Liga MX: {n} cierra {cuando(jd['_ts'])}")
+        L.append("Un reto nuevo cada día en la portada")
+        return L
+
+    def semanal(self):
+        ahora = datetime.now(MX)
+        if ahora.weekday() != 0 or not (9 <= ahora.hour < 12): return
+        sem = ahora.date().isoformat()
+        for uid, P in self.lineas_semana().items():
             b = " · ".join(P[:3]) if P else "Mira cómo les fue a tus equipos y lo que viene esta semana."
             self.manda(uid, "cie", "📊 Tu semana en La Pizarra", b[:1].upper() + b[1:], "/?sem=1", f"sem-{sem}-{uid[:8]}")
 
@@ -474,8 +492,14 @@ class Avisos:
         self.E["env"] = {k: v for k, v in self.E["env"].items() if v > lim}
         self.E["vis"] = {k: v for k, v in self.E.get("vis", {}).items() if v > self.now - 86400}
         self.E["conoc"] = {k: v for k, v in self.E["conoc"].items() if v > self.now - 120 * 86400}
+        self.E["mail"] = {k: v for k, v in self.E.get("mail", {}).items() if v > self.now - 21 * 86400}
 
     def corre(self):
+        try:   # correos (13 nov 2026): le llegan también a quien no prendió los avisos al teléfono
+            from correos import Correos
+            C = Correos(self); C.corre()
+            if C.n: self.db.guarda_estado(self.E)   # que no se repitan aunque nadie tenga avisos al teléfono
+        except Exception as e: print("Correos:", repr(e))
         if not self.subs:
             print("Nadie ha activado los avisos todavía."); return
         print(f"{len(self.subs)} personas con avisos activados")

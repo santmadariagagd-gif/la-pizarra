@@ -1874,6 +1874,7 @@ dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background
 .tbbar{display:grid;gap:6px}.tbbar>div{display:grid;grid-template-columns:minmax(90px,38%) 1fr 36px;gap:8px;align-items:center;font-size:14px}.tbbar i{height:14px;border-radius:0 4px 4px 0;background:var(--mark);display:block}.tbbar b{text-align:right}
 .tbcol{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;height:130px;align-items:end}.tbcol>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px}.tbcol i{width:100%;max-width:26px;background:var(--mark);border-radius:4px 4px 0 0;display:block}.tbcol span{color:var(--muted);margin-top:3px}.tbcol b{font-size:11px;margin-bottom:2px}
 .tbdos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 18px}
+.mailc{margin-top:14px}
 .pzpide{width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}
 .pzp h2{margin:0 0 8px}.pzp>p{color:var(--muted)}.pzpl{display:flex;flex-direction:column;gap:4px;margin:12px 0;font-weight:600;font-size:14px}.pzpl input,.pzpl textarea{font:inherit;font-weight:400;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .pzpn{display:grid;gap:8px}.pzpo{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer}.pzpo:has(input:checked){border-color:var(--mark);background:#33493F}
@@ -3037,6 +3038,24 @@ function slStand(stand,pts){
   $("#slStand").innerHTML=`<thead><tr><th class="l" aria-label="Lugar"></th><th class="l">Equipo</th><th>Récord</th><th>PF</th><th>PC</th></tr></thead><tbody>${stand.map((r,i)=>{const s=r.settings||{};
     return `<tr class="${r===SL.mine?"me":""}"><td class="rk">${i+1}</td><td class="l"><span class="nm">${teamName(r)}</span></td><td>${s.wins||0}-${s.losses||0}${s.ties?"-"+s.ties:""}</td><td>${fmt(pts(r),1)}</td><td>${fmt(pa(r),1)}</td></tr>`;}).join("")}</tbody>`;
 }
+// ---- Correos de recordatorio (13 nov 2026): correos.py los manda (cierre de la quiniela y "Tu semana" del lunes).
+// correos/{uid} = {no: true|false, t}. Link de los correos: lapizarra.mx/?correos=0 (apagar) · ?correos=1 (prender).
+const MAIL={no:null};
+async function mailLee(){ if(!(typeof acctOk==="function"&&acctOk())) return null; try{ const s=await ACCT.db.doc(`correos/${ACCT.user.uid}`).get(); MAIL.no=!!s.data()?.no; }catch(e){ MAIL.no=false; } return MAIL.no; }
+async function mailPon(no){ await ACCT.db.doc(`correos/${ACCT.user.uid}`).set({no,t:firebase.firestore.FieldValue.serverTimestamp()}); MAIL.no=no; pzTrack(no?"correos_baja":"correos_alta",{}); }
+function mailCard(){ if(!(typeof acctOk==="function"&&acctOk())) return ""; const on=MAIL.no===false;
+  return `<div class="pushc mailc"><div class="pushh"><span><b>Recordatorios por correo</b><small>Antes de que cierre tu quiniela y el resumen de tu semana los lunes. A ${hoyEsc(ACCT.user.email||"tu correo")}</small></span><button class="pushsw" role="switch" aria-checked="${on}" aria-label="Recordatorios por correo" data-mailsw="1"${MAIL.no==null?" disabled":""}><i></i></button></div><p class="pushmsg" id="mailMsg"></p></div>`; }
+document.addEventListener("click",async ev=>{ const b=ev.target.closest?.("[data-mailsw]"); if(!b) return; b.disabled=true;
+  const quiere=b.getAttribute("aria-checked")!=="true", m=$("#mailMsg");
+  try{ await mailPon(!quiere); b.setAttribute("aria-checked",String(quiere)); if(m) m.textContent=quiere?"Listo, te llegarán los recordatorios.":"Listo, ya no te mandamos correos."; }
+  catch(e){ if(m) m.textContent=e?.code==="permission-denied"?"Falta actualizar los permisos de Firebase.":"No se pudo guardar. Intenta de nuevo."; }
+  b.disabled=false; });
+async function mailLink(v){ $("#gbody").innerHTML=pzSkel(2); if(!dlg.open) dlg.showModal();
+  if(!(typeof acctOk==="function"&&acctOk())){ $("#gbody").innerHTML=`<div class="pzp"><h2>Correos de La Pizarra</h2><p>Entra con tu cuenta para ${v==="0"?"dejar de recibir":"recibir"} los recordatorios por correo.</p><button class="btn" data-acct>Entrar</button></div>`; return; }
+  let ok=true; try{ await mailPon(v==="0"); }catch(e){ ok=false; }
+  $("#gbody").innerHTML=`<div class="pzp"><h2>${!ok?"No se pudo guardar":v==="0"?"Ya no te mandamos correos":"Te mandaremos recordatorios"}</h2><p>${!ok?"Intenta otra vez en un rato.":v==="0"?"Si cambias de opinión, los prendes otra vez en la campanita de Avisos.":"Antes de que cierre tu quiniela y el resumen de tu semana los lunes."}</p>${ok&&v==="0"?`<button class="q5link" data-mailre="1">Me equivoqué, sí los quiero</button>`:""}</div>`; }
+document.addEventListener("click",ev=>{ if(ev.target.closest?.("[data-mailre]")) mailLink("1"); });
+(()=>{ try{ const v=new URLSearchParams(location.search).get("correos"); if(v==="0"||v==="1"){ history.replaceState(null,"",location.pathname+location.hash); let n=0; const iv=setInterval(()=>{ if(typeof acctOk==="function"&&(acctOk()||++n>16)){ clearInterval(iv); mailLink(v); } },500); } }catch(e){} })();
 // ---- Tablero de estadísticas (4 nov 2026): lapizarra.mx/?tablero=1. Firestore admin/tablero (lo arma contar_cuentas.py cada
 // mañana). Las reglas solo dejan leerlo a la cuenta del dueño; a cualquier otra persona le sale "solo el dueño".
 const TB_F=d=>{ const [y,m,dd]=String(d).split("-").map(Number); return pzDTF("es-MX",{day:"numeric",month:"short",timeZone:"UTC"}).format(Date.UTC(y,m-1,dd)).replace(".",""); };
@@ -11310,7 +11329,8 @@ function ntPinta(){
   const pon=pushOn(), pc=pushCard(pon);
   $("#gbody").innerHTML=`<div class="ntx"><div class="ntcab"><h2>Avisos</h2>${AV.L.some(x=>!ntLeido(S,x))?`<button class="q5link" data-ntleer="1">Marcar leídas</button>`:""}</div>${pon?"":pc}
     <div class="ntfil" role="group" aria-label="Tipo de aviso">${[["todo","Todo"],...Object.entries(NT_K)].map(([k,n])=>`<button data-ntf="${k}" aria-pressed="${AV.f===k}">${n}</button>`).join("")}</div>
-    ${G.length?G.map(([n,X])=>`<h3 class="ntg">${n}</h3>${X.map(x=>ntItem(x,S)).join("")}`).join(""):`<p class="note">${AV.L.length?"Nada de este tipo por ahora.":"Aquí te avisamos cuando te reten, te comenten, acepten tu solicitud o jueguen tus equipos."}</p>`}${pon?pc:""}</div>`;
+    ${G.length?G.map(([n,X])=>`<h3 class="ntg">${n}</h3>${X.map(x=>ntItem(x,S)).join("")}`).join(""):`<p class="note">${AV.L.length?"Nada de este tipo por ahora.":"Aquí te avisamos cuando te reten, te comenten, acepten tu solicitud o jueguen tus equipos."}</p>`}${pon?pc:""}<div id="mailBox">${mailCard()}</div></div>`;
+  if(MAIL.no==null&&typeof acctOk==="function"&&acctOk()) mailLee().then(()=>{ const b=$("#mailBox"); if(b) b.innerHTML=mailCard(); });
 }
 // ----- Avisos al teléfono (29 oct 2026) -----
 // Se pide permiso, Firebase Cloud Messaging da una clave de este aparato y se guarda en avisos_tk/{uid} (solo tú la lees).
