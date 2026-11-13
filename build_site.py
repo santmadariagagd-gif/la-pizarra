@@ -1095,7 +1095,25 @@ def _lpz():
     # contra el equipo que cubrió por mucho la semana pasada (el mercado sobrerreacciona). 50.2% en 2015-22 y 51.1% en
     # 2023-26; con los picks reales de 2026 habría ido 50-39 en vez de 42-47. Nadie le gana al spread por mucho: es ~51%.
     # La línea propia (m) y el pick sin spread no cambian. Las semanas ya fijas tampoco.
+    # v3 (13 nov 2026, mismo día; sustituye a la v2 antes de que se usara): además (3) si un equipo NO trae a su QB titular
+    # (el que más partidos ha iniciado esta temporada; nflverse pone el titular proyectado de la semana), se ignora nuestra
+    # línea en ese partido porque no sabe de lesiones (ahí la línea de EPA atinaba 47.7%), y (4) 2 puntos a la visita que
+    # llega con 3+ días más de descanso (cubre 55% desde 2015, 9 de 12 años). 51.0% en 2015-22 y 52.0% en 2023-26.
+    # Se probaron y NO entraron: rachas de victorias (49%), horario estelar (50%), perro divisional y racha cubriendo
+    # (mejoran 2023-26 pero no 2015-22), costa oeste a la 1 pm (50%).
     LPZ_V2=11 if S==2026 else 1
+    QBR={}
+    try:
+        for r_ in full.itertuples(): QBR[f"{r_.away_team}@{r_.home_team}"]=(r_.week,r_.home_qb_name,r_.away_qb_name,r_.home_rest,r_.away_rest)
+    except Exception as ex_: print("Picks de La Pizarra: sin QB/descanso de nflverse:",ex_)
+    def qb_tit(w):
+        cnt={}
+        for k_,(w_,hq,aq,_,_) in QBR.items():
+            if w_>=w: continue
+            hh,aa=k_.split('@')[1],k_.split('@')[0]
+            for t_,q_ in ((hh,hq),(aa,aq)):
+                if q_ and isinstance(q_,str): cnt.setdefault(t_,{}); cnt[t_][q_]=cnt[t_].get(q_,0)+1
+        return {t_:max(c_,key=c_.get) for t_,c_ in cnt.items()}
     def ats_prev(w):
         r={}
         for g_ in sorted((g_ for g_ in sched if g_['w']<w and g_.get('hs') is not None and g_.get('as_') is not None),key=lambda g_:g_['w']):
@@ -1107,7 +1125,7 @@ def _lpz():
     nuevos=0
     for w in sorted({g['w'] for g in sched}):
         if w<desde or w>semq: continue
-        AP=ats_prev(w)
+        AP=ats_prev(w); TIT=qb_tit(w)
         G=[g for g in sched if g['w']==w and g.get('ko')]
         if not G: continue
         ko=lambda g:datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=ZoneInfo("UTC"))
@@ -1131,7 +1149,13 @@ def _lpz():
             x=dict(su=g['h'] if ph>=0.5 else g['a'],m=round(m,1))   # m = nuestra línea (margen del local) en ese momento
             if L is not None:
                 if w>=LPZ_V2:
-                    v=(m+L)-hf-0.4*(AP.get(g['h'],0)-AP.get(g['a'],0)); x['v']=2
+                    contra=-0.4*(AP.get(g['h'],0)-AP.get(g['a'],0)); v=(m+L)-hf+contra; x['v']=3
+                    _,hq,aq,hr,ar=QBR.get(key,(0,None,None,None,None))
+                    sinqb=[t_ for t_,q_ in ((g['h'],hq),(g['a'],aq)) if q_ and TIT.get(t_) and q_!=TIT[t_]]
+                    if sinqb: v=contra+1e-9; x['qb']=sinqb      # equipo sin su QB titular: nuestra línea no sirve aquí
+                    try:
+                        if ar is not None and hr is not None and float(ar)-float(hr)>=3: v-=2; x['ds']=1   # visita descansada
+                    except Exception: pass
                     x['t']=g['h'] if v>0 else g['a']
                 else: x['t']=g['h'] if m+L>0 else g['a']
                 x['L']=L
