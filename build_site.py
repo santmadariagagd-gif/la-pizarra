@@ -624,6 +624,7 @@ sl['sid']=sl.sleeper_id.astype(int).astype(str)
 sl=sl.drop_duplicates('sid')
 out['sleeper']={r.sid:[r.name,r.position,r.team if isinstance(r.team,str) else '',r.gsis_id if isinstance(r.gsis_id,str) else ''] for r in sl.itertuples()}
 out['season']=int(S)
+SL_QB={}
 try:
     import urllib.request as _ur
     _req=_ur.Request("https://api.sleeper.app/v1/players/nfl",headers={"User-Agent":"Mozilla/5.0 (La Pizarra)"})
@@ -646,6 +647,17 @@ try:
         _nm=_p.get("full_name") or f"{_p.get('first_name','')} {_p.get('last_name','')}".strip()
         _st.setdefault(_TFIX.get(_t,_t),[]).append([_nm,_p.get("depth_chart_position") or _p.get("position") or "",_p.get("position") or ""])
     out['starters']=_st
+    # QB que va a jugar esta semana según Sleeper (13 nov 2026): el de menor orden en la tabla de profundidad que no esté
+    # fuera (Out/IR/Doubtful/PUP/Sus). nflverse a veces trae mal el titular proyectado (puso a Huntley y era Brissett).
+    _qq={}
+    for _p in _spl.values():
+        _t=_p.get("team")
+        if not _t or _p.get("position")!="QB" or _p.get("depth_chart_position") not in (None,"QB") or not _p.get("depth_chart_order"): continue
+        if (_p.get("injury_status") or "") in ("Out","IR","Doubtful","PUP","Sus","NA"): continue
+        _nm=_p.get("full_name") or f"{_p.get('first_name','')} {_p.get('last_name','')}".strip()
+        _qq.setdefault(_TFIX.get(_t,_t),[]).append((_p["depth_chart_order"],_nm))
+    SL_QB={t:min(v)[1] for t,v in _qq.items()}
+    print("QB de Sleeper esta semana:",", ".join(f"{t} {q}" for t,q in sorted(SL_QB.items())[:8]),"…")
     _ej=sorted(_st.items())[:2]
     print(f"Titulares Sleeper: {len(_st)} equipos, {sum(len(v) for v in _st.values())} jugadores; ej.: "+" | ".join(f"{t}: "+", ".join(f"{x[1]} {x[0]}" for x in v[:6]) for t,v in _ej))
 except Exception as _ex:
@@ -1171,8 +1183,10 @@ def _lpz():
     def qb_ajuste(key,w,TIT):
         """(puntos a sumar al margen del local, {equipo: [titular, el que juega, puntos]})."""
         _,hq,aq,_,_=QBR.get(key,(0,None,None,None,None)); a_,h_=key.split('@'); pts=0.0; info={}
+        if w==semq:      # la semana que viene: manda Sleeper (más al día); si no lo trae, nflverse
+            hq=SL_QB.get(h_) or hq; aq=SL_QB.get(a_) or aq
         for t_,q_,sg in ((h_,hq,1),(a_,aq,-1)):
-            if q_ and isinstance(q_,str) and TIT.get(t_) and q_!=TIT[t_]:
+            if q_ and isinstance(q_,str) and TIT.get(t_) and _abq(q_)!=_abq(TIT[t_]):
                 d_=QB_PTS*(qb_cal(q_,w)-qb_cal(TIT[t_],w)); pts+=sg*d_; info[t_]=[TIT[t_],q_,round(d_,1)]
         return pts,info
     def ats_prev(w):
