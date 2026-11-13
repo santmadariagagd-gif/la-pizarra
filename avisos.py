@@ -233,29 +233,36 @@ class Avisos:
         def fan_ult(F):
             ks = [k for k, x in (F.get("j") or {}).items() if x.get("fin")]
             return max(ks, key=lambda k: F["j"][k].get("pr", 0)) if ks else None
-        R = {}
+        R = {}; self.est = {}   # est: lo mismo en tarjetas (ícono, qué, número grande, detalle) para el correo
         for uid in (uids if uids is not None else self.subs):
-            h = sha(uid); P = []
+            h = sha(uid); P = []; T = self.est.setdefault(uid, [])
             q = (Q.get("t") or {}).get(h)
             if q and jq and str(jq[-1]) in (q.get("j") or {}):
                 P.append(f"{q['j'][str(jq[-1])][0]} aciertos en {nj(jq[-1])}" + (f", vas {rank.index(h) + 1}º de {len(rank)}" if h in rank and len(rank) > 1 else ""))
+                T.append(("🎯", "Quiniela Liga MX", f"{q['j'][str(jq[-1])][0]} aciertos", f"en {nj(jq[-1])}" + (f" · vas {rank.index(h) + 1}º de {len(rank)}" if h in rank and len(rank) > 1 else "")))
             r = (RT.get("t") or {}).get(h)
-            if r and (r.get("w") or [0, 0])[1]: P.append(f"reto del día: {r['w'][0]} de {r['w'][1]}" + (f" (racha de {r['r']})" if r.get("r", 0) >= 2 else ""))
+            if r and (r.get("w") or [0, 0])[1]:
+                P.append(f"reto del día: {r['w'][0]} de {r['w'][1]}" + (f" (racha de {r['r']})" if r.get("r", 0) >= 2 else ""))
+                T.append(("🧠", "Reto del día", f"{r['w'][0]} de {r['w'][1]}", f"racha de {r['r']} 🔥" if r.get("r", 0) >= 2 else "respuestas buenas"))
             sv = (SV.get("t") or {}).get(h)
-            if sv: P.append("sigues vivo en el Survivor" if sv.get("c") is None else f"caíste en el Survivor en la J{sv['c']}")
+            if sv:
+                P.append("sigues vivo en el Survivor" if sv.get("c") is None else f"caíste en el Survivor en la J{sv['c']}")
+                T.append(("🛡️", "Survivor Liga MX", "Vivo" if sv.get("c") is None else "Fuera", "sigues en pie" if sv.get("c") is None else f"caíste en la J{sv['c']}"))
             for F, nom in ((FM, "Fantasy Liga MX"), (FU, "Fantasy Champions")):
                 k = fan_ult(F); x = (F.get("tabla") or {}).get(h)
-                if k and x and k in (x.get("j") or {}): P.append(f"{nom}: {x['j'][k]} pts")
+                if k and x and k in (x.get("j") or {}):
+                    P.append(f"{nom}: {x['j'][k]} pts"); T.append(("⚽", nom, f"{x['j'][k]} pts", "última jornada"))
             R[uid] = P
         return R
 
     def lo_que_viene(self):
         """Renglones de lo que cierra en los próximos 8 días (para el correo del lunes)."""
         from correos import cuando, NJ
-        L = []
+        L = []; self.prox = []   # prox: (cuándo, qué) para el correo
         for jd in sorted(self.db.rango("qmx_jornadas", "primero", self.now, self.now + 8 * 86400), key=lambda x: x["_ts"]):
             j = jd.get("j"); n = NJ.get(j, f"la jornada {j}")
             L.append(f"Quiniela Liga MX: {n} cierra {cuando(jd['_ts'])}")
+            self.prox.append((jd["_ts"], f"Quiniela Liga MX: cierra {n}"))
         L.append("Un reto nuevo cada día en la portada")
         return L
 

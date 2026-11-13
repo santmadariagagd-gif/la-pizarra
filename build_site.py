@@ -1089,9 +1089,25 @@ def _lpz():
     dia=dict(zip(full.game_id,full.gameday))
     for w_,G_ in LPZ_SEMILLA.get(str(S),{}).items():      # semanas que ya se jugaron antes de esta regla
         if w_ not in T: T[w_]=json.loads(json.dumps(G_))
+    # Regla de picks con spread v2 (13 nov 2026, desde la semana 11 de 2026). Backtest 2015-2026 (2,390 partidos, sin ver el
+    # futuro): la regla vieja (nuestra línea vs. la línea) daba 49% y metía de más al local: el mercado ya cobra la ventaja
+    # de local (el local cubre 48.9% desde 2010). La nueva: (1) no le suma la ventaja de local a la comparación y (2) va
+    # contra el equipo que cubrió por mucho la semana pasada (el mercado sobrerreacciona). 50.2% en 2015-22 y 51.1% en
+    # 2023-26; con los picks reales de 2026 habría ido 50-39 en vez de 42-47. Nadie le gana al spread por mucho: es ~51%.
+    # La línea propia (m) y el pick sin spread no cambian. Las semanas ya fijas tampoco.
+    LPZ_V2=11 if S==2026 else 1
+    def ats_prev(w):
+        r={}
+        for g_ in sorted((g_ for g_ in sched if g_['w']<w and g_.get('hs') is not None and g_.get('as_') is not None),key=lambda g_:g_['w']):
+            L_=(T.get(str(g_['w']),{}).get(f"{g_['a']}@{g_['h']}") or {}).get('L')
+            if L_ is None and g_.get('sp') is not None: L_=-g_['sp']
+            if L_ is None: continue
+            x_=(g_['hs']-g_['as_'])+L_; r[g_['h']]=x_; r[g_['a']]=-x_
+        return r
     nuevos=0
     for w in sorted({g['w'] for g in sched}):
         if w<desde or w>semq: continue
+        AP=ats_prev(w)
         G=[g for g in sched if g['w']==w and g.get('ko')]
         if not G: continue
         ko=lambda g:datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ").replace(tzinfo=ZoneInfo("UTC"))
@@ -1113,7 +1129,12 @@ def _lpz():
             if ia is not None and ih is not None: pv=ih/(ia+ih)
             pm=phi(m/13.45); ph=(pm+pv)/2 if pv is not None else pm
             x=dict(su=g['h'] if ph>=0.5 else g['a'],m=round(m,1))   # m = nuestra línea (margen del local) en ese momento
-            if L is not None: x['t']=g['h'] if m+L>0 else g['a']; x['L']=L
+            if L is not None:
+                if w>=LPZ_V2:
+                    v=(m+L)-hf-0.4*(AP.get(g['h'],0)-AP.get(g['a'],0)); x['v']=2
+                    x['t']=g['h'] if v>0 else g['a']
+                else: x['t']=g['h'] if m+L>0 else g['a']
+                x['L']=L
             if cierre: x['c']=1
             if W.get(key)!=x: nuevos+=1
             W[key]=x
