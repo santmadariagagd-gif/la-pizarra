@@ -2110,13 +2110,22 @@ def _feed_post(db,uid,clave,g,tx,big,det):
     return True
 
 SMX_DESDE={"A2026":16}   # Survivor Liga MX: en el Apertura 2026 es de prueba (jornadas 16 y 17); desde el Clausura 2027, jornada 1
+QMX_NOMJ={"18":"los cuartos de final","19":"las semifinales","20":"la final"}
+def _qmx_jtx(j): return QMX_NOMJ.get(str(j),f"la jornada {j}")
 def _qmx():
     import unicodedata, re as _re
     if 'AF_FX' not in globals() or 'mx' not in AF_FX: print("Quiniela Liga MX: sin partidos de API-Football"); return
     F,torneo=AF_FX['mx']
     if not torneo: return
-    F=[f for f in F if af_torneo(f)==torneo and af_regular(f)]
-    if not F: return
+    # 13 nov 2026: la Liguilla también entra a la quiniela, como tres "jornadas" más: 18 = cuartos, 19 = semis y 20 = final
+    # (ida y vuelta juntas). Cuenta el resultado de los 90 minutos de cada partido. El Survivor sigue siendo solo de la 1 a la 17.
+    def _qmx_ronda(f):
+        if af_regular(f): return str((f["league"].get("round") or "").rsplit("-",1)[-1].strip())
+        rd=str((f.get("league") or {}).get("round") or "").lower()
+        if "play" in rd: return None
+        return "18" if "quarter" in rd else "19" if "semi" in rd else "20" if "final" in rd else None
+    F=[f for f in F if af_torneo(f)==torneo and _qmx_ronda(f)]
+    if not [f for f in F if af_regular(f)]: return
     año=min(datetime.fromtimestamp(f["fixture"]["timestamp"]).year for f in F)
     slug=f"{torneo[0]}{año}"
     nrm=lambda t:_re.sub(r"[^a-z ]","",unicodedata.normalize("NFKD",t or "").encode("ascii","ignore").decode().lower())
@@ -2134,7 +2143,8 @@ def _qmx():
         return None
     J={}
     for f in F:
-        j=str((f["league"].get("round") or "").rsplit("-",1)[-1].strip()); fx=f["fixture"]; G=f.get("goals") or {}
+        j=_qmx_ronda(f); fx=f["fixture"]; G=f.get("goals") or {}
+        if (fx.get("status") or {}).get("short") in ("AET","PEN"): G=(f.get("score") or {}).get("fulltime") or G   # en la quiniela cuentan los 90 minutos
         J.setdefault(j,{"p":[]})["p"].append([fx["id"],fx["timestamp"],f["teams"]["home"]["id"],f["teams"]["away"]["id"],G.get("home"),G.get("away"),(fx.get("status") or {}).get("short") or "",prob(f)])
     for j,x in J.items():
         x["p"].sort(key=lambda r:(r[1],r[0])); vivos=[r[1] for r in x["p"] if r[6] not in ("PST","CANC","ABD")]
@@ -2149,7 +2159,8 @@ def _qmx():
     try:
         FINS=("FT","AET","PEN","AWD","WO")
         st=lambda f:(f["fixture"].get("status") or {}).get("short")
-        fin_reg=all(st(f) in FINS+("PST","CANC","ABD") for f in F)
+        FR=[f for f in F if af_regular(f)]   # F ya trae también la Liguilla (13 nov 2026)
+        fin_reg=all(st(f) in FINS+("PST","CANC","ABD") for f in FR)
         KO=[f for f in AF_FX['mx'][0] if af_torneo(f)==torneo and not af_regular(f)]
         rn=lambda f:str((f.get("league") or {}).get("round") or "").lower()
         QF=[f for f in KO if "quarter" in rn(f)]; SF=[f for f in KO if "semi" in rn(f)]; FI=[f for f in KO if "final" in rn(f) and "semi" not in rn(f) and "quarter" not in rn(f)]
@@ -2163,7 +2174,7 @@ def _qmx():
             except Exception as ex: _pz_err("Llave de la Liguilla: tabla de API-Football",ex)
             if len(sem)<8:   # respaldo: tabla calculada con los resultados (puntos, diferencia, goles a favor)
                 Tb={}
-                for f in F:
+                for f in FR:
                     if st(f) not in FINS: continue
                     h,a=f["teams"]["home"]["id"],f["teams"]["away"]["id"]; G=f.get("goals") or {}; gh,ga=G.get("home") or 0,G.get("away") or 0
                     for t,gf,gc in ((h,gh,ga),(a,ga,gh)):
@@ -2262,7 +2273,7 @@ def _qmx():
                 for uid,M in U.items():
                     if j not in M: continue
                     a=sum(1 for r in P if res(r) and (M[j].get("p") or {}).get(str(r[0]))==res(r))
-                    if _feed_post(db,uid,f"qmxr-{slug}-{j}","mx",f"le atinó a {a} de {n} en la jornada {j}",f"{a}/{n}","Quiniela Liga MX"): pub+=1
+                    if _feed_post(db,uid,f"qmxr-{slug}-{j}","mx",f"le atinó a {a} de {n} en {_qmx_jtx(j)}",f"{a}/{n}","Quiniela Liga MX"): pub+=1
                 # premios de la jornada entre todos (con 3 jugadores o más): El Profeta, El Valiente y El Salado
                 E=[(uid,T[hashlib.sha256(uid.encode()).hexdigest()[:12]]["j"].get(str(j))) for uid in U if j in U[uid]]
                 E=[(u,x) for u,x in E if x]
@@ -2271,11 +2282,11 @@ def _qmx():
                     pro=sorted(E,key=lambda e:(-e[1][0],dg(e[1])))[0]
                     sal=sorted(E,key=lambda e:(e[1][0],-dg(e[1])))[0]
                     va=sorted([e for e in E if len(e[1])>2],key=lambda e:e[1][2][0])
-                    if pro[1][0]>0 and _feed_post(db,pro[0],f"qmxpro-{slug}-{j}","mx",f"es «El Profeta» de la jornada {j}: {pro[1][0]} aciertos, el mejor de todos","🔮","Premios de la jornada · Quiniela Liga MX"): pub+=1
+                    if pro[1][0]>0 and _feed_post(db,pro[0],f"qmxpro-{slug}-{j}","mx",f"es «El Profeta» de {_qmx_jtx(j)}: {pro[1][0]} aciertos, el mejor de todos","🔮","Premios de la jornada · Quiniela Liga MX"): pub+=1
                     if va and va[0][1][2][0]<=34:
                         v=va[0][1][2]; rr=next((r for r in P if r[0]==v[1]),None)
-                        if rr and _feed_post(db,va[0][0],f"qmxval-{slug}-{j}","mx",f"es «El Valiente» de la jornada {j}: le atinó a un resultado que solo escogió el {v[0]}%","🦁","Premios de la jornada · Quiniela Liga MX"): pub+=1
-                    if sal[0]!=pro[0] and _feed_post(db,sal[0],f"qmxsal-{slug}-{j}","mx",f"se llevó «El Salado» de la jornada {j} con {sal[1][0]} aciertos 🧂","🧂","Premios de la jornada · Quiniela Liga MX"): pub+=1
+                        if rr and _feed_post(db,va[0][0],f"qmxval-{slug}-{j}","mx",f"es «El Valiente» de {_qmx_jtx(j)}: le atinó a un resultado que solo escogió el {v[0]}%","🦁","Premios de la jornada · Quiniela Liga MX"): pub+=1
+                    if sal[0]!=pro[0] and _feed_post(db,sal[0],f"qmxsal-{slug}-{j}","mx",f"se llevó «El Salado» de {_qmx_jtx(j)} con {sal[1][0]} aciertos 🧂","🧂","Premios de la jornada · Quiniela Liga MX"): pub+=1
             if pub: print(f"Amigos: {pub} resultados de la Quiniela Liga MX publicados")
         except Exception as ex: _pz_err("Amigos: resultados de la Quiniela Liga MX",ex)
         _r=os.path.join(aqui,'docs','datos','qmx_tabla.json'); os.makedirs(os.path.dirname(_r),exist_ok=True)

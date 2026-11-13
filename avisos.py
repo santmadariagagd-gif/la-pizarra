@@ -288,13 +288,15 @@ class Avisos:
         for jd in self.db.rango("qmx_jornadas", "primero", lo, hi):
             jid, sl, j, ts = jd["_id"], jd.get("s"), jd.get("j"), jd["_ts"]
             if not isinstance(j, int): continue
+            nj = {18: "los cuartos de final", 19: "las semifinales", 20: "la final"}.get(j, f"la jornada {j}")   # 18-20 = Liguilla
             prev = f"{sl}-{j - 1}"
             Q = self.db.donde("qmx_picks", "jid", "in", [jid, prev])
             jug = {d.get("uid") for d in Q if d.get("jid") == prev}
             hechos = {d.get("uid") for d in Q if d.get("jid") == jid and (d.get("p") or {})}
             for uid in (jug - hechos) & set(self.subs):
-                t = elige(f"{jid}{uid}", [f"⏰ La jornada {j} cierra en {falta(ts)}", f"⏰ ¡Ojo! Quedan {falta(ts)} para tus picks", f"⏰ Se te va la jornada {j}"])
+                t = elige(f"{jid}{uid}", [f"⏰ {nj.capitalize()} cierra en {falta(ts)}", f"⏰ ¡Ojo! Quedan {falta(ts)} para tus picks", f"⏰ Se te va {nj}"])
                 self.manda(uid, "cie", t, "Todavía no haces tus picks de la Quiniela Liga MX.", "/#quinielamx", f"cie-q-{jid}-{uid[:8]}")
+            if j > 17: continue   # el Survivor no sigue en la Liguilla
             S = self.db.donde("smx_picks", "jid", "in", [jid, prev])
             try: TS = lee("smx_tabla.json"); TS = TS.get("t") if TS.get("s") == sl else {}
             except Exception: TS = {}
