@@ -277,6 +277,8 @@ input[type=search].hq{width:100%;max-width:440px}
 .lpzarr:disabled{opacity:.3;cursor:default}
 .lpzl .qlg{width:34px;height:34px;flex:none}
 .lpzst{text-align:right;flex:none}
+.lpzl li:has(.lpzpq){flex-wrap:wrap}
+.lpzl small.lpzpq{flex:1 0 100%;box-sizing:border-box;margin:2px 0 0;padding-left:46px;font-size:12.5px;line-height:1.4;color:var(--muted);white-space:normal}
 .lpzst small{display:block;color:var(--muted);font-size:12px;margin-top:2px;white-space:nowrap}
 @media (max-width:560px){.lpzrec{gap:6px}.lpzrec>div{padding:10px}.lpzrec b{font-size:24px}.lpzrec span,.lpzrec small{font-size:12px}}
 .qdisc{margin:0 0 14px;padding:12px 14px;background:var(--hl);border:1px solid var(--line);border-left:4px solid var(--mark);border-radius:10px;font-size:15px;line-height:1.45;color:var(--ink)}
@@ -3366,6 +3368,23 @@ function lpzRecord(mode,onlyWeek){
       const g=qnGrade(p,mode,a,h,qnResult(wk,a,h)); if(g==="win")R.w++; else if(g==="loss")R.l++; else if(g==="push")R.p++; else R.pend++;}}
   return R;
 }
+// Análisis corto del pick (desde la v3, semana 11 de 2026): por qué escogió así. build_site guarda m, L, ap (cuánto cubrió
+// cada uno la semana pasada [local, visita]), qb ({equipo: [titular, el que juega]}), ds/dd (visita descansada) y cl (clima).
+function lpzPor(x,a,h,sp){
+  if(!x||(x.v||0)<3) return "";
+  const N=t=>(NT[t]||{n:t}).n, n=v=>String(Math.round(Math.abs(v)*2)/2).replace(".5","½"), hf=+(D.qmodel?.hfa||0), out=[];
+  if(sp&&x.L!=null){
+    if(x.qb) for(const [t,q] of Object.entries(x.qb)) out.push(`${N(t)} juega con ${q[1]||"otro QB"} en lugar de ${q[0]}: aquí no usamos nuestra línea, que no sabe de lesiones.`);
+    else if(x.m!=null){ const e=(x.m+x.L)-hf;
+      out.push(Math.abs(e)<1?"Nuestra línea casi coincide con la oficial.":`Nuestro modelo ve a ${N(e>0?h:a)} ${n(e)} ${Math.abs(e)<1.25?"punto":"puntos"} mejor de lo que dice la línea.`); }
+    const [ph,pa]=x.ap||[0,0], [bt,bv]=Math.abs(ph)>=Math.abs(pa)?[h,ph]:[a,pa];
+    if(Math.abs(bv)>=7) out.push(bv>0?`${N(bt)} cubrió por ${n(bv)} la semana pasada, y después de algo así la línea suele exagerar.`:`${N(bt)} quedó ${n(bv)} abajo de la línea la semana pasada, y después de algo así la línea suele castigarlo de más.`);
+    if(x.ds) out.push(`${N(a)} llega con ${x.dd} días más de descanso.`);
+  }
+  if(x.cl&&!x.cl.techo){ let c=`Clima: ${x.cl.t} °C y viento de ${x.cl.v} km/h${x.cl.nv?", con nieve":x.cl.ll>=50?`, ${x.cl.ll}% de lluvia`:""}.`;
+    if(x.cl.v>=25) c+=" Con ese viento suelen meterse menos puntos."; out.push(c); }
+  return out.length?`<small class="lpzpq">${out.join(" ")}</small>`:"";
+}
 function lpzRender(P){
   const box=$("#qLpz"); if(!box||box.hidden) return;
   if(qnMode==="surv"){
@@ -3400,7 +3419,7 @@ function lpzRender(P){
       :L?.live?`<b>En juego</b>`:ko?`<b>${cap(fDay(ko))}</b>`:"";
     const sub=res?`${a} ${res.as}-${res.hs} ${h}`:L?.live?`${a} ${L.as}-${L.hs} ${h} · ${L.st}`:ko?fHour(ko):"";
     const what=sp?`${T(p.t).n} ${qnLine(home?p.L:-p.L)}`:`Gana ${T(p.t).n}`;
-    return `<li>${logoImg(T(p.t).logo,"qlg")}<div class="hn"><b>${what}</b><small>${home?"vs":"en"} ${T(opp).n}</small></div><div class="lpzst">${st}<small>${sub}</small></div></li>`;}).join("");
+    return `<li>${logoImg(T(p.t).logo,"qlg")}<div class="hn"><b>${what}</b><small>${home?"vs":"en"} ${T(opp).n}</small></div><div class="lpzst">${st}<small>${sub}</small></div>${lpzPor(x,a,h,sp)}</li>`;}).join("");
   box.innerHTML=`<div class="lpzrec">
       <div><span>Temporada ${sp?"con spread":"sin spread"}</span><b>${rec(Rs)}</b><small>${pct(Rs)?`${pct(Rs)} de aciertos`:"sin resultados todavía"}</small></div>
       <div><span>Semana ${w}</span><b>${rec(Rw)}</b><small>${Rw.pend?`${Rw.pend} por jugarse`:pct(Rw)?`${pct(Rw)} de aciertos`:""}</small></div>

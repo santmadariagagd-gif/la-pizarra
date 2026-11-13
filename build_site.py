@@ -1102,9 +1102,38 @@ def _lpz():
     # Se probaron y NO entraron: rachas de victorias (49%), horario estelar (50%), perro divisional y racha cubriendo
     # (mejoran 2023-26 pero no 2015-22), costa oeste a la 1 pm (50%).
     LPZ_V2=11 if S==2026 else 1
-    QBR={}
+    QBR={}; CAN={}
+    # Clima (13 nov 2026): pronóstico de Open-Meteo (gratis, sin llave) a la hora del partido en estadios al aire libre.
+    # Contra el spread NO mueve el pick (backtest 2010-26: el viento no da ventaja consistente al perro), pero se muestra en
+    # el análisis porque con viento de 25+ km/h el under pegó 55%: partido de pocos puntos.
+    EST={'BAL':(39.278,-76.623),'BUF':(42.774,-78.787),'CAR':(35.226,-80.853),'CHI':(41.862,-87.617),'CIN':(39.096,-84.516),
+         'CLE':(41.506,-81.700),'DEN':(39.744,-105.020),'GB':(44.501,-88.062),'JAX':(30.324,-81.637),'KC':(39.049,-94.484),
+         'MIA':(25.958,-80.239),'NE':(42.091,-71.264),'NYG':(40.814,-74.075),'NYJ':(40.814,-74.075),'PHI':(39.901,-75.168),
+         'PIT':(40.447,-80.016),'SEA':(47.595,-122.332),'SF':(37.403,-121.970),'TB':(27.976,-82.503),'TEN':(36.167,-86.771),'WAS':(38.908,-76.865)}
+    TECHO={'ARI','ATL','DAL','HOU','IND','DET','LA','LAC','LV','MIN','NO'}
+    CLC={}
+    def clima(key,g):
+        h_=g['h']; roof,loc=CAN.get(key,(None,None))
+        if loc=='Neutral': return None
+        if h_ in TECHO or roof in ('dome','closed'): return {'techo':1}
+        if h_ not in EST or not g.get('ko'): return None
+        k0=datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ")
+        if (k0-datetime.utcnow()).days>14: return None
+        if key not in CLC:
+            la,lo=EST[h_]; d0=k0.strftime("%Y-%m-%d")
+            u=(f"https://api.open-meteo.com/v1/forecast?latitude={la}&longitude={lo}&hourly=temperature_2m,wind_speed_10m,precipitation_probability,snowfall"
+               f"&wind_speed_unit=kmh&timezone=UTC&start_date={d0}&end_date={d0}")
+            try:
+                J=json.load(urllib.request.urlopen(urllib.request.Request(u,headers={"User-Agent":"la-pizarra"}),timeout=15))['hourly']
+                i_=min(range(len(J['time'])),key=lambda i:abs(int(J['time'][i][11:13])-k0.hour)); i2=min(i_+3,len(J['time'])-1)
+                CLC[key]=dict(t=round(J['temperature_2m'][i_]),v=round(max(J['wind_speed_10m'][i_:i2+1])),
+                              ll=max((J.get('precipitation_probability') or [0])[i_:i2+1] or [0]) or 0,nv=1 if sum(J.get('snowfall',[0])[i_:i2+1] or [0])>0.2 else 0)
+            except Exception as ex_: print("Clima:",key,ex_); CLC[key]=None
+        return CLC[key]
     try:
-        for r_ in full.itertuples(): QBR[f"{r_.away_team}@{r_.home_team}"]=(r_.week,r_.home_qb_name,r_.away_qb_name,r_.home_rest,r_.away_rest)
+        for r_ in full.itertuples():
+            QBR[f"{r_.away_team}@{r_.home_team}"]=(r_.week,r_.home_qb_name,r_.away_qb_name,r_.home_rest,r_.away_rest)
+            CAN[f"{r_.away_team}@{r_.home_team}"]=(getattr(r_,'roof',None),getattr(r_,'location',None))
     except Exception as ex_: print("Picks de La Pizarra: sin QB/descanso de nflverse:",ex_)
     def qb_tit(w):
         cnt={}
@@ -1152,7 +1181,15 @@ def _lpz():
                     contra=-0.4*(AP.get(g['h'],0)-AP.get(g['a'],0)); v=(m+L)-hf+contra; x['v']=3
                     _,hq,aq,hr,ar=QBR.get(key,(0,None,None,None,None))
                     sinqb=[t_ for t_,q_ in ((g['h'],hq),(g['a'],aq)) if q_ and TIT.get(t_) and q_!=TIT[t_]]
-                    if sinqb: v=contra+1e-9; x['qb']=sinqb      # equipo sin su QB titular: nuestra línea no sirve aquí
+                    if sinqb:      # equipo sin su QB titular: nuestra línea no sirve aquí
+                        v=contra+1e-9; x['qb']={t_:[TIT[t_],hq if t_==g['h'] else aq] for t_ in sinqb}
+                    x['ap']=[round(AP.get(g['h'],0),1),round(AP.get(g['a'],0),1)]
+                    if hr is not None and ar is not None:
+                        try: x['dd']=int(float(ar)-float(hr))
+                        except Exception: pass
+                    if not fija:
+                        cl=clima(key,g)
+                        if cl: x['cl']=cl
                     try:
                         if ar is not None and hr is not None and float(ar)-float(hr)>=3: v-=2; x['ds']=1   # visita descansada
                     except Exception: pass
