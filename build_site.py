@@ -1124,6 +1124,32 @@ def _lpz():
          'PIT':(40.447,-80.016),'SEA':(47.595,-122.332),'SF':(37.403,-121.970),'TB':(27.976,-82.503),'TEN':(36.167,-86.771),'WAS':(38.908,-76.865)}
     TECHO={'ARI','ATL','DAL','HOU','IND','DET','LA','LAC','LV','MIN','NO'}
     CLC={}
+    # Dos fuentes: Open-Meteo y, si no responde (17 nov: desde GitHub se quedaba en el saludo SSL), el Servicio
+    # Meteorológico de EE.UU. (api.weather.gov, gratis, sin llave; todos los estadios al aire libre están en EE.UU.).
+    CLC_OM={}
+    import re as _re
+    from datetime import timezone as _tz, timedelta as _td
+    def _get(u,t=8):
+        return json.load(urllib.request.urlopen(urllib.request.Request(u,headers={"User-Agent":"lapizarra.mx (avisos@lapizarra.mx)","Accept":"application/geo+json,application/json"}),timeout=t))
+    def _clima_om(la,lo,k0):
+        d0=k0.strftime("%Y-%m-%d")
+        J=_get(f"https://api.open-meteo.com/v1/forecast?latitude={la}&longitude={lo}&hourly=temperature_2m,wind_speed_10m,precipitation_probability,snowfall"
+               f"&wind_speed_unit=kmh&timezone=UTC&start_date={d0}&end_date={d0}")['hourly']
+        i_=min(range(len(J['time'])),key=lambda i:abs(int(J['time'][i][11:13])-k0.hour)); i2=min(i_+3,len(J['time'])-1)
+        return dict(t=round(J['temperature_2m'][i_]),v=round(max(J['wind_speed_10m'][i_:i2+1])),
+                    ll=max((J.get('precipitation_probability') or [0])[i_:i2+1] or [0]) or 0,nv=1 if sum(J.get('snowfall',[0])[i_:i2+1] or [0])>0.2 else 0)
+    NWS={}
+    def _clima_nws(la,lo,k0):
+        if (la,lo) not in NWS: NWS[(la,lo)]=_get(f"https://api.weather.gov/points/{la},{lo}",12)['properties']['forecastHourly']
+        Pp=_get(NWS[(la,lo)],15)['properties']['periods']
+        ini=lambda p_:datetime.fromisoformat(p_['startTime']).astimezone(_tz.utc).replace(tzinfo=None)
+        V=[p_ for p_ in Pp if k0-_td(minutes=30)<=ini(p_)<k0+_td(hours=3)]
+        if not V: return None
+        f2c=lambda f:round((f-32)*5/9); mph=lambda w:max([int(x) for x in _re.findall(r"\d+",w or "")] or [0])
+        tF=V[0]['temperature'] if V[0].get('temperatureUnit','F')=='F' else V[0]['temperature']*9/5+32
+        return dict(t=f2c(tF),v=round(max(mph(p_.get('windSpeed')) for p_ in V)*1.609),
+                    ll=max(((p_.get('probabilityOfPrecipitation') or {}).get('value') or 0) for p_ in V),
+                    nv=1 if any('snow' in (p_.get('shortForecast') or '').lower() for p_ in V) else 0)
     def clima(key,g):
         h_=g['h']; roof,loc=CAN.get(key,(None,None))
         if loc=='Neutral': return None
@@ -1132,15 +1158,13 @@ def _lpz():
         k0=datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ")
         if (k0-datetime.utcnow()).days>14: return None
         if key not in CLC:
-            la,lo=EST[h_]; d0=k0.strftime("%Y-%m-%d")
-            u=(f"https://api.open-meteo.com/v1/forecast?latitude={la}&longitude={lo}&hourly=temperature_2m,wind_speed_10m,precipitation_probability,snowfall"
-               f"&wind_speed_unit=kmh&timezone=UTC&start_date={d0}&end_date={d0}")
-            try:
-                J=json.load(urllib.request.urlopen(urllib.request.Request(u,headers={"User-Agent":"la-pizarra"}),timeout=15))['hourly']
-                i_=min(range(len(J['time'])),key=lambda i:abs(int(J['time'][i][11:13])-k0.hour)); i2=min(i_+3,len(J['time'])-1)
-                CLC[key]=dict(t=round(J['temperature_2m'][i_]),v=round(max(J['wind_speed_10m'][i_:i2+1])),
-                              ll=max((J.get('precipitation_probability') or [0])[i_:i2+1] or [0]) or 0,nv=1 if sum(J.get('snowfall',[0])[i_:i2+1] or [0])>0.2 else 0)
-            except Exception as ex_: print("Clima:",key,ex_); CLC[key]=None
+            la,lo=EST[h_]; CLC[key]=None
+            if not CLC_OM.get('mal'):
+                try: CLC[key]=_clima_om(la,lo,k0)
+                except Exception as ex_: print("Clima (Open-Meteo):",key,str(ex_)[:120]); CLC_OM['mal']=1   # si falla una vez, ya no se intenta en esta corrida
+            if CLC[key] is None:
+                try: CLC[key]=_clima_nws(la,lo,k0)
+                except Exception as ex_: print("Clima (NWS):",key,str(ex_)[:120])
         return CLC[key]
     try:
         for r_ in full.itertuples():
