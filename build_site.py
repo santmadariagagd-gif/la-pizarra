@@ -1122,6 +1122,8 @@ def _lpz():
          'CLE':(41.506,-81.700),'DEN':(39.744,-105.020),'GB':(44.501,-88.062),'JAX':(30.324,-81.637),'KC':(39.049,-94.484),
          'MIA':(25.958,-80.239),'NE':(42.091,-71.264),'NYG':(40.814,-74.075),'NYJ':(40.814,-74.075),'PHI':(39.901,-75.168),
          'PIT':(40.447,-80.016),'SEA':(47.595,-122.332),'SF':(37.403,-121.970),'TB':(27.976,-82.503),'TEN':(36.167,-86.771),'WAS':(38.908,-76.865)}
+    NEUTRAL={'Estadio Banorte':(19.303,-99.150),'Estadio Azteca':(19.303,-99.150),'Wembley Stadium':(51.556,-0.280),'Tottenham Hotspur Stadium':(51.604,-0.066),
+             'Allianz Arena':(48.219,11.625),'Olympiastadion Berlin':(52.515,13.239),'Santiago Bernabéu':(40.453,-3.688),'Estadio Santiago Bernabéu':(40.453,-3.688),'Maracanã':(-22.912,-43.230),'Neo Química Arena':(-23.545,-46.474)}
     TECHO={'ARI','ATL','DAL','HOU','IND','DET','LA','LAC','LV','MIN','NO'}
     CLC={}
     # Dos fuentes: Open-Meteo y, si no responde (17 nov: desde GitHub se quedaba en el saludo SSL), el Servicio
@@ -1151,14 +1153,18 @@ def _lpz():
                     ll=max(((p_.get('probabilityOfPrecipitation') or {}).get('value') or 0) for p_ in V),
                     nv=1 if any('snow' in (p_.get('shortForecast') or '').lower() for p_ in V) else 0)
     def clima(key,g):
-        h_=g['h']; roof,loc=CAN.get(key,(None,None))
-        if loc=='Neutral': return None
-        if h_ in TECHO or roof in ('dome','closed'): return {'techo':1}
-        if h_ not in EST or not g.get('ko'): return None
+        h_=g['h']; roof,loc,est_=CAN.get(key,(None,None,None))
+        if loc=='Neutral':      # partidos fuera de EE.UU.: solo los estadios que conocemos (al aire libre)
+            if est_ not in NEUTRAL or not g.get('ko'): return None
+            la,lo=NEUTRAL[est_]
+        else:
+            if h_ in TECHO or roof in ('dome','closed'): return {'techo':1}
+            if h_ not in EST or not g.get('ko'): return None
+            la,lo=EST[h_]
         k0=datetime.strptime(g['ko'],"%Y-%m-%dT%H:%MZ")
         if (k0-datetime.utcnow()).days>14: return None
         if key not in CLC:
-            la,lo=EST[h_]; CLC[key]=None
+            CLC[key]=None
             if not CLC_OM.get('mal'):
                 try: CLC[key]=_clima_om(la,lo,k0)
                 except Exception as ex_: print("Clima (Open-Meteo):",key,str(ex_)[:120]); CLC_OM['mal']=1   # si falla una vez, ya no se intenta en esta corrida
@@ -1169,7 +1175,7 @@ def _lpz():
     try:
         for r_ in full.itertuples():
             QBR[f"{r_.away_team}@{r_.home_team}"]=(r_.week,r_.home_qb_name,r_.away_qb_name,r_.home_rest,r_.away_rest)
-            CAN[f"{r_.away_team}@{r_.home_team}"]=(getattr(r_,'roof',None),getattr(r_,'location',None))
+            CAN[f"{r_.away_team}@{r_.home_team}"]=(getattr(r_,'roof',None),getattr(r_,'location',None),getattr(r_,'stadium',None))
     except Exception as ex_: print("Picks de La Pizarra: sin QB/descanso de nflverse:",ex_)
     def qb_tit(w):
         cnt={}
