@@ -208,17 +208,25 @@ def candidatos(season, fbs=None, ttl=20, actual=True):
 
 
 RASGOS = ["pr", "tal", "cp", "ypc"]
+PL = list(VALOR)
 
 
 def _x(j):
-    return [j["pr"], j["tal"], j["cp"], j["ypc"] if j.get("ol") else 0.0] + [1.0 if j["p"] == p else 0.0 for p in VALOR]
+    """Producción con peso propio por posición (no vale igual un buen RB que un buen EDGE), recluta, conferencia, línea ofensiva."""
+    return ([j["pr"] if j["p"] == p else 0.0 for p in PL] + [j["tal"], j["cp"], j["ypc"] if j.get("ol") else 0.0, j["tal"] if j.get("ol") else 0.0]
+            + [1.0 if j["p"] == p else 0.0 for p in PL])
+
+
+def heur(j):
+    return j["pr"] + 0.35 * j["tal"] - 0.6 * j["cp"] + VALOR.get(j["p"], 0) + (0.5 + 0.3 * j["ypc"] if j.get("ol") else 0)
 
 
 def calibra(season, fbs):
     """Aprende cuánto pesa cada cosa con los drafts de verdad: temporadas season-3..season-1 contra los drafts siguientes.
-    Valor de la selección: 1 para el pick 1, 0 para el 262 (escala logarítmica); los no escogidos valen 0."""
+    Valor de la selección: 1 para el pick 1, 0 para el 262 (escala logarítmica); los no escogidos valen 0. Se prueba
+    entrenando sin el último año; si la fórmula a mano sale mejor en esa prueba, se queda la fórmula a mano."""
     import numpy as np
-    filas, ys, hist, años = [], [], [], []
+    filas, ys, hist, años, hs = [], [], [], [], []
     for Y in (season - 3, season - 2, season - 1):
         dp = get("/draft/picks", 24 * 300, year=Y + 1) or []
         if not dp: continue
@@ -231,21 +239,27 @@ def calibra(season, fbs):
             x = D.get((norm(j["n"]), j["t"])) or D.get((norm(j["n"]), None))
             ov = g(x, "overall") if x else None
             v = max(0.0, 1 - math.log(ov) / math.log(262)) if ov else 0.0
-            filas.append(_x(j)); ys.append(v); años.append(Y)
+            filas.append(_x(j)); ys.append(v); años.append(Y); hs.append(heur(j))
             if ov: hist.append(dict(n=g(x, "name"), p=j["p"], t=g(x, "collegeTeam", "college_team"), y=Y + 1, o=ov, eq=g(x, "nflTeam", "nfl_team"),
                                     pr=j["pr"], tal=j["tal"], h=g(x, "height") or j.get("h"), w=g(x, "weight") or j.get("w")))
     if len(filas) < 300: return None, [], ""
-    X, y, A = np.array(filas), np.array(ys), np.array(años)
-    def ajusta(m):
-        lam = np.eye(X.shape[1]) * 2.0
-        return np.linalg.solve(X[m].T @ X[m] + lam, X[m].T @ y[m])
-    # prueba honesta: se entrena sin el último año y se mide en él (¿cuántos de su top 32 fueron de 1ª ronda?)
-    ult = A.max(); w0 = ajusta(A != ult); pred = X[A == ult] @ w0; yy = y[A == ult]
-    top = np.argsort(-pred)[:32]; r1 = int(sum(1 for i in top if yy[i] >= 1 - math.log(32) / math.log(262)))
-    top100 = np.argsort(-pred)[:100]; drafted = int(sum(1 for i in top100 if yy[i] > 0))
-    nota = f"probado con el draft {ult + 1}: de su top 32, {r1} fueron de 1ª ronda; de su top 100, {drafted} fueron escogidos"
-    w = ajusta(np.ones(len(y), bool))
-    print("Colegial: tablero calibrado con", len(y), "jugadores y", len(hist), "drafteados;", nota, "· pesos", dict(zip(RASGOS, [round(float(v), 3) for v in w[:4]])))
+    X, y, A, H = np.array(filas), np.array(ys), np.array(años), np.array(hs)
+    def ajusta(m, lam):
+        return np.linalg.solve(X[m].T @ X[m] + np.eye(X.shape[1]) * lam, X[m].T @ y[m])
+    ult = A.max(); te = A == ult; yy = y[te]; c1 = 1 - math.log(32) / math.log(262)
+    def mide(pred):
+        o = np.argsort(-pred); return int(sum(1 for i in o[:32] if yy[i] >= c1)), int(sum(1 for i in o[:100] if yy[i] > 0))
+    res = {"a mano": (mide(H[te]), None)}
+    for lam in (0.1, 1.0, 10.0):
+        res[f"aprendida λ={lam}"] = (mide(X[te] @ ajusta(A != ult, lam)), lam)
+    for k, ((a, b), _) in res.items(): print(f"Colegial: prueba con el draft {ult + 1} · {k}: top 32 → {a} de 1ª ronda; top 100 → {b} escogidos")
+    mejor = max(res, key=lambda k: (res[k][0][1] + 2 * res[k][0][0]))
+    (r1, dr), lam = res[mejor]
+    nota = f"probado con el draft {ult + 1}: de su top 32, {r1} fueron de 1ª ronda; de su top 100, {dr} fueron escogidos"
+    if lam is None:
+        print("Colegial: se queda la fórmula a mano"); return None, hist, nota
+    w = ajusta(np.ones(len(y), bool), lam)
+    print("Colegial: se usa la fórmula aprendida", mejor, "con", len(y), "jugadores y", len(hist), "drafteados")
     return w, hist, nota
 
 
@@ -268,7 +282,7 @@ def tablero(season, fbs=None):
     except Exception as e: print("Colegial: calibración no se pudo:", repr(e)[:200])
     for j in todos:
         if w is not None: j["sc"] = float(sum(a * b for a, b in zip(_x(j), w)))
-        else: j["sc"] = j["pr"] + 0.35 * j["tal"] - 0.6 * j["cp"] + VALOR.get(j["p"], 0) + (0.5 + 0.3 * j["ypc"] if j.get("ol") else 0)
+        else: j["sc"] = heur(j)
         if j.get("el") is None: j["sc"] -= 0.05 if w is not None else 0.4
     todos.sort(key=lambda j: -j["sc"])
     print(f"Colegial: {len(todos)} candidatos ({sum(1 for j in todos if j.get('ol'))} de línea ofensiva)")
