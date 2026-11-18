@@ -125,18 +125,22 @@ def tablero(season, fbs=None):
     def recluta(pid):
         for i in (R.get(pid) or {}).get("rid", []):
             if i in rec: return rec[i]
-        j = J.get(pid) or {}
+        j = J.get(pid) or R.get(pid) or {}
         L = porn.get(norm(j.get("n")), [])
         if len(L) > 1: L = [x for x in L if x[3] == j.get("t")] or L[:1]
         return L[0] if L else None
+    _ys = defaultdict(int)
+    for r in R.values(): _ys[r.get("y")] += 1
+    usa_y = sum(v for k, v in _ys.items() if isinstance(k, int) and k >= 3) > 0.15 * max(1, len(R))   # el año del roster a veces viene todo en 1
+    print("Colegial: años en el roster", dict(sorted(((str(k), v) for k, v in _ys.items()))), "→", "se usa" if usa_y else "no se usa; se usa el reclutamiento")
     def elegible(pid):
         r = R.get(pid)
-        if r and r.get("y"): return r["y"] >= 3
+        if usa_y and r and r.get("y"): return r["y"] >= 3
         rc = recluta(pid)
         if rc: return rc[2] <= season - 2      # clase de prepa de hace 3+ años al draft
         return None
     S = lambda j, k: j["s"].get(k)
-    if os.environ.get("CFB_DEBUG", "1") == "1":
+    if os.environ.get("CFB_DEBUG", "0") == "1":
         print("Colegial (diagnóstico): stat", json.dumps(stats[:1])[:300], "| roster", json.dumps(roster[:1])[:300])
         _pc = defaultdict(int)
         for pid, j in list(J.items())[:3000]: _pc[str(j.get("pos")) + "/" + str(POS.get((j.get("pos") or "").upper())) + "/" + str(elegible(pid))] += 1
@@ -188,7 +192,7 @@ def tablero(season, fbs=None):
     # línea ofensiva: no hay estadísticas individuales; entran los de 3er año o más con 4-5 estrellas, por su reclutamiento
     for pid, r in R.items():
         p = POS.get((r.get("pos") or "").upper())
-        if p not in ("OT", "IOL") or not r.get("y") or r["y"] < 3: continue
+        if p not in ("OT", "IOL") or elegible(pid) is not True: continue
         rc = recluta(pid)
         if not rc or rc[0] < 4: continue
         todos.append(dict(id=pid, n=r["n"], t=r["t"], conf=None, p=p, st=rc[0], s={}, sc=0.9 * zr(rc[1]) - 0.2 + VALOR[p], ol=1))
@@ -198,7 +202,7 @@ def tablero(season, fbs=None):
     for j in todos[:160]:
         porpos[j["p"]] += 1
         r = R.get(j["id"]) or {}
-        rc = recluta(j["id"]); cl = r.get("y") or (min(4, season - rc[2] + 1) if rc else None)
+        rc = recluta(j["id"]); cl = (r.get("y") if usa_y else None) or (min(4, season - rc[2] + 1) if rc else None)
         out.append(dict(id=j["id"], n=j["n"], p=j["p"], t=j["t"], c=cl, st=j.get("st") or 0, h=r.get("h"), w=r.get("w"),
                         rp=porpos[j["p"]], sc=round(j["sc"], 2), x=_linea(j), ol=j.get("ol", 0)))
     return out
