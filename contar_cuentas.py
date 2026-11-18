@@ -87,3 +87,49 @@ try:
 except Exception as ex:
     print("Tablero: no se pudo guardar:", repr(ex)); est = dict(ok=False, error=repr(ex)[:300])
 json.dump(dict(al=out["al"], **est), open("bitacora/tablero_estado.json", "w", encoding="utf-8"), ensure_ascii=False)
+
+# ---------------- Retención (18 nov 2026): una fila por cuenta, SIN nombres ni ids (el log es público) ----------------
+# Para ver quién regresa y qué usa la gente que regresa. Último uso = lo más reciente entre el último acceso de la cuenta,
+# la última sincronización (usuarios.t), su último reto del día y su último post.
+try:
+    from collections import defaultdict
+    hoyd = datetime.now(MX).date()
+    rd_u = defaultdict(list)
+    for d in db.collection("rd_resp").select(["uid"]).stream():
+        f, _, uid = d.id.partition("_"); rd_u[uid].append(f)
+    qmx_u = Counter(x.get("uid") for x in docs("qmx_picks", "uid"))
+    fan_u = Counter(x.get("uid") for x in docs("fan_ucl", "uid"))
+    post_u = defaultdict(list)
+    for d in db.collection("posts").select(["uid", "t"]).stream():
+        x = d.to_dict() or {}; t = x.get("t")
+        post_u[x.get("uid")].append(t.astimezone(MX).date() if hasattr(t, "astimezone") else None)
+    am_u = Counter()
+    for x in docs("amistades", "u", "est"):
+        if x.get("est") == "ok":
+            for u in x.get("u") or []: am_u[u] += 1
+    push_u = {d.id for d in db.collection("avisos_tk").stream()}
+    usu = {}
+    for d in db.collection("usuarios").stream():
+        x = d.to_dict() or {}; pk = (x.get("picks") or {}).get(str(datetime.now().year)) or {}
+        t = x.get("t")
+        usu[d.id] = dict(t=t.astimezone(MX).date() if hasattr(t, "astimezone") else None, nfl=len([w for w, v in pk.items() if v]),
+                         sl=1 if x.get("liga") or x.get("sleeper") else 0, fav=len(x.get("fav") or []) if isinstance(x.get("fav"), list) else len((x.get("fav") or {}).keys()) if isinstance(x.get("fav"), dict) else 0)
+    filas = []
+    for u in sorted(U, key=lambda u: u.user_metadata.creation_timestamp or 0):
+        alta = datetime.fromtimestamp((u.user_metadata.creation_timestamp or 0) / 1000, MX).date()
+        fechas = [datetime.fromtimestamp(ult(u) / 1000, MX).date()] if ult(u) else []
+        us = usu.get(u.uid, {})
+        if us.get("t"): fechas.append(us["t"])
+        rds = sorted(rd_u.get(u.uid, []))
+        if rds: fechas.append(datetime.fromisoformat(rds[-1]).date())
+        fechas += [f for f in post_u.get(u.uid, []) if f]
+        ultimo = max(fechas) if fechas else alta
+        filas.append(dict(alta=(hoyd - alta).days, ult=(hoyd - ultimo).days, nfl=us.get("nfl", 0), qmx=qmx_u.get(u.uid, 0), rd=len(rds),
+                          rd7=sum(1 for f in rds if (hoyd - datetime.fromisoformat(f).date()).days < 7), fan=fan_u.get(u.uid, 0),
+                          posts=len(post_u.get(u.uid, [])), amigos=am_u.get(u.uid, 0), sleeper=us.get("sl", 0), push=int(u.uid in push_u),
+                          fav=us.get("fav", 0), apodo=int(bool(perf.get(u.uid, {}).get("a"))), invitado=int(bool(perf.get(u.uid, {}).get("iv")))))
+    print("Retención (una fila por cuenta, sin nombres):")
+    print("alta_dias ult_dias nfl_semanas qmx_jornadas reto_dias reto_7d fantasy posts amigos sleeper push favs apodo invitado")
+    for f in filas: print(" ".join(str(f[k]) for k in ("alta", "ult", "nfl", "qmx", "rd", "rd7", "fan", "posts", "amigos", "sleeper", "push", "fav", "apodo", "invitado")))
+except Exception as ex:
+    print("Retención: no se pudo:", repr(ex))
