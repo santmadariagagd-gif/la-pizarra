@@ -634,6 +634,31 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 #hoyFiltro{min-width:0;overflow-x:auto;scrollbar-width:none}#hoyFiltro::-webkit-scrollbar{display:none}#hoyFiltro>button{flex:none}.hoyacc{min-width:0;max-width:100%}
 .hseg button{min-height:34px;padding:0 13px;border-radius:18px;border:0;background:none;color:var(--muted);font:600 16px var(--display);cursor:pointer;white-space:nowrap}
 .hseg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+/* Colegial y draft (18 nov 2026) */
+.cfbseg{margin:0 0 14px;width:max-content;max-width:100%;overflow-x:auto}
+.cfbl{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cfbl li{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);min-width:0}
+.cfbrk{flex:none;width:28px;text-align:center;font:700 18px var(--display);color:var(--muted)}
+.cfbt{display:flex;align-items:center;gap:8px;min-width:0;flex:1}.cfbt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cfbt small{color:var(--muted);font-size:12.5px;white-space:nowrap}
+.cfbab{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font:700 10.5px var(--display);color:#fff;overflow:hidden;background:#555}
+.cfbab img{width:30px;height:30px;object-fit:contain;background:#fff;border-radius:50%}
+.cfbg{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.cfbg .rk{font:700 12px var(--display);color:#F2D466;margin-right:4px}.cfbg .sc{font:700 18px var(--display);text-align:right}.cfbg .gan{color:var(--ink)}.cfbg .per{color:var(--muted)}
+.cfbg .meta{grid-column:1/-1;color:var(--muted);font-size:12px}
+.drpos{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 12px}.drpos::-webkit-scrollbar{display:none}
+.drpos button{flex:none;min-height:32px;padding:0 12px;border-radius:16px;border:1px solid var(--line);background:none;color:var(--ink);font:600 14px var(--display);cursor:pointer}
+.drpos button[aria-pressed="true"]{background:#F2D466;color:#15241F;border-color:#F2D466}
+.drp{display:grid;grid-template-columns:34px 1fr auto;gap:2px 10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.drp .n{font:700 20px var(--display);color:var(--muted);text-align:center}.drp b{font-size:15.5px}.drp small{display:block;color:var(--muted);font-size:12.5px;line-height:1.35}
+.pp{display:inline-block;margin-right:6px;padding:1px 7px;border-radius:7px;background:rgba(242,212,102,.16);color:#F2D466;font:700 12px var(--display)}
+.drsig{all:unset;cursor:pointer;font-size:20px;line-height:1;padding:6px;color:var(--muted)}.drsig[aria-pressed="true"]{color:#F2D466}
+.drord li .nec{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}.nec i{font-style:normal;padding:1px 6px;border-radius:6px;border:1px solid var(--line);font:600 11.5px var(--display);color:var(--muted)}
+.mkrow{display:grid;grid-template-columns:30px 30px 1fr;gap:4px 10px;align-items:center;padding:9px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);cursor:pointer;text-align:left;width:100%;color:var(--ink);font:inherit}
+.mkrow .n{font:700 18px var(--display);color:var(--muted);text-align:center}.mkrow img{width:30px;height:30px;object-fit:contain}
+.mkrow .eleg b{font-size:15px}.mkrow .eleg small{display:block;color:var(--muted);font-size:12px}.mkrow .vac{color:var(--muted);font-size:14px}
+.mkrow.on{border-color:rgba(242,212,102,.5)}.mkacc{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+
 .hsec{margin-top:24px}
 .hh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px}
 .hh h3{font:700 22px/1.1 var(--display);margin:0}
@@ -2120,13 +2145,13 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <button class="acct" id="acctBtn" aria-label="Tu cuenta" hidden>Entrar</button>
 </header>
 <nav class="subnav" data-for="nfl" aria-label="Secciones NFL" hidden>
-  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
+  <button aria-current="page" data-tab="nflgames">Partidos</button><button data-tab="stats">Estadísticas</button><button data-tab="nflpr">Power Ranking</button><button data-tab="nflpo">Playoffs</button><button data-tab="nfldraft">Draft</button><button data-tab="nflhonors">Palmarés</button><button data-tab="nflhist">Historia</button>
 </nav>
 <nav class="subnav" data-for="qn" aria-label="Retas" hidden>
   <button aria-current="page" data-tab="nflq">Quiniela NFL</button><button data-tab="qmx">Liga MX</button><button data-tab="nbaq5">Quinteta</button><button data-tab="fan">Fantasy</button>
 </nav>
 <nav class="subnav" data-for="mas" aria-label="Más deportes" hidden>
-  <button aria-current="page" data-tab="f1">Fórmula 1</button><button data-tab="tenis">Tenis</button>
+  <button aria-current="page" data-tab="f1">Fórmula 1</button><button data-tab="tenis">Tenis</button><button data-tab="ncaa">Colegial</button>
 </nav>
 <nav class="subnav" data-for="nba" aria-label="Secciones NBA" hidden>
   <button aria-current="page" data-tab="nbagames">Partidos</button><button data-tab="nbatable">Tabla</button><button data-tab="nbastats">Estadísticas</button>
@@ -2323,6 +2348,14 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div class="headrow"><h2>Fórmula 1</h2></div>
   <div id="f1Body"></div>
 </section>
+<section class="panel hidden" id="ncaa">
+  <div class="headrow"><h2>Futbol americano colegial</h2></div>
+  <div id="cfbBody"></div>
+</section>
+<section class="panel hidden" id="nfldraft">
+  <div class="headrow"><h2>Draft de la NFL</h2></div>
+  <div id="drBody"></div>
+</section>
 <section class="panel hidden" id="tenis">
   <div class="headrow"><h2>Tenis</h2></div>
   <div id="tenBody"></div>
@@ -2470,7 +2503,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <button role="menuitem" data-dep="nfl"><b>NFL</b><span>Partidos, estadísticas y Power Ranking</span></button>
   <button role="menuitem" data-dep="nba"><b>NBA</b><span>Partidos, tabla y estadísticas</span></button>
   <button role="menuitem" data-dep="mas" data-dt="f1"><b>Fórmula 1</b><span>El GP de esta semana y los campeonatos</span></button>
-  <button role="menuitem" data-dep="mas" data-dt="tenis"><b>Tenis</b><span>ATP y WTA: partidos y ranking</span></button>
+  <button role="menuitem" data-dep="mas" data-dt="ncaa"><b>Colegial</b><span>Top 25, partidos y prospectos del draft</span></button><button role="menuitem" data-dep="mas" data-dt="tenis"><b>Tenis</b><span>ATP y WTA: partidos y ranking</span></button>
 </div>
 <div class="pzinst" id="pzInst" hidden role="dialog" aria-label="Instalar La Pizarra">
   <img src="/iconos/icono-192.png" alt="">
@@ -2574,7 +2607,7 @@ $("#heroTitle").textContent=`Temporada ${D.season} · Semana ${D.gweek}`; setLog
 $("#fTitle").textContent = `Waivers para la semana ${D.week+1}`;
 
 // Navegación: deporte + secciones
-const SECTIONS=["retas","survmx","hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","frank","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbastats","nbaq5","qmx","fan","f1","tenis","favs","amigos"];
+const SECTIONS=["retas","survmx","hoy","nflgames","nflq","stats","nflpr","nflpo","nflhonors","fmatch","froster","fliga","fwaivers","frank","ftrade","mxexplore","mxgames","mxtable","mxplayers","mxliguilla","mxpr","mxgoleo","mxsquad","mxhonors","mxrecords","mxko","mxhist","nflhist","nbagames","nbatable","nbastats","nbaq5","qmx","fan","f1","tenis","ncaa","nfldraft","favs","amigos"];
 // Palmarés: tabla simple equipo/títulos, ordenada de mayor a menor. Mismo formato para NFL y Fútbol.
 function renderHonors(tableId,rows){
   $("#"+tableId).innerHTML=`<thead><tr><th></th><th class="l">Equipo</th><th>Títulos</th></tr></thead><tbody>${rows.map((r,i)=>
@@ -2604,7 +2637,7 @@ function loadNflPlayoffs(){
 // Qué botón de deporte se marca (arriba en computadora y en la barra de abajo en el celular) según la sección
 const FF_TABS=["fmatch","froster","fliga","fwaivers","frank","ftrade"];
 const RETAS=["retas","survmx","nflq","qmx","nbaq5","fan"];
-const MAS_TABS=["f1","tenis"];
+const MAS_TABS=["f1","tenis","ncaa"];
 const sportOf=id=>id==="hoy"?"hoy":id==="favs"?"favs":id==="amigos"?"amigos":MAS_TABS.includes(id)?"mas":RETAS.includes(id)?"qn":id.startsWith("nba")?"nba":id.startsWith("mx")?"mx":FF_TABS.includes(id)?"ff":"nfl";
 // Abre una sección que necesita un paquete: "Cargando…" mientras llega y, si falla, un aviso para recargar
 function paqCarga(n,fn,donde){
@@ -2614,7 +2647,7 @@ function paqCarga(n,fn,donde){
   paquete(n).then(()=>{ if(puse) txt(""); fn(); })
     .catch(()=>txt("No pudimos cargar esta sección. Revisa tu conexión y recarga la página."));
 }
-function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="hoy"||id==="favs"||id==="amigos"||RETAS.includes(id)||MAS_TABS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
+function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==id)); $(".hero").style.display=(id==="mxexplore"||id==="nfldraft"||id==="hoy"||id==="favs"||id==="amigos"||RETAS.includes(id)||MAS_TABS.includes(id))?"none":""; if(RETAS.includes(id)){ try{localStorage.setItem("pz_reta",id);}catch(e){} }
   const spSel=sportOf(id); PZ_SP=spSel; const grp=["hoy","qn","favs","ff"].includes(spSel)?spSel:spSel==="amigos"?"amigos":"dep"; $("#amBtn")?.setAttribute("aria-current",String(spSel==="amigos")); document.querySelectorAll("nav.sports button,.bnav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.sport===grp)); depCierra(); if(typeof chatCierra==="function") chatCierra(); PZ_CASC=Date.now()+2500; if(typeof pzEntraSeccion==="function") pzEntraSeccion(id); if(typeof pzLente==="function") pzLente();
   if(id==="hoy") hoyRender();
   if(typeof navPush==="function") navPush(id);
@@ -2623,7 +2656,7 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id)); document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
   if(id==="favs"){ favsRender(); setTimeout(()=>typeof sufObserva==="function"&&sufObserva(),400); } if(id==="amigos") amRender();
   if(id==="retas") rtRender(); if(id==="survmx") smxRender();
-  if(id==="qmx") qmxAbre(); if(id==="fan") fanRender(); if(id==="f1") f1Render(); if(id==="tenis") tenRender();
+  if(id==="qmx") qmxAbre(); if(id==="fan") fanRender(); if(id==="f1") f1Render(); if(id==="tenis") tenRender(); if(id==="ncaa") cfbRender(); if(id==="nfldraft") drRender();
   if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbastats") nbaStats(); if(id==="nbaq5") q5Render();
   if(id==="mxexplore") renderExplore(); if(id==="mxgames") loadMxGames(); if(id==="mxtable") loadMxTable(); if(id==="mxplayers") loadMxPlayers(); if(id==="mxliguilla") loadMxLiguilla(); if(id==="mxpr") loadMxPR(); if(id==="mxgoleo") paqCarga("goleo",goRender,"#goMsg"); if(id==="mxsquad") loadSelSquad(); if(id==="mxrecords") loadSelRecords(); if(id==="mxko") loadUclKo(); if(id==="mxhist") paqCarga("historia",loadMxHist,"#mxhistMsg"); if(id==="nflhist") paqCarga("historia",()=>histRender("nfl","nfl"),"#nflhistMsg");
   if(id==="stats") paqCarga("stats",statsInit,"#leaders"); if(FF_TABS.includes(id)) paqCarga("fantasy",()=>{ fantasyInit(); if(id==="frank") frkRender(); if(id==="ftrade") tsRender(); },id==="fwaivers"?"#notes":id==="frank"?"#frkBody":null); if(id==="nflq") loadQuiniela(); if(id==="mxhonors") loadMxHonors(); if(id==="nflpo") loadNflPlayoffs(); if(id==="nflhonors") loadNflHonors(); requestAnimationFrame(resyncFreeze);}
@@ -7376,6 +7409,110 @@ async function fanJoinRender(){
   el.innerHTML=I?`<b>Te invitaron a «${acctEsc(I.nombre)}»</b><span>Es un grupo de Fantasy (Champions y Liga MX): tabla y mano a mano cada jornada.</span><span><button class="btn" id="fanUnir">Unirme</button> <button class="q5link" id="fanNoUnir">Ahora no</button></span>`
     :`<b>No pudimos abrir la invitación</b><span>${errQ?`Código: ${acctEsc(errQ)}. `:""}Pide a quien te invitó un link nuevo.</span><button class="q5link" id="fanNoUnir">Cerrar</button>`;
 }
+// ---------- Futbol americano colegial y draft de la NFL (18 nov 2026) ----------
+// Datos: docs/datos/cfb.json (cfb.py, College Football Data). Tablero de prospectos de La Pizarra: números de la
+// temporada + ranking de reclutamiento + valor de la posición. No es de scouts. Mock draft: primera ronda con el orden
+// "si la temporada terminara hoy"; se guarda en el navegador (pz_mock) y viaja con tu cuenta.
+const CFB={D:null,p:null,v:"top",pol:"",dv:"mock",pos:"",sel:null};
+function cfbCarga(){ if(CFB.D) return Promise.resolve(CFB.D); if(!CFB.p) CFB.p=fetch(`datos/cfb.json?v=${D.paq?.v||Math.floor(Date.now()/36e5)}`).then(r=>r.ok?r.json():null).then(x=>(CFB.D=x)).catch(()=>{ CFB.p=null; return null; }); return CFB.p; }
+const cfbEsc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function cfbEq(s){ const t=CFB.D?.teams?.[s]; if(!t) return `<span class="cfbab">${cfbEsc(String(s||"?").slice(0,3).toUpperCase())}</span>`;
+  return `<span class="cfbab" style="background:${cfbEsc(t[1])}">${t[2]?`<img src="${cfbEsc(t[2])}" alt="" loading="lazy" onerror="this.remove()">`:""}${cfbEsc(t[0])}</span>`; }
+const cfbSeg=(id,ops,cur)=>`<div class="hseg cfbseg" id="${id}" role="group">${ops.map(([k,n])=>`<button data-v="${k}" aria-pressed="${k===cur}">${n}</button>`).join("")}</div>`;
+async function cfbRender(){
+  const box=$("#cfbBody"); if(!box) return; if(!CFB.D) box.innerHTML=pzSkel(4); const C=await cfbCarga();
+  if(!C){ box.innerHTML=`<p class="note">El futbol americano colegial está por llegar a La Pizarra. Vuelve pronto.</p>`; return; }
+  let h=cfbSeg("cfbSeg",[["top","Top 25"],["juegos","Partidos"],["pros","Prospectos"]],CFB.v);
+  if(CFB.v==="top"){
+    const pols=[...(C.cfp?.length?[["cfp","Ranking del Playoff"]]:[]),["ap","AP Top 25"]]; if(!pols.some(p=>p[0]===CFB.pol)) CFB.pol=pols[0][0];
+    const L=C[CFB.pol]||[];
+    h+=(pols.length>1?`<div class="drpos" id="cfbPol">${pols.map(([k,n])=>`<button data-pol="${k}" aria-pressed="${k===CFB.pol}">${n}</button>`).join("")}</div>`:"")+
+      `<ol class="cfbl">${L.map(r=>`<li><span class="cfbrk">${r[0]}</span><span class="cfbt">${cfbEq(r[1])}<b>${cfbEsc(r[1])}</b><small>${cfbEsc(r[2]||"")}</small></span>${r[3]?`<small class="note" style="margin:0">${r[3]} votos al 1º</small>`:""}</li>`).join("")}</ol>
+      <p class="note">${CFB.pol==="cfp"?"Los 12 primeros entrarían hoy al College Football Playoff (los 5 mejores campeones de conferencia tienen lugar asegurado).":"Encuesta de la Associated Press."} Semana ${C.week}.</p>`;
+  } else if(CFB.v==="juegos"){
+    const fmt=g=>{ if(g.ok) return ""; if(!g.ko) return "Por definir"; const d=new Date(g.ko); return d.toLocaleDateString("es-MX",{weekday:"short",day:"numeric",month:"short",timeZone:"America/Mexico_City"})+(g.tbd?"":" · "+d.toLocaleTimeString("es-MX",{hour:"numeric",minute:"2-digit",timeZone:"America/Mexico_City"})); };
+    const fila=g=>{ const ga=g.ok&&g.ap>g.hp, gh=g.ok&&g.hp>g.ap;
+      return `<div class="cfbg"><span class="cfbt ${g.ok?(ga?"gan":"per"):""}">${cfbEq(g.a)}${g.ar?`<span class="rk">${g.ar}</span>`:""}<b>${cfbEsc(g.a)}</b></span><span class="sc ${ga?"gan":g.ok?"per":""}">${g.ok?g.ap:""}</span>
+        <span class="cfbt ${g.ok?(gh?"gan":"per"):""}">${cfbEq(g.h)}${g.hr?`<span class="rk">${g.hr}</span>`:""}<b>${cfbEsc(g.h)}</b></span><span class="sc ${gh?"gan":g.ok?"per":""}">${g.ok?g.hp:""}</span>
+        <span class="meta">${g.ok?"Final":fmt(g)}${g.n?` · ${cfbEsc(g.n)}`:""}</span></div>`; };
+    const esta=C.games.filter(g=>g.w===C.week), ant=C.games.filter(g=>g.w!==C.week);
+    h+=`<div class="hh"><h3>Semana ${C.week}</h3></div><div class="cfbl" style="display:grid;gap:8px">${esta.map(fila).join("")||`<p class="note">Sin partidos de equipos del Top 25 esta semana.</p>`}</div>
+      ${ant.length?`<div class="hh" style="margin-top:20px"><h3>Semana ${C.week-1}</h3></div><div style="display:grid;gap:8px">${ant.map(fila).join("")}</div>`:""}
+      <p class="note">Partidos con algún equipo del ranking o entre equipos de las 4 conferencias grandes. Hora del centro de México.</p>`;
+  } else { h+=drProspectos(C,true); }
+  box.innerHTML=h;
+}
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
+  const b=t.closest("#cfbSeg button"); if(b){ CFB.v=b.dataset.v; pzTrack("cfb_vista",{v:CFB.v}); return cfbRender(); }
+  const pl=t.closest("#cfbPol button"); if(pl){ CFB.pol=pl.dataset.pol; return cfbRender(); } });
+
+// --- Draft ---
+const DR_POS=["QB","WR","RB","TE","OT","IOL","EDGE","DL","LB","CB","S"];
+const drSig=()=>{ try{ return new Set(JSON.parse(localStorage.getItem("pz_draft_sig")||"[]")); }catch(e){ return new Set(); } };
+const drMock=()=>{ try{ const m=JSON.parse(localStorage.getItem("pz_mock")||"null"); return m&&m.y===CFB.D?.draft?.y?m:{y:CFB.D?.draft?.y,p:{}}; }catch(e){ return {y:CFB.D?.draft?.y,p:{}}; } };
+const drMockGuarda=m=>{ try{ localStorage.setItem("pz_mock",JSON.stringify(m)); if(typeof acctPush==="function") acctPush(); }catch(e){} };
+const drCl=c=>c==null?"":c>=4?"Senior":c===3?"Junior":"";
+function drProspectos(C,desdeCfb){
+  const sig=drSig(), L=(C.pros||[]).filter(p=>!CFB.pos||(CFB.pos==="sig"?sig.has(p.id):p.p===CFB.pos));
+  return `<div class="drpos" id="drPos"><button data-pos="" aria-pressed="${!CFB.pos}">Todos</button><button data-pos="sig" aria-pressed="${CFB.pos==="sig"}">★ Siguiendo</button>${DR_POS.map(p=>`<button data-pos="${p}" aria-pressed="${CFB.pos===p}">${p}</button>`).join("")}</div>
+    <div style="display:grid;gap:6px">${L.slice(0,120).map(p=>`<div class="drp"><span class="n">${(C.pros.indexOf(p)+1)}</span><span><b>${cfbEsc(p.n)}</b><small><span class="pp">${p.p}${p.rp}</span>${cfbEsc(p.t)}${drCl(p.c)?` · ${drCl(p.c)}`:""}${p.st?` · ${"★".repeat(p.st)} de recluta`:""}</small><small>${cfbEsc(p.x||"")}</small></span>
+      <button class="drsig" data-sig="${cfbEsc(p.id)}" aria-pressed="${sig.has(p.id)}" aria-label="${sig.has(p.id)?"Dejar de seguir":"Seguir"} a ${cfbEsc(p.n)}">${sig.has(p.id)?"★":"☆"}</button></div>`).join("")||`<p class="note">${CFB.pos==="sig"?"Todavía no sigues a nadie: toca la ☆ de un prospecto.":"Sin prospectos en esta posición."}</p>`}</div>
+    <p class="note">Tablero de La Pizarra para el draft ${C.draft?.y||""}: números de esta temporada, su ranking como recluta, la dureza de su conferencia y lo que vale su posición en el draft. Es estadístico, no de scouts: la línea ofensiva entra solo por su ranking de recluta. Solo juniors y seniors.${desdeCfb?` <button class="alink" data-drir="1">Arma tu mock draft</button>`:""}</p>`;
+}
+async function drRender(){
+  const box=$("#drBody"); if(!box) return; if(!CFB.D) box.innerHTML=pzSkel(4); const C=await cfbCarga();
+  if(!C?.draft?.order?.length){ box.innerHTML=`<p class="note">El draft llega pronto a La Pizarra: prospectos, orden de selección y tu propio mock draft.</p>`; return; }
+  let h=cfbSeg("drSeg",[["mock","Mi mock draft"],["pros","Prospectos"],["orden","Orden"]],CFB.dv);
+  const N=t=>NT[t]||{n:t};
+  if(CFB.dv==="orden"){
+    h+=`<ol class="cfbl drord">${C.draft.order.map(([k,t,r,nec])=>`<li><span class="cfbrk">${k}</span><span class="cfbt">${hoyLogo(N(t).logo,"qlg")}<b>${cfbEsc(N(t).n)}</b><small>${r}</small></span><span class="nec">${(nec||[]).map(x=>`<i>${x}</i>`).join("")}</span></li>`).join("")}</ol>
+      <p class="note">Si la temporada terminara hoy: peor récord primero; en empate, el de calendario más fácil. No incluye selecciones intercambiadas. Las necesidades salen de dónde está cada equipo más abajo de la liga (pase, carrera, defensa contra el pase y la carrera, capturas).</p>`;
+  } else if(CFB.dv==="pros"){ h+=drProspectos(C,false); }
+  else {
+    const m=drMock(), P=Object.fromEntries((C.pros||[]).map(p=>[p.id,p])), n=Object.values(m.p).filter(Boolean).length;
+    h+=`<div class="mkacc"><button class="btn" id="mkAuto">Llenar con La Pizarra</button>${n?`<button class="btn ghost" id="mkShare">📸 Compartir</button><button class="btn ghost" id="mkBorra">Borrar</button>`:""}</div>
+      <p class="note" style="margin-top:0">${n?`${n} de 32 escogidos.`:"Toca cada selección para escoger a tu jugador, o deja que La Pizarra lo llene y cambias lo que quieras."}</p>
+      <div style="display:grid;gap:6px">${C.draft.order.map(([k,t,r,nec])=>{ const p=P[m.p[k]];
+        return `<button class="mkrow${p?" on":""}" data-mk="${k}"><span class="n">${k}</span>${hoyLogo(N(t).logo)}<span class="eleg">${p?`<b>${cfbEsc(p.n)}</b><small><span class="pp">${p.p}</span>${cfbEsc(p.t)}</small>`:`<span class="vac">${cfbEsc(N(t).n)} · escoger</span><small>Necesita: ${(nec||[]).join(", ")||"—"}</small>`}</span></button>`; }).join("")}</div>
+      <p class="note">Orden si la temporada terminara hoy (sin intercambios). Se guarda en este navegador y en tu cuenta.</p>`;
+  }
+  box.innerHTML=h;
+}
+function drElegir(k){
+  const C=CFB.D, m=drMock(), ord=C.draft.order.find(o=>o[0]===+k); if(!ord) return; const [_,t,r,nec]=ord, N=NT[t]||{n:t};
+  const usados=new Set(Object.entries(m.p).filter(([kk,v])=>+kk!==+k&&v).map(([kk,v])=>v));
+  const pos=CFB.sel??""; const L=(C.pros||[]).filter(p=>!usados.has(p.id)&&(!pos||p.p===pos)).slice(0,60);
+  $("#gbody").innerHTML=`<div class="pzp"><h2>Selección ${k}: ${cfbEsc(N.n)}</h2><p class="note">Necesita: ${(nec||[]).join(", ")||"—"} · ${r}</p>
+    <div class="drpos" id="mkPos"><button data-mpos="" aria-pressed="${!pos}">Todos</button>${[...new Set([...(nec||[]),...DR_POS])].map(p=>`<button data-mpos="${p}" aria-pressed="${pos===p}">${p}${(nec||[]).includes(p)?" ·":""}</button>`).join("")}</div>
+    <div style="display:grid;gap:6px">${m.p[k]?`<button class="mkrow" data-mkq="${k}"><span class="n">×</span><span></span><span class="vac">Quitar mi selección</span></button>`:""}${L.map(p=>`<button class="mkrow${m.p[k]===p.id?" on":""}" data-mkp="${k}:${cfbEsc(p.id)}"><span class="n">${C.pros.indexOf(p)+1}</span><span class="pp" style="justify-self:center">${p.p}</span><span class="eleg"><b>${cfbEsc(p.n)}</b><small>${cfbEsc(p.t)} · ${cfbEsc(p.x||"")}</small></span></button>`).join("")}</div></div>`;
+  if(!dlg.open) dlg.showModal(); CFB.mk=k;
+}
+function drAuto(){   // mejor disponible con un empujón a lo que necesita el equipo
+  const C=CFB.D, m={y:C.draft.y,p:{}}, usados=new Set();
+  for(const [k,t,r,nec] of C.draft.order){ let mejor=null, ms=-1e9;
+    for(const p of C.pros){ if(usados.has(p.id)) continue; const i=(nec||[]).indexOf(p.p), sc=p.sc+(i===0?.55:i>0?.3:0)-(p.p==="QB"&&!(nec||[]).includes("QB")?.6:0); if(sc>ms){ ms=sc; mejor=p; } }
+    if(mejor){ m.p[k]=mejor.id; usados.add(mejor.id); } }
+  drMockGuarda(m); pzTrack("mock_auto",{}); drRender();
+}
+async function drCompartir(){
+  const C=CFB.D, m=drMock(), P=Object.fromEntries(C.pros.map(p=>[p.id,p]));
+  const F=C.draft.order.filter(([k])=>P[m.p[k]]).map(([k,t])=>({l:`${k}. ${(NT[t]||{}).n||t}`,v:`${P[m.p[k]].n} · ${P[m.p[k]].p}`,on:k<=3}));
+  pzTrack("compartir_picks",{q:"mock"});
+  pzCompartir(null,"mi-mock-draft",{blob:await picksImagen(`Draft de la NFL ${C.draft.y} · 1ª ronda`,"Mi mock draft",F,"lista"),titulo:"Comparte tu mock draft",texto:`Mi mock draft ${C.draft.y} en La Pizarra. ¿A quién escoge tu equipo? https://lapizarra.mx`});
+}
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
+  const b=t.closest("#drSeg button"); if(b){ CFB.dv=b.dataset.v; pzTrack("draft_vista",{v:CFB.dv}); return drRender(); }
+  const ps=t.closest("#drPos button"); if(ps){ CFB.pos=ps.dataset.pos; return document.querySelector("#ncaa:not(.hidden)")?cfbRender():drRender(); }
+  const sg=t.closest("[data-sig]"); if(sg){ const S=drSig(), id=sg.dataset.sig; S.has(id)?S.delete(id):S.add(id); try{ localStorage.setItem("pz_draft_sig",JSON.stringify([...S])); if(typeof acctPush==="function") acctPush(); }catch(e){} pzTrack("draft_seguir",{}); return document.querySelector("#ncaa:not(.hidden)")?cfbRender():drRender(); }
+  if(t.closest("[data-drir]")){ CFB.dv="mock"; showSport("nfl","nfldraft"); window.scrollTo(0,0); return; }
+  const mk=t.closest("[data-mk]"); if(mk){ CFB.sel=null; return drElegir(mk.dataset.mk); }
+  const mp=t.closest("#mkPos button"); if(mp){ CFB.sel=mp.dataset.mpos; return drElegir(CFB.mk); }
+  const pk=t.closest("[data-mkp]"); if(pk){ const [k,id]=pk.dataset.mkp.split(":"); const m=drMock(); m.p[k]=id; drMockGuarda(m); pzTrack("mock_pick",{}); dlg.close(); return drRender(); }
+  const q=t.closest("[data-mkq]"); if(q){ const m=drMock(); delete m.p[q.dataset.mkq]; drMockGuarda(m); dlg.close(); return drRender(); }
+  if(t.closest("#mkAuto")) return drAuto();
+  if(t.closest("#mkBorra")){ drMockGuarda({y:CFB.D.draft.y,p:{}}); return drRender(); }
+  if(t.closest("#mkShare")) return drCompartir();
+});
 // ---------- Más deportes: Fórmula 1 y tenis (27 oct 2026) ----------
 // Datos de ESPN directo desde el navegador (como la NBA): calendario, sesiones, resultados y campeonatos de F1;
 // torneos de la semana, partidos en vivo y ranking de la ATP y la WTA. Horarios del centro de México.
@@ -9822,7 +9959,7 @@ setInterval(()=>{ if(document.hidden) return; for(const e of document.querySelec
 
 function fanRepinta(){ FAN.nube=0; FAN.eq=null; FAN.hash=null; if(!$("#fan").classList.contains("hidden")) fanRender(); }
 
-const ACCT_V="12.19.0", ACCT_KEYS=["pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio","pz_hoy","pz_perfil","pz_tema","pz_hoy_orden"];
+const ACCT_V="12.19.0", ACCT_KEYS=["pz_mock","pz_draft_sig","pz_fan","pz_fang","pz_qmxg","pz_q5","pz_fav","pz_mispicks","pz_surv","pizarra_sleeper","pizarra_league","pizarra_espn","pizarra_fsrc","pz_cuenta","pz_cuenta_sucio","pz_hoy","pz_perfil","pz_tema","pz_hoy_orden"];
 const acctLsGet=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
 const acctLsSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
 const acctLsDel=k=>{try{localStorage.removeItem(k);}catch(e){}};
@@ -9846,7 +9983,7 @@ function acctLoadJS(f){return new Promise((ok,no)=>{
   const go=i=>{if(i>=urls.length) return no(new Error("No cargó "+f)); const s=document.createElement("script"); s.src=urls[i]; s.async=true;
     s.onload=ok; s.onerror=()=>{s.remove(); go(i+1);}; document.head.appendChild(s);};
   go(0);});}
-const acctLocal=()=>({fang:fanIds(),qmxg:qmxIds(),q5:Q5.todo(),fav:favLee(),picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||""});
+const acctLocal=()=>({fang:fanIds(),qmxg:qmxIds(),q5:Q5.todo(),fav:favLee(),picks:qnPicksAll(),surv:svAll(),sleeper:acctLsGet("pizarra_sleeper")||"",liga:acctLsGet("pizarra_league")||"",espn:acctLsGet("pizarra_espn")||"",fsrc:acctLsGet("pizarra_fsrc")||"",mock:acctLsGet("pz_mock")||"",dsig:acctLsGet("pz_draft_sig")||""});
 function acctMerge(nube,local){   // {temporada:{semana:{"VIS@LOC":{ats,su}}}}: gana la nube; lo local llena lo que falte
   const R=JSON.parse(JSON.stringify(nube||{}));
   for(const [s,S] of Object.entries(local||{})) for(const [w,W] of Object.entries(S||{})) for(const [k,G] of Object.entries(W||{})) for(const [m,p] of Object.entries(G||{})){
@@ -9876,11 +10013,13 @@ async function acctPull(){
   catch(e){console.warn("Cuentas: no se pudo leer la cuenta",e?.code||e); return;}
   if(ACCT.user!==u) return;
   const L=acctLocal(), linked=acctLsGet("pz_cuenta")===u.uid, dirty=acctLsGet("pz_cuenta_sucio")==="1";
-  const cloud={fang:Array.isArray(C.fang)?C.fang:[],qmxg:Array.isArray(C.qmxg)?C.qmxg:[],q5:C.q5||{},fav:{eq:C.fav?.eq||{},jug:C.fav?.jug||{}},picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:""};
+  const cloud={fang:Array.isArray(C.fang)?C.fang:[],qmxg:Array.isArray(C.qmxg)?C.qmxg:[],q5:C.q5||{},fav:{eq:C.fav?.eq||{},jug:C.fav?.jug||{}},picks:C.picks||{},surv:C.surv||{},sleeper:C.sleeper||"",liga:C.liga||"",espn:"",fsrc:"",mock:typeof C.mock==="string"?C.mock:"",dsig:typeof C.dsig==="string"?C.dsig:""};
   let N;
   if(linked&&exists&&!dirty) N=cloud;                         // navegador ya ligado: manda la nube
   else if(linked) N=L;                                         // cambios locales sin subir (o cuenta nueva): manda lo local
   else N={fang:[...new Set([...(cloud.fang||[]),...(L.fang||[])])],qmxg:[...new Set([...(cloud.qmxg||[]),...(L.qmxg||[])])],q5:{...L.q5,...cloud.q5},fav:{eq:{...L.fav.eq,...cloud.fav.eq},jug:{...L.fav.jug,...cloud.fav.jug}},picks:acctMerge(cloud.picks,L.picks),surv:svMerge(cloud.surv,L.surv),sleeper:cloud.sleeper||L.sleeper,liga:cloud.sleeper?cloud.liga:L.liga,espn:cloud.espn||L.espn,fsrc:cloud.fsrc||L.fsrc};
+  if(!(linked&&exists&&!dirty)&&!linked){ N.mock=cloud.mock||L.mock; try{ N.dsig=JSON.stringify([...new Set([...JSON.parse(cloud.dsig||"[]"),...JSON.parse(L.dsig||"[]")])]); }catch(e){ N.dsig=cloud.dsig||L.dsig; } }
+  if(N.mock) acctLsSet("pz_mock",N.mock); if(N.dsig) acctLsSet("pz_draft_sig",N.dsig);
   acctLsSet("pz_cuenta",u.uid);
   const pc=JSON.stringify(N.picks)!==JSON.stringify(L.picks)||JSON.stringify(N.surv||{})!==JSON.stringify(L.surv||{}), sc=N.sleeper!==L.sleeper||N.liga!==L.liga||N.espn!==L.espn||N.fsrc!==L.fsrc;
   acctLsSet(QN_PK,JSON.stringify(N.picks)); acctLsSet(SV_PK,JSON.stringify(N.surv||{}));

@@ -5,7 +5,7 @@ on:
     - cron: "0 5 * * *"    # y 11:00 pm CDMX (puntos de la quiniela y del fantasy esa misma noche)
   workflow_dispatch:        # botón "Run workflow"
   push:
-    paths: ["notas.json", "ranking.json", "template.html", "build_site.py"]
+    paths: ["notas.json", "ranking.json", "template.html", "build_site.py", "cfb.py"]
 permissions:
   contents: write
 concurrency:
@@ -34,6 +34,7 @@ jobs:
           SPORTMONKS_KEY: ${{ secrets.SPORTMONKS_KEY }}   # Sportmonks: estadísticas de jugadores de fútbol
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}   # API-Football: estadísticas de jugadores (Liga MX ya sale de aquí)
           YT_API_KEY: ${{ secrets.YT_API_KEY }}   # YouTube Data API (gratis): videos oficiales; si no está, se usa el RSS
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}   # College Football Data (gratis, 1,000 al mes): colegial y draft (cfb.py)
       - name: Guardar la página nueva
         run: |
           git config user.name "La Pizarra bot"

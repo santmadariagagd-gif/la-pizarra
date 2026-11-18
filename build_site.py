@@ -2114,6 +2114,34 @@ try:
     out['nfl_seeds']=nfl_seeds()
 except Exception as ex:
     print("Postemporada NFL: no se pudo calcular:",ex); out['nfl_seeds']={}
+# ----- Futbol americano colegial y draft (18 nov 2026): cfb.py arma docs/datos/cfb.json -----
+# Lo de la NFL que necesita: récord de cada equipo, dureza del calendario (para desempatar el orden del draft) y
+# necesidades: las 3 áreas donde el equipo está más abajo de la liga (EPA por jugada y capturas).
+try:
+    import cfb as _cfb
+    _rec={r.tm:[int(r.w),int(r.l),int(r.tie)] for r in rec_t.itertuples()}
+    _pct=rec_t.set_index('tm').pct.to_dict(); _sos=gm.assign(op=gm.opp.map(_pct)).groupby('tm').op.mean().to_dict()
+    _pp=pbp[pbp.play_type.isin(['pass','run'])]
+    _m={'op':_pp[_pp['pass']==1].groupby('posteam').epa.mean(),'or':_pp[_pp['pass']!=1].groupby('posteam').epa.mean(),
+        'dp':-_pp[_pp['pass']==1].groupby('defteam').epa.mean(),'dr':-_pp[_pp['pass']!=1].groupby('defteam').epa.mean(),
+        'sk':pbp[pbp.sack==1].groupby('defteam').size()}
+    _rk={k:v.rank(ascending=True) for k,v in _m.items()}   # 1 = el peor de la liga
+    _pos={'op':['QB','WR'],'or':['OT','RB'],'dp':['CB','S'],'dr':['DL','LB'],'sk':['EDGE']}
+    _nec={}
+    for t in _rec:
+        L=sorted(((float(_rk[k].get(t,16)),k) for k in _rk))[:3]
+        n=[]
+        for _r,k in L:
+            for p in _pos[k]:
+                if p not in n: n.append(p); break
+        if L and L[0][0]<=4 and len(_pos[L[0][1]])>1 and _pos[L[0][1]][1] not in n: n.append(_pos[L[0][1]][1])
+        _nec[t]=n[:4]
+    C=_cfb.arma(int(S),dict(rec=_rec,sos=_sos,nec=_nec))
+    if C:
+        os.makedirs('docs/datos',exist_ok=True)
+        json.dump(C,open('docs/datos/cfb.json','w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
+except Exception as ex:
+    print("Colegial: no se pudo armar:",repr(ex)[:300])
 # ----- Momios de fútbol (1X2) de The Odds API -----
 # ESPN casi nunca trae el momio local/visita en fútbol. The Odds API sí (plan gratis: 500 créditos al mes;
 # cada liga cuesta 1 crédito con 1 mercado y 1 región). Para no gastar de más, solo se piden momios nuevos en
