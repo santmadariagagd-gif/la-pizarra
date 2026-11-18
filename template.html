@@ -1344,7 +1344,7 @@ nav.tabs button .depch{vertical-align:-2px;margin-left:2px;transition:transform 
 .q5new{display:flex;gap:8px;flex-wrap:wrap;max-width:640px;margin:6px 0 0}.q5new input{flex:1 1 220px;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 16px var(--body)}
 .q5link{background:none;border:0;color:var(--mark);font:600 15px var(--body);cursor:pointer;padding:6px 0;text-decoration:underline}
 /* ---------- Más vida (27 oct 2026): portada, partido grande, cierre de picks, reacciones, logros, resumen y detalles ---------- */
-#hoyPor:empty,#hoyBv:empty{display:none}
+#hoyPor:empty,#hoyBv:empty,#hoyPasos:empty{display:none}
 .vpor{position:relative;overflow:hidden;border-radius:24px;margin:4px 0 18px;border:1px solid var(--line);background:var(--surface);isolation:isolate}
 .vfondo{position:absolute;inset:0;z-index:-1;background-image:radial-gradient(70% 90% at 12% 0%,color-mix(in srgb,var(--c1) 62%,transparent) 0%,transparent 62%),radial-gradient(70% 90% at 95% 20%,color-mix(in srgb,var(--c2) 70%,transparent) 0%,transparent 66%),linear-gradient(180deg,#2c4a40,#1F332D);background-size:220% 220%;animation:vderiva 16s ease-in-out infinite}
 .vfondo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,32,28,.18),rgba(20,32,28,.55))}
@@ -1900,6 +1900,17 @@ dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background
 .pzp h2{margin:0 0 8px}.pzp>p{color:var(--muted)}.pzpl{display:flex;flex-direction:column;gap:4px;margin:12px 0;font-weight:600;font-size:14px}.pzpl input,.pzpl textarea{font:inherit;font-weight:400;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .pzpn{display:grid;gap:8px}.pzpo{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer}.pzpo:has(input:checked){border-color:var(--mark);background:#33493F}
 .pzpo input{margin-top:4px;accent-color:#F2D466}.pzpo span{display:flex;flex-direction:column;gap:2px}.pzpo b{font:800 18px var(--display)}.pzpo small{color:var(--muted);font-size:13px}.pzpo i{font-size:13px;color:#C9D6CF;margin-top:2px}
+.pasos{position:relative;padding:16px;border-radius:18px;background:linear-gradient(135deg,#2B4A40,#1F332D 65%);border:1px solid rgba(242,212,102,.35);margin:0 0 16px;max-width:640px}
+.pasos h3{margin:0 0 2px;font:700 21px/1.15 var(--display)}.pasos>p{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+.pasbar{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:0 0 12px}.pasbar i{display:block;height:100%;background:#F2D466;border-radius:99px;transition:width .5s}
+.pasos ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.pasos li button{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.pasos li button:focus-visible{outline:2px solid #F2D466;outline-offset:2px}
+.pasos li .pic{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:17px;background:rgba(242,212,102,.14)}
+.pasos li b{display:block;font-size:15px}.pasos li small{display:block;color:var(--muted);font-size:12.5px;line-height:1.3}
+.pasos li .pok{margin-left:auto;flex:none;font-size:13px;font-weight:700;color:var(--muted)}
+.pasos li.ok button{opacity:.62}.pasos li.ok .pic{background:#F2D466;color:#15241F;font-weight:800}.pasos li.ok b{text-decoration:line-through;text-decoration-color:rgba(242,212,102,.7)}
+.pasos.listo{text-align:center}.pasos.listo .pgran{font-size:42px;line-height:1;margin:2px 0 6px}
 .bienv{position:relative;padding:16px;border-radius:18px;background:linear-gradient(135deg,#3E5A3A,#263D36 60%,#2f4a5e);border:1px solid var(--mark);margin:0 0 16px;max-width:640px}
 .bienv>b{display:block;font:800 24px/1.1 var(--display);padding-right:30px}.bienv ul{list-style:none;padding:0;margin:12px 0 14px;display:grid;gap:8px}.bienv li{display:flex;gap:10px;align-items:center;font-size:15px}.bienv li span{font-size:20px;width:26px;text-align:center}
 .bienvb{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.bienvb .btn{min-height:46px;font-size:17px}.bienvb small{color:var(--muted);font-size:13px}
@@ -2160,6 +2171,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <section class="panel" id="hoy">
   <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hoyacc"><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div><button class="hcfgbtn" id="hoyCfg" aria-label="Personalizar tu portada" title="Personalizar tu portada"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div></div>
   <div id="hoyBv"></div>
+  <div id="hoyPasos"></div>
   <div id="hoyPor"></div>
   <div id="hoyPf"></div>
   <div id="hoyRd"></div>
@@ -6769,7 +6781,7 @@ async function qmxLlave(sinRed){
     ${sinHora?`<p class="note">Ya están los 8 de la Liguilla. Podrás escoger en cuanto se publiquen los horarios de cuartos (normalmente un día después de la jornada 17).</p>`:""}
     ${cerrada&&!hechos?`<p class="note">No llenaste tu llave a tiempo.</p>`:""}
     <div class="llave"><div class="llcol"><h4>Cuartos</h4><div class="llbody">${cuartos}</div></div><div class="llcol"><h4>Semis</h4><div class="llbody">${semisH}</div></div><div class="llcol"><h4>Final</h4><div class="llbody">${finalH}<div class="llcamp${c!=null?"":" vacio"}"><span class="lltro" aria-hidden="true">🏆</span>${c!=null?`${hoyLogo(qmxEq(c).logo,"qmxl")}<span><small>Tu campeón</small><b>${hoyEsc(qmxEq(c).n)}</b></span>`:`<span><small>Tu campeón</small><b>?</b></span>`}</div></div></div></div>
-    <p class="note">En semis se reacomoda: el mejor de la tabla que pase juega contra el peor.</p>
+    <p class="note">En semis se reacomoda: el mejor de la tabla que pase juega contra el peor.</p>${q.some(v=>v!=null)?`<div class="qmxtools"><button class="q5link" id="llShare">📸 Presumir mi Llave</button></div>`:""}
     <p class="note" id="qmxGuardo"></p>${reglas}`;
 }
 document.addEventListener("click",ev=>{ const b=ev.target.closest?.("[data-ll]"); if(!b||b.disabled) return;
@@ -7677,7 +7689,9 @@ async function picksImagen(kick,titulo,filas,modo){
     x.font=Fn(800,sz); x.fillStyle=on?"#15241F":"rgba(236,239,231,.62)"; x.textAlign="center"; x.fillText(txt,bx+bw/2,by+bh/2+sz*.36); x.textAlign="left"; };
   filas.forEach((f,i)=>{ const yy=y+i*rh, bh=rh-26, sz=Math.round(bh*.5);
     if(i%2===0){ x.fillStyle="rgba(255,255,255,.04)"; x.beginPath(); x.roundRect(P-18,yy-6,W-2*P+36,rh-8,22); x.fill(); }
-    if(modo==="mx"){ const bw=(W-2*P-110-40)/2;
+    if(modo==="lista"){ const lw=250; x.font=Fn(700,Math.round(sz*.62)); x.fillStyle="#A8B8AF"; x.fillText(f.l||"",P,yy+4+bh/2+sz*.22);
+      box(P+lw,yy+4,W-2*P-lw,bh,!!f.on,f.v,sz); }
+    else if(modo==="mx"){ const bw=(W-2*P-110-40)/2;
       box(P,yy+4,bw,bh,f.k==="a",f.a,sz); box(P+bw+20,yy+4,110,bh,f.k==="E","E",sz); box(P+bw+150,yy+4,bw,bh,f.k==="b",f.b,sz);
       // marca de "vs"
       x.font=Fn(700,Math.round(sz*.55)); x.fillStyle="rgba(168,184,175,.7)"; }
@@ -7686,6 +7700,13 @@ async function picksImagen(kick,titulo,filas,modo){
       box(W-P-bw,yy+4,bw,bh,f.k==="b",f.b+(f.k==="b"&&f.x?` ${f.x}`:""),sz); } });
   const yb=H-150; x.textAlign="center"; x.font=Fn(800,62); x.fillStyle="#F2D466"; x.fillText("¿Me ganas?",W/2,yb); x.font=Fn(400,36,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("Haz tus picks gratis en lapizarra.mx",W/2,yb+58); x.textAlign="left";
   return await new Promise(r=>c.toBlob(r,"image/png"));
+}
+async function picksCompartirLlave(){
+  const L=qmxD().L, x=qmxMios("llave"), P=x.p&&!Array.isArray(x.p)?x.p:{}; if(!L) return;
+  const nm=id=>{ if(id==null) return "?"; const E=qmxEq(+id); return E.n.length>16?(E.ab||E.n.slice(0,3).toUpperCase()):E.n; };
+  const F=[...[0,1,2,3].map(i=>({l:i?"":"Semis",v:nm((P.q||[])[i])})),...[0,1].map(i=>({l:i?"":"Final",v:nm((P.s||[])[i])})),{l:"Campeón",v:"🏆 "+nm(P.c),on:P.c!=null}];
+  pzTrack("compartir_picks",{q:"llave"});
+  pzCompartir(null,"mi-llave",{blob:await picksImagen("Quiniela Liga MX · Apertura 2026","Mi Llave de la Liguilla",F,"lista"),titulo:"Presume tu Llave",texto:"Mi Llave de la Liguilla en La Pizarra. ¿Quién es tu campeón? https://lapizarra.mx/?llave=1"});
 }
 async function picksCompartirMx(){
   const j=QMX.j, J=qmxD().J[j], mios=qmxMios(j); if(!J) return;
@@ -7700,7 +7721,7 @@ async function picksCompartirNfl(){
   pzTrack("compartir_picks",{q:"nfl",modo:mode});
   pzCompartir(null,"mis-picks",{blob:await picksImagen(`Quiniela NFL · ${mode==="ats"?"contra el spread":"sin spread"}`,P.label,F,"nfl"),titulo:"Comparte tus picks",texto:`Mis picks de la ${P.label.toLowerCase()} de la NFL. ¿Me ganas? https://lapizarra.mx`});
 }
-document.addEventListener("click",ev=>{ if(ev.target.closest?.("#qmxShare")) picksCompartirMx(); else if(ev.target.closest?.("#qnShare")) picksCompartirNfl(); });
+document.addEventListener("click",ev=>{ if(ev.target.closest?.("#llShare")) picksCompartirLlave(); else if(ev.target.closest?.("#qmxShare")) picksCompartirMx(); else if(ev.target.closest?.("#qnShare")) picksCompartirNfl(); });
 async function pzCompartir(o,nombre,op={}){
   $("#gbody").innerHTML=pzSkel(2); if(!dlg.open) dlg.showModal(); pzTrack("compartir_abre",{t:nombre});
   const b=op.blob||await pzImagen(o), TX=op.texto||"¿Me ganas? https://lapizarra.mx"; if(!b){ $("#gbody").innerHTML=`<p class="note">No se pudo hacer la imagen en este navegador.</p>`; return; }
@@ -8009,7 +8030,7 @@ $("#hoyPor")?.addEventListener("click",ev=>{
 const vidaSemana=()=>{ const d=new Date(Date.now()-6*3600e3), dow=(d.getUTCDay()+6)%7; return new Date(d.getTime()-dow*864e5).toISOString().slice(0,10); };
 function vidaAct(k){ try{ let A=JSON.parse(localStorage.getItem("pz_act")||"{}"); const s=vidaSemana(); if(A.s!==s) A={s,f:0,r:0,c:0,p:0}; A[k]=(A[k]||0)+1; localStorage.setItem("pz_act",JSON.stringify(A)); }catch(e){} }
 // ---- Rachas y logros ----
-const VIDA_LOGROS=[["pick","1","Primera quiniela","Guardaste tus primeros picks","#9FD3A8"],["racha3","3","Tres seguidas","Picks en 3 jornadas seguidas","#FF9C80"],
+const VIDA_LOGROS=[["pasos","✓","Primeros pasos","Completaste los primeros pasos en La Pizarra","#9FD3A8"],["pick","1","Primera quiniela","Guardaste tus primeros picks","#9FD3A8"],["racha3","3","Tres seguidas","Picks en 3 jornadas seguidas","#FF9C80"],
   ["seis","6+","Seis o más","6 aciertos o más en una jornada","#F2D466"],["perfecta","9/9","Jornada perfecta","Le atinaste a todos los partidos","#F2D466"],
   ["goles","G","Ojo de halcón","Atinaste los goles exactos de la jornada","#7FB8E8"],["lider","1º","Líder","Primero de la general de la Liga MX","#F2D466"],
   ["once","XI","Tu once","Armaste tu equipo del Fantasy","#9FD3A8"],["cincuenta","50","Medio centenar","50 puntos o más en una jornada del Fantasy","#7FB8E8"],
@@ -8041,7 +8062,7 @@ async function vidaLogrosCalc(forzar){
       gen={pos:L.findIndex(x=>x[0]===h)+1,de:L.length,pts:L.find(x=>x[0]===h)?.[1]||0}; if(gen.pos===1&&gen.de>=2&&gen.pts>0) T.add("lider"); }
     if(Object.keys(fanLs()).length||yoF) T.add("once"); if(yoF&&Object.values(yoF.j||{}).some(v=>v>=50)) T.add("cincuenta");
     if(Object.keys(FAV.eq).length>=3) T.add("fan3");
-    if(h){ try{ await rdDatos(); const RT=RD.t?.t?.[h]; if(RT?.m>=7) T.add("rd7"); if(RT?.m>=30) T.add("rd30"); }catch(e){} } try{ if(localStorage.getItem("pz_compartio")) T.add("comparte"); }catch(e){}
+    if(h){ try{ await rdDatos(); const RT=RD.t?.t?.[h]; if(RT?.m>=7) T.add("rd7"); if(RT?.m>=30) T.add("rd30"); }catch(e){} } try{ if(localStorage.getItem("pz_compartio")) T.add("comparte"); }catch(e){} try{ if(localStorage.getItem("pz_pasos_ok")) T.add("pasos"); }catch(e){}
     if(h){ try{ const n=(await invCarga()).length; if(n>=1) T.add("recluta"); if(n>=3) T.add("embajador"); }catch(e){} }
     let fan=null; if(yoF&&F){ const ks=Object.keys(yoF.j||{}).sort((a,b)=>F.j[a].pr-F.j[b].pr), k=ks[ks.length-1];
       if(k){ const L=Object.entries(F.tabla).sort((a,b)=>(b[1].t||0)-(a[1].t||0)); fan={k,n:F.j[k]?.n||k,pts:yoF.j[k],tot:yoF.t||0,pos:L.findIndex(x=>x[0]===h)+1,de:L.length}; } }
@@ -8068,6 +8089,11 @@ function vidaLogrosAbre(){
 }
 
 // ---- Resumen semanal tipo historia ----
+// 18 nov 2026: links de los correos. ?llave=1 abre la Llave de la Liguilla; ?vuelve=1 (te extrañamos) solo se mide.
+(()=>{ try{ const q=new URLSearchParams(location.search), ll=q.get("llave")==="1", vu=q.get("vuelve")==="1"; if(!ll&&!vu) return; q.delete("llave"); q.delete("vuelve");
+  history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash);
+  if(vu) setTimeout(()=>pzTrack("volvio_correo",{}),1500);
+  if(ll){ let n=0; const iv=setInterval(()=>{ if(++n>40||(typeof navIr==="function"&&D.qmx)){ clearInterval(iv); try{ QMX.vista="llave"; navIr("qmx"); window.scrollTo(0,0); pzTrack("llave_correo",{}); }catch(e){} } },300); } }catch(e){} })();
 // 3 nov 2026: el aviso de los lunes abre lapizarra.mx/?sem=1 → se calcula todo y se abre la historia
 (()=>{ try{ const q=new URLSearchParams(location.search); if(q.get("sem")!=="1") return; q.delete("sem");
   history.replaceState(history.state,"",location.pathname+(q.toString()?"?"+q:"")+location.hash);
@@ -8280,7 +8306,7 @@ const PERF_FONDOS=[["#263D36"],["radial-gradient(circle at 30% 20%,#3d6b5a,#1F33
   ["radial-gradient(#F2D466 1.5px,transparent 2.2px) 0 0/12px 12px,radial-gradient(#FF9C80 1.5px,transparent 2.2px) 6px 6px/12px 12px,radial-gradient(#9FD3A8 1.2px,transparent 2px) 3px 9px/12px 12px,#263D36","comparte","Confeti"]];
 const PERF_MARCOS=[["no","Sin marco",null,""],["fuego","Racha de fuego","racha3","conic-gradient(#FF9C80,#F2D466,#FF9C80)"],["oro","Marco dorado","perfecta","conic-gradient(#F2D466,#FFF6C9,#F2D466,#C9A227,#F2D466)"],["lider","Marco de líder","lider","conic-gradient(#C9A7F0,#7FB8E8,#C9A7F0)"],["emb","Marco de embajador","embajador","conic-gradient(#25D366,#F2D466,#C9A7F0,#7FB8E8,#25D366)"]];
 const PERF_X=[["nd","Número dorado","perfecta"],["est","Estrella en el escudo","goles"],["cor","Corona","lider"],["llama","Llamita animada","rd7"],["brillo","Brillo que da la vuelta","rd30"]];
-const PERF_TIT=[["","Sin título",null],["sabe","El que sabe","seis"],["const","Constante","racha3"],["profeta","El Profeta","perfecta"],["halcon","Ojo de halcón","goles"],["lider","El Líder","lider"],["fanta","Fantasista","once"],["fiel","Fiel","fan3"],["presume","El Presumido","comparte"],["imparable","Imparable","rd7"],["recluta","Reclutador","recluta"],["emba","Embajador","embajador"]];
+const PERF_TIT=[["","Sin título",null],["sabe","El que sabe","seis"],["const","Constante","racha3"],["profeta","El Profeta","perfecta"],["halcon","Ojo de halcón","goles"],["lider","El Líder","lider"],["fanta","Fantasista","once"],["fiel","Fiel","fan3"],["presume","El Presumido","comparte"],["imparable","Imparable","rd7"],["recluta","Reclutador","recluta"],["emba","Embajador","embajador"],["casa","De la casa","pasos"]];
 const PERF_PAL=["#FFFFFF","#1A1A1A","#C8102E","#12305E","#0047BB","#6CABDD","#FFD23F","#F4B400","#00843D","#A50044","#7A3E9D","#E8742C"], PERF_NEON=["#39FF14","#FF2BD6","#00E5FF"];
 const PERF_REQ_PRONTO={rd7:"7 días seguidos atinándole al reto del día",rd30:"30 días seguidos atinándole al reto del día"};
 const PERF_CAM="M38 20 L50 13 Q60 21 70 13 L82 20 L106 34 L97 55 L85 49 L85 120 L35 120 L35 49 L23 55 L14 34 Z";
@@ -8329,6 +8355,50 @@ const perfNudgeOff=()=>{ try{ return localStorage.getItem("pz_perfnudge")==="1";
 function perfNudgeHTML(){ if(!(typeof amOk==="function"&&amOk())||!perfSinTocar()||perfNudgeOff()) return "";
   return `<div class="pfnudge">${perfAvatar(perfMio(),56)}<span><b>Haz tuya tu playera</b><small>Escoge tus colores, el diseño, tu número y una frase. Así te reconocen tus amigos.</small></span><button class="btn" data-pfnudge="1">Editar mi perfil</button><button class="pfnx" data-pfnudgex="1" aria-label="Ahora no">×</button></div>`; }
 // 3 nov 2026: quien llega sin cuenta (muchas veces por un link de un amigo) ve qué es La Pizarra y cómo entrar
+// ---------- Primeros pasos (18 nov 2026) ----------
+// 6 de 9 cuentas nuevas no regresaron después del primer día. Para cuentas de menos de 30 días: 4 cosas para dejar algo
+// pendiente (y una razón para volver mañana). Al completarlas: logro "Primeros pasos" y el título "De la casa".
+const PASOS={cache:null,t:0,celebrado:false};
+function pasosDias(){ try{ const c=Date.parse(ACCT.user.metadata.creationTime); return isFinite(c)?(Date.now()-c)/864e5:99; }catch(e){ return 99; } }
+async function pasosEstado(){
+  const hoy=rdHoy(), L=rdLs();
+  let reto=L[hoy]!=null; if(!reto){ try{ reto=!!(await rdMiResp(hoy)); }catch(e){} }
+  const equipo=Object.keys(FAV.eq||{}).length>0||!!perfMio()?.eq;
+  let amigo=false; try{ if(!AM.L) await amCarga().catch(()=>{}); amigo=(AM.L||[]).some(a=>a.est==="ok")||(await invCarga()).length>0; }catch(e){}
+  let quiniela=false; try{ quiniela=Object.keys(vidaQmxMias()).length>0||Object.values((qnPicksAll()[D.season]||{})).some(w=>Object.keys(w||{}).length); }catch(e){}
+  return [
+    {k:"reto",ic:"❓",t:"Contesta el reto de hoy",sub:"Una pregunta del partido grande. Mañana hay otra: arma tu racha.",ok:reto},
+    {k:"equipo",ic:"⚽",t:"Escoge tu equipo",sub:"Te avisamos de sus partidos y ves cuánto sufres con él.",ok:equipo},
+    {k:"quiniela",ic:"🏆",t:"Haz tus picks",sub:D.qmx&&qmxD().L?"Llena tu Llave de la Liguilla: 2 minutos.":"Quiniela de Liga MX o de la NFL, contra tus amigos.",ok:quiniela},
+    {k:"amigo",ic:"🤝",t:"Agrega a un amigo",sub:"Mándale tu link por WhatsApp. Jugar contra alguien es lo que lo hace divertido.",ok:amigo}];
+}
+async function pasosPinta(){
+  const el=$("#hoyPasos"); if(!el) return;
+  if(typeof acctOk!=="function"||!acctOk()||!ACCT?.user){ el.innerHTML=""; return; }
+  let x=false; try{ x=localStorage.getItem("pz_pasos_x")==="1"||localStorage.getItem("pz_pasos_fin")==="1"; }catch(e){}
+  if(x||pasosDias()>30){ el.innerHTML=""; return; }
+  const P=await pasosEstado(), n=P.filter(p=>p.ok).length;
+  if(n===P.length){
+    let ya=false; try{ ya=!!localStorage.getItem("pz_pasos_ok"); localStorage.setItem("pz_pasos_ok","1"); }catch(e){}
+    if(!ya){ pzTrack("primeros_pasos_ok",{}); try{ VIDA.logT=0; }catch(e){} }
+    el.innerHTML=`<div class="pasos listo"><button class="pfnx" data-pasosfin="1" aria-label="Cerrar">×</button><div class="pgran" aria-hidden="true">🎉</div><h3>¡Ya eres de la casa!</h3><p>Ganaste el título <b>«De la casa»</b> para tu perfil. Mañana hay reto nuevo: no rompas la racha.</p><button class="btn" data-vact="perfil">Ponerme el título</button></div>`;
+    return; }
+  el.innerHTML=`<div class="pasos"><button class="pfnx" data-pasosx="1" aria-label="Cerrar">×</button><h3>Tus primeros pasos</h3><p>${n} de ${P.length} · al terminar ganas el título «De la casa»</p>
+    <div class="pasbar" role="progressbar" aria-valuemin="0" aria-valuemax="${P.length}" aria-valuenow="${n}"><i style="width:${Math.max(6,n/P.length*100)}%"></i></div>
+    <ol>${P.map(p=>`<li class="${p.ok?"ok":""}"><button data-paso="${p.k}"><span class="pic" aria-hidden="true">${p.ok?"✓":p.ic}</span><span><b>${p.t}</b>${p.ok?"":`<small>${p.sub}</small>`}</span><span class="pok">${p.ok?"Listo":"→"}</span></button></li>`).join("")}</ol></div>`;
+}
+document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
+  if(t.closest("[data-pasosx]")){ try{ localStorage.setItem("pz_pasos_x","1"); }catch(e){} $("#hoyPasos").innerHTML=""; pzTrack("primeros_pasos_x",{}); return; }
+  if(t.closest("[data-pasosfin]")){ try{ localStorage.setItem("pz_pasos_fin","1"); }catch(e){} $("#hoyPasos").innerHTML=""; return; }
+  const b=t.closest("[data-paso]"); if(b){ const k=b.dataset.paso; pzTrack("primeros_pasos",{k});
+    if(k==="reto"){ const r=$("#hoyRd"); if(r){ r.scrollIntoView({behavior:PZ_RM()?"auto":"smooth",block:"center"}); r.classList.add("sufbrilla"); setTimeout(()=>r.classList.remove("sufbrilla"),2400); } }
+    else if(k==="equipo") favAbre();
+    else if(k==="quiniela"){ if(D.qmx&&qmxD().L) QMX.vista="llave"; navIr("qmx"); window.scrollTo(0,0); }
+    else if(k==="amigo"){ navIr("amigos"); window.scrollTo(0,0); }
+    return; }
+  if(t.closest("#hoyRd button,.qmxb,[data-ll],.fvadd,[data-favadd]")) setTimeout(()=>pasosPinta().catch(()=>{}),1800);
+});
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) setTimeout(()=>pasosPinta().catch(()=>{}),600); });
 function bienvHTML(){ if(typeof acctOk!=="function"||acctOk()||!D.fb?.apiKey) return ""; try{ if(sessionStorage.getItem("pz_bienvx")) return ""; }catch(e){} const n=invNom();
   return `<div class="bienv"><button class="pfnx" data-bienvx="1" aria-label="Cerrar">×</button><b>${n?`${hoyEsc(n)} te invitó a La Pizarra`:"Juega con tus amigos, gratis"}</b>
     <ul><li><span>🏆</span>Quinielas de Liga MX y NFL</li><li><span>🛡️</span>Survivor: un equipo por jornada, sin repetir</li><li><span>⚽</span>Fantasy de Champions y Liga MX</li><li><span>❓</span>Un reto nuevo cada día</li></ul>
@@ -9848,7 +9918,7 @@ function acctSlHint(){
   const p=$("#slAcct"), show=!!(D.fb&&ACCT.ready&&!ACCT.user&&SL.user);
   p.hidden=!show; p.innerHTML=show?`<button class="alink" data-acct>Entra a tu cuenta</button> para que tu liga se abra sola en cualquier dispositivo.`:"";
 }
-function acctBtn(){ try{ if(acctOk()&&$("#hoyBv")) $("#hoyBv").innerHTML=""; }catch(e){} try{ if(ACCT?.user&&TB_DUENO===null&&typeof tbRevisa==="function") tbRevisa(); }catch(e){}
+function acctBtn(){ try{ if(acctOk()&&$("#hoyBv")) $("#hoyBv").innerHTML=""; }catch(e){} setTimeout(()=>{ try{ pasosPinta().catch(()=>{}); }catch(e){} },900); try{ if(ACCT?.user&&TB_DUENO===null&&typeof tbRevisa==="function") tbRevisa(); }catch(e){}
   const b=$("#acctBtn"), u=ACCT.user; b.hidden=!(ACCT.ready||(D.fb?.apiKey&&!ACCT_INI)); b.classList.toggle("in",!!u); if(typeof amBadge==="function") amBadge();
   if(!u){b.textContent="Entrar"; b.setAttribute("aria-label","Entrar a tu cuenta"); return;}
   const ini=(u.displayName||u.email||"?").trim().charAt(0).toUpperCase(), pf=typeof perfMio==="function"&&perfMio();

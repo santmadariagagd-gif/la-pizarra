@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       prueba_correo:
-        description: "Escribe 1 para mandarle al dueño un correo de prueba"
+        description: "1 = correo de prueba al dueño (semana y cierre); 2 = además racha, te extrañamos y Llave"
         required: false
 permissions:
   contents: read
