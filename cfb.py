@@ -92,14 +92,18 @@ def _z(vals):
     return lambda x: 0.0 if x is None else max(-3, min(3, (x - m) / s))
 
 
-def tablero(season):
-    stats = get("/stats/player/season", 20, year=season) or []
+def tablero(season, fbs=None):
+    stats = [x for x in (get("/stats/player/season", 20, year=season) or []) if not fbs or g(x, "team") in fbs]   # solo FBS
     ppa = get("/ppa/players/season", 20, year=season) or []
     roster = get("/roster", 24 * 7, year=season, classification="fbs") or []
     rec = {}
-    for y in (season - 5, season - 4, season - 3, season - 2):
+    import re as _re, unicodedata as _ud
+    norm = lambda n: _re.sub(r"[^a-z]", "", _ud.normalize("NFD", str(n or "").lower()).encode("ascii", "ignore").decode().replace(" jr", "").replace(" iii", "").replace(" ii", ""))
+    porn = defaultdict(list)   # nombre → reclutas (si no hay roster, se cruzan por nombre)
+    for y in (season - 5, season - 4, season - 3, season - 2, season - 1):
         for r in get("/recruiting/players", 24 * 300, year=y, classification="HighSchool") or []:
-            rec[str(g(r, "id"))] = (g(r, "stars") or 0, g(r, "rating") or 0, y)
+            t = (g(r, "stars") or 0, g(r, "rating") or 0, y, g(r, "committedTo", "committed_to"))
+            rec[str(g(r, "id"))] = t; porn[norm(g(r, "name"))].append(t)
     # jugadores: id → {n, t, conf, pos, s{}}
     J = {}
     for x in stats:
@@ -118,15 +122,18 @@ def tablero(season):
         R[pid] = dict(y=g(x, "year"), pos=g(x, "position"), t=g(x, "team"), n=f"{g(x, 'firstName', 'first_name', d='')} {g(x, 'lastName', 'last_name', d='')}".strip(),
                       h=g(x, "height"), w=g(x, "weight"), rid=[str(i) for i in (g(x, "recruitIds", "recruit_ids") or [])])
     # quién puede ir al draft: 3er año o más (con roster) o reclutado hace 3+ años
-    def elegible(pid):
-        r = R.get(pid)
-        if r and r.get("y"): return r["y"] >= 3
-        for i in (r or {}).get("rid", []):
-            if i in rec: return rec[i][2] <= season - 3 + 1
-        return None
     def recluta(pid):
         for i in (R.get(pid) or {}).get("rid", []):
             if i in rec: return rec[i]
+        j = J.get(pid) or {}
+        L = porn.get(norm(j.get("n")), [])
+        if len(L) > 1: L = [x for x in L if x[3] == j.get("t")] or L[:1]
+        return L[0] if L else None
+    def elegible(pid):
+        r = R.get(pid)
+        if r and r.get("y"): return r["y"] >= 3
+        rc = recluta(pid)
+        if rc: return rc[2] <= season - 2      # clase de prepa de hace 3+ años al draft
         return None
     S = lambda j, k: j["s"].get(k)
     grupos = defaultdict(list)
@@ -171,7 +178,7 @@ def tablero(season):
         j["st"] = rc[0] if rc else 0
         talento = zr(rc[1]) if rc else -0.6
         conf = 0 if (j.get("conf") in POWER or j.get("t") == "Notre Dame") else -0.6
-        j["sc"] = j["pr"] + 0.35 * talento + conf + VALOR.get(j["p"], 0)
+        j["sc"] = j["pr"] + 0.35 * talento + conf + VALOR.get(j["p"], 0) - (0.4 if elegible(j["id"]) is None else 0)
     # línea ofensiva: no hay estadísticas individuales; entran los de 3er año o más con 4-5 estrellas, por su reclutamiento
     for pid, r in R.items():
         p = POS.get((r.get("pos") or "").upper())
@@ -179,12 +186,14 @@ def tablero(season):
         rc = recluta(pid)
         if not rc or rc[0] < 4: continue
         todos.append(dict(id=pid, n=r["n"], t=r["t"], conf=None, p=p, st=rc[0], s={}, sc=0.9 * zr(rc[1]) - 0.2 + VALOR[p], ol=1))
+    print(f"Colegial: tablero con {len(J)} jugadores FBS, roster {len(R)}, reclutas {len(rec)}; elegibles conocidos {sum(1 for j in todos if elegible(j['id']))} de {len(todos)}")
     todos.sort(key=lambda j: -j["sc"])
     out, porpos = [], defaultdict(int)
     for j in todos[:160]:
         porpos[j["p"]] += 1
         r = R.get(j["id"]) or {}
-        out.append(dict(id=j["id"], n=j["n"], p=j["p"], t=j["t"], c=r.get("y"), st=j.get("st") or 0, h=r.get("h"), w=r.get("w"),
+        rc = recluta(j["id"]); cl = r.get("y") or (min(4, season - rc[2] + 1) if rc else None)
+        out.append(dict(id=j["id"], n=j["n"], p=j["p"], t=j["t"], c=cl, st=j.get("st") or 0, h=r.get("h"), w=r.get("w"),
                         rp=porpos[j["p"]], sc=round(j["sc"], 2), x=_linea(j), ol=j.get("ol", 0)))
     return out
 
@@ -234,7 +243,7 @@ def arma(season, nfl):
             usados |= {h, a}
     games.sort(key=lambda x: (x["w"], x["ko"] or ""))
     pros = []
-    try: pros = tablero(season)
+    try: pros = tablero(season, set(teams))
     except Exception as e: print("Colegial: tablero de prospectos no se pudo:", repr(e)[:200])
     usados |= {r[1] for r in ap + cfp} | {p["t"] for p in pros}
     T = {}
