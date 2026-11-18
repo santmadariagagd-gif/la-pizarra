@@ -195,7 +195,7 @@ def tablero(season, fbs=None):
         if p not in ("OT", "IOL") or elegible(pid) is not True: continue
         rc = recluta(pid)
         if not rc or rc[0] < 4: continue
-        todos.append(dict(id=pid, n=r["n"], t=r["t"], conf=None, p=p, st=rc[0], s={}, sc=0.9 * zr(rc[1]) - 0.2 + VALOR[p], ol=1))
+        todos.append(dict(id=pid, n=r["n"], t=r["t"], conf=None, p=p, st=rc[0], s={}, sc=0.9 * zr(rc[1]) + 0.5 + VALOR[p], ol=1))
     print(f"Colegial: tablero con {len(J)} jugadores FBS, roster {len(R)}, reclutas {len(rec)}; elegibles conocidos {sum(1 for j in todos if elegible(j['id']))} de {len(todos)}")
     todos.sort(key=lambda j: -j["sc"])
     out, porpos = [], defaultdict(int)
