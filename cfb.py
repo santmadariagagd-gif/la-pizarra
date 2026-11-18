@@ -207,6 +207,25 @@ def candidatos(season, fbs=None, ttl=20, actual=True):
     return todos
 
 
+SLOTS = {}
+
+
+def pos_draft(t):
+    t = (t or "").lower()
+    if "quarter" in t: return "QB"
+    if "running" in t or "fullback" in t: return "RB"
+    if "wide" in t: return "WR"
+    if "tight" in t: return "TE"
+    if "tackle" in t and "defensive" not in t: return "OT"
+    if "guard" in t or "center" in t or "offensive line" in t: return "IOL"
+    if "defensive end" in t or "edge" in t or "outside linebacker" in t: return "EDGE"
+    if "defensive tackle" in t or "nose" in t or "defensive line" in t: return "DL"
+    if "linebacker" in t: return "LB"
+    if "corner" in t: return "CB"
+    if "safety" in t: return "S"
+    return None
+
+
 RASGOS = ["pr", "tal", "cp", "ypc"]
 PL = list(VALOR)
 
@@ -226,10 +245,15 @@ def calibra(season, fbs):
     Valor de la selección: 1 para el pick 1, 0 para el 262 (escala logarítmica); los no escogidos valen 0. Se prueba
     entrenando sin el último año; si la fórmula a mano sale mejor en esa prueba, se queda la fórmula a mano."""
     import numpy as np
-    filas, ys, hist, años, hs = [], [], [], [], []
+    filas, ys, hist, años, hs, ps = [], [], [], [], [], []
+    global SLOTS
+    porY = defaultdict(lambda: defaultdict(list))
     for Y in (season - 3, season - 2, season - 1):
         dp = get("/draft/picks", 24 * 300, year=Y + 1) or []
         if not dp: continue
+        for x in dp:
+            pp = pos_draft(g(x, "position")); ov = g(x, "overall")
+            if pp and ov: porY[Y][pp].append(ov)
         D = {}
         for x in dp:
             D[(norm(g(x, "name")), g(x, "collegeTeam", "college_team"))] = x
@@ -239,9 +263,17 @@ def calibra(season, fbs):
             x = D.get((norm(j["n"]), j["t"])) or D.get((norm(j["n"]), None))
             ov = g(x, "overall") if x else None
             v = max(0.0, 1 - math.log(ov) / math.log(262)) if ov else 0.0
-            filas.append(_x(j)); ys.append(v); años.append(Y); hs.append(heur(j))
+            filas.append(_x(j)); ys.append(v); años.append(Y); hs.append(heur(j)); ps.append(j["p"])
             if ov: hist.append(dict(n=g(x, "name"), p=j["p"], t=g(x, "collegeTeam", "college_team"), y=Y + 1, o=ov, eq=g(x, "nflTeam", "nfl_team"),
                                     pr=j["pr"], tal=j["tal"], h=g(x, "height") or j.get("h"), w=g(x, "weight") or j.get("w")))
+    # lugar promedio del k-ésimo jugador de cada posición en los drafts (p. ej. el 3er OT suele irse en el pick ~20)
+    SLOTS = {}
+    for pp in VALOR:
+        L = [sorted(porY[Y][pp]) for Y in porY if porY[Y][pp]]
+        if not L: continue
+        n = max(len(l) for l in L)
+        SLOTS[pp] = [sum(l[k] if k < len(l) else 262 for l in L) / len(L) for k in range(n)]
+    print("Colegial: lugares históricos por posición", {pp: [round(v) for v in L[:4]] + [len(L)] for pp, L in SLOTS.items()})
     if len(filas) < 300: return None, [], ""
     X, y, A, H = np.array(filas), np.array(ys), np.array(años), np.array(hs)
     def ajusta(m, lam):
@@ -252,12 +284,31 @@ def calibra(season, fbs):
     res = {"a mano": (mide(H[te]), None)}
     for lam in (0.1, 1.0, 10.0):
         res[f"aprendida λ={lam}"] = (mide(X[te] @ ajusta(A != ult, lam)), lam)
+    # con cupos por posición (aprendidos sin el año de prueba)
+    def slots_de(años_ok):
+        S2 = {}
+        for pp in VALOR:
+            L = [sorted(porY[Y][pp]) for Y in porY if Y in años_ok and porY[Y][pp]]
+            if L: S2[pp] = [sum(l[k] if k < len(l) else 262 for l in L) / len(L) for k in range(max(len(l) for l in L))]
+        return S2
+    def con_cupos(pred, S2):
+        P = [ps[i] for i in range(len(ps)) if te[i]]; o = np.argsort(-pred); kk = defaultdict(int); esp = np.zeros(len(pred))
+        for i in o:
+            L = S2.get(P[i]) or []; n = kk[P[i]]; kk[P[i]] += 1
+            esp[i] = L[n] if n < len(L) else (L[-1] if L else 262) + 25 * (n - len(L) + 1)
+        return -esp
+    S2 = slots_de({Y for Y in porY if Y != ult})
+    for lam in (0.1, 1.0):
+        res[f"aprendida con cupos λ={lam}"] = (mide(con_cupos(X[te] @ ajusta(A != ult, lam), S2)), ("c", lam))
+    res["a mano con cupos"] = (mide(con_cupos(H[te], S2)), ("c", None))
     for k, ((a, b), _) in res.items(): print(f"Colegial: prueba con el draft {ult + 1} · {k}: top 32 → {a} de 1ª ronda; top 100 → {b} escogidos")
-    mejor = max(res, key=lambda k: (res[k][0][1] + 2 * res[k][0][0]))
-    (r1, dr), lam = res[mejor]
+    # siempre con cupos (el mock necesita la mezcla de posiciones de un draft real); entre esas, la que mejor salió
+    cands = {k: v for k, v in res.items() if isinstance(v[1], tuple)}
+    mejor = max(cands, key=lambda k: (cands[k][0][1] + 2 * cands[k][0][0]))
+    (r1, dr), (_, lam) = cands[mejor]
     nota = f"probado con el draft {ult + 1}: de su top 32, {r1} fueron de 1ª ronda; de su top 100, {dr} fueron escogidos"
     if lam is None:
-        print("Colegial: se queda la fórmula a mano"); return None, hist, nota
+        print("Colegial: se queda la fórmula a mano (con cupos)"); return None, hist, nota
     w = ajusta(np.ones(len(y), bool), lam)
     print("Colegial: se usa la fórmula aprendida", mejor, "con", len(y), "jugadores y", len(hist), "drafteados")
     return w, hist, nota
@@ -285,13 +336,22 @@ def tablero(season, fbs=None):
         else: j["sc"] = heur(j)
         if j.get("el") is None: j["sc"] -= 0.05 if w is not None else 0.4
     todos.sort(key=lambda j: -j["sc"])
+    if SLOTS:
+        # Cada posición tiene su "cupo" histórico: el mejor OT según la puntuación toma el lugar donde suele irse el 1er OT,
+        # el 2º el del 2º OT, etc. Así el tablero trae la mezcla de posiciones de un draft de verdad.
+        k = defaultdict(int)
+        for j in todos:
+            L = SLOTS.get(j["p"]) or []
+            i = k[j["p"]]; k[j["p"]] += 1
+            j["esp"] = L[i] if i < len(L) else (L[-1] if L else 262) + 25 * (i - len(L) + 1)
+        todos.sort(key=lambda j: (j["esp"], -j["sc"]))
     print(f"Colegial: {len(todos)} candidatos ({sum(1 for j in todos if j.get('ol'))} de línea ofensiva)")
     out, porpos = [], defaultdict(int)
     for k, j in enumerate(todos[:200], 1):
         porpos[j["p"]] += 1
         s = {kk: round(v, 1) for kk, v in (j.get("s") or {}).items() if kk.split(".")[0] in ("passing", "rushing", "receiving", "defensive", "interceptions")}
         out.append(dict(id=j["id"], n=j["n"], p=j["p"], t=j["t"], c=j.get("cl"), st=j.get("st") or 0, h=j.get("h"), w=j.get("w"),
-                        rp=porpos[j["p"]], sc=round(j["sc"], 3), x=_linea(j), ol=j.get("ol", 0), r=min(8, (k - 1) // 32 + 1),
+                        rp=porpos[j["p"]], sc=round(j["sc"], 3), x=_linea(j), ol=j.get("ol", 0), r=min(8, int((j.get("esp") or k) - 1) // 32 + 1),
                         s=s, cmp=comp(j, hist) if hist else None))
     return out, nota
 
