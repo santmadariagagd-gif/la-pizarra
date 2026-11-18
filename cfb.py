@@ -92,19 +92,30 @@ def _z(vals):
     return lambda x: 0.0 if x is None else max(-3, min(3, (x - m) / s))
 
 
-def tablero(season, fbs=None):
-    stats = [x for x in (get("/stats/player/season", 20, year=season) or []) if not fbs or g(x, "team") in fbs]   # solo FBS
-    ppa = get("/ppa/players/season", 20, year=season) or []
-    roster = get("/roster", 24 * 7, year=season, classification="fbs") or []
-    rec = {}
-    import re as _re, unicodedata as _ud
-    norm = lambda n: _re.sub(r"[^a-z]", "", _ud.normalize("NFD", str(n or "").lower()).encode("ascii", "ignore").decode().replace(" jr", "").replace(" iii", "").replace(" ii", ""))
-    porn = defaultdict(list)   # nombre → reclutas (si no hay roster, se cruzan por nombre)
-    for y in (season - 5, season - 4, season - 3, season - 2, season - 1):
-        for r in get("/recruiting/players", 24 * 300, year=y, classification="HighSchool") or []:
+import re as _re, unicodedata as _ud
+norm = lambda n: _re.sub(r"[^a-z]", "", _ud.normalize("NFD", str(n or "").lower()).encode("ascii", "ignore").decode().replace(" jr", "").replace(" iii", "").replace(" ii", ""))
+_REC = {}
+
+
+def reclutas(desde, hasta):
+    """{id: (estrellas, rating, clase, escuela)} y {nombre: [...]} de las clases de prepa desde..hasta (caché larga)."""
+    rec, porn = {}, defaultdict(list)
+    for y in range(desde, hasta + 1):
+        if y not in _REC: _REC[y] = get("/recruiting/players", 24 * 300, year=y, classification="HighSchool") or []
+        for r in _REC[y]:
             t = (g(r, "stars") or 0, g(r, "rating") or 0, y, g(r, "committedTo", "committed_to"))
             rec[str(g(r, "id"))] = t; porn[norm(g(r, "name"))].append(t)
-    # jugadores: id → {n, t, conf, pos, s{}}
+    return rec, porn
+
+
+def candidatos(season, fbs=None, ttl=20, actual=True):
+    """Jugadores con sus rasgos: pr (producción z por posición), tal (z de recluta), cp (1 si no es Power 4), ypc (OL: z de la
+    carrera de su equipo), elegibilidad. Mismo cálculo para la temporada actual y para las pasadas (con las que se calibra)."""
+    stats = [x for x in (get("/stats/player/season", ttl, year=season) or []) if not fbs or g(x, "team") in fbs]
+    ppa = get("/ppa/players/season", ttl, year=season) or []
+    roster = get("/roster", 24 * (7 if actual else 300), year=season, classification="fbs") or []
+    tst = get("/stats/season", ttl if actual else 24 * 300, year=season) or []
+    rec, porn = reclutas(season - 6, season - 1)
     J = {}
     for x in stats:
         pid = str(g(x, "playerId", "player_id"))
@@ -113,15 +124,19 @@ def tablero(season, fbs=None):
         except Exception: pass
     for x in ppa:
         pid = str(g(x, "id"))
-        if pid in J:
-            a = g(x, "averagePPA", "average_ppa") or {}
-            J[pid]["ppa"] = g(a, "all"); J[pid]["plays"] = g(x, "countablePlays", "countable_plays") or 0
+        if pid in J: J[pid]["ppa"] = g(g(x, "averagePPA", "average_ppa") or {}, "all")
     R = {}
     for x in roster:
-        pid = str(g(x, "id"))
-        R[pid] = dict(y=g(x, "year"), pos=g(x, "position"), t=g(x, "team"), n=f"{g(x, 'firstName', 'first_name', d='')} {g(x, 'lastName', 'last_name', d='')}".strip(),
-                      h=g(x, "height"), w=g(x, "weight"), rid=[str(i) for i in (g(x, "recruitIds", "recruit_ids") or [])])
-    # quién puede ir al draft: 3er año o más (con roster) o reclutado hace 3+ años
+        R[str(g(x, "id"))] = dict(y=g(x, "year"), pos=g(x, "position"), t=g(x, "team"), n=f"{g(x, 'firstName', 'first_name', d='')} {g(x, 'lastName', 'last_name', d='')}".strip(),
+                                  h=g(x, "height"), w=g(x, "weight"), rid=[str(i) for i in (g(x, "recruitIds", "recruit_ids") or [])])
+    conf_eq = {}
+    TY = defaultdict(dict)
+    for x in tst:
+        try: TY[g(x, "team")][g(x, "statName", "stat_name")] = float(g(x, "statValue", "stat_value"))
+        except Exception: pass
+        conf_eq[g(x, "team")] = g(x, "conference")
+    ypc = {t: v.get("rushingYards", 0) / v["rushingAttempts"] for t, v in TY.items() if v.get("rushingAttempts")}
+    zy = _z(list(ypc.values()))
     def recluta(pid):
         for i in (R.get(pid) or {}).get("rid", []):
             if i in rec: return rec[i]
@@ -132,7 +147,6 @@ def tablero(season, fbs=None):
     _ys = defaultdict(int)
     for r in R.values(): _ys[r.get("y")] += 1
     usa_y = sum(v for k, v in _ys.items() if isinstance(k, int) and k >= 3) > 0.15 * max(1, len(R))   # el año del roster a veces viene todo en 1
-    print("Colegial: años en el roster", dict(sorted(((str(k), v) for k, v in _ys.items()))), "→", "se usa" if usa_y else "no se usa; se usa el reclutamiento")
     def elegible(pid):
         r = R.get(pid)
         if usa_y and r and r.get("y"): return r["y"] >= 3
@@ -140,19 +154,12 @@ def tablero(season, fbs=None):
         if rc: return rc[2] <= season - 2      # clase de prepa de hace 3+ años al draft
         return None
     S = lambda j, k: j["s"].get(k)
-    if os.environ.get("CFB_DEBUG", "0") == "1":
-        print("Colegial (diagnóstico): stat", json.dumps(stats[:1])[:300], "| roster", json.dumps(roster[:1])[:300])
-        _pc = defaultdict(int)
-        for pid, j in list(J.items())[:3000]: _pc[str(j.get("pos")) + "/" + str(POS.get((j.get("pos") or "").upper())) + "/" + str(elegible(pid))] += 1
-        print("Colegial (diagnóstico): pos/mapeo/elegible", sorted(_pc.items(), key=lambda x: -x[1])[:15])
-        print("Colegial (diagnóstico): tipos de estadística", sorted({k for j in list(J.values())[:400] for k in j["s"]})[:40])
     grupos = defaultdict(list)
     for pid, j in J.items():
         p = POS.get((j.get("pos") or (R.get(pid) or {}).get("pos") or "").upper())
         if not p or elegible(pid) is False: continue
         if p in ("DL", "EDGE") and (S(j, "defensive.SACKS") or 0) >= 4: p = "EDGE" if p == "EDGE" or (S(j, "defensive.SACKS") or 0) >= 6 else p
         j["p"] = p; j["id"] = pid; grupos[p].append(j)
-    # índices de producción por posición (z dentro de su grupo)
     def prod(p, L):
         if p == "QB":
             L = [j for j in L if (S(j, "passing.ATT") or 0) >= 120]
@@ -182,30 +189,97 @@ def tablero(season, fbs=None):
         return L
     todos = []
     for p, L in grupos.items(): todos += prod(p, L)
-    zr = _z([r[1] for r in rec.values()])
+    zr = _z([r[1] for r in rec.values() if r[2] <= season - 2])
+    potencia = lambda t, c: 0 if (c in POWER or t == "Notre Dame") else 1
     for j in todos:
-        rc = recluta(j["id"])
-        j["st"] = rc[0] if rc else 0
-        talento = zr(rc[1]) if rc else -0.6
-        conf = 0 if (j.get("conf") in POWER or j.get("t") == "Notre Dame") else -0.6
-        j["sc"] = j["pr"] + 0.35 * talento + conf + VALOR.get(j["p"], 0) - (0.4 if elegible(j["id"]) is None else 0)
-    # línea ofensiva: no hay estadísticas individuales; entran los de 3er año o más con 4-5 estrellas, por su reclutamiento
+        rc = recluta(j["id"]); r = R.get(j["id"]) or {}
+        j.update(st=rc[0] if rc else 0, tal=zr(rc[1]) if rc else -0.8, cp=potencia(j["t"], j.get("conf")), ypc=0.0, ol=0,
+                 el=elegible(j["id"]), h=r.get("h"), w=r.get("w"), cl=(r.get("y") if usa_y else None) or (min(4, season - rc[2] + 1) if rc else None))
+    # línea ofensiva: sin estadísticas individuales → su reclutamiento y qué tan bien corre su equipo
     for pid, r in R.items():
         p = POS.get((r.get("pos") or "").upper())
         if p not in ("OT", "IOL") or elegible(pid) is not True: continue
         rc = recluta(pid)
-        if not rc or rc[0] < 4: continue
-        todos.append(dict(id=pid, n=r["n"], t=r["t"], conf=None, p=p, st=rc[0], s={}, sc=0.9 * zr(rc[1]) + 0.5 + VALOR[p], ol=1))
-    print(f"Colegial: tablero con {len(J)} jugadores FBS, roster {len(R)}, reclutas {len(rec)}; elegibles conocidos {sum(1 for j in todos if elegible(j['id']))} de {len(todos)}")
+        if not rc or rc[0] < 3: continue
+        if p == "IOL" and (r.get("h") or 0) >= 77: p = "OT"     # "OL" genérico: los de 1.96 m o más casi siempre juegan de tackle
+        todos.append(dict(id=pid, n=r["n"], t=r["t"], conf=conf_eq.get(r["t"]), p=p, st=rc[0], s={}, pr=0.0, tal=zr(rc[1]), cp=potencia(r["t"], conf_eq.get(r["t"])),
+                          ypc=zy(ypc.get(r["t"])), ol=1, el=True, h=r.get("h"), w=r.get("w"), cl=min(4, season - rc[2] + 1)))
+    return todos
+
+
+RASGOS = ["pr", "tal", "cp", "ypc"]
+
+
+def _x(j):
+    return [j["pr"], j["tal"], j["cp"], j["ypc"] if j.get("ol") else 0.0] + [1.0 if j["p"] == p else 0.0 for p in VALOR]
+
+
+def calibra(season, fbs):
+    """Aprende cuánto pesa cada cosa con los drafts de verdad: temporadas season-3..season-1 contra los drafts siguientes.
+    Valor de la selección: 1 para el pick 1, 0 para el 262 (escala logarítmica); los no escogidos valen 0."""
+    import numpy as np
+    filas, ys, hist, años = [], [], [], []
+    for Y in (season - 3, season - 2, season - 1):
+        dp = get("/draft/picks", 24 * 300, year=Y + 1) or []
+        if not dp: continue
+        D = {}
+        for x in dp:
+            D[(norm(g(x, "name")), g(x, "collegeTeam", "college_team"))] = x
+            D.setdefault((norm(g(x, "name")), None), x)
+        C = candidatos(Y, fbs, ttl=24 * 300, actual=False)
+        for j in C:
+            x = D.get((norm(j["n"]), j["t"])) or D.get((norm(j["n"]), None))
+            ov = g(x, "overall") if x else None
+            v = max(0.0, 1 - math.log(ov) / math.log(262)) if ov else 0.0
+            filas.append(_x(j)); ys.append(v); años.append(Y)
+            if ov: hist.append(dict(n=g(x, "name"), p=j["p"], t=g(x, "collegeTeam", "college_team"), y=Y + 1, o=ov, eq=g(x, "nflTeam", "nfl_team"),
+                                    pr=j["pr"], tal=j["tal"], h=g(x, "height") or j.get("h"), w=g(x, "weight") or j.get("w")))
+    if len(filas) < 300: return None, [], ""
+    X, y, A = np.array(filas), np.array(ys), np.array(años)
+    def ajusta(m):
+        lam = np.eye(X.shape[1]) * 2.0
+        return np.linalg.solve(X[m].T @ X[m] + lam, X[m].T @ y[m])
+    # prueba honesta: se entrena sin el último año y se mide en él (¿cuántos de su top 32 fueron de 1ª ronda?)
+    ult = A.max(); w0 = ajusta(A != ult); pred = X[A == ult] @ w0; yy = y[A == ult]
+    top = np.argsort(-pred)[:32]; r1 = int(sum(1 for i in top if yy[i] >= 1 - math.log(32) / math.log(262)))
+    top100 = np.argsort(-pred)[:100]; drafted = int(sum(1 for i in top100 if yy[i] > 0))
+    nota = f"probado con el draft {ult + 1}: de su top 32, {r1} fueron de 1ª ronda; de su top 100, {drafted} fueron escogidos"
+    w = ajusta(np.ones(len(y), bool))
+    print("Colegial: tablero calibrado con", len(y), "jugadores y", len(hist), "drafteados;", nota, "· pesos", dict(zip(RASGOS, [round(float(v), 3) for v in w[:4]])))
+    return w, hist, nota
+
+
+def comp(j, hist):
+    """El drafteado más parecido de su posición (producción, recluta, estatura y peso)."""
+    best, bd = None, 1e9
+    for h in hist:
+        if h["p"] != j["p"]: continue
+        d = (j["pr"] - h["pr"]) ** 2 + 0.6 * (j["tal"] - h["tal"]) ** 2
+        if j.get("h") and h.get("h"): d += ((j["h"] - h["h"]) / 2) ** 2
+        if j.get("w") and h.get("w"): d += ((j["w"] - h["w"]) / 15) ** 2
+        if d < bd: bd, best = d, h
+    return [best["n"], best["t"], best["y"], best["o"], best["eq"]] if best else None
+
+
+def tablero(season, fbs=None):
+    todos = candidatos(season, fbs)
+    w, hist, nota = None, [], ""
+    try: w, hist, nota = calibra(season, fbs)
+    except Exception as e: print("Colegial: calibración no se pudo:", repr(e)[:200])
+    for j in todos:
+        if w is not None: j["sc"] = float(sum(a * b for a, b in zip(_x(j), w)))
+        else: j["sc"] = j["pr"] + 0.35 * j["tal"] - 0.6 * j["cp"] + VALOR.get(j["p"], 0) + (0.5 + 0.3 * j["ypc"] if j.get("ol") else 0)
+        if j.get("el") is None: j["sc"] -= 0.05 if w is not None else 0.4
     todos.sort(key=lambda j: -j["sc"])
+    print(f"Colegial: {len(todos)} candidatos ({sum(1 for j in todos if j.get('ol'))} de línea ofensiva)")
     out, porpos = [], defaultdict(int)
-    for j in todos[:160]:
+    for k, j in enumerate(todos[:200], 1):
         porpos[j["p"]] += 1
-        r = R.get(j["id"]) or {}
-        rc = recluta(j["id"]); cl = (r.get("y") if usa_y else None) or (min(4, season - rc[2] + 1) if rc else None)
-        out.append(dict(id=j["id"], n=j["n"], p=j["p"], t=j["t"], c=cl, st=j.get("st") or 0, h=r.get("h"), w=r.get("w"),
-                        rp=porpos[j["p"]], sc=round(j["sc"], 2), x=_linea(j), ol=j.get("ol", 0)))
-    return out
+        s = {kk: round(v, 1) for kk, v in (j.get("s") or {}).items() if kk.split(".")[0] in ("passing", "rushing", "receiving", "defensive", "interceptions")}
+        out.append(dict(id=j["id"], n=j["n"], p=j["p"], t=j["t"], c=j.get("cl"), st=j.get("st") or 0, h=j.get("h"), w=j.get("w"),
+                        rp=porpos[j["p"]], sc=round(j["sc"], 3), x=_linea(j), ol=j.get("ol", 0), r=min(8, (k - 1) // 32 + 1),
+                        s=s, cmp=comp(j, hist) if hist else None))
+    return out, nota
 
 
 def _linea(j):
@@ -218,6 +292,30 @@ def _linea(j):
     if p in ("CB", "S"): return f"{f('defensive.PD')} pases defendidos · {f('interceptions.INT')} INT · {f('defensive.TOT')} tacleadas"
     if j.get("ol"): return f"{j.get('st', 0)} estrellas como recluta"
     return ""
+
+
+# ---------------------------------------------------------------- Playoff de 12 proyectado
+# Reglas 2026-27: campeones de ACC, Big Ten, Big 12 y SEC; el mejor de American, CUSA, MAC, Mountain West, Pac-12 o Sun Belt;
+# Notre Dame si queda entre los 12; el resto por ranking. Los 4 mejores rankeados descansan la 1ª ronda; sin reacomodo.
+G6 = {"American Athletic", "American", "Conference USA", "Mid-American", "Mountain West", "Pac-12", "Sun Belt"}
+
+
+def playoff(L, fuente):
+    if len(L) < 12: return None
+    auto = {}
+    for c in ("SEC", "Big Ten", "Big 12", "ACC"):
+        t = next((r for r in L if r[2] == c), None)
+        if t: auto[t[1]] = f"Campeón proyectado de la {c}" if c != "SEC" else "Campeón proyectado de la SEC"
+    t = next((r for r in L if r[2] in G6), None)
+    if t: auto[t[1]] = "Mejor de las conferencias chicas"
+    nd = next((r for r in L if r[1] == "Notre Dame" and r[0] <= 12), None)
+    if nd: auto[nd[1]] = "Notre Dame entre los 12"
+    campo = [r for r in L if r[1] in auto]
+    for r in L:
+        if len(campo) >= 12: break
+        if r[1] not in auto: campo.append(r)
+    campo = sorted(campo, key=lambda r: r[0])[:12]
+    return dict(f=fuente, s=[[i + 1, r[1], r[0], auto.get(r[1], "Invitado por ranking"), r[2]] for i, r in enumerate(campo)])
 
 
 # ---------------------------------------------------------------- todo junto
@@ -239,6 +337,7 @@ def arma(season, nfl):
             if nom.startswith("AP"): ap = L[:25]
             elif "Playoff" in nom: cfp = L[:25]
     rank = {r[1]: r[0] for r in (cfp or ap)}
+    cfp12 = playoff(cfp or ap, "cfp" if cfp else "ap")
     # partidos: esta semana y la anterior, solo con algún equipo FBS
     games = []
     for ww, ttl in ((w, 3), (w - 1, 24)):
@@ -252,8 +351,8 @@ def arma(season, nfl):
                               hr=rank.get(h), ar=rank.get(a), n=g(x, "notes") or ""))
             usados |= {h, a}
     games.sort(key=lambda x: (x["w"], x["ko"] or ""))
-    pros = []
-    try: pros = tablero(season, set(teams))
+    pros, nota = [], ""
+    try: pros, nota = tablero(season, set(teams))
     except Exception as e: print("Colegial: tablero de prospectos no se pudo:", repr(e)[:200])
     usados |= {r[1] for r in ap + cfp} | {p["t"] for p in pros}
     T = {}
@@ -272,4 +371,4 @@ def arma(season, nfl):
     lim = sum(v for k, v in (_uso()[1]).items() if k == _uso()[2])
     print(f"Colegial: semana {w} ({st}), {len(games)} partidos, AP {len(ap)}, CFP {len(cfp)}, {len(pros)} prospectos; consultas este mes: {lim}/{TOPE_MES}")
     return dict(al=datetime.now(timezone.utc).isoformat()[:16], season=season, week=w, st=st, ap=ap, cfp=cfp, games=games, teams=T, pros=pros,
-                draft=dict(y=season + 1, order=order))
+                draft=dict(y=season + 1, order=order, nota=nota), cfp12=cfp12)

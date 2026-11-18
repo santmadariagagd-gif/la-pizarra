@@ -2140,6 +2140,23 @@ try:
     if C:
         os.makedirs('docs/datos',exist_ok=True)
         json.dump(C,open('docs/datos/cfb.json','w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
+        # Consenso de los mocks de la gente (Firestore mocks/{año}_{uid}): lo más escogido en cada selección
+        try:
+            sa=os.environ.get('FIREBASE_SA','')
+            if sa:
+                import firebase_admin
+                from firebase_admin import credentials, firestore
+                if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(sa)))
+                _y=C['draft']['y']; _cnt={}; _n=0
+                for d in firestore.client().collection('mocks').where('y','==',_y).stream():
+                    m=(d.to_dict() or {}).get('p') or {}
+                    if len(m)<8: continue
+                    _n+=1
+                    for k,v in m.items(): _cnt.setdefault(str(k),{}); _cnt[str(k)][v]=_cnt[str(k)].get(v,0)+1
+                _p={k:[max(v,key=v.get),round(100*max(v.values())/sum(v.values()))] for k,v in _cnt.items()}
+                json.dump(dict(y=_y,n=_n,p=_p),open('docs/datos/mock_consenso.json','w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
+                print(f"Colegial: consenso de {_n} mocks")
+        except Exception as ex: print("Colegial: consenso no se pudo:",repr(ex)[:200])
 except Exception as ex:
     print("Colegial: no se pudo armar:",repr(ex)[:300])
 # ----- Momios de fútbol (1X2) de The Odds API -----

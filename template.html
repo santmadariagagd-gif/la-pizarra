@@ -657,7 +657,12 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .mkrow{display:grid;grid-template-columns:30px 30px 1fr;gap:4px 10px;align-items:center;padding:9px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);cursor:pointer;text-align:left;width:100%;color:var(--ink);font:inherit}
 .mkrow .n{font:700 18px var(--display);color:var(--muted);text-align:center}.mkrow img{width:30px;height:30px;object-fit:contain}
 .mkrow .eleg b{font-size:15px}.mkrow .eleg small{display:block;color:var(--muted);font-size:12px}.mkrow .vac{color:var(--muted);font-size:14px}
-.mkrow.on{border-color:rgba(242,212,102,.5)}.mkacc{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.mkrow.on{border-color:rgba(242,212,102,.5)}
+.drn{font:inherit;color:inherit;text-align:left;padding:0;text-decoration:none}.drn b{text-decoration:underline;text-decoration-color:rgba(242,212,102,.45);text-underline-offset:3px}
+.drfn{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.drfn span{flex:1 1 90px;padding:10px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-align:center}
+.drfn b{display:block;font:700 20px var(--display)}.drfn small{color:var(--muted);font-size:12px}
+.drst{width:100%;border-collapse:collapse;font-size:14px}.drst td{padding:6px 2px;border-bottom:1px solid var(--line)}.drst td:last-child{text-align:right;font-weight:700}
+#simRon{margin-left:6px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:4px 8px}.mkacc{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
 
 .hsec{margin-top:24px}
 .hh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px}
@@ -7422,7 +7427,8 @@ const cfbSeg=(id,ops,cur)=>`<div class="hseg cfbseg" id="${id}" role="group">${o
 async function cfbRender(){
   const box=$("#cfbBody"); if(!box) return; if(!CFB.D) box.innerHTML=pzSkel(4); const C=await cfbCarga();
   if(!C){ box.innerHTML=`<p class="note">El futbol americano colegial está por llegar a La Pizarra. Vuelve pronto.</p>`; return; }
-  let h=cfbSeg("cfbSeg",[["top","Top 25"],["juegos","Partidos"],["pros","Prospectos"]],CFB.v);
+  let h=cfbSeg("cfbSeg",[["top","Top 25"],["playoff","Playoff"],["juegos","Partidos"],["pros","Prospectos"]],CFB.v);
+  if(CFB.v==="playoff"){ box.innerHTML=h+cfbPlayoff(C); return; }
   if(CFB.v==="top"){
     const pols=[...(C.cfp?.length?[["cfp","Ranking del Playoff"]]:[]),["ap","AP Top 25"]]; if(!pols.some(p=>p[0]===CFB.pol)) CFB.pol=pols[0][0];
     const L=C[CFB.pol]||[];
@@ -7450,19 +7456,26 @@ document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return
 const DR_POS=["QB","WR","RB","TE","OT","IOL","EDGE","DL","LB","CB","S"];
 const drSig=()=>{ try{ return new Set(JSON.parse(localStorage.getItem("pz_draft_sig")||"[]")); }catch(e){ return new Set(); } };
 const drMock=()=>{ try{ const m=JSON.parse(localStorage.getItem("pz_mock")||"null"); return m&&m.y===CFB.D?.draft?.y?m:{y:CFB.D?.draft?.y,p:{}}; }catch(e){ return {y:CFB.D?.draft?.y,p:{}}; } };
-const drMockGuarda=m=>{ try{ localStorage.setItem("pz_mock",JSON.stringify(m)); if(typeof acctPush==="function") acctPush(); }catch(e){} };
+const drMockGuarda=m=>{ try{ localStorage.setItem("pz_mock",JSON.stringify(m)); if(typeof acctPush==="function") acctPush(); }catch(e){} clearTimeout(CFB.mt); CFB.mt=setTimeout(()=>mkNube(m),2500); };
+// Mocks en Firestore (mocks/{año}_{uid}) para que tus amigos los vean y para el consenso de La Pizarra
+async function mkNube(m){ if(typeof amOk!=="function"||!amOk()||!m?.y) return; const uid=ACCT.user.uid;
+  try{ const p={}; Object.entries(m.p||{}).forEach(([k,v])=>{ if(v&&+k>=1&&+k<=96) p[k]=String(v).slice(0,20); });
+    await ACCT.db.doc(`mocks/${m.y}_${uid}`).set({uid,y:m.y,a:String(perfMio()?.a||ACCT.user.displayName||"").slice(0,24),p,t:firebase.firestore.FieldValue.serverTimestamp()}); }
+  catch(e){ console.warn("Mock en la nube:",e?.code||e); } }
 const drCl=c=>c==null?"":c>=4?"Senior":c===3?"Junior":"";
 function drProspectos(C,desdeCfb){
   const sig=drSig(), L=(C.pros||[]).filter(p=>!CFB.pos||(CFB.pos==="sig"?sig.has(p.id):p.p===CFB.pos));
   return `<div class="drpos" id="drPos"><button data-pos="" aria-pressed="${!CFB.pos}">Todos</button><button data-pos="sig" aria-pressed="${CFB.pos==="sig"}">★ Siguiendo</button>${DR_POS.map(p=>`<button data-pos="${p}" aria-pressed="${CFB.pos===p}">${p}</button>`).join("")}</div>
-    <div style="display:grid;gap:6px">${L.slice(0,120).map(p=>`<div class="drp"><span class="n">${(C.pros.indexOf(p)+1)}</span><span><b>${cfbEsc(p.n)}</b><small><span class="pp">${p.p}${p.rp}</span>${cfbEsc(p.t)}${drCl(p.c)?` · ${drCl(p.c)}`:""}${p.st?` · ${"★".repeat(p.st)} de recluta`:""}</small><small>${cfbEsc(p.x||"")}</small></span>
+    <div style="display:grid;gap:6px">${L.slice(0,120).map(p=>`<div class="drp"><span class="n">${(C.pros.indexOf(p)+1)}</span><span><button class="alink drn" data-ficha="${cfbEsc(p.id)}"><b>${cfbEsc(p.n)}</b></button><small><span class="pp">${p.p}${p.rp}</span>${p.r&&p.r<=7?`<span class="pp">R${p.r}</span>`:""}${cfbEsc(p.t)}${drCl(p.c)?` · ${drCl(p.c)}`:""}${p.st?` · ${"★".repeat(p.st)} de recluta`:""}</small><small>${cfbEsc(p.x||"")}</small></span>
       <button class="drsig" data-sig="${cfbEsc(p.id)}" aria-pressed="${sig.has(p.id)}" aria-label="${sig.has(p.id)?"Dejar de seguir":"Seguir"} a ${cfbEsc(p.n)}">${sig.has(p.id)?"★":"☆"}</button></div>`).join("")||`<p class="note">${CFB.pos==="sig"?"Todavía no sigues a nadie: toca la ☆ de un prospecto.":"Sin prospectos en esta posición."}</p>`}</div>
-    <p class="note">Tablero de La Pizarra para el draft ${C.draft?.y||""}: números de esta temporada, su ranking como recluta, la dureza de su conferencia y lo que vale su posición en el draft. Es estadístico, no de scouts: la línea ofensiva entra solo por su ranking de recluta. Solo juniors y seniors.${desdeCfb?` <button class="alink" data-drir="1">Arma tu mock draft</button>`:""}</p>`;
+    <p class="note">Tablero de La Pizarra para el draft ${C.draft?.y||""}: números de esta temporada, su ranking como recluta, la dureza de su conferencia y su posición, con pesos aprendidos de los drafts de los últimos 3 años${C.draft?.nota?` (${cfbEsc(C.draft.nota)})`:""}. Es estadístico, no de scouts; la línea ofensiva entra por su ranking de recluta y lo bien que corre su equipo. Solo juniors y seniors. R = ronda proyectada. Toca un nombre para ver su ficha.${desdeCfb?` <button class="alink" data-drir="1">Arma tu mock draft</button>`:""}</p>`;
 }
 async function drRender(){
   const box=$("#drBody"); if(!box) return; if(!CFB.D) box.innerHTML=pzSkel(4); const C=await cfbCarga();
   if(!C?.draft?.order?.length){ box.innerHTML=`<p class="note">El draft llega pronto a La Pizarra: prospectos, orden de selección y tu propio mock draft.</p>`; return; }
-  let h=cfbSeg("drSeg",[["mock","Mi mock draft"],["pros","Prospectos"],["orden","Orden"]],CFB.dv);
+  let h=cfbSeg("drSeg",[["mock","Mi mock"],["sim","Simulador"],["amigos","Amigos"],["pros","Prospectos"],["orden","Orden"]],CFB.dv);
+  if(CFB.dv==="sim"){ box.innerHTML=h+simHTML(C); return; }
+  if(CFB.dv==="amigos"){ box.innerHTML=h+pzSkel(3); box.innerHTML=h+await mkAmigosHTML(C); return; }
   const N=t=>NT[t]||{n:t};
   if(CFB.dv==="orden"){
     h+=`<ol class="cfbl drord">${C.draft.order.map(([k,t,r,nec])=>`<li><span class="cfbrk">${k}</span><span class="cfbt">${hoyLogo(N(t).logo,"qlg")}<b>${cfbEsc(N(t).n)}</b><small>${r}</small></span><span class="nec">${(nec||[]).map(x=>`<i>${x}</i>`).join("")}</span></li>`).join("")}</ol>
@@ -7473,7 +7486,7 @@ async function drRender(){
     h+=`<div class="mkacc"><button class="btn" id="mkAuto">Llenar con La Pizarra</button>${n?`<button class="btn ghost" id="mkShare">📸 Compartir</button><button class="btn ghost" id="mkBorra">Borrar</button>`:""}</div>
       <p class="note" style="margin-top:0">${n?`${n} de 32 escogidos.`:"Toca cada selección para escoger a tu jugador, o deja que La Pizarra lo llene y cambias lo que quieras."}</p>
       <div style="display:grid;gap:6px">${C.draft.order.map(([k,t,r,nec])=>{ const p=P[m.p[k]];
-        return `<button class="mkrow${p?" on":""}" data-mk="${k}"><span class="n">${k}</span>${hoyLogo(N(t).logo)}<span class="eleg">${p?`<b>${cfbEsc(p.n)}</b><small><span class="pp">${p.p}</span>${cfbEsc(p.t)}</small>`:`<span class="vac">${cfbEsc(N(t).n)} · escoger</span><small>Necesita: ${(nec||[]).join(", ")||"—"}</small>`}</span></button>`; }).join("")}</div>
+        return `<button class="mkrow${p?" on":""}" data-mk="${k}"><span class="n">${k}</span>${drLg(t)}<span class="eleg">${p?`<b>${cfbEsc(p.n)}</b><small><span class="pp">${p.p}</span>${cfbEsc(p.t)}</small>`:`<span class="vac">${cfbEsc(N(t).n)} · escoger</span><small>Necesita: ${(nec||[]).join(", ")||"—"}</small>`}</span></button>`; }).join("")}</div>
       <p class="note">Orden si la temporada terminara hoy (sin intercambios). Se guarda en este navegador y en tu cuenta.</p>`;
   }
   box.innerHTML=h;
@@ -7487,6 +7500,97 @@ function drElegir(k){
     <div style="display:grid;gap:6px">${m.p[k]?`<button class="mkrow" data-mkq="${k}"><span class="n">×</span><span></span><span class="vac">Quitar mi selección</span></button>`:""}${L.map(p=>`<button class="mkrow${m.p[k]===p.id?" on":""}" data-mkp="${k}:${cfbEsc(p.id)}"><span class="n">${C.pros.indexOf(p)+1}</span><span class="pp" style="justify-self:center">${p.p}</span><span class="eleg"><b>${cfbEsc(p.n)}</b><small>${cfbEsc(p.t)} · ${cfbEsc(p.x||"")}</small></span></button>`).join("")}</div></div>`;
   if(!dlg.open) dlg.showModal(); CFB.mk=k;
 }
+// --- Ficha del prospecto ---
+const DR_ST={"passing.YDS":"Yardas por pase","passing.TD":"TD de pase","passing.INT":"Intercepciones","passing.PCT":"% de pases completos","passing.YPA":"Yardas por intento",
+  "rushing.CAR":"Acarreos","rushing.YDS":"Yardas por tierra","rushing.YPC":"Yardas por acarreo","rushing.TD":"TD por tierra","receiving.REC":"Recepciones","receiving.YDS":"Yardas recibidas",
+  "receiving.YPR":"Yardas por recepción","receiving.TD":"TD de recepción","defensive.TOT":"Tacleadas","defensive.SOLO":"Tacleadas solo","defensive.TFL":"Tacleadas para pérdida",
+  "defensive.SACKS":"Capturas","defensive.QB HUR":"Presiones al QB","defensive.PD":"Pases defendidos","interceptions.INT":"Intercepciones"};
+const drLg=t=>hoyLogo((NT[t]||{}).logo)||`<span class="cfbab">${cfbEsc(t)}</span>`;
+const drAlto=h=>h?`${(h*0.0254).toFixed(2)} m`:"", drPeso=w=>w?`${Math.round(w*0.4536)} kg`:"";
+function drFicha(id){
+  const C=CFB.D, p=(C?.pros||[]).find(x=>x.id===id); if(!p) return; const k=C.pros.indexOf(p)+1, sig=drSig().has(p.id), N=t=>(NT[t]||{n:t}).n;
+  const st=Object.entries(p.s||{}).filter(([kk,v])=>DR_ST[kk]&&v).map(([kk,v])=>[DR_ST[kk],kk.endsWith("PCT")?`${Math.round(v*(v<=1?100:1))}%`:Number.isInteger(v)?v:v.toFixed(1)]);
+  const quien=(C.draft?.order||[]).filter(o=>(o[3]||[]).includes(p.p)).slice(0,4);
+  $("#gbody").innerHTML=`<div class="pzp drficha"><div class="cfbt" style="gap:12px">${cfbEq(p.t)}<span><h2 style="margin:0">${cfbEsc(p.n)}</h2><small class="note" style="margin:0">${cfbEsc(p.t)}${drCl(p.c)?` · ${drCl(p.c)}`:""}</small></span></div>
+    <div class="drfn"><span><b>#${k}</b><small>del tablero</small></span><span><b>${p.p}${p.rp}</b><small>en su posición</small></span><span><b>${p.r<=7?`${p.r}ª`:"—"}</b><small>ronda proyectada</small></span>${p.st?`<span><b>${"★".repeat(p.st)}</b><small>de recluta</small></span>`:""}${p.h?`<span><b>${drAlto(p.h)}</b><small>${drPeso(p.w)}</small></span>`:""}</div>
+    ${st.length?`<h3>Temporada ${C.season}</h3><table class="drst">${st.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join("")}</table>`:p.ol?`<p class="note">Línea ofensiva: no hay estadísticas individuales; entra por su ranking de recluta y lo bien que corre su equipo.</p>`:""}
+    ${p.cmp?`<h3>Se parece a</h3><p><b>${cfbEsc(p.cmp[0])}</b> (${cfbEsc(p.cmp[1])}), selección ${p.cmp[3]} de ${cfbEsc(p.cmp[4]||"")} en ${p.cmp[2]}.<small class="note" style="display:block;margin:2px 0 0">El drafteado de los últimos 3 años más parecido en números, recluta, estatura y peso.</small></p>`:""}
+    ${quien.length?`<h3>Equipos que necesitan ${p.p}</h3><p>${quien.map(o=>`${o[0]}. ${cfbEsc(N(o[1]))}`).join(" · ")}</p>`:""}
+    <div class="mkacc"><button class="btn${sig?" ghost":""}" data-sig="${cfbEsc(p.id)}">${sig?"★ Siguiendo":"☆ Seguir"}</button></div></div>`;
+  if(!dlg.open) dlg.showModal(); pzTrack("draft_ficha",{p:p.p});
+}
+
+// --- Playoff de 12 proyectado ---
+function cfbPlayoff(C){
+  const P=C.cfp12; if(!P?.s?.length) return `<p class="note">El bracket proyectado sale cuando hay ranking del comité.</p>`;
+  const S=Object.fromEntries(P.s.map(x=>[x[0],x])), eq=n=>{ const x=S[n]; return `<span class="cfbt"><span class="cfbrk" style="width:22px;font-size:15px">${n}</span>${cfbEq(x[1])}<b>${cfbEsc(x[1])}</b></span>`; };
+  const cruce=(a,b,donde)=>`<div class="cfbg"><div style="display:grid;gap:6px">${eq(a)}${eq(b)}</div><span></span><span class="meta">${donde}</span></div>`;
+  const vs=(a,b,c)=>`<div class="cfbg"><div style="display:grid;gap:6px">${eq(a)}<span class="cfbt"><span class="cfbrk" style="width:22px"></span><small>Ganador de ${b} vs ${c}</small></span></div><span></span></div>`;
+  return `<div class="hh"><h3>Los 12</h3></div><ol class="cfbl">${P.s.map(x=>`<li><span class="cfbrk">${x[0]}</span><span class="cfbt">${cfbEq(x[1])}<span style="min-width:0"><b style="display:block">${cfbEsc(x[1])}</b><small style="white-space:normal">#${x[2]} del ranking · ${cfbEsc(x[3])}</small></span></span>${x[0]<=4?`<small class="note" style="margin:0">descansa</small>`:""}</li>`).join("")}</ol>
+    <div class="hh" style="margin-top:20px"><h3>Primera ronda · 18 y 19 de diciembre</h3></div><div style="display:grid;gap:8px">${cruce(12,5,`En casa de ${cfbEsc(S[5][1])}`)}${cruce(11,6,`En casa de ${cfbEsc(S[6][1])}`)}${cruce(10,7,`En casa de ${cfbEsc(S[7][1])}`)}${cruce(9,8,`En casa de ${cfbEsc(S[8][1])}`)}</div>
+    <div class="hh" style="margin-top:20px"><h3>Cuartos · 30 dic y 1 ene</h3></div><div style="display:grid;gap:8px">${vs(1,8,9)}${vs(2,7,10)}${vs(3,6,11)}${vs(4,5,12)}</div>
+    <p class="note">Los cuartos se juegan en el Fiesta Bowl (30 de diciembre) y en el Cotton, Rose y Peach Bowl (1 de enero); el comité asigna cuál a cada partido el día de la selección (6 de diciembre). Semifinales: Orange Bowl (14 de enero) y Sugar Bowl (15 de enero). Final: 25 de enero en Las Vegas.</p>
+    <p class="note">Proyección con el ${P.f==="cfp"?"ranking del comité del Playoff":"Top 25 de AP (todavía no hay ranking del comité)"}: el mejor de cada conferencia grande cuenta como su campeón; entran los campeones de SEC, Big Ten, Big 12 y ACC, el mejor de las conferencias chicas y Notre Dame si está entre los 12; los 4 mejores rankeados descansan la primera ronda.</p>`;
+}
+
+// --- Simulador de mock draft ---
+const SIM={eq:null,ron:1,p:[],run:false,pos:""};
+function simOrden(C){ const o=C.draft.order, R=[]; for(let r=1;r<=SIM.ron;r++) o.forEach(([k,t,rc,nec])=>R.push({n:(r-1)*32+k,r,t,nec})); return R; }
+function simAuto(C,sl,usados){
+  const L=C.pros.filter(p=>!usados.has(p.id)); if(!L.length) return null; const top=L.slice(0,100).map(p=>p.sc), m=top.reduce((a,b)=>a+b,0)/top.length, sd=Math.sqrt(top.reduce((a,b)=>a+(b-m)**2,0)/top.length)||1;
+  const adj=L.slice(0,40).map(p=>{ const i=(sl.nec||[]).indexOf(p.p); return [p,p.sc+(i===0?.6:i>0?.35:0)*sd-(p.p==="QB"&&!(sl.nec||[]).includes("QB")?.8*sd:0)]; }).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const W=[.36,.2,.13,.1,.08,.06,.04,.03]; let x=Math.random()*W.slice(0,adj.length).reduce((a,b)=>a+b,0);
+  for(let i=0;i<adj.length;i++){ x-=W[i]; if(x<=0) return adj[i][0]; } return adj[0][0];
+}
+function simAvanza(){ const C=CFB.D, O=simOrden(C), usados=new Set(SIM.p.map(x=>x.id));
+  while(SIM.p.length<O.length){ const sl=O[SIM.p.length]; if(sl.t===SIM.eq){ SIM.run=false; return drRender(); }
+    const p=simAuto(C,sl,usados); if(!p) break; SIM.p.push({n:sl.n,t:sl.t,id:p.id}); usados.add(p.id); }
+  SIM.run=false; pzTrack("sim_fin",{ron:SIM.ron}); drRender(); }
+function simNota(C){ // calificación de tus picks: qué tan arriba del tablero agarraste a cada uno contra el lugar donde escogiste
+  const mios=SIM.p.filter(x=>x.t===SIM.eq); if(!mios.length) return null; const val=mios.reduce((a,x)=>a+(x.n-(C.pros.findIndex(p=>p.id===x.id)+1)),0)/mios.length;
+  return val>=12?"A+":val>=6?"A":val>=2?"B+":val>=-2?"B":val>=-8?"C":"D"; }
+function simHTML(C){
+  const N=t=>(NT[t]||{n:t}).n, O=simOrden(C), P=Object.fromEntries(C.pros.map(p=>[p.id,p]));
+  if(!SIM.eq) return `<p class="note" style="margin-top:0">Escoge tu equipo: los demás escogen solos (a veces se sorprenden) y cuando te toca, escoges tú.</p>
+    <label class="note">Rondas <select id="simRon">${[1,2,3].map(r=>`<option value="${r}"${r===SIM.ron?" selected":""}>${r}</option>`).join("")}</select></label>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:10px">${C.draft.order.map(([k,t])=>`<button class="mkrow" data-simeq="${t}" style="grid-template-columns:30px 30px 1fr"><span class="n">${k}</span>${drLg(t)}<span class="eleg"><b>${cfbEsc(N(t).n)}</b></span></button>`).join("")}</div>`;
+  const usados=new Set(SIM.p.map(x=>x.id)), fin=SIM.p.length>=O.length, sl=O[SIM.p.length];
+  let h=`<div class="mkacc"><button class="btn ghost" id="simOtra">Cambiar de equipo</button>${fin?`<button class="btn" id="simShare">📸 Compartir</button><button class="btn ghost" id="simDe">Otra vez</button>`:""}</div>`;
+  if(!fin&&sl?.t===SIM.eq){ const L=C.pros.filter(p=>!usados.has(p.id)&&(!SIM.pos||p.p===SIM.pos)).slice(0,40);
+    h+=`<div class="hh"><h3>¡Te toca! Selección ${sl.n}</h3></div><p class="note" style="margin-top:0">${cfbEsc(N(SIM.eq).n)} necesita: ${(sl.nec||[]).join(", ")||"—"}</p>
+      <div class="drpos" id="simPos"><button data-spos="" aria-pressed="${!SIM.pos}">Todos</button>${[...new Set([...(sl.nec||[]),...DR_POS])].map(p=>`<button data-spos="${p}" aria-pressed="${SIM.pos===p}">${p}</button>`).join("")}</div>
+      <div style="display:grid;gap:6px">${L.map(p=>`<button class="mkrow" data-simp="${cfbEsc(p.id)}"><span class="n">${C.pros.indexOf(p)+1}</span><span class="pp" style="justify-self:center">${p.p}</span><span class="eleg"><b>${cfbEsc(p.n)}</b><small>${cfbEsc(p.t)} · ${cfbEsc(p.x||"")}</small></span></button>`).join("")}</div>`; }
+  if(fin){ const nota=simNota(C), mios=SIM.p.filter(x=>x.t===SIM.eq);
+    h+=`<div class="pasos listo" style="margin-bottom:12px"><div class="pgran">${nota}</div><h3>Tu draft con ${cfbEsc(N(SIM.eq).n)}</h3><p>${mios.map(x=>`${x.n}. <b>${cfbEsc(P[x.id].n)}</b> (${P[x.id].p}, ${cfbEsc(P[x.id].t)})`).join("<br>")}</p><p class="note">La calificación compara dónde escogiste a cada uno contra su lugar en el tablero de La Pizarra.</p></div>`; }
+  h+=`<div class="hh"><h3>Así va</h3></div><div style="display:grid;gap:6px">${SIM.p.slice().reverse().map(x=>{ const p=P[x.id]; return `<div class="mkrow${x.t===SIM.eq?" on":""}" style="cursor:default"><span class="n">${x.n}</span>${drLg(x.t)}<span class="eleg"><b>${cfbEsc(p.n)}</b><small><span class="pp">${p.p}</span>${cfbEsc(p.t)}</small></span></div>`; }).join("")}</div>`;
+  return h;
+}
+async function simCompartir(){ const C=CFB.D, P=Object.fromEntries(C.pros.map(p=>[p.id,p])), N=t=>(NT[t]||{n:t}).n;
+  const F=SIM.p.filter(x=>x.t===SIM.eq).map(x=>({l:`Selección ${x.n}`,v:`${P[x.id].n} · ${P[x.id].p}`,on:true}));
+  F.push({l:"Calificación",v:simNota(C)||"—"}); pzTrack("compartir_picks",{q:"sim"});
+  pzCompartir(null,"mi-draft",{blob:await picksImagen(`Simulador del draft ${C.draft.y}`,`Mi draft con ${N(SIM.eq)}`,F,"lista"),titulo:"Comparte tu draft",texto:`Así me fue en el simulador del draft de La Pizarra con ${N(SIM.eq)}. https://lapizarra.mx`}); }
+
+// --- Mocks de tus amigos y consenso ---
+async function mkAmigosHTML(C){
+  const P=Object.fromEntries(C.pros.map(p=>[p.id,p])), mio=drMock(), N=t=>(NT[t]||{n:t}).n;
+  let cons=null; try{ cons=await fetch(`datos/mock_consenso.json?v=${Math.floor(Date.now()/36e5)}`).then(r=>r.ok?r.json():null); }catch(e){}
+  let h="";
+  if(cons?.n&&cons.y===C.draft.y){ h+=`<div class="hh"><h3>Consenso de La Pizarra</h3></div><p class="note" style="margin-top:0">Lo que más escogió la gente en ${cons.n} mock${cons.n===1?"":"s"}.</p><div style="display:grid;gap:6px">${C.draft.order.map(([k,t])=>{ const x=cons.p?.[k], p=x&&P[x[0]]; return p?`<div class="mkrow" style="cursor:default"><span class="n">${k}</span>${drLg(t)}<span class="eleg"><b>${cfbEsc(p.n)}</b><small><span class="pp">${p.p}</span>${x[1]}% · ${cfbEsc(p.t)}</small></span></div>`:""; }).join("")}</div>`; }
+  if(typeof amOk!=="function"||!amOk()) return h+`<p class="note">Entra con tu cuenta para ver los mocks de tus amigos.</p>`;
+  try{ if(!AM.L) await amCarga(); }catch(e){}
+  const ids=(AM.L||[]).filter(a=>a.est==="ok").map(a=>a.otro);
+  if(!ids.length) return h+`<p class="note">Agrega amigos en La Pizarra para comparar sus mocks con el tuyo.</p>`;
+  const M=(await Promise.all(ids.map(u=>ACCT.db.doc(`mocks/${C.draft.y}_${u}`).get().then(d=>d.exists?d.data():null).catch(()=>null)))).filter(m=>m&&Object.keys(m.p||{}).length);
+  CFB.amigos=M;
+  h+=`<div class="hh" style="margin-top:18px"><h3>Tus amigos</h3></div>`+(M.length?`<div style="display:grid;gap:6px">${M.map((m,i)=>{ const igual=Object.entries(m.p).filter(([k,v])=>mio.p?.[k]===v).length, p1=P[m.p[1]];
+    return `<button class="mkrow" data-mkam="${i}" style="grid-template-columns:1fr auto"><span class="eleg"><b>${cfbEsc(m.a||"Amigo")}</b><small>${Object.keys(m.p).length} de 32${p1?` · el 1 es ${cfbEsc(p1.n)}`:""}</small></span><span class="note" style="margin:0">${igual} igual${igual===1?"":"es"} al tuyo</span></button>`; }).join("")}</div>`:`<p class="note">Ninguno de tus amigos ha armado su mock todavía. Mándales el tuyo con 📸.</p>`)+
+    `<p class="note">En abril, cuando sea el draft de verdad, calificamos quién le atinó más.</p>`;
+  return h;
+}
+function mkVerAmigo(i){ const C=CFB.D, m=CFB.amigos?.[i]; if(!m) return; const P=Object.fromEntries(C.pros.map(p=>[p.id,p])), mio=drMock(), N=t=>(NT[t]||{n:t}).n;
+  $("#gbody").innerHTML=`<div class="pzp"><h2>El mock de ${cfbEsc(m.a||"tu amigo")}</h2><div style="display:grid;gap:6px">${C.draft.order.map(([k,t])=>{ const p=P[m.p[k]], igual=mio.p?.[k]&&mio.p[k]===m.p[k];
+    return `<div class="mkrow${igual?" on":""}" style="cursor:default"><span class="n">${k}</span>${drLg(t)}<span class="eleg">${p?`<b>${cfbEsc(p.n)}</b><small><span class="pp">${p.p}</span>${cfbEsc(p.t)}${igual?" · igual que tú":""}</small>`:`<span class="vac">—</span>`}</span></div>`; }).join("")}</div></div>`;
+  if(!dlg.open) dlg.showModal(); }
 function drAuto(){   // mejor disponible con un empujón a lo que necesita el equipo
   const C=CFB.D, m={y:C.draft.y,p:{}}, usados=new Set();
   for(const [k,t,r,nec] of C.draft.order){ let mejor=null, ms=-1e9;
@@ -7503,7 +7607,7 @@ async function drCompartir(){
 document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return;
   const b=t.closest("#drSeg button"); if(b){ CFB.dv=b.dataset.v; pzTrack("draft_vista",{v:CFB.dv}); return drRender(); }
   const ps=t.closest("#drPos button"); if(ps){ CFB.pos=ps.dataset.pos; return document.querySelector("#ncaa:not(.hidden)")?cfbRender():drRender(); }
-  const sg=t.closest("[data-sig]"); if(sg){ const S=drSig(), id=sg.dataset.sig; S.has(id)?S.delete(id):S.add(id); try{ localStorage.setItem("pz_draft_sig",JSON.stringify([...S])); if(typeof acctPush==="function") acctPush(); }catch(e){} pzTrack("draft_seguir",{}); return document.querySelector("#ncaa:not(.hidden)")?cfbRender():drRender(); }
+  const sg=t.closest("[data-sig]"); if(sg){ const S=drSig(), id=sg.dataset.sig; S.has(id)?S.delete(id):S.add(id); try{ localStorage.setItem("pz_draft_sig",JSON.stringify([...S])); if(typeof acctPush==="function") acctPush(); }catch(e){} pzTrack("draft_seguir",{}); if(sg.closest(".drficha")) drFicha(id); return document.querySelector("#ncaa:not(.hidden)")?cfbRender():drRender(); }
   if(t.closest("[data-drir]")){ CFB.dv="mock"; showSport("nfl","nfldraft"); window.scrollTo(0,0); return; }
   const mk=t.closest("[data-mk]"); if(mk){ CFB.sel=null; return drElegir(mk.dataset.mk); }
   const mp=t.closest("#mkPos button"); if(mp){ CFB.sel=mp.dataset.mpos; return drElegir(CFB.mk); }
@@ -7512,6 +7616,14 @@ document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return
   if(t.closest("#mkAuto")) return drAuto();
   if(t.closest("#mkBorra")){ drMockGuarda({y:CFB.D.draft.y,p:{}}); return drRender(); }
   if(t.closest("#mkShare")) return drCompartir();
+  const fi=t.closest("[data-ficha]"); if(fi) return drFicha(fi.dataset.ficha);
+  const se=t.closest("[data-simeq]"); if(se){ SIM.eq=se.dataset.simeq; SIM.ron=+($("#simRon")?.value||SIM.ron); SIM.p=[]; SIM.pos=""; pzTrack("sim_empieza",{ron:SIM.ron}); return simAvanza(); }
+  const sp=t.closest("[data-simp]"); if(sp){ const C=CFB.D, O=simOrden(C), sl=O[SIM.p.length]; SIM.p.push({n:sl.n,t:sl.t,id:sp.dataset.simp}); SIM.pos=""; window.scrollTo(0,$("#drBody").offsetTop-60); return simAvanza(); }
+  const sps=t.closest("#simPos button"); if(sps){ SIM.pos=sps.dataset.spos; return drRender(); }
+  if(t.closest("#simOtra")){ SIM.eq=null; SIM.p=[]; return drRender(); }
+  if(t.closest("#simDe")){ SIM.p=[]; return simAvanza(); }
+  if(t.closest("#simShare")) return simCompartir();
+  const ma=t.closest("[data-mkam]"); if(ma) return mkVerAmigo(+ma.dataset.mkam);
 });
 // ---------- Más deportes: Fórmula 1 y tenis (27 oct 2026) ----------
 // Datos de ESPN directo desde el navegador (como la NBA): calendario, sesiones, resultados y campeonatos de F1;
