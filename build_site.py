@@ -2136,7 +2136,7 @@ try:
                 if p not in n: n.append(p); break
         if L and L[0][0]<=4 and len(_pos[L[0][1]])>1 and _pos[L[0][1]][1] not in n: n.append(_pos[L[0][1]][1])
         _nec[t]=n[:4]
-    C=_cfb.arma(int(S),dict(rec=_rec,sos=_sos,nec=_nec))
+    C=_cfb.arma(int(out['season']),dict(rec=_rec,sos=_sos,nec=_nec))
     if C:
         os.makedirs('docs/datos',exist_ok=True)
         json.dump(C,open('docs/datos/cfb.json','w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
