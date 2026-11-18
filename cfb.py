@@ -136,6 +136,12 @@ def tablero(season, fbs=None):
         if rc: return rc[2] <= season - 2      # clase de prepa de hace 3+ años al draft
         return None
     S = lambda j, k: j["s"].get(k)
+    if os.environ.get("CFB_DEBUG", "1") == "1":
+        print("Colegial (diagnóstico): stat", json.dumps(stats[:1])[:300], "| roster", json.dumps(roster[:1])[:300])
+        _pc = defaultdict(int)
+        for pid, j in list(J.items())[:3000]: _pc[str(j.get("pos")) + "/" + str(POS.get((j.get("pos") or "").upper())) + "/" + str(elegible(pid))] += 1
+        print("Colegial (diagnóstico): pos/mapeo/elegible", sorted(_pc.items(), key=lambda x: -x[1])[:15])
+        print("Colegial (diagnóstico): tipos de estadística", sorted({k for j in list(J.values())[:400] for k in j["s"]})[:40])
     grupos = defaultdict(list)
     for pid, j in J.items():
         p = POS.get((j.get("pos") or (R.get(pid) or {}).get("pos") or "").upper())
