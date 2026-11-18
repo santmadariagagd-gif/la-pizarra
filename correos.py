@@ -157,7 +157,7 @@ class Correos:
                                        headers={"Authorization": f"Bearer {KEY}", "Content-Type": "application/json", "User-Agent": "la-pizarra-correos/1.0"})
             with urllib.request.urlopen(r, timeout=20) as x: x.read()
             self.E["mail"][clave] = int(time.time()); self.n += 1
-            print(f"✉ {uid[:6]}… {asunto}")
+            print(f"✉ {clave.split('-')[0]}")   # sin asunto: puede traer apodos y el log es público
         except Exception as e:
             print("Correo:", getattr(e, "code", ""), str(getattr(e, "read", lambda: b"")() or e)[:200])
 
