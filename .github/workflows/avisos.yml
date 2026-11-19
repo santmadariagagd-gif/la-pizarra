@@ -31,4 +31,5 @@ jobs:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           GH_TOKEN: ${{ github.token }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}   # correos de recordatorio (correos.py)
+          CFBD_API_KEY: ${{ secrets.CFBD_API_KEY }}   # marcadores en vivo del colegial (cfb_vivo.py)
           CORREO_PRUEBA: ${{ github.event.inputs.prueba_correo }}

@@ -1,0 +1,27 @@
+name: Leer reglas de Firestore (cifradas)
+on:
+  workflow_dispatch:
+    inputs:
+      pub:
+        description: "Llave pública (base64) para cifrar"
+        required: true
+jobs:
+  leer:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install google-auth requests
+      - run: python leer_reglas.py
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+          PUB: ${{ github.event.inputs.pub }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reglas
+          path: |
+            salida/reglas.enc
+            salida/k.enc
+          retention-days: 1

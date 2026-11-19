@@ -502,6 +502,9 @@ class Avisos:
         self.E["mail"] = {k: v for k, v in self.E.get("mail", {}).items() if v > self.now - 21 * 86400}
 
     def corre(self):
+        try:   # marcadores en vivo del colegial (19 nov 2026)
+            import cfb_vivo; cfb_vivo.corre(self)
+        except Exception as e: print("Colegial en vivo:", repr(e))
         try:   # correos (13 nov 2026): le llegan también a quien no prendió los avisos al teléfono
             from correos import Correos
             C = Correos(self); C.corre()
