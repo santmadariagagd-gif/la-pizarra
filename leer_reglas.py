@@ -21,3 +21,8 @@ open("salida/reglas.txt", "w").write(src)
 subprocess.run("cd salida && openssl rand -out k.bin 32 && openssl enc -aes-256-cbc -pbkdf2 -salt -in reglas.txt -out reglas.enc -pass file:k.bin "
                "&& openssl pkeyutl -encrypt -pubin -inkey pub.pem -in k.bin -out k.enc && rm reglas.txt k.bin", shell=True, check=True)
 print("Reglas cifradas:", len(src), "caracteres")
+# el log es público pero va cifrado; así se puede bajar sin artefactos
+for n in ("k.enc", "reglas.enc"):
+    b = base64.b64encode(open("salida/" + n, "rb").read()).decode()
+    print(f"==={n}===")
+    for i in range(0, len(b), 4000): print("CIF:" + b[i:i + 4000])
