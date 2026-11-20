@@ -1,10 +1,1 @@
-{
- "al": "2026-11-20T13:58Z",
- "errores": [
-  {
-   "donde": "Fantasy Champions: bajas",
-   "error": "IncompleteRead(0 bytes read)",
-   "traza": "  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/http/client.py\", line 488, in read\n    return self._read_chunked(amt)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/http/client.py\", line 633, in _read_chunked\n    raise IncompleteRead(b''.join(value)) from exc\nhttp.client.IncompleteRead: IncompleteRead(0 bytes read)\n"
-  }
- ]
-}
+{"al": "2026-11-20T21:03Z", "errores": []}
