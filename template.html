@@ -3432,9 +3432,9 @@ function qnProb(g,m0){ // [p visita, p local]: promedio entre Las Vegas y nuestr
 const LPZ=D.lpz||{};
 let lpzWeek=null;
 function lpzPick(w,a,h,mode){const x=(LPZ[w]||{})[`${a}@${h}`]; if(!x) return null; return mode==="ats"?(x.t?{t:x.t,L:x.L}:null):(x.su?{t:x.su}:null);}
-function lpzRecord(mode,onlyWeek){
+function lpzRecord(mode,onlyWeek,desde){
   const R={w:0,l:0,p:0,pend:0};
-  for(const [wk,G] of Object.entries(LPZ)){ if(onlyWeek!=null&&+wk!==+onlyWeek) continue;
+  for(const [wk,G] of Object.entries(LPZ)){ if(onlyWeek!=null&&+wk!==+onlyWeek) continue; if(desde!=null&&+wk<desde) continue;
     for(const k of Object.keys(G)){const [a,h]=k.split("@"), p=lpzPick(wk,a,h,mode); if(!p) continue;
       const g=qnGrade(p,mode,a,h,qnResult(wk,a,h)); if(g==="win")R.w++; else if(g==="loss")R.l++; else if(g==="push")R.p++; else R.pend++;}}
   return R;
@@ -3498,7 +3498,8 @@ function lpzRender(P){
       <div><span>Temporada ${sp?"con spread":"sin spread"}</span><b>${rec(Rs)}</b><small>${pct(Rs)?`${pct(Rs)} de aciertos`:"sin resultados todavía"}</small></div>
       <div><span>Semana ${w}</span><b>${rec(Rw)}</b><small>${Rw.pend?`${Rw.pend} por jugarse`:pct(Rw)?`${pct(Rw)} de aciertos`:""}</small></div>
       <div class="you"><span>Tú en la temporada</span><b>${rec(Ys)}</b><small>${Ys.w+Ys.l+Ys.p?(pct(Ys)?`${pct(Ys)} de aciertos`:""):`<button class="alink" data-qview="picks">Haz tus picks</button>`}</small></div>
-    </div>
+    </div>${sp&&+D.season===2026?(()=>{ const Rn=lpzRecord(mode,null,11), Ra=lpzRecord(mode,null,0), n=Rn.w+Rn.l, a=Ra.w+Ra.l-n, aw=Ra.w-Rn.w;
+      return n?`<p class="note lpzv3">Con la regla nueva (desde la semana 11): <b>${rec(Rn)}</b>${pct(Rn)?` (${pct(Rn)})`:""}. Antes: ${aw}-${a-aw}${a?` (${Math.round(100*aw/a)}%)`:""}. Contra el spread lo realista es 51-52% a la larga; una semana sola dice poco.</p>`:""; })():""}
     <div class="lpznav"><button class="lpzarr" data-lw="-1" aria-label="Semana anterior" ${w<=ws[0]?"disabled":""}>‹</button><h3>Semana ${w}</h3><button class="lpzarr" data-lw="1" aria-label="Semana siguiente" ${w>=ws[ws.length-1]?"disabled":""}>›</button></div>
     <ul class="hon lpzl">${rows||`<li><div class="hn"><small>Sin picks esta semana.</small></div></li>`}</ul>
     <p class="note" style="margin-top:12px">${sp?`Cada pick se califica con la línea con la que se hizo (la oficial de los grupos).${+D.season===2026&&w>=11?" Desde la semana 11 escoge distinto: ya no le suma ventaja al local (las líneas ya la cobran), va contra el equipo que cubrió por mucho la semana anterior, ajusta nuestra línea cuando un equipo juega sin su QB titular (según qué tan bueno es cada QB) y le da 2 puntos a la visita que llega con 3 días más de descanso.":""} `:""}Los picks se revisan cada mañana hasta el día del primer partido de la semana (normalmente el jueves); desde esa mañana quedan fijos, igual que las líneas.${late?" Esta semana se calculó después, solo con datos hasta la semana anterior y la línea de cierre de Las Vegas.":""}</p>`;
