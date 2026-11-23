@@ -9171,6 +9171,38 @@
       "MIN@SF": -2.5,
       "CIN@WAS": 6.5
      }
+    },
+    {
+     "cuando": "2026-11-23 14:15",
+     "motivo": "diaria",
+     "lineas": {
+      "CIN@WAS": {
+       "draftkings": 6.0,
+       "betus": 6.0,
+       "fanduel": 5.5,
+       "betonlineag": 6.0,
+       "lowvig": 6.0,
+       "betrivers": 6.0,
+       "mybookieag": 6.0,
+       "betmgm": 6.0,
+       "bovada": 6.0
+      }
+     },
+     "espn": {
+      "MIA@BUF": -16.5,
+      "TB@DET": -6.5,
+      "ARI@KC": -16.5,
+      "NYJ@LAC": -3.5,
+      "LV@DEN": -9.5,
+      "PIT@PHI": 4.5,
+      "IND@HOU": -12.5,
+      "NO@CHI": -11.5,
+      "TEN@DAL": -8.5,
+      "JAX@NYG": 5.5,
+      "BAL@CAR": -2.5,
+      "MIN@SF": -2.5,
+      "CIN@WAS": 6.5
+     }
     }
    ],
    "primera_vez": "2026-11-17T22:24+00:00"
