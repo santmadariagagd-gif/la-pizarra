@@ -15,6 +15,20 @@ self.addEventListener("fetch", e => {
   const req = e.request, url = new URL(req.url);
   if (req.method !== "GET" || url.origin !== self.location.origin) return;   // solo lo de lapizarra.mx
   const pagina = req.mode === "navigate";
+  // El código y los estilos (/app/app.<huella>.js|css) nunca cambian con el mismo nombre: primero la copia guardada (abre al instante)
+  // y, si no está, se baja y se guarda; las versiones viejas se borran para no acumular.
+  if (url.pathname.startsWith("/app/app.")) {
+    e.respondWith(caches.open(CACHE).then(c => c.match(url.pathname).then(g => g || fetch(req).then(r => {
+      if (r.ok && r.type === "basic") {
+        const ext = url.pathname.split(".").pop();
+        c.put(url.pathname, r.clone()).then(() => c.keys()).then(ks => ks.forEach(k => {
+          const p = new URL(k.url).pathname; if (p.startsWith("/app/app.") && p.endsWith("." + ext) && p !== url.pathname) c.delete(k);
+        })).catch(() => {});
+      }
+      return r;
+    }))));
+    return;
+  }
   if (!pagina && !url.pathname.startsWith("/datos/") && !url.pathname.startsWith("/iconos/")) return;
   const llave = pagina ? "/" : url.pathname;   // sin "?v=…": una sola copia por archivo (no se acumulan versiones)
   e.respondWith(

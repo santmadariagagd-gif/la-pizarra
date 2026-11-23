@@ -3503,7 +3503,46 @@ try:
     ga_id=_ga_id()
 except Exception as ex:
     print("Analytics: no se pudo leer google_analytics.txt:",ex); ga_id=""
-html=open(os.path.join(aqui,'template.html'),encoding='utf-8').read().replace('__DATA__',data).replace('__NOTES__',notas_js).replace('__GA_ID__',ga_id)
+_tpl=open(os.path.join(aqui,'template.html'),encoding='utf-8').read()
+# Página más rápida (23 nov 2026): el código (≈1 MB) va en un archivo aparte, docs/app/app.<huella>.js. Solo cambian cuando cambia template.html, así que el celular los guarda y en las siguientes visitas solo baja los datos
+# del día (≈80 KB comprimido en vez de ≈440 KB). El nombre lleva una huella del contenido: si cambia, es otro archivo y nunca
+# se mezcla código viejo con datos nuevos. Se guardan las últimas versiones para quien tenga la página vieja abierta.
+def _aparte(tpl):
+    import hashlib as _hl
+    dirapp=os.path.join(aqui,'docs','app'); os.makedirs(dirapp,exist_ok=True)
+    def guarda(txt,ext):
+        h=_hl.sha256(txt.encode('utf-8')).hexdigest()[:10]; nom=f'app.{h}.{ext}'; ruta=os.path.join(dirapp,nom)
+        if not os.path.exists(ruta): open(ruta,'w',encoding='utf-8').write(txt)
+        return nom
+    a='<script>\nconst D = __DATA__;\n'; i0=tpl.index(a); i1=tpl.index('</script>',i0)
+    js=tpl[i0+len(a):i1]
+    if 'const NOTES=__NOTES__;' not in js: raise ValueError('NOTES')
+    js=js.replace('const NOTES=__NOTES__;','',1)
+    if '__DATA__' in js or '__NOTES__' in js or '__GA_ID__' in js: raise ValueError('marcador dentro del código')
+    nj=guarda(js,'js')
+    tpl=tpl[:i0]+'<script>\nconst D = __DATA__;\nconst NOTES=__NOTES__;\n</script>\n<script src="/app/'+nj+'"></script>'+tpl[i1+len('</script>'):]
+    # los estilos se quedan dentro (≈45 KB comprimidos): así la página se pinta en cuanto llega, sin esperar otro archivo;
+    # el código se empieza a bajar desde el principio (preload) mientras el navegador lee la página
+    tpl=tpl.replace('</head>','<link rel="preload" href="/app/'+nj+'" as="script">\n</head>',1)
+    # versiones: las 8 más recientes de cada tipo; lo demás se borra
+    lista=os.path.join(dirapp,'versiones.txt')
+    try: V=[l.strip() for l in open(lista,encoding='utf-8') if l.strip()]
+    except Exception: V=[]
+    V=[v for v in V if v!=nj]+[nj]
+    for ext in ('js',):
+        de=[v for v in V if v.endswith('.'+ext)]
+        for v in de[:-8]:
+            V.remove(v)
+            try: os.remove(os.path.join(dirapp,v))
+            except Exception: pass
+    open(lista,'w',encoding='utf-8').write('\n'.join(V)+'\n')
+    print(f"Página ligera: código en app/{nj} ({len(js)//1024} KB)")
+    return tpl
+try:
+    _tpl=_aparte(_tpl)
+except Exception as ex:
+    print("Página ligera: el código se queda dentro de la página:",repr(ex)[:150])
+html=_tpl.replace('__DATA__',data).replace('__NOTES__',notas_js).replace('__GA_ID__',ga_id)
 # El mapa de Explorar (≈115 KB) va en docs/datos/mapa.html y la página lo baja al abrir Explorar
 try:
     _ls=html.split('\n'); _i=next(i for i,l in enumerate(_ls) if l.lstrip().startswith('<div class="mapa-wrap">'))

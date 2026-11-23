@@ -42,14 +42,17 @@ jobs:
           # Se apartan los archivos generados, se baja lo último del repositorio y se copian encima (así nunca chocan)
           mkdir -p /tmp/gen && cp -r docs/index.html /tmp/gen/
           if [ -d docs/datos ]; then cp -r docs/datos /tmp/gen/datos; fi
+          if [ -d docs/app ]; then cp -r docs/app /tmp/gen/app; fi
           if [ -f momios.json ]; then cp momios.json /tmp/gen/; fi
           git fetch origin main
           git reset --hard origin/main
           cp /tmp/gen/index.html docs/index.html
           if [ -d /tmp/gen/datos ]; then mkdir -p docs/datos && cp -r /tmp/gen/datos/. docs/datos/; fi
+          if [ -d /tmp/gen/app ]; then rm -rf docs/app && cp -r /tmp/gen/app docs/app; fi
           if [ -f /tmp/gen/momios.json ]; then cp /tmp/gen/momios.json momios.json; fi
           git add docs/index.html
           if [ -d docs/datos ]; then git add docs/datos; fi
+          if [ -d docs/app ]; then git add -A docs/app; fi
           if [ -f momios.json ]; then git add momios.json; fi
           git diff --cached --quiet || git commit -m "Actualización automática de datos"
           git push
