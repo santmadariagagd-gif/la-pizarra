@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20x%3D%226.5%22%20y%3D%227.5%22%20width%3D%2251%22%20height%3D%2239%22%20rx%3D%223%22%20style%3D%22fill%3A%231F332D%3Bstroke%3A%23F2D466%3Bstroke-width%3A4.5%22%3E%3C/rect%3E%3Crect%20x%3D%2212.5%22%20y%3D%2255%22%20width%3D%2239%22%20height%3D%224%22%20rx%3D%222%22%20style%3D%22fill%3A%23F2D466%22%3E%3C/rect%3E%3Cg%20transform%3D%22translate%2832%2027.5%29%20scale%280.84%29%20translate%28-32%20-29%29%22%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2215%22%20r%3D%223%22%20style%3D%22fill%3Anone%3Bstroke%3A%23F2D466%3Bstroke-width%3A2.8%22%3E%3C/circle%3E%3Cpath%20d%3D%22M15%2020%20V40%20H26%20M22.5%2036.5%20L26%2040%20L22.5%2043.5%22%20style%3D%22fill%3Anone%3Bstroke%3A%23EFEBDD%3Bstroke-width%3A3.5%3Bstroke-linecap%3Around%3Bstroke-linejoin%3Around%22%3E%3C/path%3E%3Cpath%20d%3D%22M36%2037%20V14%20H40%20C50%2014%2050%2029%2040%2029%20H37.5%20M41.5%2025%20L37.5%2029%20L41.5%2033%22%20style%3D%22fill%3Anone%3Bstroke%3A%23EFEBDD%3Bstroke-width%3A3.5%3Bstroke-linecap%3Around%3Bstroke-linejoin%3Around%22%3E%3C/path%3E%3Cpath%20d%3D%22M33.5%2041%20L38.5%2046%20M38.5%2041%20L33.5%2046%22%20style%3D%22fill%3Anone%3Bstroke%3A%23F2D466%3Bstroke-width%3A2.8%3Bstroke-linecap%3Around%22%3E%3C/path%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#1F332D">
 <script>/* Invitaciones (3 nov 2026): quién te mandó el link (?amigo=UID o ?de=UID en los links de grupos). Se guarda la primera vez. */
 try{ var q=new URLSearchParams(location.search), iv=q.get("de")||q.get("amigo"); if(iv&&/^[A-Za-z0-9]{20,40}$/.test(iv)&&!localStorage.getItem("pz_invpor")){ localStorage.setItem("pz_invpor",iv); var dn=(q.get("dn")||"").replace(/[<>"&]/g,"").slice(0,24); if(dn) localStorage.setItem("pz_invnom",dn); } }catch(e){}
@@ -2150,6 +2150,64 @@ dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background
 .rdtab{display:flex;flex-direction:column;gap:6px}.rdtab>div{display:grid;grid-template-columns:18px 30px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--surface)}
 .rdtab b{color:var(--muted)}.rdtab strong{font:800 18px var(--display)}
 .rdman{margin-top:14px;padding:12px;border-radius:14px;border:1px dashed var(--line);display:flex;flex-direction:column;gap:2px}.rdman b{font-size:13px;color:#C9A7F0}
+/* ---- Hoy · portada C (23 nov 2026): pizarrón con titulares de periódico ---- */
+:root{--tab:"Anton","Barlow Condensed","Arial Narrow",sans-serif}
+.hoyhead{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);padding:6px 0 8px;margin-bottom:6px}
+.hoyhead h2 .hm{background:none;padding:0;font:400 54px/.95 var(--tab);text-transform:uppercase;letter-spacing:.005em}
+.hoyhead p{font:600 12px var(--body);letter-spacing:.14em;text-transform:uppercase}
+#hoy .hsec>.hh{border-top:2px solid rgba(236,239,231,.55);padding-top:10px}
+#hoy .hsec>.hh h3{background:none;padding:0;font:400 28px/1 var(--tab);text-transform:uppercase;letter-spacing:.01em}
+#hoy .hsec>.hh h3 small{text-transform:none;letter-spacing:0;font-family:var(--body)}
+#hoyPortada:empty,#hoyBoleta:empty{display:none}
+.hoyhead h2 .hd{background:none;padding:0;font:400 52px/.95 var(--tab);text-transform:uppercase}
+@media(min-width:1000px){
+  #hoy:not(.hidden){display:grid;grid-template-columns:minmax(0,1fr) 380px;column-gap:40px}
+  #hoy:not(.hidden)>*{grid-column:1/-1}
+  #hoy>.hoyhead{grid-row:1}
+  #hoy>#hoyPortada{grid-column:1;grid-row:2}
+  #hoy>#hoyBoleta{grid-column:2;grid-row:2;align-self:start;margin-top:22px}
+  #hoyBoleta .hbol{max-width:none}
+  .hport::before{right:auto;left:min(560px,60%)}
+}
+.hoyhead::before{display:none}
+.hport{position:relative;padding:16px 0 4px;margin:0 0 20px}
+.hport::before{content:"";position:absolute;right:0;top:10px;width:170px;height:80px;opacity:.15;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 80' fill='none' stroke='%23ECEFE7' stroke-width='2.5' stroke-linecap='round'%3E%3Ccircle cx='24' cy='62' r='8'/%3E%3Ccircle cx='52' cy='62' r='8'/%3E%3Ccircle cx='80' cy='62' r='8'/%3E%3Cpath d='M18 18l12 12M30 18L18 30M70 10l12 12M82 10L70 22M120 18l12 12M132 18l-12 12'/%3E%3Cpath d='M80 54C86 28 110 12 160 6' stroke='%23F2D466'/%3E%3C/svg%3E") no-repeat right top/contain}
+.hpk{display:block;font:700 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--mark)}
+.hpt{margin:8px 0 2px;font:400 clamp(44px,13vw,76px)/.92 var(--tab);text-transform:uppercase;max-width:14ch;position:relative}
+.hpt.lg{font-size:clamp(34px,9vw,56px);max-width:20ch}
+.hpu{display:block;width:min(240px,60%);height:12px}
+.hpd{margin:10px 0 0;font-size:17px;line-height:1.4;color:#C9D6CF;max-width:52ch}
+.hpg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px;max-width:640px}
+.hpg>div{padding:10px 12px;border-radius:14px;border:1px dashed #4B6A5F;display:flex;flex-direction:column;gap:2px}
+.hpg small{font:600 11px var(--body);color:var(--muted)}.hpg b{font:700 19px/1.1 var(--display)}
+.hpc{margin-top:14px;min-height:52px;width:100%;max-width:640px;border:0;border-radius:26px;background:var(--mark);color:#15241F;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 20px;font:700 16px var(--body);cursor:pointer}
+.hpc span{font-weight:500;font-size:13px}.hpc:active{transform:scale(.99)}
+.hbol{margin:0 0 20px;border-radius:20px;background:var(--surface);border:1px solid var(--line);overflow:hidden;max-width:640px}
+.hbolh{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px 6px}.hbolh h2{margin:0;font:400 26px var(--tab);text-transform:uppercase}.hbolh span{font:600 13px var(--body);color:var(--mark)}
+.hbr{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;width:100%;text-align:left;padding:12px 16px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;cursor:pointer;min-height:56px}
+.hbr span{display:flex;flex-direction:column;min-width:0}.hbr b{font:700 18px/1.15 var(--display)}.hbr small{font-size:13px;color:var(--muted)}
+.hbr em{font:400 22px var(--tab);font-style:normal;white-space:nowrap}
+.hbr:hover{background:rgba(255,255,255,.03)}
+/* Lo último como breves: la primera a lo ancho, las demás en dos columnas */
+#hoyUlt .ulist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:none;border:0;border-radius:0;gap:0}
+#hoyUlt .uit{border-top:1px solid var(--line);padding:12px 12px 12px 0;border-radius:0}
+#hoyUlt .uit:nth-child(n+2):nth-child(even){border-right:1px solid var(--line)}
+#hoyUlt .uit:nth-child(n+2):nth-child(odd){padding-left:12px}
+#hoyUlt .uit:first-child{grid-column:1/-1;border-top:0;padding:12px 0 14px;border-bottom:0}
+#hoyUlt .uit:first-child b{font:700 26px/1.05 var(--display)}
+#hoyUlt .uit:nth-child(n+2) b{font-size:17px;line-height:1.12}
+#hoyUlt .uit:nth-child(n+2) .ud{font-size:12.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#hoyUlt .uit>.uch{display:none}
+#hoyUlt .uit .um .utag{background:none;padding:0}
+/* Reto del día en tarjeta clara, como "Esta noche" */
+.rdcard{background:#ECEFE7;border:0;color:#15241F}.rdcard::before,.rdcard::after{display:none}
+.rdcard .rdtag{color:#7A3FB0}.rdcard .rdmeta,.rdcard .rdpie,.rdcard .rdnota,.rdcard .rdam{color:#4B5F57}.rdcard .rdcd{color:#7A3FB0}
+.rdcard .rdq{color:#15241F}.rdcard a,.rdcard .q5link{color:#15241F}
+.rdcard .rdop.o0,.rdcard .rdop.o1,.rdcard .rdops.n2 .rdop.o1{background:#15241F;color:#ECEFE7}.rdcard .rdops.n2 .rdop.o1{background:transparent;color:#15241F;box-shadow:inset 0 0 0 2px #15241F}
+.rdcard .rdop.o2{background:transparent;color:#15241F;box-shadow:inset 0 0 0 2px #15241F}
+.rdcard .rdb{background:#fff;border-color:#C9D2CB;color:#15241F}
+/* tarjetas de invitación sin colores que compitan */
+.bienv,.pfnudge{background:var(--surface);border:1px solid var(--line)}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -2249,15 +2307,17 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 <!-- PORTADA: HOY EN LA PIZARRA (5 oct 2026) -->
 <section class="panel" id="hoy">
   <div class="hoyhead"><div><h2><span class="hm">Hoy</span><span class="hd">Hoy en La Pizarra</span></h2><p id="hoyFecha"></p></div><div class="hoyacc"><div class="hseg" id="hoyFiltro" role="group" aria-label="Filtrar por deporte"></div><button class="hcfgbtn" id="hoyCfg" aria-label="Personalizar tu portada" title="Personalizar tu portada"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button></div></div>
+  <div id="hoyPortada"></div>
+  <div id="hoyBoleta"></div>
   <div id="hoyBv"></div>
   <div id="hoyPasos"></div>
-  <div id="hoyCfb"></div>
   <div id="hoyPor"></div>
-  <div id="hoyPf"></div>
   <div id="hoyRd"></div>
   <div id="hoyVivo"></div>
+  <div id="hoyCfb"></div>
+  <div id="hoyPf"></div>
   <div class="hoygrid">
-    <div class="hoymain"><div id="hoyFav"></div><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyUlt"></div><div id="hoyVid"></div><div id="hoyBs"></div><div id="hoyNfl"></div></div>
+    <div class="hoymain"><div id="hoyUlt"></div><div id="hoyFav"></div><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyVid"></div><div id="hoyBs"></div><div id="hoyNfl"></div></div>
     <aside class="hoyside"><div id="hoyLpz"></div></aside>
   </div>
 </section>
@@ -8596,7 +8656,7 @@ function vidaAccHTML(){
 function vidaPortadaHTML(){
   const {h}=vidaParte(), nom=(typeof q5AliasDef==="function"?q5AliasDef():"").split(" ")[0], sal=h<5?"Buenas noches":h<12?"Buenos días":h<19?"Buenas tardes":"Buenas noches";
   const yo=typeof acctOk==="function"&&acctOk()?perfMio():null, nom2=yo?.a?yo.a.split(" ")[0]:nom;
-  const saludo=`<div class="vsalf">${yo?`<button class="vav" data-vact="miperfil" aria-label="Ver tu perfil">${perfAvatar(yo,48)}</button>`:""}<p class="vsal">${sal}${nom2?`, ${hoyEsc(nom2)}`:""}${yo&&perfTitulo(yo)?`<small class="vtit2">${hoyEsc(perfTitulo(yo))}</small>`:""}</p></div>`, cie=vidaCierreHTML(), acc=vidaAccHTML();
+  const saludo=`<div class="vsalf">${yo?`<button class="vav" data-vact="miperfil" aria-label="Ver tu perfil">${perfAvatar(yo,48)}</button>`:""}<p class="vsal">${sal}${nom2?`, ${hoyEsc(nom2)}`:""}${yo&&perfTitulo(yo)?`<small class="vtit2">${hoyEsc(perfTitulo(yo))}</small>`:""}</p></div>`, cie="", acc=vidaAccHTML();   // los cierres ahora van en "Tu boleta" (23 nov 2026)
   const cl=vidaClasico();
   if(cl){ const cH=PZ_COL[cl.h]||["#3d6b5a","#ECEFE7"], cV=PZ_COL[cl.v]||["#2c4a40","#ECEFE7"], e=HOY.ev?.get(cl.fid), st=e?.status?.type?.state;
     const sc=e&&st!=="pre"?e.competitions[0].competitors.map(c=>c.score??"–"):null;
@@ -8615,6 +8675,7 @@ function vidaPortadaHTML(){
   else if(pend.length) cuerpo=`<p class="vtit">${pend.length===1&&!fin.length?"Hoy juega tu equipo":"Hoy juegan los tuyos"}</p><div class="vlista">${pend.concat(fin).map(vidaFilaRes).join("")}</div>`;
   else { const nf=HOY.ev?.size||0, nn=(D.sched||[]).filter(s=>s.ko&&hoyYmd(+new Date(s.ko))===hoyYmd()).length;
     const t=[nf?`${nf} ${nf===1?"partido":"partidos"} de fútbol`:"",nn?`${nn} de la NFL`:""].filter(Boolean).join(" y ");
+    if(!acc) return "";   // portada C (23 nov 2026): sin tus equipos ni pendientes, no se ocupa la tarjeta de saludo
     cuerpo=t?`<p class="vtxt">Hoy hay ${t}.${Object.keys(FAV.eq).length?"":` <button class="vlink" data-hact="fav">Sigue a tus equipos</button> para verlos aquí primero.`}</p>`:""; }
   return `<div class="vpor" style="--c1:${col[0]};--c2:${col[1]}"><div class="vfondo" aria-hidden="true"></div><div class="vin">${saludo}${cuerpo}${cie}${acc}</div></div>`;
 }
@@ -11632,17 +11693,73 @@ function hoyAvisos(){
   } }catch(e){ console.warn("avisos nfl",e); }
   return A.sort((a,b)=>b.peso-a.peso).slice(0,4);
 }
+// ---- Portada C (23 nov 2026, diseño escogido en Claude Design): nota principal en titular de periódico + "Tu boleta" ----
+const BOL_COL={mx:"#F2D466",nfl:"#9CC7E6",cfb:"#C9A7F0"};
+function bolFalta(f){ if(f>=86400){ const d=Math.round(f/86400); return d===1?"1 día":`${d} días`; } if(f>=3600) return `${Math.floor(f/3600)} h`; return `${Math.max(1,Math.ceil(f/60))} min`; }
+function avNfl(){ const now=Date.now()/1000, pend=x=>x.hs==null&&x.ko&&!x.tbd&&+new Date(x.ko)/1000>now;
+  const ini=w=>Math.min(...(D.sched||[]).filter(x=>x.w===w&&x.ko).map(x=>+new Date(x.ko)/1000));
+  const w=[...new Set((D.sched||[]).filter(pend).map(x=>x.w))].sort((a,b)=>a-b).find(w=>ini(w)>now); if(w==null) return null;
+  const G=(D.sched||[]).filter(x=>x.w===w), F=G.filter(pend), pr=Math.min(...F.map(x=>+new Date(x.ko)/1000));
+  const mios=Object.keys(((qnPicksAll()[D.season]||{})[w])||{}).filter(k=>F.some(x=>`${x.a}@${x.h}`===k)).length;
+  const nov=new Date(Date.UTC(+D.season,10,1)), tg=avYmd(Date.UTC(+D.season,10,1+((4-nov.getUTCDay()+7)%7)+21,18)/1000);
+  return {w,F,pr,mios,nTg:G.filter(x=>avYmd(+new Date(x.ko)/1000)===tg).length,lpz:Object.keys(LPZ[w]||{}).length}; }
+function avCfb(){ const TB=CFBQ.TB, now=Date.now()/1000; if(!TB) return null;
+  const ws=Object.entries(TB.w||{}).filter(([,x])=>x.pr>now).sort((a,b)=>a[1].pr-b[1].pr); if(!ws.length) return null;
+  const [w,x]=ws[0], jid=`${TB.s}-${w}`, n=(x.g||[]).length; return {w,n,pr:x.pr,mias:Math.min(n,Object.keys(cfbLs()[jid]||CFBQ.mias[jid]||{}).length)}; }
+function hoyPortadaHTML(){
+  const now=Date.now()/1000, f=HOY.f; let P=null;
+  try{ if(D.qmx&&f!=="nfl"){ const J=qmxD().J, LL=qmxD().L, nom=id=>qmxEq(id).n;
+    const r=[18,19,20].find(j=>J[j]&&J[j].p.some(x=>!qmxRes(x).fin)&&J[j].pr-now<6*86400);
+    if(r){ const X=J[r], ida=X.p.slice(0,Math.max(1,X.p.length/2)), sem=(LL?.sem||[]).map(Number), sd=id=>sem.indexOf(+id)+1;
+      const hoy=X.p.filter(x=>avYmd(x[1])===avYmd(now)&&!qmxRes(x).fin), antes=now<X.pr;
+      const tit=hoy.length?"Hoy hay Liguilla":r===18?(antes?"Arranca la Liguilla":"Se juegan los cuartos"):r===19?"Semifinales":"La gran final";
+      const dek=hoy.length?`${hoy.map(x=>`${nom(x[2])} vs ${nom(x[3])}`).join(", ")}. El primero ${hoyEsc(qmxHora(hoy[0][1]).toLowerCase())}.`
+        :antes?(r===18?`Ocho equipos, cuatro series. La ida es ${avCuando(X.pr)}: ¿quién es tu campeón?`:`La ida es ${avCuando(X.pr)}.`):"Sigue la serie y tus picks.";
+      const grid=ida.map(x=>{ const a=sd(x[2]), b=sd(x[3]), [p,q]=a&&b&&a>b?[x[3],x[2]]:[x[2],x[3]]; return {s:a&&b?`${Math.min(a,b)} vs ${Math.max(a,b)}`:"",t:`${nom(p)} · ${nom(q)}`}; });
+      const Pll=qmxMios("llave").p||{}, hll=(Pll.q||[]).filter(v=>v!=null).length+(Pll.s||[]).filter(v=>v!=null).length+(Pll.c!=null?1:0);
+      const m=qmxMios(r), hq=Object.keys(m.p||{}).filter(fid=>X.p.some(x=>String(x[0])===String(fid))).length;
+      const cta=LL?.pr>now&&hll<7?{ir:"llave",t:hll?"Termina tu Llave":"Llena tu Llave",s:`cierra ${qmxHora(LL.pr).toLowerCase()}`}
+        :antes&&hq<X.p.length?{ir:"qmx",t:"Mete tu quiniela",s:`cierra ${qmxHora(X.pr).toLowerCase()}`}:{ir:"llave",t:"Ver la llave",s:""};
+      P={k:`Liga MX · ${QMX_NJ[r][0]}`,tit,dek,grid,cta}; } } }catch(e){ console.warn("portada mx",e); }
+  try{ if(!P&&f!=="fut"&&(typeof verNfl!=="function"||verNfl())){ const N=avNfl();
+    if(N&&N.pr-now<3*86400) P={k:`NFL · Semana ${N.w}`,tit:N.nTg?"Llega Thanksgiving":`Arranca la semana ${N.w}`,dek:`${N.F.length} partidos${N.nTg?`, ${N.nTg} el jueves de Thanksgiving`:""}. El primero ${avCuando(N.pr)}.${N.lpz?" Ya están los picks de La Pizarra.":""}`,
+      cta:N.mios<N.F.length?{ir:"nflq",t:"Haz tus picks",s:N.mios?`te faltan ${N.F.length-N.mios}`:""}:{ir:"nflq",t:"Ver tus picks",s:"✓ ya los tienes"}}; } }catch(e){}
+  if(!P){ const n=(D.noticias||[]).filter(n=>f==="nfl"?n.liga==="nfl":f==="fut"?n.liga!=="nfl":true)[0]; if(!n) return "";
+    P={k:`${(ULT_TIPO[n.tipo]||[""])[0]}${ULT_LIGA[n.liga]?` · ${ULT_LIGA[n.liga]}`:""}`,tit:n.tit,dek:n.det||"",nid:n.fx?`${n.liga}|${n.fx}`:null}; }
+  const larga=P.tit.length>40;
+  return `<section class="hport"><span class="hpk">${hoyEsc(P.k)}</span><h2 class="hpt${larga?" lg":""}">${hoyEsc(P.tit)}</h2>
+    <svg class="hpu" aria-hidden="true" viewBox="0 0 230 12" preserveAspectRatio="none"><path d="M2 7 C 70 2, 150 11, 228 5" stroke="#F2D466" stroke-width="4" fill="none" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+    ${P.dek?`<p class="hpd">${hoyEsc(P.dek)}</p>`:""}
+    ${P.grid?.length?`<div class="hpg">${P.grid.map(g=>`<div>${g.s?`<small>${hoyEsc(g.s)}</small>`:""}<b>${hoyEsc(g.t)}</b></div>`).join("")}</div>`:""}
+    ${P.cta?`<button class="hpc" data-hir="${P.cta.ir}">${hoyEsc(P.cta.t)}${P.cta.s?`<span>${hoyEsc(P.cta.s)}</span>`:""}</button>`:""}</section>`;
+}
+function hoyBoletaHTML(){
+  const now=Date.now()/1000, f=HOY.f, R=[];
+  if(f!=="nfl") for(const x of vidaCierreDatos()){ if(x.falta<=0||x.falta>6*86400) continue; if(!(x.pend||x.baja)) continue;
+    const ir=x.k==="smx"?"smx":x.k;
+    R.push({ir,c:"mx",nom:x.k==="qmx"?`Quiniela Liga MX · ${x.j}`:x.k==="llave"?"Llave de la Liguilla":`${x.nom} · ${x.j}`,
+      sub:x.k==="fan"?(x.baja?`${x.baja} de baja en tu once`:"Arma tu once"):x.k==="smx"?"Escoge tu equipo":`${x.hechos} de ${x.tot} · cierra ${qmxHora(x.pr).toLowerCase()}`,falta:x.falta}); }
+  if(f!=="fut"){
+    try{ if(typeof verNfl!=="function"||verNfl()){ const N=avNfl(); if(N&&N.pr-now<6*86400&&N.mios<N.F.length) R.push({ir:"nflq",c:"nfl",nom:`NFL · Semana ${N.w}`,sub:`${N.mios} de ${N.F.length}${N.nTg?` · ${N.nTg} partidos en Thanksgiving`:` · el primero ${avCuando(N.pr)}`}`,falta:N.pr-now}); } }catch(e){}
+    try{ const T=avCfb(); if(T&&T.pr-now<6*86400&&T.mias<T.n) R.push({ir:"cfbq",c:"cfb",nom:`Quiniela colegial · Semana ${T.w}`,sub:`${T.mias} de ${T.n} · cierra ${qmxHora(T.pr).toLowerCase()}`,falta:T.pr-now}); }catch(e){}
+    if(!CFBQ.TB&&!HOY.avcfb){ HOY.avcfb=1; cfbTabla().then(t=>{ if(t) hoyPaint(); }).catch(()=>{}); }
+  }
+  if(!R.length) return "";
+  R.sort((a,b)=>a.falta-b.falta);
+  return `<section class="hbol"><div class="hbolh"><h2>Tu boleta</h2><span>${R.length} ${R.length===1?"pendiente":"pendientes"}</span></div>
+    ${R.map(x=>`<button class="hbr" data-hir="${x.ir}"><span><b>${hoyEsc(x.nom)}</b><small>${hoyEsc(x.sub)}</small></span><em style="color:${BOL_COL[x.c]}${x.falta<7200?";animation:vlate 1.6s ease-in-out infinite":""}">${bolFalta(x.falta)}</em></button>`).join("")}</section>`;
+}
 function hoyAvisoFila(n){ const liga=ULT_LIGA[n.liga]||"";
   return `<button class="uit uav" data-hir="${n.ir}"><span class="ub"><span class="um"><span class="utag u-pizarra"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${AV_SVG}</svg>La Pizarra</span>${n.ir==="cfbq"||n.ir==="cfbll"?"Colegial":liga}</span>
     <b>${hoyEsc(n.tit)}</b><span class="ud">${n.html?n.det:hoyEsc(n.det)}</span></span><svg class="uch" width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>`; }
 function hoyUltHTML(){
   let N=(D.noticias||[]).filter(n=>HOY.f==="nfl"?n.liga==="nfl":HOY.f==="fut"?n.liga!=="nfl":true);
-  const AV=hoyAvisos().filter(n=>HOY.f==="nfl"?n.liga==="nfl":HOY.f==="fut"?n.liga!=="nfl":true);
+  const AV=[];   // los avisos ahora son la nota principal y "Tu boleta" (23 nov 2026)
   if(!N.length&&!AV.length) return "";
   const grupo=n=>n.liga==="nfl"?"nfl":n.liga==="mx"?"mx":"eur";
   const ops=(HOY.f==="nfl"?[]:HOY.f==="fut"?["todo","mx","eur"]:["todo","mx","eur","nfl"]);
   const f=ops.includes(HOY.uf)?HOY.uf:"todo", lab={todo:"Todo",mx:"Liga MX",eur:"Europa",nfl:"NFL"};
-  const L=N.filter(n=>f==="todo"||grupo(n)===f), AVf=AV.filter(n=>f==="todo"||(n.liga==="nfl"?"nfl":"mx")===f), max=matchMedia("(min-width:721px)").matches?8:6, ab=HOY.abiertos.has("ult");
+  const L=N.filter(n=>f==="todo"||grupo(n)===f), AVf=AV.filter(n=>f==="todo"||(n.liga==="nfl"?"nfl":"mx")===f), max=matchMedia("(min-width:721px)").matches?9:7, ab=HOY.abiertos.has("ult");
   const chips=ops.length?`<div class="hseg" role="group" aria-label="Filtrar notas">${ops.map(k=>`<button data-uf="${k}" aria-pressed="${k===f}">${lab[k]}</button>`).join("")}</div>`:"";
   const fila=n=>{const [tl,ic]=ULT_TIPO[n.tipo]||["Nota",""], liga=ULT_LIGA[n.liga]||"";
     const abre=n.nid?` data-nid="${hoyEsc(n.nid)}"`:(n.fx&&LEAGUES[n.liga]&&comercial(LEAGUES[n.liga]))?` data-hk="${n.liga}" data-hid="${hoyEsc(String(n.fx))}"`:"";
@@ -11780,6 +11897,7 @@ function hoyPaint(){
   if($("#hoy").classList.contains("hidden")) return;
   hoyArma();
   $("#hoyFecha").textContent=cap(fDay(new Date())); $("#hoyFiltro").innerHTML=hoyFiltroHTML();
+  try{ $("#hoyPortada").innerHTML=hoyPortadaHTML(); $("#hoyBoleta").innerHTML=hoyBoletaHTML(); }catch(e){ console.warn("Portada:",e); }
   const st=$("#hoyVivo .hstrip"), x=st?st.scrollLeft:0;
   $("#hoyVivo").innerHTML=hoyVivoHTML(); const st2=$("#hoyVivo .hstrip"); if(st2) st2.scrollLeft=x;
   $("#hoyFav").innerHTML=hoyFavHTML(); $("#hoySem").innerHTML=hoySemHTML(); $("#hoyMarc").innerHTML=hoyMarcHTML(); $("#hoyUlt").innerHTML=hoyUltHTML();
@@ -11915,6 +12033,7 @@ $("#hoy").addEventListener("click",ev=>{
     if(k==="llave"){ QMX.vista="llave"; navIr("qmx"); } else if(k==="qmx"){ QMX.vista="picks"; QMX.j=qmxAbierta()??QMX.j; navIr("qmx"); }
     else if(k==="nflq"){ showSport("qn","nflq"); try{ qnSetView("picks"); }catch(e){} }
     else if(k==="cfbq"||k==="cfbll"){ CFB.v=k==="cfbq"?"quiniela":"playoff"; navIr("ncaa"); }
+    else if(k==="smx") navIr("survmx"); else navIr(k);
     window.scrollTo(0,0); return; }
   const jf=ev.target.closest("[data-jf]"); if(jf) return favFicha(jf.dataset.jf);
   const p=ev.target.closest("[data-hid]"); if(p) return hoyAbrir(p.dataset.hk,p.dataset.hid);
@@ -12045,7 +12164,7 @@ const hoyOrdenLs=()=>{ try{ const o=JSON.parse(localStorage.getItem("pz_hoy_orde
 function hoyOrden(){
   const o=hoyOrdenLs(), main=$("#hoy .hoymain"), side=$("#hoy .hoyside"), grid=$("#hoy .hoygrid"); if(!main||!grid) return;
   if(o&&o.length){ const todos=[...o,...HOY_ORD.map(x=>x[0]).filter(id=>!o.includes(id))]; for(const id of todos){ const el=$("#"+id); if(el) main.append(el); } side.hidden=true; grid.classList.add("hoyuna"); }
-  else { for(const id of ["hoyRd","hoyVivo"]){ const el=$("#"+id); if(el) grid.before(el); } for(const id of ["hoyFav","hoySem","hoyMarc","hoyUlt","hoyNfl"]){ const el=$("#"+id); if(el) main.append(el); } const l=$("#hoyLpz"); if(l) side.append(l); side.hidden=false; grid.classList.remove("hoyuna"); }
+  else { const por=$("#hoyPor"); for(const id of ["hoyVivo","hoyRd"]){ const el=$("#"+id); if(el) (por?por.after(el):grid.before(el)); } for(const id of ["hoyUlt","hoyFav","hoySem","hoyMarc","hoyVid","hoyBs","hoyNfl"]){ const el=$("#"+id); if(el) main.append(el); } const l=$("#hoyLpz"); if(l) side.append(l); side.hidden=false; grid.classList.remove("hoyuna"); }
 }
 const PERS={};
 function persAbre(){ if(!dlg.open){ dlg.showModal(); FICHA.pila=[]; } pzTrack("personaliza_abre",{}); persPinta(); }
