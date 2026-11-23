@@ -928,6 +928,12 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .dpan.on{display:flex}
 .dbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .dgrafs{display:flex;flex-direction:column;gap:12px}.dgrafs:empty{display:none}
+#mxSuerte{margin-top:18px}.sufol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.sufl{display:flex;flex-direction:column;gap:5px}.sufn{display:flex;align-items:center;gap:8px}.sufn b{flex:1;font-weight:700}.sufn em{font-style:normal;font:700 18px var(--display)}
+.sufn em.sp{color:var(--good)}.sufn em.sn{color:var(--bad)}.sufl small{color:var(--muted);font-size:12.5px;line-height:1.35}
+.sufb{position:relative;height:8px;border-radius:4px;background:rgba(255,255,255,.05)}.sufb::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--line)}
+.sufb i{position:absolute;top:0;bottom:0;border-radius:4px}.sufb i.sp{background:var(--good)}.sufb i.sn{background:var(--bad)}
+.sufcut{text-align:center;color:var(--muted);font-size:13px}.sufbox .hmas2{border:1px solid var(--line);border-radius:22px;min-height:44px;background:none;color:var(--mark);font:inherit;font-weight:700}
 .grleg{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}.grleg span{display:inline-flex;align-items:center;gap:6px}.grleg i{width:10px;height:10px;border-radius:3px;display:inline-block}
 .grfr{margin:0;font-size:15px;line-height:1.4;color:var(--ink)}.grnota{margin:0;font-size:12.5px;line-height:1.4;color:var(--muted)}
 .grxg{display:flex;flex-direction:column;gap:10px;border-top:1px dashed var(--line);padding-top:12px}.dk2{font-size:12px;font-weight:700;color:var(--muted)}
@@ -2522,7 +2528,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <button role="menuitem" data-dep="nfl"><b>NFL</b><span>Partidos, estadísticas y Power Ranking</span></button>
   <button role="menuitem" data-dep="nba"><b>NBA</b><span>Partidos, tabla y estadísticas</span></button>
   <button role="menuitem" data-dep="mas" data-dt="f1"><b>Fórmula 1</b><span>El GP de esta semana y los campeonatos</span></button>
-  <button role="menuitem" data-dep="mas" data-dt="ncaa"><b>Colegial</b><span>Top 25, partidos y prospectos del draft</span></button><button role="menuitem" data-dep="mas" data-dt="tenis"><b>Tenis</b><span>ATP y WTA: partidos y ranking</span></button>
+  <button role="menuitem" data-dep="mas" data-dt="ncaa"><b>Colegial</b><span>Top 25, quiniela, Playoff, Heisman y prospectos</span></button><button role="menuitem" data-dep="mas" data-dt="tenis"><b>Tenis</b><span>ATP y WTA: partidos y ranking</span></button>
 </div>
 <div class="pzinst" id="pzInst" hidden role="dialog" aria-label="Instalar La Pizarra">
   <img src="/iconos/icono-192.png" alt="">
@@ -5775,6 +5781,28 @@ async function loadMxLiguilla(){
     }
   }catch(e){mxLgLoaded=false;$("#mxlgMsg").textContent="No pudimos cargar la Liguilla. Intenta recargar la página en un momento.";}
 }
+// Tabla de la suerte (23 nov 2026): goles reales contra goles esperados (xG) de cada equipo en el torneo (datos/xg.json del build).
+// Suerte = (goles a favor − xG a favor) + (xG en contra − goles en contra): positivo = le ha ido mejor de lo que sus ocasiones decían.
+async function suertePinta(key){
+  let el=$("#mxSuerte"); if(!el){ el=document.createElement("div"); el.id="mxSuerte"; $("#mxtable").append(el); }
+  el.innerHTML=""; const XG=await grXg(); if(key!==FLIG) return;
+  const L=(XG?.L?.[key]?.eq||[]).filter(r=>r[3]>=3); if(L.length<4) return;
+  const R=L.map(r=>({id:r[0],n:r[1],pj:r[3],gf:r[4],xgf:r[5],gc:r[6],xgc:r[7],at:r[4]-r[5],de:r[7]-r[6]})).map(x=>({...x,t:x.at+x.de})).sort((a,b)=>b.t-a.t);
+  const mx=Math.max(1,...R.map(x=>Math.abs(x.t))), ab=el.dataset.ab==="1", ver=ab?R:R.slice(0,6).concat(R.length>12?R.slice(-6):R.slice(6));
+  const f1=v=>`${v>=0?"+":"−"}${Math.abs(v).toFixed(1)}`;
+  const fila=(x,i)=>{ const w=Math.abs(x.t)/mx*50, pos=x.t>=0;
+    return `<li class="sufl"><span class="sufn">${logoImg(`https://media.api-sports.io/football/teams/${x.id}.png`,"tlogo")}<b>${grEsc(x.n)}</b><em class="${pos?"sp":"sn"}">${f1(x.t)}</em></span>
+      <span class="sufb" title="${grEsc(x.n)}: ${f1(x.t)} goles de suerte"><i class="${pos?"sp":"sn"}" style="${pos?"left:50%":`left:${50-w}%`};width:${Math.max(w,.6)}%"></i></span>
+      <small>Metió ${x.gf} con ${x.xgf.toFixed(1)} esperados (${f1(x.at)}) · recibió ${x.gc} con ${x.xgc.toFixed(1)} esperados (${f1(x.de)})</small></li>`; };
+  const corte=!ab&&R.length>12?`<li class="sufcut">⋯ ${R.length-12} equipos más ⋯</li>`:"";
+  el.innerHTML=`<div class="dbox sufbox"><span class="dk">Tabla de la suerte</span>
+    <p class="grfr">Goles reales contra goles esperados (xG): cuánto mejor (o peor) le ha ido a cada equipo de lo que decían sus ocasiones.</p>
+    <div class="grleg"><span><i style="background:var(--good)"></i>Con suerte</span><span><i style="background:var(--bad)"></i>Salado</span></div>
+    <ol class="sufol">${ver.slice(0,ab||R.length<=12?R.length:6).map(fila).join("")}${corte}${!ab&&R.length>12?R.slice(-6).map(fila).join(""):""}</ol>
+    ${R.length>12?`<button class="hmas2" data-suf="1">${ab?"Ver menos":`Ver los ${R.length} equipos`}</button>`:""}
+    <p class="grnota">Suerte = goles a favor menos los esperados, más los esperados en contra menos los que recibió. Partidos ${grEsc(XG.L[key].tor?`del ${XG.L[key].tor}`:"de esta temporada")} con datos de xG. Con el tiempo, la suerte casi siempre se empareja.</p></div>`;
+}
+document.addEventListener("click",ev=>{ const b=ev.target.closest?.("[data-suf]"); if(!b) return; const el=$("#mxSuerte"); el.dataset.ab=el.dataset.ab==="1"?"0":"1"; suertePinta(FLIG).catch(()=>{}); });
 async function loadMxTable(){
   if(mxtLoaded) return; mxtLoaded=true;
   try{
@@ -5792,13 +5820,14 @@ async function loadMxTable(){
         const grupos=[...new Map(rows.map(r=>[r.grupo,1])).keys()];
         const fila=(r,i)=>`<tr><td class="tm">${i+1}</td><td class="l">${r.logo?`<img src="${r.logo}" alt="" width="20" height="20" style="vertical-align:-4px;margin-right:8px">`:""}<span class="nm"${usaAF(LEAGUES[FLIG])&&r.id?` data-eqf="${r.id}"`:""}>${r.n}</span></td><td>${r.pts}</td><td>${r.pj}</td><td>${r.g}</td><td>${r.e}</td><td>${r.p}</td><td>${r.gf}</td><td>${r.gc}</td><td>${r.dg==null?"–":(r.dg>0?"+":"")+r.dg}</td></tr>`;
         G.innerHTML=grupos.map(g=>`<h3>${g.replace(/^Group /,"Grupo ")}</h3><div class="tbl"><table><thead><tr><th></th><th class="l">Equipo</th><th>Pts</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>Dif.</th></tr></thead><tbody>${rows.filter(r=>r.grupo===g).map(fila).join("")}</tbody></table></div>`).join("");
-        MX_TABLE_ROWS=rows; return;
+        MX_TABLE_ROWS=rows; suertePinta(key).catch(()=>{}); return;
       }
       G.innerHTML=""; $("#mxTable").closest(".tbl").style.display="";
       const st={k:"rk",dir:"asc",render(){table($("#mxTable"),[
         {k:"n",h:"Equipo",l:1,f:r=>`${r.logo?`<img src="${r.logo}" alt="" width="20" height="20" style="vertical-align:-4px;margin-right:8px">`:""}<span class="nm"${usaAF(LEAGUES[FLIG])&&r.id?` data-eqf="${r.id}"`:""}>${r.n}</span>`,asc:1},
         {k:"pts",h:"Puntos"},{k:"pj",h:"PJ"},{k:"g",h:"G"},{k:"e",h:"E"},{k:"p",h:"P",asc:1},{k:"gf",h:"GF"},{k:"gc",h:"GC",asc:1},{k:"dg",h:"Dif.",f:r=>r.dg==null?"–":(r.dg>0?"+":"")+r.dg}],rows,this)}};
       st.render(); MX_TABLE_ROWS=rows; if(LEAGUES[FLIG].liguilla&&mxLgLoaded) renderMxBracket(rows);
+      suertePinta(key).catch(()=>{});
       return;
     }
     // Para estas ligas, /apis/site/v2/.../standings regresa vacío; hay que usar /apis/v2/.../standings.
@@ -7066,10 +7095,16 @@ function rtVoy(){ const st={}; const now=Date.now()/1000;
   try{ const w=+(qnCache?.week||D.gweek), M=svMine(), r=svRun(x=>M[x]||null,1,SV_DESDE,w);
     st.nflsv=!Object.keys(M).length?[`Semana ${w} · escoge equipo`,"pend"]:r.out!=null?[`Fuera en la semana ${r.out}`,"mal"]:M[w]?[`Vivo · semana ${w}: ${(NT[M[w].t]||{n:M[w].t}).n}`,"ok"]:[`Vivo · escoge para la semana ${w}`,"pend"]; }catch(e){}
   try{ st.nflq=[`Semana ${qnCache?.week||D.gweek}`,""]; }catch(e){}
+  try{ const TB=CFBQ.TB; if(TB){ const w=Object.entries(TB.w||{}).filter(([,x])=>x.pr>now).sort((a,b)=>a[1].pr-b[1].pr)[0];
+      if(w){ const jid=`${TB.s}-${w[0]}`, n=(w[1].g||[]).length, h=Math.min(n,Object.keys(cfbLs()[jid]||CFBQ.mias[jid]||{}).length); st.cfbq=[`Semana ${w[0]} · ${h} de ${n} picks`,h<n?"pend":"ok"]; }
+      else st.cfbq=["Esperando la próxima semana",""];
+      if(TB.L?.seeds?.length===12) st.cfbll=TB.L.pr>now?["Ya está abierta: llénala","pend"]:["Ya cerró: ve cómo vas",""]; } }catch(e){}
   try{ const q=Q5.lee(); st.q5=q.eq?.length===5?["Tu quinteta está lista","ok"]:["Escoge tus 5 equipos","pend"]; }catch(e){}
   return st; }
 async function rtRender(){
-  const box=$("#rtBody"); if(!box) return; const st=rtVoy();
+  const box=$("#rtBody"); if(!box) return;
+  if(!CFBQ.TB&&!rtRender.cfb){ rtRender.cfb=1; cfbTabla().then(t=>{ if(t&&!$("#retas").classList.contains("hidden")) rtRender(); }).catch(()=>{}); }
+  const st=rtVoy();
   const L=(typeof vidaCierreDatos==="function"?vidaCierreDatos():[]).filter(x=>x.falta>0&&(x.pend||x.baja));
   const urg=L.sort((a,b)=>a.falta-b.falta).map(x=>{ const nv=vidaNivel(x.falta), [n,u]=vidaFalta(x.falta);
     const msg=x.k==="smx"?"Escoge tu equipo":x.k==="fan"?(x.baja?`${x.baja} ${x.baja===1?"jugador":"jugadores"} de baja`:"Arma tu once"):`Te faltan ${x.pend} de ${x.tot} picks`;
@@ -7078,13 +7113,13 @@ async function rtRender(){
   box.innerHTML=`<div class="rt"><div class="headrow"><h2>Retas</h2></div><p class="note" style="margin:-6px 0 14px">Tus juegos de la semana, en un solo lugar.</p>
     <section class="rtsec"><h3 class="rth3 hot">Por hacer${urg?"":" · todo listo ✓"}</h3>${urg||`<p class="note">No tienes nada por cerrar en los próximos días.</p>`}</section>
     <section class="rtsec"><h3 class="rth3">Quinielas <small>Atínale a quién gana</small></h3><div class="rtgrid">
-      ${card("nflq","🏈","Quiniela NFL","Con spread o sin spread","#7FB8E8")}${D.qmx?card("qmx","⚽","Quiniela Liga MX","Local, empate o visita","#F2D466"):""}</div></section>
+      ${card("nflq","🏈","Quiniela NFL","Con spread o sin spread","#7FB8E8")}${D.qmx?card("qmx","⚽","Quiniela Liga MX","Local, empate o visita","#F2D466"):""}${card("cfbq","🏟️","Quiniela colegial","Los partidos grandes del sábado","#C9A7F0")}${st.cfbll?card("cfbll","🏆","Llave del Playoff colegial","12 equipos, ¿quién es campeón?","#E8A33D"):""}</div></section>
     <section class="rtsec"><h3 class="rth3">Survivor <small>Un equipo que gane, sin repetir</small></h3><div class="rtgrid">
       ${D.qmx?card("smx","🛡️","Survivor Liga MX","Una jornada a la vez","#FF9C80"):""}${card("nflsv","🛡️","Survivor NFL","Una semana a la vez","#FF9C80")}</div></section>
     <section class="rtsec"><h3 class="rth3">Fantasy <small>Arma tu once</small></h3><div class="rtgrid">
       ${card("fanucl","⭐","Fantasy Champions","11 jugadores, 80 de presupuesto","#9FD3A8")}${card("fanmx","⭐","Fantasy Liga MX","Nuevo · el mismo juego con la Liga MX","#9FD3A8")}</div></section>
     <section class="rtsec"><h3 class="rth3">Más</h3><div class="rtgrid">
-      ${card("q5","🏀","Quinteta NBA","5 equipos, cada victoria suma","#E8A33D")}${card("rd","🎯","Reto del día","Una pregunta diaria, cuida tu racha","#C9A7F0")}</div></section></div>`;
+      ${card("q5","🏀","Quinteta NBA","5 equipos, cada victoria suma","#E8A33D")}${card("rd","🎯","Reto del día","Una pregunta diaria, cuida tu racha","#C9A7F0")}${card("mock","📋","Mock draft NFL","Arma tu draft y compáralo con tus amigos","#9CC7E6")}</div></section></div>`;
 }
 function rtIr(k){ pzTrack("retas_ir",{k}); window.scrollTo(0,0);
   if(k==="qmx"){ QMX.vista="picks"; return showTab("qmx"); } if(k==="llave"){ QMX.vista="llave"; return showTab("qmx"); }
@@ -7094,6 +7129,8 @@ function rtIr(k){ pzTrack("retas_ir",{k}); window.scrollTo(0,0);
   if(k==="fan"||k==="fanucl"||k==="fanmx"){ if(k!=="fan"&&typeof fanLigaPon==="function"){ const L=k==="fanmx"?"mx":"ucl"; if(FAN.L!==L){ FAN.L=L; try{ localStorage.setItem("pz_fan_liga",L); }catch(e){} Object.assign(FAN,{D:null,P:null,t:0,sel:null,eq:null,c:null,j:null,nube:0}); } }
     FAN.vista="once"; return showTab("fan"); }
   if(k==="q5"){ Q5.vista="jugar"; return showTab("nbaq5"); }
+  if(k==="cfbq"||k==="cfbll"){ CFB.v=k==="cfbq"?"quiniela":"playoff"; return navIr("ncaa"); }
+  if(k==="mock"){ CFB.dv="mock"; return navIr("nfldraft"); }
   if(k==="rd"){ showSport("hoy"); setTimeout(()=>$("#hoyRd")?.scrollIntoView({block:"center"}),300); } }
 document.addEventListener("click",ev=>{ const t=ev.target; if(!t.closest) return; let b;
   if((b=t.closest("[data-rtir]"))) return rtIr(b.dataset.rtir);
