@@ -784,7 +784,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .utag svg{flex:none}
 .u-lesion{color:#FFB27A;background:rgba(255,178,122,.14)}.u-suspension{color:#FF8A7E;background:rgba(255,138,126,.14)}
 .u-racha{color:#F2D466;background:rgba(242,212,102,.14)}.u-goles{color:#8FD6A6;background:rgba(143,214,166,.14)}
-.u-fichaje{color:#9CC7E6;background:rgba(156,199,230,.14)}.u-tecnico{color:#C9B3F2;background:rgba(201,179,242,.14)}
+.u-fichaje{color:#9CC7E6;background:rgba(156,199,230,.14)}.u-xg{color:#8FD6A6;background:rgba(143,214,166,.14)}.u-tecnico{color:#C9B3F2;background:rgba(201,179,242,.14)}
 .u-pizarra{color:#1B2B25;background:#F2D466}
 .uit.uav{background:linear-gradient(90deg,rgba(242,212,102,.10),rgba(242,212,102,0) 70%);box-shadow:inset 3px 0 0 #F2D466}
 .uit .uok{color:#8FD6A6;font-weight:600}.uit .ufal{color:#F2D466;font-weight:600}
@@ -927,6 +927,15 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .dpan{display:none;flex-direction:column;gap:14px}
 .dpan.on{display:flex}
 .dbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.dgrafs{display:flex;flex-direction:column;gap:12px}.dgrafs:empty{display:none}
+.grleg{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}.grleg span{display:inline-flex;align-items:center;gap:6px}.grleg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.grfr{margin:0;font-size:15px;line-height:1.4;color:var(--ink)}.grnota{margin:0;font-size:12.5px;line-height:1.4;color:var(--muted)}
+.grxg{display:flex;flex-direction:column;gap:10px;border-top:1px dashed var(--line);padding-top:12px}.dk2{font-size:12px;font-weight:700;color:var(--muted)}
+.grmt{display:flex;flex-direction:column;gap:4px;border-top:1px dashed var(--line);padding-top:12px}.grmt:first-of-type{border-top:0;padding-top:0}
+.grmt>b{display:flex;align-items:center;gap:8px;font:700 18px var(--display)}.grmt>small{color:var(--muted);font-size:13px}
+.grmin{width:100%;max-width:520px;height:auto;display:block}.grmin text{font-family:var(--body);fill:var(--muted)}.grmin .grv{font-size:11px;fill:var(--ink);font-weight:700}.grmin .grx{font-size:10.5px}
+.grmin path{transition:opacity .15s}.grmin path:hover{opacity:.75}
+.dxgv{margin:4px 0 0;font-size:14px;line-height:1.4;color:var(--ink)}.dxgv span{display:block;color:var(--muted);font-size:12.5px;margin-bottom:2px}.dxgv b{color:var(--ink)}
 .dk{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .dbl{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--muted)}
 .dbl b{font:700 18px var(--display);color:var(--ink)}.dbl b.w{color:var(--mark)}
@@ -4995,6 +5004,7 @@ async function openMx(id,quiet){
   const Rs=sm?.rosters||[];
   DET.R={R:{h:Rs.find(r=>r.homeAway==="home"),a:Rs.find(r=>r.homeAway==="away")},H,A}; DET.ko=+c.when; DET.upd=Date.now();
   $("#gbody").innerHTML=mxDetHTML(e,c,H,A,sm); if(quiet) $("#gbody").scrollTop=keep;
+  if(sm?._f) detGraf(sm._f,FLIG).catch(err=>console.warn("Gráficas:",err));
   vidaReacConecta(e.id); pzFicha(e,quiet); if(DET.golNuevo){ pzFranja(DET.golNuevo.quien,DET.golNuevo.det); DET.golNuevo=null; }
   $("#gbody").querySelectorAll(".tbl").forEach(freezeTable);
   detReloj();
@@ -5122,6 +5132,74 @@ function detBarras(stats,nH,nA){
   return stats.map(([n,a,b])=>{const x=parseFloat(a)||0, y=parseFloat(b)||0, t=(x+y)||1;
     return `<div class="dbar"><div class="dbl"><b class="${x>y?"w":""}">${detEsc(a)}</b><span>${n}</span><b class="${y>x?"w":""}">${detEsc(b)}</b></div><div class="dbb"><s><i class="${x>y?"w":""}" style="width:${x/t*100}%"></i></s><s><i class="${y>x?"w":""}" style="width:${y/t*100}%"></i></s></div></div>`;}).join("");
 }
+// ---- Gráficas del partido (23 nov 2026), para cualquier liga de API-Football: cara a cara (predictions), cuándo mete y recibe
+// goles cada equipo (teams/statistics, por tramos de 15 minutos) y goles esperados de la temporada (datos/xg.json del build).
+// Se piden una vez por partido y se guardan en DGRAF.html, así la actualización en vivo no las vuelve a pedir.
+const DGRAF={html:{},pend:{},xg:null};
+const grEsc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function xgVeredicto(mh,ma,nH,nA,gh,ga){
+  const xh=parseFloat(mh.expectedGoals), xa=parseFloat(ma.expectedGoals); if(isNaN(xh)||isNaN(xa)||isNaN(gh)||isNaN(ga)) return "";
+  const d=xh-xa, real=gh>ga?"L":gh<ga?"V":"E", mer=d>0.6?"L":d<-0.6?"V":"E", nm=k=>k==="L"?nH:nA;
+  const txt=mer===real?(mer==="E"?"Las ocasiones fueron parejas y el marcador también.":`El resultado fue justo: ${grEsc(nm(mer))} generó más peligro.`)
+    :mer==="E"?`Las ocasiones fueron parejas; ${real==="E"?"el empate fue justo":`${grEsc(nm(real))} lo ganó con más puntería que peligro`}.`
+    :`Por las ocasiones, el partido era para ${grEsc(nm(mer))}${real==="E"?" y se le escapó el triunfo":`, pero ganó ${grEsc(nm(real))}`}.`;
+  return `<p class="dxgv"><span>Goles esperados (xG): <b>${xh.toFixed(1)} – ${xa.toFixed(1)}</b></span>${txt}</p>`;
+}
+const GR_TR=[["0-15","0-15"],["16-30","16-30"],["31-45","31-45"],["46-60","46-60"],["61-75","61-75"],["76-90","76-90+"]];
+function grTramos(m){ const v=k=>+(m?.[k]?.total||0); return GR_TR.map(([k],i)=>v(k)+(i===5?v("91-105")+v("106-120"):0)); }
+function grMinutosSVG(F,C,nm){   // F = a favor, C = en contra (6 tramos); columnas arriba (a favor) y abajo (en contra)
+  const W=320, Hh=58, top=16, max=Math.max(1,...F,...C), cw=W/6, bw=Math.min(26,cw*.46), y0=top+Hh;
+  const col=(v,i,arriba)=>{ if(!v) return ""; const h=Math.max(3,v/max*Hh), x=i*cw+(cw-bw)/2, y=arriba?y0-1-h:y0+1;
+    const r=Math.min(4,h/2), p=arriba?`M${x},${y0-1}V${y+r}Q${x},${y} ${x+r},${y}H${x+bw-r}Q${x+bw},${y} ${x+bw},${y+r}V${y0-1}Z`:`M${x},${y0+1}V${y+h-r}Q${x},${y+h} ${x+r},${y+h}H${x+bw-r}Q${x+bw},${y+h} ${x+bw},${y+h-r}V${y0+1}Z`;
+    return `<path d="${p}" fill="${arriba?"var(--good)":"var(--bad)"}"><title>${grEsc(nm)} · ${GR_TR[i][1]}': ${v} ${arriba?"a favor":"en contra"}</title></path><text x="${x+bw/2}" y="${arriba?y-4:y+h+11}" text-anchor="middle" class="grv">${v}</text>`; };
+  return `<svg viewBox="0 0 ${W} ${y0+Hh+24}" class="grmin" role="img" aria-label="Goles de ${grEsc(nm)} por tramo de 15 minutos">
+    ${F.map((v,i)=>col(v,i,1)).join("")}${C.map((v,i)=>col(v,i,0)).join("")}
+    <line x1="0" x2="${W}" y1="${y0}" y2="${y0}" stroke="var(--line)" stroke-width="1"/>
+    ${GR_TR.map(([,l],i)=>`<text x="${i*cw+cw/2}" y="${y0+Hh+20}" text-anchor="middle" class="grx">${l}'</text>`).join("")}</svg>`;
+}
+function grMinutosFrase(nm,F,C){
+  const tf=F.reduce((a,b)=>a+b,0), tc=C.reduce((a,b)=>a+b,0), out=[];
+  const tramo=i=>i===5?"del 76' en adelante":`entre el ${GR_TR[i][0].replace("-","' y el ")}'`;
+  if(tf>=4){ const i=F.indexOf(Math.max(...F)), pc=Math.round(100*F[i]/tf); if(pc>=25) out.push(`mete el ${pc}% de sus goles ${tramo(i)}`); }
+  if(tc>=4){ const i=C.indexOf(Math.max(...C)), pc=Math.round(100*C[i]/tc); if(pc>=25) out.push(`recibe el ${pc}% de los suyos ${tramo(i)}`); }
+  return out.length?`${grEsc(nm)} ${out.join(" y ")}.`:"";
+}
+async function grXg(){ if(DGRAF.xg) return DGRAF.xg; try{ DGRAF.xg=await fetch(`datos/xg.json?v=${D.paq?.v||Math.floor(Date.now()/36e5)}`).then(r=>r.ok?r.json():{}); }catch(e){ DGRAF.xg={}; } return DGRAF.xg; }
+async function detGraf(f,lgk){
+  const id=f.fixture?.id, lg=f.league?.id, se=f.league?.season, H=f.teams?.home, A=f.teams?.away; if(!id||!lg||!H||!A) return;
+  const pinta=()=>{ const el=document.querySelector(`[data-dgraf="${id}"]`); if(el&&DGRAF.html[id]!=null&&el.innerHTML!==DGRAF.html[id]) el.innerHTML=DGRAF.html[id]; };
+  if(DGRAF.html[id]!=null) return pinta();
+  if(DGRAF.pend[id]) return; DGRAF.pend[id]=1;
+  const nm=t=>afNombre(t), nH=nm(H), nA=nm(A);
+  const [pr,tH,tA,XG]=await Promise.all([afList("predictions",`fixture=${id}`).then(r=>r[0]).catch(()=>null),
+    afGet("teams/statistics",`league=${lg}&season=${se}&team=${H.id}`).then(j=>j.response).catch(()=>null),
+    afGet("teams/statistics",`league=${lg}&season=${se}&team=${A.id}`).then(j=>j.response).catch(()=>null), grXg()]);
+  let h="";
+  // Cara a cara
+  const cmp=pr?.comparison, n=x=>parseFloat(x)||0;
+  const filas=cmp?[["form","Forma"],["att","Ataque"],["def","Defensa"],["h2h","Historial entre ellos"],["total","En total"]].filter(([k])=>cmp[k]&&(n(cmp[k].home)||n(cmp[k].away))).map(([k,l])=>[l,n(cmp[k].home),n(cmp[k].away)]):[];
+  const xL=(XG?.L?.[lgk]?.eq||[]), xr=t=>xL.find(r=>r[0]===t.id&&r[3]>=3);
+  const xh=xr(H), xa=xr(A);
+  if(filas.length||(xh&&xa)){
+    const bar=([l,a,b],fmt=v=>`${Math.round(v)}%`,inv=0)=>`<div class="dbl"><b class="${(inv?a<b:a>b)?"w":""}">${fmt(a)}</b><span>${l}</span><b class="${(inv?b<a:b>a)?"w":""}">${fmt(b)}</b></div><div class="dpb"><i style="flex:${Math.max(a,.01)}"></i><i style="flex:${Math.max(b,.01)}"></i></div>`;
+    const ven=filas.filter(r=>r[0]!=="En total"&&Math.abs(r[1]-r[2])>=10), quien=(k)=>ven.filter(r=>(k?r[1]>r[2]:r[2]>r[1])).map(r=>r[0].toLowerCase());
+    const fr=[quien(1).length?`${grEsc(nH)} llega mejor en ${quien(1).join(", ").replace(/, ([^,]*)$/," y $1")}`:"",quien(0).length?`${grEsc(nA)} en ${quien(0).join(", ").replace(/, ([^,]*)$/," y $1")}`:""].filter(Boolean).join("; ");
+    const xgf=(r)=>[(r[5]/r[3]),(r[7]/r[3])];
+    const xgH=xh&&xa?`<div class="grxg"><span class="dk2">Goles esperados por partido (xG) en la temporada</span>${bar(["A favor",...[xgf(xh)[0],xgf(xa)[0]]],v=>v.toFixed(2))}${bar(["En contra (menos es mejor)",...[xgf(xh)[1],xgf(xa)[1]]],v=>v.toFixed(2),1)}
+      <p class="grnota">${[[nH,xh],[nA,xa]].map(([nmx,r])=>{ const d=r[4]-r[5]; return `${grEsc(nmx)}: ${r[4]} goles con ${r[5].toFixed(1)} esperados (${d>=0?"+":""}${d.toFixed(1)}${Math.abs(d)>=3?d>0?", con suerte":", salado":""})`; }).join(" · ")}</p></div>`:"";
+    h+=`<div class="dbox grcara"><span class="dk">Cara a cara</span><div class="grleg"><span><i style="background:var(--mark)"></i>${grEsc(nH)}</span><span><i style="background:var(--alt)"></i>${grEsc(nA)}</span></div>
+      ${fr?`<p class="grfr">${fr}.</p>`:""}${filas.map(r=>bar(r)).join("")}${xgH}<p class="grnota">${filas.length?"Comparación de API-Football con los últimos partidos de cada uno. ":""}Los goles esperados miden qué tan claras fueron las ocasiones.</p></div>`;
+  }
+  // Cuándo meten y reciben goles
+  const pan=[[H,tH],[A,tA]].filter(([,t])=>t?.goals&&(t.fixtures?.played?.total||0)>=3);
+  if(pan.length){
+    h+=`<div class="dbox grminbox"><span class="dk">Cuándo meten y reciben goles</span><div class="grleg"><span><i style="background:var(--good)"></i>A favor</span><span><i style="background:var(--bad)"></i>En contra</span></div>
+      ${pan.map(([t,x])=>{ const F=grTramos(x.goals.for.minute), C=grTramos(x.goals.against.minute), nmx=nm(t), fr=grMinutosFrase(nmx,F,C);
+        return `<div class="grmt"><b>${logoImg(t.logo,"tlogo")}${grEsc(nmx)}</b><small>${x.fixtures.played.total} partidos · ${F.reduce((a,b)=>a+b,0)} a favor, ${C.reduce((a,b)=>a+b,0)} en contra</small>${grMinutosSVG(F,C,nmx)}${fr?`<p class="grfr">${fr}</p>`:""}</div>`; }).join("")}
+      <p class="grnota">Goles de esta temporada en ${grEsc(f.league?.name||"la liga")}, por tramos de 15 minutos (76-90+ incluye el tiempo agregado).</p></div>`;
+  }
+  DGRAF.html[id]=h; delete DGRAF.pend[id]; pinta();
+}
 function mxDetHTML(e,c,H,A,sm){
   const st=e.status?.type?.state, pre=st==="pre", vivo=st==="in", jug=!pre;
   const T=x=>({n:esTeam(x.team?.shortDisplayName||x.team?.displayName),logo:x.team?.logo});
@@ -5154,7 +5232,7 @@ function mxDetHTML(e,c,H,A,sm){
   const pos=mh.possessionPct!=null?`<div class="dpos"><div class="dbl"><b class="${+mh.possessionPct>+ma.possessionPct?"w":""}">${mh.possessionPct}%</b><span>Posesión</span><b class="${+ma.possessionPct>+mh.possessionPct?"w":""}">${ma.possessionPct}%</b></div><div class="dpb"><i style="flex:${mh.possessionPct}"></i><i style="flex:${ma.possessionPct}"></i></div></div>`:"";
   const filas=keys.map(k=>[MXSTAT[k],mh[k]??"0",ma[k]??"0"]);
   const clave=["expectedGoals","totalShots","shotsOnTarget"].filter(k=>mh[k]!=null||ma[k]!=null).map(k=>[MXSTAT[k],mh[k]??"0",ma[k]??"0"]);
-  const boxImp=jug&&(pos||clave.length)?`<div class="dbox dimp"><span class="dk">Lo más importante</span>${pos}${detBarras(clave)}${pzDomina(e.id,mh,ma)}</div>`:"";
+  const boxImp=jug&&(pos||clave.length)?`<div class="dbox dimp"><span class="dk">Lo más importante</span>${pos}${detBarras(clave)}${pzDomina(e.id,mh,ma)}${st==="post"?xgVeredicto(mh,ma,tH.n,tA.n,+hs,+as):""}</div>`:"";
   // Tarjeta de medio tiempo o final (se voltea)
   const ht=vivo&&/medio|MT|HT|descanso/i.test(c.status||""), pk=st==="post"?pzPickDe(e.id):null, rr=+hs>+as?"L":+hs<+as?"V":"E";
   const boxFase=(ht||st==="post")&&hs!=null?`<div class="dbox pzfase"><span class="dk">${ht?"Al descanso":"Final del partido"}</span><b>${detEsc(tH.n)} ${hs} - ${as} ${detEsc(tA.n)}</b>${goles.length?`<span>${goles.map(k=>`${detEsc((k.who[0]||"").split(" ").slice(-1)[0])} ${detEsc(k.m)}`).join(" · ")}</span>`:""}${pk?`<em class="${pk===rr?"ok":"mal"}">Tu quiniela: le pusiste ${pk} — ${pk===rr?"¡acierto!":"este no salió"}</em>`:""}</div>`:"";
@@ -5182,7 +5260,7 @@ function mxDetHTML(e,c,H,A,sm){
   const boxProb=P?`<div class="dbox"><span class="dk">Probabilidades y momios</span><div class="dpb tri"><i style="flex:${P[0]}"></i><i style="flex:${P[1]}"></i><i style="flex:${P[2]}"></i></div><div class="dbl"><span>${detEsc(tH.n)} <b>${P[0]}%</b>${c.teams[0].ml!=null?` · ${mlTxt(c.teams[0].ml)}`:""}</span><span>Empate ${P[1]}%</span><span>${c.teams[1].ml!=null?`${mlTxt(c.teams[1].ml)} · `:""}<b>${P[2]}%</b> ${detEsc(tA.n)}</span></div></div>`:"";
   const prev=sm?mxPreviaHTML(sm,H,A):"";
   const boxPrev=prev?`<div class="dbox dprev">${prev}</div>`:"";
-  const previa=boxProb+boxPrev+(pre?boxDet:"");
+  const previa=boxProb+(sm?._f?`<div class="dgrafs" data-dgraf="${sm._f.fixture?.id}">${DGRAF.html[sm._f.fixture?.id]||""}</div>`:"")+boxPrev+(pre?boxDet:"");
   // Alineaciones
   const Rs=sm?.rosters||[], R={h:Rs.find(r=>r.homeAway==="home"),a:Rs.find(r=>r.homeAway==="away")};
   const hayAli=Rs.some(r=>(r.roster||[]).some(p=>p.starter));
@@ -11331,7 +11409,7 @@ $("#mxgoleo").addEventListener("input",ev=>{ if(ev.target.id!=="goQ") return; GO
 // ---- Lo último (7 oct 2026): titulares de la semana que arma build_site.py (noticias.py) ----
 const ULT_TIPO={lesion:["Lesión",'<circle cx="8" cy="8" r="6.5"/><path d="M8 5v6M5 8h6"/>'],suspension:["Suspendido",'<rect x="4" y="2" width="8" height="12" rx="1.5"/>'],
   racha:["Racha",'<path d="M2 12l4-4 3 3 5-6"/><path d="M10 5h4v4"/>'],goles:["Goles",'<circle cx="8" cy="8" r="6.5"/><path d="M8 4.5l3 2.2-1.2 3.6H6.2L5 6.7z"/>'],
-  fichaje:["Fichaje",'<path d="M2 5h10l-3-3M14 11H4l3 3"/>'],tecnico:["Técnico",'<rect x="3" y="2.5" width="10" height="12" rx="1.5"/><path d="M6 6h4M6 9h4M6 12h2"/>']};
+  fichaje:["Fichaje",'<path d="M2 5h10l-3-3M14 11H4l3 3"/>'],xg:["Suerte",'<path d="M2 13h12"/><path d="M4 13V8M8 13V4M12 13V9"/>'],tecnico:["Técnico",'<rect x="3" y="2.5" width="10" height="12" rx="1.5"/><path d="M6 6h4M6 9h4M6 12h2"/>']};
 const ULT_LIGA={mx:"Liga MX",eng:"Premier",esp:"LaLiga",ita:"Serie A",ger:"Bundesliga",fra:"Ligue 1",ucl:"Champions",uel:"Europa League",uecl:"Conference",nfl:"NFL"};
 // Avisos de La Pizarra (23 nov 2026): notas que arma la página con el calendario y TUS picks (arranca la Liguilla, semana de la NFL,
 // quiniela colegial…). Salen arriba de "Lo último", con etiqueta amarilla, y llevan a la sección para jugar.

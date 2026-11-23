@@ -1674,7 +1674,25 @@ def af_player_stats(lid,nombre,F,torneo=None,cods=None,sin_previas=False,sin_cla
         r["as"]=r.pop("as_"); r["pg"]=r["pos"]; r["g90"]=round(r["g"]*90/r["min"],2) if r["min"]>=90 else None
         res.append(r)
     print(f"{nombre} (API-Football): {len(F)} partidos terminados, {con} con estadísticas por jugador, {len(res)} jugadores")
+    # Goles esperados (23 nov 2026): con los mismos partidos, xG a favor y en contra de cada equipo (solo partidos que traen xG
+    # de los dos lados). Sirve para la "tabla de la suerte" (goles reales contra los esperados) y para la previa de cada partido.
+    X={}
+    for f in D:
+        st={}
+        for T in f.get("statistics") or []:
+            v=next((s.get("value") for s in T.get("statistics") or [] if s.get("type")=="expected_goals"),None)
+            try: st[T["team"]["id"]]=float(v)
+            except Exception: pass
+        H,A=f["teams"]["home"],f["teams"]["away"]; g=f.get("goals") or {}
+        if H["id"] not in st or A["id"] not in st or g.get("home") is None or g.get("away") is None: continue
+        for t,yo,el,gf,gc in ((H,H["id"],A["id"],g["home"],g["away"]),(A,A["id"],H["id"],g["away"],g["home"])):
+            nm,ab=AF_EQ.get(yo,(AF_NOMBRE.get(t.get("name"),t.get("name") or ""),(cods or {}).get(yo) or ""))
+            r=X.setdefault(yo,[yo,nm,ab,0,0,0.0,0,0.0])
+            r[3]+=1; r[4]+=gf; r[5]+=st[yo]; r[6]+=gc; r[7]+=st[el]
+    AF_XG_ULT.clear(); AF_XG_ULT.update({k:[r[0],r[1],r[2],r[3],r[4],round(r[5],2),r[6],round(r[7],2)] for k,r in X.items()})
+    if X: print(f"{nombre}: goles esperados de {len(X)} equipos")
     return res
+AF_XG_ULT={}
 # Ligas que ya salen de API-Football: clave en la página → (id en API-Football, nombre, ¿tiene Liguilla?)
 AF_LIGAS={"mx":(262,"Liga MX",True),"eng":(39,"Premier League",False),"esp":(140,"La Liga",False),"ita":(135,"Serie A",False),
           "ger":(78,"Bundesliga",False),"fra":(61,"Ligue 1",False),"ucl":(2,"Champions League",False),"uel":(3,"Europa League",False),"uecl":(848,"Conference League",False),
@@ -1732,6 +1750,7 @@ else:
 if AFK:
     carpeta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'docs','datos'); os.makedirs(carpeta,exist_ok=True)
     AF_FX={}   # partidos de la temporada actual por liga (para los partidos de la semana de la portada)
+    AF_XG={}   # goles esperados por liga → docs/datos/xg.json
     for clave,(lid,nombre,lig) in AF_LIGAS.items():
         try:
             L=(af("leagues",id=lid) or [{}])[0]
@@ -1742,7 +1761,9 @@ if AFK:
             torneo=af_torneo_actual(F) if lig else None
             AF_FX[clave]=(F,torneo)
             cods=af_codigos(lid,actual); sp=clave in AF_SIN_PREVIAS; sc=clave in AF_SIN_CLASIF
+            AF_XG_ULT.clear()
             guarda_jugadores(f'jugadores_{clave}.json',af_player_stats(lid,f"{nombre} {torneo or actual}",F,torneo,cods,sp,sc))
+            if AF_XG_ULT: AF_XG[clave]=dict(n=nombre,s=actual,tor=torneo,eq=list(AF_XG_ULT.values()))
             # Torneos y temporadas pasadas: una sola vez (ya no cambian), cada uno en su archivo.
             # Liga MX: jugadores_mx_<temporada>_<Apertura|Clausura>.json (temporada 2025 = Apertura 2025 + Clausura 2026)
             for año in [a for a in años if a<=actual][:3]:
@@ -1759,6 +1780,12 @@ if AFK:
                     except Exception as ex: print(f"{nombre} {t or año}: no se pudo:",ex)
         except Exception as ex:
             print(f"{nombre} (API-Football): no se pudieron obtener estadísticas de jugadores:",ex)
+    # Goles esperados (23 nov 2026): docs/datos/xg.json = {clave: {n, s, tor, eq: [[id, nombre, abrev, pj, gf, xgf, gc, xgc]]}}
+    if AF_XG:
+        try:
+            with open(os.path.join(carpeta,'xg.json'),'w',encoding='utf-8') as _f: json.dump(dict(t=datetime.now(ZoneInfo("America/Mexico_City")).isoformat(timespec="minutes"),L=AF_XG),_f,ensure_ascii=False,separators=(",",":"))
+            print(f"Goles esperados: {len(AF_XG)} ligas ({', '.join(AF_XG)})")
+        except Exception as ex: print("Goles esperados: no se guardó xg.json:",ex)
     # ---------- Selecciones (28 oct 2026) ----------
     # Competencias de selecciones mayores que se muestran en la página cuando están activas: su temporada actual empieza
     # en los próximos 45 días o terminó hace menos de 21. out['inter_on'] = {clave: temporada}. Solo una llamada por torneo.
@@ -1966,6 +1993,25 @@ if AFK:
         from noticias import generar as _noticias
         _prop={x['n']:x.get('own') or 0 for x in out.get('fantasy',[])}
         out['noticias']=_noticias(af,_prop,sched=out.get('sched'))
+        # Notas de goles esperados (23 nov 2026): el equipo con más suerte (o mala suerte) de la Liga MX y de Europa
+        try:
+            _xgn=[]
+            for _grupo in (("mx",),("eng","esp","ita","ger","fra")):
+                _c=[]
+                for _k in _grupo:
+                    for r in ((AF_XG.get(_k) or {}).get("eq") or []):
+                        if r[3]>=8: _c.append((r[4]-r[5],_k,r))
+                if not _c: continue
+                _d,_k,r=max(_c,key=lambda x:abs(x[0]))
+                if abs(_d)<3: continue
+                _nl={"mx":"la Liga MX","eng":"la Premier","esp":"LaLiga","ita":"la Serie A","ger":"la Bundesliga","fra":"la Ligue 1"}[_k]
+                _ab=round(abs(_d),1); _ab=int(_ab) if _ab==int(_ab) else _ab
+                _tit=(f"{r[1]}, el más suertudo de {_nl}: lleva {_ab} goles más de los que merecía" if _d>0 else f"{r[1]}, el más salado de {_nl}: lleva {_ab} goles menos de los que merecía")
+                _xgn.append(dict(tipo="xg",liga=_k,eq=r[1],t=datetime.now(ZoneInfo("America/Mexico_City")).isoformat(timespec="minutes"),tit=_tit,
+                    det=f"{r[4]} goles con {round(r[5],1)} de goles esperados (xG) en {r[3]} partidos · recibió {r[6]} con {round(r[7],1)} esperados",peso=12.5,tid=r[0]))
+            out['noticias']=sorted(out['noticias']+_xgn,key=lambda n:-n.get('peso',0))
+            if _xgn: print("Lo último: notas de goles esperados →",len(_xgn))
+        except Exception as ex: print("Lo último: notas de goles esperados:",ex)
         print(f"Lo último: {len(out['noticias'])} notas ("+", ".join(f"{t} {sum(1 for n in out['noticias'] if n['tipo']==t)}" for t in ("lesion","suspension","racha","goles","fichaje","tecnico"))+")")
     except Exception as ex:
         out['noticias']=[]; print("Lo último: no se pudieron armar las notas:",ex)
