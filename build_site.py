@@ -2391,6 +2391,16 @@ def _qmx():
                     for t,gf,gc in ((h,gh,ga),(a,ga,gh)):
                         x=Tb.setdefault(t,[0,0,0]); x[0]+=3 if gf>gc else 1 if gf==gc else 0; x[1]+=gf-gc; x[2]+=gf
                 sem=[t for t,_ in sorted(Tb.items(),key=lambda kv:(-kv[1][0],-kv[1][1],-kv[1][2]))][:8]
+            # 23 nov 2026: API-Football trajo un lugar de la tabla sin id de equipo (None). Si ya están los cuartos, el que falta
+            # es el rival de su pareja (1-8, 2-7, 3-6, 4-5) en esos partidos.
+            if len(sem)==8 and None in sem and QF:
+                rival={}
+                for f in QF:
+                    h,a=f["teams"]["home"]["id"],f["teams"]["away"]["id"]; rival.setdefault(h,set()).add(a); rival.setdefault(a,set()).add(h)
+                for i in range(8):
+                    if sem[i] is None and sem[7-i] is not None:
+                        c=[x for x in rival.get(sem[7-i],()) if x not in sem]
+                        if len(c)==1: sem[i]=c[0]; print(f"Llave de la Liguilla: el lugar {i+1} venía vacío; se completó con los cuartos ({c[0]})")
             pos={t:i for i,t in enumerate(sem)}
             def gana(fs,final=False):
                 if len(fs)<2 or any(st(f) not in FINS for f in fs): return None
