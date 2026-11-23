@@ -646,6 +646,36 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .cfbg{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
 .cfbg .rk{font:700 12px var(--display);color:#F2D466;margin-right:4px}.cfbg .sc{font:700 18px var(--display);text-align:right}.cfbg .gan{color:var(--ink)}.cfbg .per{color:var(--muted)}
 .cfbg .meta{grid-column:1/-1;color:var(--muted);font-size:12px}
+/* Colegial v3 (23 nov 2026) */
+.cfbtop li{gap:10px}.cfbtop li.cut{border-bottom:2px dashed #F2D466;margin-bottom:10px;position:relative}
+.cfbtop li.cut::after{content:"Línea del Playoff";position:absolute;right:12px;bottom:-11px;background:var(--bg);color:#F2D466;font:700 11px var(--display);padding:0 6px;letter-spacing:.06em;text-transform:uppercase}
+.ctt{display:flex;flex-direction:column;min-width:0;flex:1;gap:1px}.ctt b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ctt small{color:var(--muted);font-size:12.5px}
+.cnx{all:unset;cursor:pointer;color:var(--alt);font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmv{font-style:normal;font:700 13px var(--display);min-width:34px;text-align:right}.cmv.up{color:var(--good)}.cmv.dn{color:var(--bad)}.cmv.eq{color:var(--muted)}.cmv.nu{color:#F2D466;font-size:11px;text-transform:uppercase}
+.cgrid{display:grid;gap:10px}@media(min-width:721px){.cgrid{grid-template-columns:1fr 1fr}}
+.cgdia{margin:18px 0 8px;font:700 15px var(--display);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.cg{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--line);width:100%;transition:border-color .15s,transform .15s}
+.cg:hover{border-color:#5d7b70}.cg:active{transform:scale(.99)}.cg:focus-visible{outline:2px solid #F2D466;outline-offset:2px}
+.cgviv{border-color:#E8664A}
+.cgk{font:700 11.5px var(--display);letter-spacing:.08em;text-transform:uppercase;color:#F2D466}
+.cgl{display:flex;align-items:center;gap:10px;min-width:0}.cgl.per{opacity:.6}
+.cgn{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}.cgn em{font-style:normal;font:700 13px var(--display);color:#F2D466}.cgn b{font:700 18px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cgn small{color:var(--muted);font-size:12.5px;white-space:nowrap}
+.cgp{font:700 24px var(--display);min-width:34px;text-align:right}
+.cgwp{display:flex;align-items:center;gap:8px;font:700 12px var(--display);color:var(--muted)}.cgwb{flex:1;display:flex;height:6px;border-radius:3px;overflow:hidden;gap:2px}.cgwb i:first-child{background:var(--mark)}.cgwb i:last-child{background:var(--alt)}
+.cgm{display:flex;flex-wrap:wrap;gap:4px;align-items:center;color:var(--muted);font-size:13px}.cgm b{color:var(--ink);font-weight:600}.cgd{font-style:normal;margin:0 2px;opacity:.6}
+.cgbig{padding:18px;background:linear-gradient(160deg,#2f4a41,#263D36 60%);border-color:#4b6a5f;margin-bottom:6px}.cgbig .cfbab,.cgbig .cfbab img{width:44px;height:44px}.cgbig .cgn b{font-size:22px}.cgbig .cgp{font-size:30px}
+.cfbdet{display:flex;flex-direction:column;gap:12px}
+.cdhead{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start;text-align:center;padding:8px 0 2px}
+.cdt{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}.cdt b{font:700 18px/1.15 var(--display)}.cdt b em{font-style:normal;color:#F2D466}.cdt small{color:var(--muted);font-size:12.5px}
+.cfbab.cfbxl,.cfbab.cfbxl img{width:60px;height:60px;font-size:14px}
+.cdc{display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:12px}.cdm{font:700 34px var(--display);white-space:nowrap}.cdh{font:700 26px var(--display)}.cdk{color:var(--muted);font-size:13px}
+.cdinfo{text-align:center;color:var(--muted);font-size:13px;margin:0}.cdq{width:100%}
+.cdls{width:100%}.cdls th,.cdls td{text-align:center;padding:6px 4px}.cdls .l{text-align:left;font-weight:700}
+.cdld{display:flex;flex-direction:column;gap:6px}.cdld+.cdld{border-top:1px dashed var(--line);padding-top:10px}.cdld>b{display:flex;align-items:center;gap:8px;font:700 16px var(--display)}
+.cdld ul,.cdfo ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}.cdld li{font-size:14px;line-height:1.35}.cdld li small{color:var(--muted)}
+.cdfo{display:flex;flex-direction:column;gap:6px}.cdfo+.cdfo{border-top:1px dashed var(--line);padding-top:10px}.cdfo>b{display:flex;align-items:center;gap:8px;font:700 16px var(--display)}.cdfo>b small{color:var(--muted);font-size:13px}
+.cdfo li{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;font-size:14px}.cdfo .fchip{width:22px;height:22px;display:inline-grid;place-items:center;border-radius:6px;font:700 12px var(--display);font-style:normal}
+.cdfo .fchip.g{background:rgba(143,214,166,.2);color:var(--good)}.cdfo .fchip.p{background:rgba(242,156,140,.2);color:var(--bad)}
 .cfbv{color:#E8664A;font-weight:700}.cfblk{cursor:pointer}.cfbab[data-cfbeq]{cursor:pointer}.cfbg .cfbt.per b{color:var(--muted)}
 .drpos{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 12px}.drpos::-webkit-scrollbar{display:none}
 .drpos button{flex:none;min-height:32px;padding:0 12px;border-radius:16px;border:1px solid var(--line);background:none;color:var(--ink);font:600 14px var(--display);cursor:pointer}
@@ -7545,6 +7575,89 @@ const cfbEsc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">"
 function cfbEq(s){ const t=CFB.D?.teams?.[s]; if(!t) return `<span class="cfbab">${cfbEsc(String(s||"?").slice(0,3).toUpperCase())}</span>`;
   return `<span class="cfbab" data-cfbeq="${cfbEsc(s)}" style="background:${cfbEsc(t[1])}">${t[2]?`<img src="${cfbEsc(t[2])}" alt="" loading="lazy" onerror="this.remove()">`:""}${cfbEsc(t[0])}</span>`; }
 const cfbSeg=(id,ops,cur)=>`<div class="hseg cfbseg" id="${id}" role="group">${ops.map(([k,n])=>`<button data-v="${k}" aria-pressed="${k===cur}">${n}</button>`).join("")}</div>`;
+// ---- Colegial v3 (23 nov 2026): partidos por día con línea, probabilidad y canal; Top 25 con récord, movimiento y siguiente
+// partido; detalle de cada partido (cfbPartido) con previa, marcador por cuarto, estadísticas y líderes (datos de cfb.json).
+const CFB_DTF=o=>pzDTF("es-MX",{timeZone:"America/Mexico_City",...o});
+const cfbRec=t=>CFB.D?.rec?.[t]||"";
+const cfbAb=t=>CFB.D?.teams?.[t]?.[0]||String(t||"").slice(0,4).toUpperCase();
+function cfbLinea(g){ const L=g.ln; if(!L||L.sp==null) return ""; const sp=+L.sp;
+  return sp===0?"Línea pareja":`${cfbEsc(cfbAb(sp>0?g.h:g.a))} −${Math.abs(sp)}`; }
+function cfbHora(g){ if(!g.ko) return "Por definir"; const d=new Date(g.ko); return g.tbd?"Hora por definir":CFB_DTF({hour:"numeric",minute:"2-digit"}).format(d).replace(/\s?([ap])\.?\s?m\.?/i," $1m"); }
+function cfbProx(t){ const now=Date.now(); return (CFB.D?.games||[]).find(g=>!g.ok&&(g.h===t||g.a===t)&&Date.parse(g.ko||0)>now-4*36e5); }
+function cfbTopHTML(C,L,pol){
+  return `<ol class="cfbl cfbtop">${L.map(r=>{ const pv=r[4], mov=pv===-1||pv===undefined?"":pv==null?`<i class="cmv nu">Nuevo</i>`:pv>r[0]?`<i class="cmv up">▲${pv-r[0]}</i>`:pv<r[0]?`<i class="cmv dn">▼${r[0]-pv}</i>`:`<i class="cmv eq">–</i>`;
+    const px=cfbProx(r[1]), vs=px?(px.h===r[1]?px.a:px.h):null, rk=px?(px.h===r[1]?px.ar:px.hr):null;
+    return `<li${pol==="cfp"&&r[0]===12?' class="cut"':""}><span class="cfbrk">${r[0]}</span>${cfbEq(r[1])}<span class="ctt"><b class="cfblk" data-cfbeq="${cfbEsc(r[1])}">${cfbEsc(r[1])}</b><small>${cfbRec(r[1])?`${cfbRec(r[1])} · `:""}${cfbEsc(r[2]||"")}</small>${px?`<button class="cnx" data-cfbg="${px.id}">${px.h===r[1]?"vs":"en"} ${rk?`#${rk} `:""}${cfbEsc(vs)} · ${CFB_DTF({weekday:"short"}).format(new Date(px.ko)).replace(".","")}</button>`:""}</span>${mov}</li>`; }).join("")}</ol>`;
+}
+function cfbCard(g0,grande,extra){
+  const g=cfbVivoDe(g0), fin=g.ok, viv=g.vivo, gh=fin&&g.hp>g.ap, ga=fin&&g.ap>g.hp, wp=g.wp!=null&&!fin&&!viv?Math.round(g.wp*100):null;
+  const lado=(t,r,pts,gan)=>`<div class="cgl${fin&&!gan?" per":""}">${cfbEq(t)}<span class="cgn">${r?`<em>${r}</em>`:""}<b>${cfbEsc(t)}</b><small>${cfbRec(t)}</small></span>${fin||viv?`<span class="cgp">${pts??""}</span>`:""}</div>`;
+  const est=viv?`<b class="cfbv">● ${cfbEsc(g.reloj||"En vivo")}</b>`:fin?`<b>Final</b>`:`<b>${CFB_DTF({weekday:"short"}).format(new Date(g.ko)).replace(".","")} ${cfbHora(g)}</b>`;
+  const meta=[est,g.tv&&!fin?cfbEsc(g.tv):"",!fin&&cfbLinea(g)?cfbLinea(g):"",!fin&&g.ln?.ou?`O/U ${g.ln.ou}`:"",extra||""].filter(Boolean).join('<i class="cgd">·</i>');
+  return `<button class="cg${grande?" cgbig":""}${viv?" cgviv":""}" data-cfbg="${g.id}">${grande?`<span class="cgk">Partido de la semana${g.n?` · ${cfbEsc(g.n)}`:""}</span>`:g.n?`<span class="cgk">${cfbEsc(g.n)}</span>`:""}
+    ${lado(g.a,g.ar,g.ap,ga)}${lado(g.h,g.hr,g.hp,gh)}
+    ${wp!=null?`<div class="cgwp" title="Probabilidad de ganar"><span>${100-wp}%</span><span class="cgwb"><i style="flex:${100-wp}"></i><i style="flex:${wp}"></i></span><span>${wp}%</span></div>`:""}
+    <div class="cgm">${meta}</div></button>`;
+}
+function cfbJuegosHTML(C){
+  const esta=C.games.filter(g=>g.w===C.week), ant=C.games.filter(g=>g.w!==C.week).sort((a,b)=>(Math.min(a.hr||99,a.ar||99))-(Math.min(b.hr||99,b.ar||99)));
+  const top=g=>(g.hr&&g.ar?60-g.hr-g.ar:0)+(g.hr||g.ar?25-Math.min(g.hr||99,g.ar||99)/2:0);
+  const fut=esta.filter(g=>!g.ok), dest=fut.length?[...fut].sort((a,b)=>top(b)-top(a))[0]:null;
+  const dias=new Map(); esta.filter(g=>g!==dest).forEach(g=>{ const k=g.ko?CFB_DTF({weekday:"long",day:"numeric",month:"long"}).format(new Date(g.ko)):"Por definir"; if(!dias.has(k)) dias.set(k,[]); dias.get(k).push(g); });
+  let h=`<div class="hh"><h3>Semana ${C.week}</h3></div>`;
+  if(dest&&top(dest)>0) h+=cfbCard(dest,1); else if(dest) dias.set("_",[dest]);
+  for(const [d,G] of dias) h+=`${d==="_"?"":`<h4 class="cgdia">${cap(d)}</h4>`}<div class="cgrid">${G.map(g=>cfbCard(g)).join("")}</div>`;
+  if(!esta.length) h+=`<p class="note">Sin partidos de equipos del Top 25 esta semana.</p>`;
+  if(ant.length) h+=`<div class="hh" style="margin-top:22px"><h3>Resultados de la semana ${C.week-1}</h3></div><div class="cgrid">${ant.map(g=>cfbCard(g)).join("")}</div>`;
+  return h+`<p class="note">Partidos con algún equipo del ranking o entre equipos de las 4 conferencias grandes. Hora del centro de México. Toca un partido para ver la previa o las estadísticas.</p>`;
+}
+const CFB_BX=[["yd","Yardas totales"],["py","Yardas por pase"],["ry","Yardas por tierra"],["fd","Primeros downs"],["d3","Terceros downs"],["to","Pérdidas de balón",1],["pen","Castigos (núm.-yds)",1],["pos","Tiempo de posesión"]];
+async function cfbPartido(id,quiet){
+  const C=await cfbCarga(); const g0=(C?.games||[]).find(x=>String(x.id)===String(id)); if(!g0) return;
+  if(!CFBQ.eq){ try{ CFBQ.eq=await fetch(`datos/cfb_eq.json?v=${Math.floor(Date.now()/36e5)}`).then(r=>r.ok?r.json():null); }catch(e){} }
+  const g=cfbVivoDe(g0), fin=g.ok, viv=g.vivo, pre=!fin&&!viv;
+  const T=t=>C.teams?.[t]||[cfbAb(t),"#555",""];
+  const lado=(t,r)=>`<div class="cdt">${cfbEq(t).replace('class="cfbab"','class="cfbab cfbxl"')}<b class="cfblk" data-cfbeq="${cfbEsc(t)}">${r?`<em>#${r}</em> `:""}${cfbEsc(t)}</b><small>${cfbRec(t)}${T(t)[3]?` · ${cfbEsc(T(t)[3])}`:""}</small></div>`;
+  const centro=pre?`<span class="cdk">${cap(CFB_DTF({weekday:"long",day:"numeric",month:"short"}).format(new Date(g.ko)))}</span><b class="cdh">${cfbHora(g)}</b>`
+    :`<b class="cdm">${g.ap??""} – ${g.hp??""}</b><span class="cdk">${viv?`<b class="cfbv">● ${cfbEsc(g.reloj||"En vivo")}</b>`:"Final"}</span>`;
+  const info=[g.n,g.v?(g.neu?`${g.v} (cancha neutral)`:g.v):"",g.tv?`TV: ${g.tv}`:"",g.cg?"Partido de conferencia":""].filter(Boolean);
+  let b=`<div class="cdhead">${lado(g.a,g.ar)}<div class="cdc">${centro}</div>${lado(g.h,g.hr)}</div>${info.length?`<p class="cdinfo">${info.map(cfbEsc).join(" · ")}</p>`:""}`;
+  // en la quiniela colegial
+  try{ const TB=await cfbTabla(), J=TB?.w?.[g.w]; if(J&&(J.g||[]).some(x=>String(x[0])===String(g.id))&&J.pr*1000>Date.now()) b+=`<button class="btn cdq" data-cfbqir="1">🏟️ Este partido está en la Quiniela colegial: escoge</button>`; }catch(e){}
+  const caja=(t,x)=>`<div class="dbox"><span class="dk">${t}</span>${x}</div>`;
+  const barra=(l,a,h_,inv)=>{ const A=parseFloat(a)||0, H=parseFloat(h_)||0; return `<div class="dbl"><b class="${(inv?A<H:A>H)?"w":""}">${cfbEsc(a)}</b><span>${l}</span><b class="${(inv?H<A:H>A)?"w":""}">${cfbEsc(h_)}</b></div><div class="dpb"><i style="flex:${Math.max(A,.01)}"></i><i style="flex:${Math.max(H,.01)}"></i></div>`; };
+  const leyenda=`<div class="grleg"><span><i style="background:var(--mark)"></i>${cfbEsc(g.a)}</span><span><i style="background:var(--alt)"></i>${cfbEsc(g.h)}</span></div>`;
+  if(fin||viv){
+    if(g.ls){ const n=Math.max(g.ls[0].length,g.ls[1].length), q=i=>i<4?`${i+1}º`:i===4?"TE":`TE${i-3}`;
+      b+=caja("Marcador por cuarto",`<div class="tbl"><table class="cdls"><thead><tr><th class="l"></th>${Array.from({length:n},(_,i)=>`<th>${q(i)}</th>`).join("")}<th>Total</th></tr></thead><tbody>
+        ${[[g.a,g.ls[1],g.ap],[g.h,g.ls[0],g.hp]].map(([t,L,tot])=>`<tr><td class="l">${cfbEsc(cfbAb(t))}</td>${Array.from({length:n},(_,i)=>`<td>${L[i]??"–"}</td>`).join("")}<td><b>${tot??""}</b></td></tr>`).join("")}</tbody></table></div>`); }
+    if(fin&&g.ln?.sp!=null&&g.hp!=null){ const dif=(g.hp-g.ap)-g.ln.sp, cub=dif>0?g.h:dif<0?g.a:null, tot=g.hp+g.ap;
+      b+=caja("Contra la línea",`<p class="grfr">La línea era <b>${cfbLinea(g)}</b>${g.ln.ou?` y el total ${g.ln.ou}`:""}. ${cub?`<b>${cfbEsc(cub)}</b> cubrió`:"Fue empate contra la línea"}${g.ln.ou?`; ${tot>g.ln.ou?"pasó del total (over)":tot<g.ln.ou?"quedó abajo del total (under)":"empató el total"}`:""}.</p>`); }
+    const X=g.bx; if(X?.h&&X?.a){ const pen=v=>String(v||"").replace(/^(\d+)-(\d+)$/,"$1-$2");
+      b+=caja("Estadísticas del partido",leyenda+CFB_BX.filter(([k])=>X.a[k]!=null||X.h[k]!=null).map(([k,l,inv])=>{ let a=X.a[k]??"0", h_=X.h[k]??"0";
+        if(k==="d3"){ const pc=v=>{ const m=String(v).match(/(\d+)-(\d+)/); return m&&+m[2]?Math.round(100*m[1]/m[2]):0; }; return barra(`${l} (${a} · ${h_})`,pc(a)+"%",pc(h_)+"%"); }
+        if(k==="pos"){ const sg=v=>{ const m=String(v).match(/(\d+):(\d+)/); return m?(+m[1])*60+(+m[2]):0; }; const A=sg(a),H=sg(h_); return `<div class="dbl"><b class="${A>H?"w":""}">${cfbEsc(a)}</b><span>${l}</span><b class="${H>A?"w":""}">${cfbEsc(h_)}</b></div><div class="dpb"><i style="flex:${A||1}"></i><i style="flex:${H||1}"></i></div>`; }
+        if(k==="pen"){ const n=v=>+(String(v).split("-")[1]||0); return `<div class="dbl"><b class="${n(a)<n(h_)?"w":""}">${cfbEsc(pen(a))}</b><span>${l}</span><b class="${n(h_)<n(a)?"w":""}">${cfbEsc(pen(h_))}</b></div><div class="dpb"><i style="flex:${n(a)||.01}"></i><i style="flex:${n(h_)||.01}"></i></div>`; }
+        return barra(l,a,h_,inv); }).join("")); }
+    if(g.ld&&(g.ld.a?.length||g.ld.h?.length)) b+=caja("Líderes del partido",[[g.a,g.ld.a],[g.h,g.ld.h]].filter(([,L])=>L?.length).map(([t,L])=>`<div class="cdld"><b>${cfbEq(t)}${cfbEsc(t)}</b><ul>${L.map(([tp,n,tx])=>`<li><span class="pp">${cfbEsc(tp)}</span><b>${cfbEsc(n)}</b> <small>${cfbEsc(tx)}</small></li>`).join("")}</ul></div>`).join(""));
+    if(!g.ls&&!X&&!g.ld) b+=`<p class="note">Las estadísticas completas llegan unas horas después del partido.</p>`;
+  }
+  if(pre||fin){
+    const P=[];
+    if(g.ln?.sp!=null||g.wp!=null){ const wp=g.wp!=null?Math.round(g.wp*100):null;
+      P.push(caja(fin?"Antes del partido":"Las Vegas y las probabilidades",`${g.ln?.sp!=null?`<p class="grfr">Favorito: <b>${cfbLinea(g)}</b>${g.ln.ou?` · total de puntos ${g.ln.ou}`:""}</p>`:""}${wp!=null?`${leyenda}<div class="dbl"><b class="${wp<50?"w":""}">${100-wp}%</b><span>Probabilidad de ganar</span><b class="${wp>50?"w":""}">${wp}%</b></div><div class="dpb"><i style="flex:${100-wp}"></i><i style="flex:${wp}"></i></div>`:""}<p class="grnota">Línea ${cfbEsc(g.ln?.pv||"de consenso")} y probabilidad de College Football Data.</p>`)); }
+    const forma=t=>{ const E=CFBQ.eq?.eq?.[t]; const L=(E?.g||[]).filter(r=>r[5]&&r[3]!=null).slice(-5).reverse(); if(!L.length) return "";
+      return `<div class="cdfo"><b>${cfbEq(t)}${cfbEsc(t)} <small>${E.r||""}</small></b><ul>${L.map(r=>{ const w=r[3]>r[4]; return `<li><i class="fchip ${w?"g":"p"}">${w?"G":"P"}</i><span>${r[2]===1?"vs":r[2]===0?"en":"vs"} ${cfbEsc(r[1])}</span><b>${r[3]}-${r[4]}</b></li>`; }).join("")}</ul></div>`; };
+    if(pre){ const f=forma(g.a)+forma(g.h); if(f) P.push(caja("Así llegan (últimos 5)",f)); }
+    const pros=t=>(C.pros||[]).filter(p=>p.t===t).slice(0,3);
+    const PR=[[g.a,pros(g.a)],[g.h,pros(g.h)]].filter(([,L])=>L.length);
+    if(PR.length) P.push(caja("Prospectos para el Draft de la NFL",PR.map(([t,L])=>`<div class="cdld"><b>${cfbEq(t)}${cfbEsc(t)}</b><ul>${L.map(p=>`<li><span class="pp">${cfbEsc(p.p||p.pos||"")}</span><b>${cfbEsc(p.n)}</b> <small>${[p.r?`${p.r}ª ronda proyectada`:"",p.x||""].filter(Boolean).map(cfbEsc).join(" · ")}</small></li>`).join("")}</ul></div>`).join("")));
+    b+=P.join("");
+  }
+  const keep=quiet?$("#gbody").scrollTop:0;
+  $("#gbody").innerHTML=`<div class="det cfbdet">${b}</div>`; if(quiet) $("#gbody").scrollTop=keep;
+  DLG_CUR={k:"cfb",id:String(id)}; if(!dlg.open){ dlg.showModal(); pzTrack("cfb_partido",{}); }
+}
 async function cfbRender(){
   const box=$("#cfbBody"); if(!box) return; if(!CFB.D) box.innerHTML=pzSkel(4); const C=await cfbCarga();
   if(C?.games?.some(cfbEnVentana)) cfbVivoEscucha();
@@ -7557,18 +7670,9 @@ async function cfbRender(){
     const pols=[...(C.cfp?.length?[["cfp","Ranking del Playoff"]]:[]),["ap","AP Top 25"]]; if(!pols.some(p=>p[0]===CFB.pol)) CFB.pol=pols[0][0];
     const L=C[CFB.pol]||[];
     h+=(pols.length>1?`<div class="drpos" id="cfbPol">${pols.map(([k,n])=>`<button data-pol="${k}" aria-pressed="${k===CFB.pol}">${n}</button>`).join("")}</div>`:"")+
-      `<ol class="cfbl">${L.map(r=>`<li><span class="cfbrk">${r[0]}</span><span class="cfbt">${cfbEq(r[1])}<b class="cfblk" data-cfbeq="${cfbEsc(r[1])}">${cfbEsc(r[1])}</b><small>${cfbEsc(r[2]||"")}</small></span>${r[3]?`<small class="note" style="margin:0">${r[3]} votos al 1º</small>`:""}</li>`).join("")}</ol>
+      cfbTopHTML(C,L,CFB.pol)+`
       <p class="note">${CFB.pol==="cfp"?"Los 12 primeros entrarían hoy al College Football Playoff (los 5 mejores campeones de conferencia tienen lugar asegurado).":"Encuesta de la Associated Press."} Semana ${C.week}.</p>`;
-  } else if(CFB.v==="juegos"){
-    const fmt=g=>{ if(g.ok) return ""; if(!g.ko) return "Por definir"; const d=new Date(g.ko); return d.toLocaleDateString("es-MX",{weekday:"short",day:"numeric",month:"short",timeZone:"America/Mexico_City"})+(g.tbd?"":" · "+d.toLocaleTimeString("es-MX",{hour:"numeric",minute:"2-digit",timeZone:"America/Mexico_City"})); };
-    const fila=g0=>{ const g=cfbVivoDe(g0), ga=g.ok&&g.ap>g.hp, gh=g.ok&&g.hp>g.ap;
-      return `<div class="cfbg"><span class="cfbt ${g.ok?(ga?"gan":"per"):""}">${cfbEq(g.a)}${g.ar?`<span class="rk">${g.ar}</span>`:""}<b class="cfblk" data-cfbeq="${cfbEsc(g.a)}">${cfbEsc(g.a)}</b></span><span class="sc ${ga?"gan":g.ok?"per":""}">${g.ok||g.vivo?g.ap??"":""}</span>
-        <span class="cfbt ${g.ok?(gh?"gan":"per"):""}">${cfbEq(g.h)}${g.hr?`<span class="rk">${g.hr}</span>`:""}<b class="cfblk" data-cfbeq="${cfbEsc(g.h)}">${cfbEsc(g.h)}</b></span><span class="sc ${gh?"gan":g.ok?"per":""}">${g.ok||g.vivo?g.hp??"":""}</span>
-        <span class="meta">${g.vivo?`<b class="cfbv">● En vivo</b> ${cfbEsc(g.reloj)}`:g.ok?"Final":fmt(g)}${g.n?` · ${cfbEsc(g.n)}`:""}</span></div>`; };
-    const esta=C.games.filter(g=>g.w===C.week), ant=C.games.filter(g=>g.w!==C.week);
-    h+=`<div class="hh"><h3>Semana ${C.week}</h3></div><div class="cfbl" style="display:grid;gap:8px">${esta.map(fila).join("")||`<p class="note">Sin partidos de equipos del Top 25 esta semana.</p>`}</div>
-      ${ant.length?`<div class="hh" style="margin-top:20px"><h3>Semana ${C.week-1}</h3></div><div style="display:grid;gap:8px">${ant.map(fila).join("")}</div>`:""}
-      <p class="note">Partidos con algún equipo del ranking o entre equipos de las 4 conferencias grandes. Hora del centro de México.</p>`;
+  } else if(CFB.v==="juegos"){ h+=cfbJuegosHTML(C);
   } else { h+=drProspectos(C,true); }
   box.innerHTML=h;
 }
@@ -7641,7 +7745,9 @@ async function cfbFicha(t){
   if(!dlg.open) dlg.showModal(); pzTrack("cfb_ficha",{});
 }
 document.addEventListener("click",async ev=>{ const t=ev.target; if(!t.closest) return;
-  const fe=t.closest("[data-cfbeq]"); if(fe&&(fe.closest("#ncaa")||fe.closest("#hoyCfb")||fe.closest(".pzp"))){ ev.preventDefault(); return cfbFicha(fe.dataset.cfbeq); }
+  const cg=t.closest("[data-cfbg]"); if(cg&&!t.closest(".cg [data-cfbeq]")){ ev.preventDefault(); return cfbPartido(cg.dataset.cfbg); }
+  if(t.closest("[data-cfbqir]")){ dlg.close(); CFB.v="quiniela"; return navIr("ncaa"); }
+  const fe=t.closest("[data-cfbeq]"); if(fe&&(fe.closest("#ncaa")||fe.closest("#hoyCfb")||fe.closest(".pzp")||fe.closest(".cfbdet"))){ ev.preventDefault(); return cfbFicha(fe.dataset.cfbeq); }
   const qw=t.closest("[data-cfqw]"); if(qw){ CFBQ.w=+qw.dataset.cfqw; return cfbRender(); }
   const q=t.closest("[data-cfq]"); if(q){ const [gid,lado]=q.dataset.cfq.split(":"), TB=await cfbTabla(), w=CFBQ.w, jid=`${TB.s}-${w}`, p={...(await cfbMias(jid))};
     p[gid]=p[gid]===lado?undefined:lado; Object.keys(p).forEach(k=>p[k]===undefined&&delete p[k]); cfbRender(); await cfbGuarda(jid,w,p); pzTrack("cfb_pick",{}); return; }
@@ -7659,15 +7765,14 @@ function cfbEnVentana(g){ const k=Date.parse(g.ko||""); return !g.ok&&isFinite(k
 function cfbVivoDe(g){ const v=CFBV.g[String(g.id)]; if(!v) return g; const per=v[2], q=per>4?"Tiempo extra":per?`${per}º cuarto`:"";
   return {...g,hp:v[0],ap:v[1],ok:v[4]==="fin"?1:g.ok,vivo:v[4]==="vivo",reloj:[q,v[3]].filter(Boolean).join(" · ")}; }
 function cfbVivoEscucha(){ if(CFBV.unsub||!ACCT?.db) return; try{ CFBV.unsub=ACCT.db.doc("vivo/cfb").onSnapshot(d=>{ const x=d.data()||{}; CFBV.g=x.g||{}; CFBV.t=x.t||0;
-  if(document.querySelector("#ncaa:not(.hidden)")&&CFB.v==="juegos") cfbRender(); cfbHoy(); },()=>{}); }catch(e){} }
+  if(document.querySelector("#ncaa:not(.hidden)")&&CFB.v==="juegos") cfbRender(); cfbHoy(); if(dlg.open&&DLG_CUR?.k==="cfb") cfbPartido(DLG_CUR.id,true); },()=>{}); }catch(e){} }
 function cfbHoy(){ const el=$("#hoyCfb"); if(!el||!CFB.D) return;
   const G=(CFB.D.games||[]).map(cfbVivoDe).filter(g=>g.vivo||cfbEnVentana(g)||(g.ok&&CFBV.g[String(g.id)]&&Date.now()-Date.parse(g.ko)<7*36e5));
   if(!G.length){ el.innerHTML=""; return; }
   const sig=drSig(), mios={}; (CFB.D.pros||[]).forEach(p=>{ if(sig.has(p.id)) (mios[p.t]=mios[p.t]||[]).push(p.n); });
   G.sort((a,b)=>(b.vivo-a.vivo)||((mios[b.h]||mios[b.a]?1:0)-(mios[a.h]||mios[a.a]?1:0))||(Math.min(a.hr||99,a.ar||99)-Math.min(b.hr||99,b.ar||99)));
   const lado=(t,r,p,gana)=>`<span class="cfbt ${gana===false?"per":""}">${cfbEq(t)}${r?`<span class="rk">${r}</span>`:""}<b class="cfblk" data-cfbeq="${cfbEsc(t)}">${cfbEsc(t)}</b></span><span class="sc">${p??""}</span>`;
-  el.innerHTML=`<section class="hoysec"><div class="hh"><h3>Colegial ${G.some(g=>g.vivo)?"en vivo":"hoy"}</h3><button class="alink" data-cfbir="1">Ver todo</button></div><div style="display:grid;gap:8px">${G.slice(0,6).map(g=>{ const pr=[...(mios[g.h]||[]),...(mios[g.a]||[])];
-    const ver=g.ok||g.vivo; return `<div class="cfbg">${lado(g.a,g.ar,ver?g.ap:"",g.ok?g.ap>g.hp:undefined)}${lado(g.h,g.hr,ver?g.hp:"",g.ok?g.hp>g.ap:undefined)}<span class="meta">${g.vivo?`<b class="cfbv">● En vivo</b> ${cfbEsc(g.reloj)}`:g.ok?"Final":new Date(g.ko).toLocaleTimeString("es-MX",{hour:"numeric",minute:"2-digit",timeZone:"America/Mexico_City"})}${pr.length?` · ★ Juega ${pr.map(cfbEsc).join(", ")}`:""}</span></div>`; }).join("")}</div></section>`;
+  el.innerHTML=`<section class="hoysec"><div class="hh"><h3>Colegial ${G.some(g=>g.vivo)?"en vivo":"hoy"}</h3><button class="alink" data-cfbir="1">Ver todo</button></div><div class="cgrid">${G.slice(0,6).map(g=>{ const pr=[...(mios[g.h]||[]),...(mios[g.a]||[])]; return cfbCard(g,0,pr.length?`★ Juega ${pr.map(cfbEsc).join(", ")}`:""); }).join("")}</div></section>`;
 }
 // En días de colegial (jueves a sábado, y diciembre-enero por los bowls y el Playoff), la portada se fija si hay partidos.
 setTimeout(async()=>{ try{ const d=new Date(), m=d.getMonth(); if(!([4,5,6].includes(d.getDay())||m===11||m===0)) return;

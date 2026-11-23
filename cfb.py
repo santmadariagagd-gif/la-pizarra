@@ -449,6 +449,75 @@ def heisman(season, fbs, fich):
 
 
 # ---------------------------------------------------------------- todo junto
+STATS_BX = {"totalYards": "yd", "netPassingYards": "py", "rushingYards": "ry", "turnovers": "to", "firstDowns": "fd", "thirdDownEff": "d3",
+            "possessionTime": "pos", "totalPenaltiesYards": "pen", "sacks": "sk", "completionAttempts": "ca", "yardsPerPass": "ypp", "yardsPerRushAttempt": "ypr"}
+LIDER = {"passing": "Pase", "rushing": "Carrera", "receiving": "Recepción"}
+
+
+def detalle(season, w, st, games):
+    """Agrega a cada partido: ln {sp: puntos de ventaja del local (positivo = favorito el local), ou, pv: casa}, wp (prob. del local antes
+    del partido), tv, bx {h:{...}, a:{...}} (estadísticas de equipo) y ld {h:[[tipo, jugador, texto]], a:[...]} (líderes)."""
+    por = {}
+    for x in games: por.setdefault(x["w"], []).append(x)
+    for ww, L in por.items():
+        ttl = 3 if ww == w else 24
+        idx = {x["id"]: x for x in L}
+        for r in get("/lines", ttl, year=season, week=ww, seasonType=st) or []:
+            x = idx.get(g(r, "id"))
+            if not x: continue
+            ls = g(r, "lines") or []
+            ln = next((l for l in ls if str(g(l, "provider")).lower() in ("consensus", "draftkings", "espn bet", "bovada")), ls[0] if ls else None)
+            if ln and g(ln, "spread") is not None:
+                try: x["ln"] = dict(sp=-float(g(ln, "spread")), ou=float(g(ln, "overUnder", "over_under")) if g(ln, "overUnder", "over_under") is not None else None, pv=g(ln, "provider"))
+                except Exception: pass
+        for r in get("/metrics/wp/pregame", ttl, year=season, week=ww, seasonType=st) or []:
+            x = idx.get(g(r, "gameId", "game_id"))
+            if x and g(r, "homeWinProbability", "home_win_probability") is not None: x["wp"] = round(float(g(r, "homeWinProbability", "home_win_probability")), 3)
+        for r in get("/games/media", 24, year=season, week=ww, seasonType=st) or []:
+            x = idx.get(g(r, "id"))
+            if x and g(r, "outlet") and str(g(r, "mediaType", "media_type")).lower() in ("tv", "web", "") and not x.get("tv"): x["tv"] = g(r, "outlet")
+        if not any(x.get("ok") for x in L): continue
+        for r in get("/games/teams", ttl, year=season, week=ww, seasonType=st, classification="fbs") or []:
+            x = idx.get(g(r, "id"))
+            if not x: continue
+            bx = {}
+            for t in g(r, "teams") or []:
+                lado = "h" if (g(t, "homeAway", "home_away") == "home") else "a"
+                d = {}
+                for s_ in g(t, "stats") or []:
+                    k = STATS_BX.get(g(s_, "category"))
+                    if k: d[k] = g(s_, "stat")
+                bx[lado] = d
+            if bx: x["bx"] = bx
+        for r in get("/games/players", ttl, year=season, week=ww, seasonType=st, classification="fbs") or []:
+            x = idx.get(g(r, "id"))
+            if not x: continue
+            ld = {}
+            for t in g(r, "teams") or []:
+                lado = "h" if (g(t, "homeAway", "home_away") == "home") else "a"; out = []
+                for c in g(t, "categories") or []:
+                    nom = g(c, "name")
+                    if nom not in LIDER: continue
+                    tipos = {g(tp, "name"): {g(a_, "name"): g(a_, "stat") for a_ in g(tp, "athletes") or []} for tp in g(c, "types") or []}
+                    yd = tipos.get("YDS") or {}
+                    if not yd: continue
+                    try: top = max(yd, key=lambda n: float(yd[n] or 0))
+                    except Exception: continue
+                    ex = []
+                    if nom == "passing" and tipos.get("C/ATT", {}).get(top): ex.append(f"{tipos['C/ATT'][top]}")
+                    if nom == "rushing" and tipos.get("CAR", {}).get(top): ex.append(f"{tipos['CAR'][top]} acarreos")
+                    if nom == "receiving" and tipos.get("REC", {}).get(top): ex.append(f"{tipos['REC'][top]} recepciones")
+                    ex.append(f"{yd[top]} yardas")
+                    td = (tipos.get("TD") or {}).get(top)
+                    if td and str(td) != "0": ex.append(f"{td} TD")
+                    if nom == "passing" and (tipos.get("INT") or {}).get(top) not in (None, "0", 0): ex.append(f"{tipos['INT'][top]} INT")
+                    out.append([LIDER[nom], top, ", ".join(ex)])
+                ld[lado] = out
+            if ld: x["ld"] = ld
+    n = lambda k: sum(1 for x in games if x.get(k))
+    print(f"Colegial: detalle → línea {n('ln')}, probabilidad {n('wp')}, TV {n('tv')}, estadísticas {n('bx')}, líderes {n('ld')}, marcador por cuarto {n('ls')}")
+
+
 def arma(season, nfl):
     """nfl = {rec: {equipo: [w, l, t]}, sos: {equipo: float}, nec: {equipo: [posiciones]}}"""
     if not KEY and not os.path.isdir(CACHE):
@@ -457,7 +526,7 @@ def arma(season, nfl):
     teams = {g(t, "school"): t for t in (get("/teams/fbs", 24 * 30, year=season) or [])}
     usados = set()
     # rankings
-    ap, cfp = [], []
+    ap, cfp, apv, cfpv = [], [], [], []
     RK = get("/rankings", 6, year=season, seasonType=st) or get("/rankings", 6, year=season) or []
     if RK:
         # cada encuesta con su semana más reciente (el ranking del comité sale el martes; la AP del domingo puede ir una semana adelante)
@@ -465,8 +534,12 @@ def arma(season, nfl):
           for pol in g(ult, "polls") or []:
             nom = g(pol, "poll") or ""
             L = [[g(r, "rank"), g(r, "school"), g(r, "conference"), g(r, "firstPlaceVotes", "first_place_votes") or 0] for r in sorted(g(pol, "ranks") or [], key=lambda r: g(r, "rank") or 99)]
-            if nom.startswith("AP"): ap = L[:25]
-            elif "Playoff" in nom: cfp = L[:25]
+            if nom.startswith("AP"): apv, ap = ap, L[:25]
+            elif "Playoff" in nom: cfpv, cfp = cfp, L[:25]
+    # lugar de la semana anterior en la misma encuesta (5º campo; None = no estaba)
+    for L, P in ((ap, apv), (cfp, cfpv)):
+        pv = {r[1]: r[0] for r in P}
+        for r in L: r.append(pv.get(r[1]) if P else -1)
     rank = {r[1]: r[0] for r in (cfp or ap)}
     cfp12 = playoff(cfp or ap, "cfp" if cfp else "ap")
     try:
@@ -484,11 +557,21 @@ def arma(season, nfl):
             h, a = g(x, "homeTeam", "home_team"), g(x, "awayTeam", "away_team")
             if "fbs" not in (str(g(x, "homeClassification", "home_classification")) + str(g(x, "awayClassification", "away_classification"))).lower(): continue
             if not (rank.get(h) or rank.get(a)) and not (g(x, "homeConference", "home_conference") in POWER and g(x, "awayConference", "away_conference") in POWER): continue
-            games.append(dict(id=g(x, "id"), w=ww, ko=g(x, "startDate", "start_date"), tbd=1 if g(x, "startTimeTBD", "start_time_tbd") else 0,
+            G1 = dict(id=g(x, "id"), w=ww, ko=g(x, "startDate", "start_date"), tbd=1 if g(x, "startTimeTBD", "start_time_tbd") else 0,
                               h=h, a=a, hp=g(x, "homePoints", "home_points"), ap=g(x, "awayPoints", "away_points"), ok=1 if g(x, "completed") else 0,
-                              hr=rank.get(h), ar=rank.get(a), n=g(x, "notes") or ""))
+                              hr=rank.get(h), ar=rank.get(a), n=g(x, "notes") or "")
+            v = g(x, "venue"); ls = [g(x, "homeLineScores", "home_line_scores"), g(x, "awayLineScores", "away_line_scores")]
+            if v: G1["v"] = v
+            if g(x, "neutralSite", "neutral_site"): G1["neu"] = 1
+            if g(x, "conferenceGame", "conference_game"): G1["cg"] = 1
+            if all(isinstance(l, list) and l for l in ls): G1["ls"] = ls
+            games.append(G1)
             usados |= {h, a}
     games.sort(key=lambda x: (x["w"], x["ko"] or ""))
+    # Detalle de los partidos (23 nov 2026): línea de Las Vegas, probabilidad, canal, estadísticas y líderes. Una consulta por semana
+    # por cada dato (semana actual cada 3 h, la anterior cada 24 h).
+    try: detalle(season, w, st, games)
+    except Exception as e: print("Colegial: detalle de partidos no se pudo:", repr(e)[:200])
     pros, nota = [], ""
     try: pros, nota = tablero(season, set(teams))
     except Exception as e: print("Colegial: tablero de prospectos no se pudo:", repr(e)[:200])
@@ -508,5 +591,6 @@ def arma(season, nfl):
             r = nfl["rec"][t]; order.append([i, t, f"{r[0]}-{r[1]}" + (f"-{r[2]}" if r[2] else ""), (nfl.get("nec") or {}).get(t, [])])
     lim = sum(v for k, v in (_uso()[1]).items() if k == _uso()[2])
     print(f"Colegial: semana {w} ({st}), {len(games)} partidos, AP {len(ap)}, CFP {len(cfp)}, {len(pros)} prospectos; consultas este mes: {lim}/{TOPE_MES}")
-    return dict(al=datetime.now(timezone.utc).isoformat()[:16], season=season, week=w, st=st, ap=ap, cfp=cfp, games=games, teams=T, pros=pros,
+    rec = {t: e.get("r") for t, e in ((FICH or {}).get("eq") or {}).items() if t in T and e.get("r")}
+    return dict(al=datetime.now(timezone.utc).isoformat()[:16], season=season, week=w, st=st, ap=ap, cfp=cfp, games=games, teams=T, pros=pros, rec=rec,
                 draft=dict(y=season + 1, order=order, nota=nota), cfp12=cfp12, heisman=HZ)
