@@ -8249,7 +8249,7 @@ async function pzImagen(o){
 // amarillo). Sin logos (las imágenes de otros dominios no se pueden pasar al canvas): abreviaturas.
 // filas: [{a, b, k}] → a y b = equipos (local, visita en Liga MX; visita @ local en NFL), k = "a" | "b" | "E" (lo que escogiste), x = texto extra (línea)
 async function picksImagen(kick,titulo,filas,modo){
-  const W=1080, n=filas.length, rh=n>10?74:n>6?96:110, H=Math.max(1350,430+n*rh+230), c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  const W=1080, n=modo==="llave"?0:filas.length, rh=n>10?74:n>6?96:110, H=modo==="llave"?1350:Math.max(1350,430+n*rh+230), c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
   try{ await Promise.all(['800 100px "Barlow Condensed"','700 40px "Barlow Condensed"','400 40px "Barlow"'].map(f=>document.fonts.load(f))); }catch(e){}
   const Fn=(w,sz,fam="Barlow Condensed")=>`${w} ${sz}px "${fam}", "Arial Narrow", Arial, sans-serif`, P=72;
   x.fillStyle="#1F332D"; x.fillRect(0,0,W,H);
@@ -8267,7 +8267,8 @@ async function picksImagen(kick,titulo,filas,modo){
   y+=72;
   const box=(bx,by,bw,bh,on,txt,sz)=>{ x.beginPath(); x.roundRect(bx,by,bw,bh,bh/2.6); if(on){ x.fillStyle="#F2D466"; x.fill(); } else { x.strokeStyle="rgba(236,239,231,.28)"; x.lineWidth=2.5; x.stroke(); }
     x.font=Fn(800,sz); x.fillStyle=on?"#15241F":"rgba(236,239,231,.62)"; x.textAlign="center"; x.fillText(txt,bx+bw/2,by+bh/2+sz*.36); x.textAlign="left"; };
-  filas.forEach((f,i)=>{ const yy=y+i*rh, bh=rh-26, sz=Math.round(bh*.5);
+  if(modo==="llave") llaveDibuja(x,y+10,W,P,filas,Fn);
+  else filas.forEach((f,i)=>{ const yy=y+i*rh, bh=rh-26, sz=Math.round(bh*.5);
     if(i%2===0){ x.fillStyle="rgba(255,255,255,.04)"; x.beginPath(); x.roundRect(P-18,yy-6,W-2*P+36,rh-8,22); x.fill(); }
     if(modo==="lista"){ const lw=250; x.font=Fn(700,Math.round(sz*.62)); x.fillStyle="#A8B8AF"; x.fillText(f.l||"",P,yy+4+bh/2+sz*.22);
       box(P+lw,yy+4,W-2*P-lw,bh,!!f.on,f.v,sz); }
@@ -8281,12 +8282,41 @@ async function picksImagen(kick,titulo,filas,modo){
   const yb=H-150; x.textAlign="center"; x.font=Fn(800,62); x.fillStyle="#F2D466"; x.fillText("¿Me ganas?",W/2,yb); x.font=Fn(400,36,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("Haz tus picks gratis en lapizarra.mx",W/2,yb+58); x.textAlign="left";
   return await new Promise(r=>c.toBlob(r,"image/png"));
 }
+// La Llave para compartir (23 nov 2026): se dibuja igual que en la página (cuartos, semis, final y campeón con escudos).
+// Los escudos salen de datos/escudos/{id}.png (mismo sitio; los de api-sports no se pueden pintar en canvas).
+function llaveDibuja(x,y0,W,P,L,Fn){
+  const {sem,q,S,s:fin,c,img}=L, seed=id=>sem.indexOf(id)+1;
+  const colW=[300,300,300], gapC=(W-2*P-colW.reduce((a,b)=>a+b))/2, X=[P,P+colW[0]+gapC,P+colW[0]+colW[1]+2*gapC];
+  x.font=Fn(700,26); x.fillStyle="#A8B8AF"; ["CUARTOS","SEMIS","FINAL"].forEach((t,i)=>x.fillText(t,X[i]+6,y0+10));
+  const y=y0+36, rH=62, mGap=12, mH=2*rH+mGap+20, sep=28;   // alto de un renglón, de una serie y separación entre series
+  const caja=(bx,by,bw,bh,r,fill,stroke,lw)=>{ x.beginPath(); x.roundRect(bx,by,bw,bh,r); if(fill){ x.fillStyle=fill; x.fill(); } if(stroke){ x.strokeStyle=stroke; x.lineWidth=lw||3; x.stroke(); } };
+  const escudo=(id,cx,cy,r)=>{ const im=img[id]; if(im){ x.drawImage(im,cx-r,cy-r,2*r,2*r); return; }
+    x.beginPath(); x.arc(cx,cy,r,0,7); x.fillStyle="#3A554C"; x.fill(); x.font=Fn(700,r*.8); x.fillStyle="#ECEFE7"; x.textAlign="center"; x.fillText((qmxEq(id).ab||"?").slice(0,3),cx,cy+r*.3); x.textAlign="left"; };
+  const fila=(id,bx,by,bw,gana)=>{ caja(bx,by,bw,rH,18,gana?"rgba(242,212,102,.10)":"rgba(255,255,255,.04)",gana?"#F2D466":null,4);
+    if(id==null){ x.font=Fn(700,30); x.fillStyle="rgba(168,184,175,.6)"; x.fillText("?",bx+24,by+rH/2+11); return; }
+    x.font=Fn(700,28); x.fillStyle="#A8B8AF"; x.fillText(String(seed(id)),bx+20,by+rH/2+10);
+    escudo(id,bx+86,by+rH/2,22); x.font=Fn(800,34); x.fillStyle="#ECEFE7"; x.fillText(qmxEq(id).ab||qmxEq(id).n.slice(0,3).toUpperCase(),bx+122,by+rH/2+12); };
+  const serie=(a,b,gan,bx,by,bw)=>{ caja(bx,by,bw,mH,24,"rgba(255,255,255,.035)","rgba(236,239,231,.10)",2); fila(a,bx+10,by+10,bw-20,gan!=null&&gan===a); fila(b,bx+10,by+10+rH+mGap,bw-20,gan!=null&&gan===b); };
+  const guion=(x1,y1,x2)=>{ x.save(); x.setLineDash([10,8]); x.strokeStyle="rgba(242,212,102,.7)"; x.lineWidth=4; x.beginPath(); x.moveTo(x1,y1); x.lineTo(x2,y1); x.stroke(); x.restore(); };
+  const yQ=i=>y+i*(mH+sep);
+  LLAVE_QF.forEach(([a,b],i)=>{ serie(sem[a],sem[b],q[i],X[0],yQ(i),colW[0]); guion(X[0]+colW[0]+4,yQ(i)+mH/2,X[1]-4); });
+  const yS=[ (yQ(0)+yQ(1))/2, (yQ(2)+yQ(3))/2 ];
+  [0,1].forEach(i=>{ const pr=S?S[i]:[null,null]; serie(pr[0],pr[1],fin?.[i],X[1],yS[i],colW[1]); guion(X[1]+colW[1]+4,yS[i]+mH/2,X[2]-4); });
+  const yF=yS[0]+mH/2-10; serie(fin?.[0],fin?.[1],c,X[2],yF,colW[2]);
+  // campeón
+  const cy=yF+mH+40, ch=yS[1]+mH-cy; const g=x.createLinearGradient(0,cy,0,cy+ch); g.addColorStop(0,"rgba(242,212,102,.22)"); g.addColorStop(1,"rgba(242,212,102,.06)");
+  caja(X[2],cy,colW[2],ch,26,g,"#F2D466",4);
+  const mx=X[2]+colW[2]/2; x.textAlign="center"; x.font=Fn(400,64,"Barlow"); x.fillText("🏆",mx,cy+72);
+  if(c!=null) escudo(c,mx,cy+122,30);
+  x.textAlign="center"; x.font=Fn(400,30,"Barlow"); x.fillStyle="#C9D6CF"; x.fillText("Mi campeón",mx,cy+ch-74);
+  x.font=Fn(800,46); x.fillStyle="#ECEFE7"; x.fillText(c!=null?qmxEq(c).n:"?",mx,cy+ch-26); x.textAlign="left";
+}
 async function picksCompartirLlave(){
   const L=qmxD().L, x=qmxMios("llave"), P=x.p&&!Array.isArray(x.p)?x.p:{}; if(!L) return;
-  const nm=id=>{ if(id==null) return "?"; const E=qmxEq(+id); return E.n.length>16?(E.ab||E.n.slice(0,3).toUpperCase()):E.n; };
-  const F=[...[0,1,2,3].map(i=>({l:i?"":"Semis",v:nm((P.q||[])[i])})),...[0,1].map(i=>({l:i?"":"Final",v:nm((P.s||[])[i])})),{l:"Campeón",v:"🏆 "+nm(P.c),on:P.c!=null}];
+  const sem=(L.sem||[]).map(Number), q=(P.q||[]).map(v=>v==null?null:+v), fin=(P.s||[]).map(v=>v==null?null:+v), c=P.c==null?null:+P.c;
+  const img={}; await Promise.all(sem.map(id=>new Promise(r=>{ const im=new Image(); im.onload=()=>{ img[id]=im; r(); }; im.onerror=r; im.src=`datos/escudos/${id}.png`; setTimeout(r,4000); })));
   pzTrack("compartir_picks",{q:"llave"});
-  pzCompartir(null,"mi-llave",{blob:await picksImagen("Quiniela Liga MX · Apertura 2026","Mi Llave de la Liguilla",F,"lista"),titulo:"Presume tu Llave",texto:"Mi Llave de la Liguilla en La Pizarra. ¿Quién es tu campeón? https://lapizarra.mx/?llave=1"});
+  pzCompartir(null,"mi-llave",{blob:await picksImagen(`Quiniela Liga MX · ${qmxD().n||""}`,"Mi Llave de la Liguilla",{sem,q,S:qmxLlaveSemis(sem,q),s:fin,c,img},"llave"),titulo:"Presume tu Llave",texto:"Mi Llave de la Liguilla en La Pizarra. ¿Quién es tu campeón? https://lapizarra.mx/?llave=1"});
 }
 async function picksCompartirMx(){
   const j=QMX.j, J=qmxD().J[j], mios=qmxMios(j); if(!J) return;

@@ -2407,6 +2407,17 @@ def _qmx():
         x["p"].sort(key=lambda r:(r[1],r[0])); vivos=[r[1] for r in x["p"] if r[6] not in ("PST","CANC","ABD")]
         x["pr"]=min(vivos) if vivos else min(r[1] for r in x["p"])
     out['qmx']={"s":slug,"n":f"{torneo} {año}","y":(F[0].get("league") or {}).get("season"),"J":J}
+    # Escudos de la Liga MX en nuestro sitio (23 nov 2026): las imágenes para compartir (canvas) no pueden usar los de
+    # media.api-sports.io (no dan permiso CORS). Se bajan una sola vez a docs/datos/escudos/{id}.png.
+    try:
+        _de=os.path.join(aqui,'docs','datos','escudos'); os.makedirs(_de,exist_ok=True); _n=0
+        for _id in {r[k] for x in J.values() for r in x["p"] for k in (2,3)}:
+            _f=os.path.join(_de,f"{_id}.png")
+            if os.path.exists(_f): continue
+            _r=urllib.request.Request(f"https://media.api-sports.io/football/teams/{_id}.png",headers={"User-Agent":"lapizarra.mx"})
+            with urllib.request.urlopen(_r,timeout=30) as _x: open(_f,'wb').write(_x.read()); _n+=1
+        if _n: print(f"Escudos de la Liga MX: {_n} nuevos en datos/escudos")
+    except Exception as ex: print("Escudos de la Liga MX:",repr(ex)[:150])
     # ----- Llave de la Liguilla (28 oct 2026) -----
     # Se abre cuando termina la fase regular (o ya hay cuartos en API-Football) y se cierra con el primer partido de cuartos.
     # out['qmx']['L'] = {sem: [ids del 1º al 8º], pr: primer partido de cuartos (o None si no hay horarios), r: {q, s, c}}
