@@ -2157,6 +2157,7 @@ try:
                 json.dump(dict(y=_y,n=_n,p=_p),open('docs/datos/mock_consenso.json','w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
                 print(f"Colegial: consenso de {_n} mocks")
         except Exception as ex: print("Colegial: consenso no se pudo:",repr(ex)[:200])
+        CFB_C=C   # la Quiniela colegial corre más abajo (necesita _alias_uid)
 except Exception as ex:
     print("Colegial: no se pudo armar:",repr(ex)[:300])
 # ----- Momios de fútbol (1X2) de The Odds API -----
@@ -2816,12 +2817,22 @@ def _reto_dia():
             ts=nfl_ts(x)
             if datetime.fromtimestamp(ts,tz).date()!=dia or ts<time.time()+1800: continue
             C.append(dict(tipo="nfl",id=x['id'],ts=ts,h=x['h'],a=x['a'],sp=x.get('sp'),tot=x.get('tot'),p=9+(2 if datetime.fromtimestamp(ts,tz).hour>=18 else 0)))
+        # Colegial (23 nov 2026): los partidos del ranking también pueden ser el reto (sábados, sobre todo)
+        for g in (globals().get('CFB_C') or {}).get('games') or []:
+            if g.get('ok') or not g.get('ko') or g.get('tbd') or not (g.get('hr') or g.get('ar')): continue
+            try: ts=datetime.fromisoformat(g['ko'].replace('Z','+00:00')).timestamp()
+            except Exception: continue
+            if datetime.fromtimestamp(ts,tz).date()!=dia or ts<time.time()+1800: continue
+            a_,b_=g.get('hr') or 99,g.get('ar') or 99
+            C.append(dict(tipo="cfb",id=str(g['id']),ts=ts,h=g['h'],a=g['a'],hn=g['h'],an=g['a'],hr=g.get('hr'),ar=g.get('ar'),
+                          p=6+(3 if a_<99 and b_<99 else 0)+(2 if min(a_,b_)<=10 else 0)))
         return sorted(C,key=lambda c:(-c['p'],c['ts']))
     def arma(dia):
         C=candidatos(dia)
         if not C: return None
         c=C[0]; n=dia.toordinal()
         if c["tipo"]=="fut": c["q"]=["gana","goles","ambos"][n%3]
+        elif c["tipo"]=="cfb": c["q"]="gana"
         else:
             c["q"]=["spread","total"][n%2]
             if c["q"]=="spread" and not c.get("sp"): c["q"]="gana" if not c.get("tot") else "total"
@@ -2848,6 +2859,10 @@ def _reto_dia():
             if gh is None or ga is None: continue
             c["gh"],c["ga"]=gh,ga
             c["res"]={"gana":"a" if gh>ga else "b" if gh==ga else "c","goles":"a" if gh+ga>2.5 else "b","ambos":"a" if gh>0 and ga>0 else "b"}[c["q"]]
+        elif c["tipo"]=="cfb":
+            g=next((g for g in (globals().get('CFB_C') or {}).get('games') or [] if str(g.get('id'))==c["id"]),None)
+            if not g or not g.get('ok') or g.get('hp') is None: continue
+            c["gh"],c["ga"]=g['hp'],g['ap']; c["res"]="a" if g['hp']>g['ap'] else "c" if g['ap']>g['hp'] else "x"
         else:
             x=next((s for s in out.get('sched') or [] if s.get('id')==c["id"]),None)
             if not x or x.get('hs') is None: continue
@@ -2902,6 +2917,17 @@ try:
     _reto_dia()
 except Exception as ex:
     _pz_err("Reto del día",ex)
+
+# ----- Quiniela colegial y Llave del Playoff (23 nov 2026): cfb_juegos.py -----
+try:
+    if os.environ.get('FIREBASE_SA','') and globals().get('CFB_C'):
+        import cfb_juegos
+        import firebase_admin
+        from firebase_admin import credentials, firestore as _fs
+        if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(os.environ['FIREBASE_SA'])))
+        _db=_fs.client(); cfb_juegos.corre(CFB_C,_db,lambda uid:_alias_uid(_db,uid),aqui)
+except Exception as ex:
+    _pz_err("Quiniela colegial",ex)
 
 # ----- Duelos uno contra uno (28 oct 2026) -----
 # Firestore duelos/{tipo}-{k}_{uidA}_{uidB} = {u, de, tipo: mx | fan | rd, k, e, n:{uid: nombre}, cierre, est, t}. Cuando termina

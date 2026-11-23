@@ -108,7 +108,7 @@ def reclutas(desde, hasta):
     return rec, porn
 
 
-def candidatos(season, fbs=None, ttl=20, actual=True):
+def candidatos(season, fbs=None, ttl=20, actual=True, todos_=False):
     """Jugadores con sus rasgos: pr (producción z por posición), tal (z de recluta), cp (1 si no es Power 4), ypc (OL: z de la
     carrera de su equipo), elegibilidad. Mismo cálculo para la temporada actual y para las pasadas (con las que se calibra)."""
     stats = [x for x in (get("/stats/player/season", ttl, year=season) or []) if not fbs or g(x, "team") in fbs]
@@ -157,7 +157,7 @@ def candidatos(season, fbs=None, ttl=20, actual=True):
     grupos = defaultdict(list)
     for pid, j in J.items():
         p = POS.get((j.get("pos") or (R.get(pid) or {}).get("pos") or "").upper())
-        if not p or elegible(pid) is False: continue
+        if not p or (elegible(pid) is False and not todos_): continue
         if p in ("DL", "EDGE") and (S(j, "defensive.SACKS") or 0) >= 4: p = "EDGE" if p == "EDGE" or (S(j, "defensive.SACKS") or 0) >= 6 else p
         j["p"] = p; j["id"] = pid; grupos[p].append(j)
     def prod(p, L):
@@ -392,6 +392,62 @@ def playoff(L, fuente):
     return dict(f=fuente, s=[[i + 1, r[1], r[0], auto.get(r[1], "Invitado por ranking"), r[2]] for i, r in enumerate(campo)])
 
 
+# ---------------------------------------------------------------- ficha de equipo (23 nov 2026)
+def fichas(season, teams, RK):
+    """docs/datos/cfb_eq.json: de cada equipo FBS, récord, partidos de la temporada y su ranking semana a semana."""
+    G = (get("/games", 6, year=season, seasonType="regular") or []) + (get("/games", 6, year=season, seasonType="postseason") or [])
+    E = {}
+    for x in G:
+        h, a = g(x, "homeTeam", "home_team"), g(x, "awayTeam", "away_team")
+        hp, ap = g(x, "homePoints", "home_points"), g(x, "awayPoints", "away_points"); ok = 1 if g(x, "completed") else 0
+        neu = 1 if g(x, "neutralSite", "neutral_site") else 0
+        for t, o, loc, pf, pc in ((h, a, 2 if neu else 1, hp, ap), (a, h, 2 if neu else 0, ap, hp)):
+            if t not in teams: continue
+            E.setdefault(t, {"g": []})["g"].append([g(x, "week"), o, loc, pf, pc, ok, g(x, "startDate", "start_date"), (g(x, "notes") or "")[:40],
+                                                   1 if g(x, "seasonType", "season_type") == "postseason" else 0])
+    for t, e in E.items():
+        e["g"].sort(key=lambda r: (r[8], r[6] or ""))
+        gan = sum(1 for r in e["g"] if r[5] and r[3] is not None and r[4] is not None and r[3] > r[4])
+        per = sum(1 for r in e["g"] if r[5] and r[3] is not None and r[4] is not None and r[3] < r[4])
+        e["r"] = f"{gan}-{per}"; e["c"] = g(teams[t], "conference") or ""
+    for sem in RK or []:
+        if g(sem, "seasonType", "season_type") != "regular": continue
+        w = g(sem, "week")
+        for pol in g(sem, "polls") or []:
+            nom = g(pol, "poll") or ""; k = 1 if nom.startswith("AP") else 2 if "Playoff" in nom else 0
+            if not k: continue
+            for r in g(pol, "ranks") or []:
+                t = g(r, "school")
+                if t in E:
+                    rk = E[t].setdefault("rk", {}); rk.setdefault(str(w), [None, None])[k - 1] = g(r, "rank")
+    T = {s_: [g(t, "abbreviation") or s_[:4].upper(), g(t, "color") or "#555555", (g(t, "logos") or [""])[0], g(t, "conference") or "", g(t, "mascot") or ""] for s_, t in teams.items()}
+    return {"s": season, "eq": E, "teams": T}
+
+
+# ---------------------------------------------------------------- carrera al Heisman (23 nov 2026)
+def heisman(season, fbs, fich):
+    """Índice de La Pizarra: producción en su posición (z), récord de su equipo y su ranking. QB pesa más (así vota la gente)."""
+    C = candidatos(season, fbs, todos_=True)
+    rec = {}
+    for t, e in (fich or {}).get("eq", {}).items():
+        try: w_, l_ = map(int, e.get("r", "0-0").split("-")); rec[t] = w_ / max(1, w_ + l_)
+        except Exception: pass
+    rk_ult = {}
+    for t, e in (fich or {}).get("eq", {}).items():
+        R = e.get("rk") or {}
+        if R:
+            w_ = max(R, key=int); rk_ult[t] = R[w_][1] or R[w_][0]
+    L = []
+    for j in C:
+        if j["p"] not in ("QB", "RB", "WR", "TE") or j.get("ol"): continue
+        r = rk_ult.get(j["t"])
+        hz = j["pr"] + {"QB": 0.6, "RB": 0.1, "WR": 0.0, "TE": -0.3}[j["p"]] + 1.6 * (rec.get(j["t"], 0.5) - 0.5) + (0.6 if r and r <= 10 else 0.3 if r else 0) - 0.5 * j["cp"]
+        L.append((hz, j))
+    L.sort(key=lambda x: -x[0])
+    return [dict(n=j["n"], p=j["p"], t=j["t"], x=_linea(j), hz=round(hz, 2), rec=(fich or {}).get("eq", {}).get(j["t"], {}).get("r", ""), rk=rk_ult.get(j["t"]))
+            for hz, j in L[:12]]
+
+
 # ---------------------------------------------------------------- todo junto
 def arma(season, nfl):
     """nfl = {rec: {equipo: [w, l, t]}, sos: {equipo: float}, nec: {equipo: [posiciones]}}"""
@@ -404,14 +460,22 @@ def arma(season, nfl):
     ap, cfp = [], []
     RK = get("/rankings", 6, year=season, seasonType=st) or get("/rankings", 6, year=season) or []
     if RK:
-        ult = max(RK, key=lambda x: (1 if g(x, "seasonType", "season_type") == "postseason" else 0, g(x, "week") or 0))
-        for pol in g(ult, "polls") or []:
+        # cada encuesta con su semana más reciente (el ranking del comité sale el martes; la AP del domingo puede ir una semana adelante)
+        for ult in sorted(RK, key=lambda x: (1 if g(x, "seasonType", "season_type") == "postseason" else 0, g(x, "week") or 0)):
+          for pol in g(ult, "polls") or []:
             nom = g(pol, "poll") or ""
             L = [[g(r, "rank"), g(r, "school"), g(r, "conference"), g(r, "firstPlaceVotes", "first_place_votes") or 0] for r in sorted(g(pol, "ranks") or [], key=lambda r: g(r, "rank") or 99)]
             if nom.startswith("AP"): ap = L[:25]
             elif "Playoff" in nom: cfp = L[:25]
     rank = {r[1]: r[0] for r in (cfp or ap)}
     cfp12 = playoff(cfp or ap, "cfp" if cfp else "ap")
+    try:
+        FICH = fichas(season, teams, RK)
+        os.makedirs("docs/datos", exist_ok=True)
+        json.dump(FICH, open("docs/datos/cfb_eq.json", "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+    except Exception as e: FICH = None; print("Colegial: fichas de equipo no se pudieron:", repr(e)[:200])
+    try: HZ = heisman(season, set(teams), FICH)
+    except Exception as e: HZ = []; print("Colegial: Heisman no se pudo:", repr(e)[:200])
     # partidos: esta semana y la anterior, solo con algún equipo FBS
     games = []
     for ww, ttl in ((w, 3), (w - 1, 24)):
@@ -445,4 +509,4 @@ def arma(season, nfl):
     lim = sum(v for k, v in (_uso()[1]).items() if k == _uso()[2])
     print(f"Colegial: semana {w} ({st}), {len(games)} partidos, AP {len(ap)}, CFP {len(cfp)}, {len(pros)} prospectos; consultas este mes: {lim}/{TOPE_MES}")
     return dict(al=datetime.now(timezone.utc).isoformat()[:16], season=season, week=w, st=st, ap=ap, cfp=cfp, games=games, teams=T, pros=pros,
-                draft=dict(y=season + 1, order=order, nota=nota), cfp12=cfp12)
+                draft=dict(y=season + 1, order=order, nota=nota), cfp12=cfp12, heisman=HZ)
