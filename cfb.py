@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 BASE = "https://api.collegefootballdata.com"
 KEY = os.environ.get("CFBD_API_KEY", "").strip()
 CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".afcache", "cfbd")
-TOPE_MES = 900
+TOPE_MES = 1500   # Tier 1: 5,000 al mes compartidas; hasta 3,000 son para el marcador en vivo (cfb_vivo.py)
 POWER = {"SEC", "Big Ten", "Big 12", "ACC"}
 
 
@@ -48,7 +48,7 @@ def get(ruta, ttl, **q):
         return viejo["d"] if viejo else None
     try:
         r = urllib.request.Request(url, headers={"Authorization": f"Bearer {KEY}", "Accept": "application/json", "User-Agent": "lapizarra.mx"})
-        with urllib.request.urlopen(r, timeout=40) as x: d = json.loads(x.read().decode())
+        with urllib.request.urlopen(r, timeout=90) as x: d = json.loads(x.read().decode())
         U[mes] = U.get(mes, 0) + 1; json.dump(U, open(p, "w"))
         json.dump({"t": time.time(), "d": d}, open(f, "w"))
         return d
