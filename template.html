@@ -2188,6 +2188,23 @@ dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background
 .hbr span{display:flex;flex-direction:column;min-width:0}.hbr b{font:700 18px/1.15 var(--display)}.hbr small{font-size:13px;color:var(--muted)}
 .hbr em{font:400 22px var(--tab);font-style:normal;white-space:nowrap}
 .hbr:hover{background:rgba(255,255,255,.03)}
+/* Estilo de portada en el resto de la página (24 nov 2026): títulos y pestañas con letra de periódico */
+.headrow h2{font:400 46px/.95 var(--tab);text-transform:uppercase;letter-spacing:.005em}
+.qview{gap:4px;border-bottom:2px solid rgba(236,239,231,.55)}
+.qview button{font:400 18px var(--tab);text-transform:uppercase;letter-spacing:.02em;padding:10px 10px;border-bottom-width:4px;margin-bottom:-2px}
+@media (max-width:480px){.qview{gap:2px}.qview button{font-size:17px;padding:10px 8px}}
+.rjcard{border-color:var(--line);background:var(--surface)}
+/* Retas */
+.rthead{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);padding:6px 0 8px;margin:0 0 18px;display:flex;flex-direction:column-reverse;gap:2px}
+.rthead h2{margin:0;font:400 54px/.95 var(--tab);text-transform:uppercase}.rthead span{font:600 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.rt .hbol{margin-bottom:22px}
+.rtlisto{margin:0;padding:14px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);color:#9FD3A8;font-weight:600}
+.rth3{font:400 26px/1 var(--tab);letter-spacing:.01em;color:var(--ink);border-top:2px solid rgba(236,239,231,.55);padding-top:10px;margin:0 0 10px;align-items:baseline}
+.rth3 small{font:500 12.5px var(--body);letter-spacing:0;text-transform:none;color:var(--muted)}
+.rtcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;min-height:112px;padding:12px 14px;position:relative}
+.rtcard::before{content:"";position:absolute;left:14px;top:0;width:28px;height:3px;border-radius:0 0 3px 3px;background:var(--rc)}
+.rtcard:hover{border-color:#5d7b70}
+.rth b{font:700 20px/1.05 var(--display)}.rte{font-size:17px}
 /* Pestañas de Hoy */
 .htabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:6px 0 16px;border-bottom:2px solid rgba(236,239,231,.55);position:sticky;top:0;z-index:5;background:var(--bg);padding-top:6px}
 .htabs::-webkit-scrollbar{display:none}
@@ -7208,8 +7225,9 @@ async function rtRender(){
     const msg=x.k==="smx"?"Escoge tu equipo":x.k==="fan"?(x.baja?`${x.baja} ${x.baja===1?"jugador":"jugadores"} de baja`:"Arma tu once"):`Te faltan ${x.pend} de ${x.tot} picks`;
     return `<button class="rtur${nv>=2?" late":""}" data-rtir="${x.k}" style="--vc:${VIDA_NIV_COL[nv]}"><span class="rtring"><b>${n}</b><small>${u}</small></span><span class="rtt"><b>${hoyEsc(x.nom)} · ${hoyEsc(x.j)}</b><small>${msg} · cierra ${hoyEsc(qmxHora(x.pr).toLowerCase())}</small></span><i>${x.k==="fan"?"Revisar":"Jugar"}</i></button>`; }).join("");
   const card=(k,e,t,d,c)=>{ const s=st[k]||["",""]; return `<button class="rtcard" data-rtir="${k}" style="--rc:${c}"><span class="rth"><span class="rte">${e}</span><b>${t}</b></span><small>${d}</small><i class="${s[1]}">${hoyEsc(s[0])}</i></button>`; };
-  box.innerHTML=`<div class="rt"><div class="headrow"><h2>Retas</h2></div><p class="note" style="margin:-6px 0 14px">Tus juegos de la semana, en un solo lugar.</p>
-    <section class="rtsec"><h3 class="rth3 hot">Por hacer${urg?"":" · todo listo ✓"}</h3>${urg||`<p class="note">No tienes nada por cerrar en los próximos días.</p>`}</section>
+  const bol=hoyBoletaHTML("todo","data-rtir");
+  box.innerHTML=`<div class="rt"><header class="rthead"><span>Tus juegos de la semana, en un solo lugar</span><h2>Retas</h2></header>
+    ${bol||`<section class="rtsec"><p class="rtlisto">✓ Todo listo: no tienes nada por cerrar en los próximos días.</p></section>`}
     <section class="rtsec"><h3 class="rth3">Quinielas <small>Atínale a quién gana</small></h3><div class="rtgrid">
       ${card("nflq","🏈","Quiniela NFL","Con spread o sin spread","#7FB8E8")}${D.qmx?card("qmx","⚽","Quiniela Liga MX","Local, empate o visita","#F2D466"):""}${card("cfbq","🏟️","Quiniela colegial","Los partidos grandes del sábado","#C9A7F0")}${st.cfbll?card("cfbll","🏆","Llave del Playoff colegial","12 equipos, ¿quién es campeón?","#E8A33D"):""}</div></section>
     <section class="rtsec"><h3 class="rth3">Survivor <small>Un equipo que gane, sin repetir</small></h3><div class="rtgrid">
@@ -11753,8 +11771,8 @@ function hoyPortadaHTML(){
     ${P.grid?.length?`<div class="hpg">${P.grid.map(g=>`<div>${g.s?`<small>${hoyEsc(g.s)}</small>`:""}<b>${hoyEsc(g.t)}</b></div>`).join("")}</div>`:""}
     ${P.cta?`<button class="hpc" data-hir="${P.cta.ir}">${hoyEsc(P.cta.t)}${P.cta.s?`<span>${hoyEsc(P.cta.s)}</span>`:""}</button>`:""}</section>`;
 }
-function hoyBoletaHTML(){
-  const now=Date.now()/1000, f=HOY.f, R=[];
+function hoyBoletaHTML(fx,attr){
+  const now=Date.now()/1000, f=fx||HOY.f, R=[], at=attr||"data-hir";
   if(f!=="nfl") for(const x of vidaCierreDatos()){ if(x.falta<=0||x.falta>6*86400) continue; if(!(x.pend||x.baja)) continue;
     const ir=x.k==="smx"?"smx":x.k;
     R.push({ir,c:"mx",nom:x.k==="qmx"?`Quiniela Liga MX · ${x.j}`:x.k==="llave"?"Llave de la Liguilla":`${x.nom} · ${x.j}`,
@@ -11762,12 +11780,12 @@ function hoyBoletaHTML(){
   if(f!=="fut"){
     try{ if(typeof verNfl!=="function"||verNfl()){ const N=avNfl(); if(N&&N.pr-now<6*86400&&N.mios<N.F.length) R.push({ir:"nflq",c:"nfl",nom:`NFL · Semana ${N.w}`,sub:`${N.mios} de ${N.F.length}${N.nTg?` · ${N.nTg} partidos en Thanksgiving`:` · el primero ${avCuando(N.pr)}`}`,falta:N.pr-now}); } }catch(e){}
     try{ const T=avCfb(); if(T&&T.pr-now<6*86400&&T.mias<T.n) R.push({ir:"cfbq",c:"cfb",nom:`Quiniela colegial · Semana ${T.w}`,sub:`${T.mias} de ${T.n} · cierra ${qmxHora(T.pr).toLowerCase()}`,falta:T.pr-now}); }catch(e){}
-    if(!CFBQ.TB&&!HOY.avcfb){ HOY.avcfb=1; cfbTabla().then(t=>{ if(t) hoyPaint(); }).catch(()=>{}); }
+    if(!CFBQ.TB&&!HOY.avcfb){ HOY.avcfb=1; cfbTabla().then(t=>{ if(t){ hoyPaint(); if(!$("#retas")?.classList.contains("hidden")) rtRender(); } }).catch(()=>{}); }
   }
   if(!R.length) return "";
   R.sort((a,b)=>a.falta-b.falta);
   return `<section class="hbol"><div class="hbolh"><h2>Tu boleta</h2><span>${R.length} ${R.length===1?"pendiente":"pendientes"}</span></div>
-    ${R.map(x=>`<button class="hbr" data-hir="${x.ir}"><span><b>${hoyEsc(x.nom)}</b><small>${hoyEsc(x.sub)}</small></span><em style="color:${BOL_COL[x.c]}${x.falta<7200?";animation:vlate 1.6s ease-in-out infinite":""}">${bolFalta(x.falta)}</em></button>`).join("")}</section>`;
+    ${R.map(x=>`<button class="hbr" ${at}="${x.ir}"><span><b>${hoyEsc(x.nom)}</b><small>${hoyEsc(x.sub)}</small></span><em style="color:${BOL_COL[x.c]}${x.falta<7200?";animation:vlate 1.6s ease-in-out infinite":""}">${bolFalta(x.falta)}</em></button>`).join("")}</section>`;
 }
 // ---- Pestañas de Hoy (23 nov 2026): arriba lo esencial (nota principal, Tu boleta, reto, en vivo); lo demás en 4 pestañas,
 // una a la vez. Se recuerda la última que viste.
