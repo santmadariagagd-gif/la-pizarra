@@ -7240,6 +7240,16 @@ function rtVoy(){ const st={}; const now=Date.now()/1000;
       if(TB.L?.seeds?.length===12) st.cfbll=TB.L.pr>now?["Ya está abierta: llénala","pend"]:["Ya cerró: ve cómo vas",""]; } }catch(e){}
   try{ const q=Q5.lee(); st.q5=q.eq?.length===5?["Tu quinteta está lista","ok"]:["Escoge tus 5 equipos","pend"]; }catch(e){}
   return st; }
+function rtTuyos(){ const T=new Set(), hay=o=>o&&Object.keys(o).length>0;
+  try{ const L=qmxLs(); if(Object.entries(L).some(([k,v])=>!/llave/.test(k)&&hay(v?.p))) T.add("qmx"); }catch(e){}
+  try{ if(hay(smxLs())) T.add("smx"); }catch(e){}
+  try{ if(hay(svMine())) T.add("nflsv"); }catch(e){}
+  try{ const A=qnPicksAll()[D.season]||{}; if(Object.values(A).some(hay)) T.add("nflq"); }catch(e){}
+  try{ const C=cfbLs(); if(Object.entries(C).some(([k,v])=>!/cfp/.test(k)&&hay(v))) T.add("cfbq"); if(Object.entries(C).some(([k,v])=>/cfp/.test(k)&&hay(v))) T.add("cfbll"); }catch(e){}
+  try{ const F=fanLs(); if(Object.keys(F).some(k=>/^UCL/.test(k))) T.add("fanucl"); if(Object.keys(F).some(k=>/^MX/.test(k))) T.add("fanmx"); }catch(e){}
+  try{ if(Q5.lee().eq?.length) T.add("q5"); }catch(e){}
+  try{ const m=JSON.parse(localStorage.getItem("pz_mock")||"null"); if(hay(m?.p)) T.add("mock"); }catch(e){}
+  return T; }
 async function rtRender(){
   const box=$("#rtBody"); if(!box) return;
   if(!CFBQ.TB&&!rtRender.cfb){ rtRender.cfb=1; cfbTabla().then(t=>{ if(t&&!$("#retas").classList.contains("hidden")) rtRender(); }).catch(()=>{}); }
@@ -7248,10 +7258,13 @@ async function rtRender(){
   const urg=L.sort((a,b)=>a.falta-b.falta).map(x=>{ const nv=vidaNivel(x.falta), [n,u]=vidaFalta(x.falta);
     const msg=x.k==="smx"?"Escoge tu equipo":x.k==="fan"?(x.baja?`${x.baja} ${x.baja===1?"jugador":"jugadores"} de baja`:"Arma tu once"):`Te faltan ${x.pend} de ${x.tot} picks`;
     return `<button class="rtur${nv>=2?" late":""}" data-rtir="${x.k}" style="--vc:${VIDA_NIV_COL[nv]}"><span class="rtring"><b>${n}</b><small>${u}</small></span><span class="rtt"><b>${hoyEsc(x.nom)} · ${hoyEsc(x.j)}</b><small>${msg} · cierra ${hoyEsc(qmxHora(x.pr).toLowerCase())}</small></span><i>${x.k==="fan"?"Revisar":"Jugar"}</i></button>`; }).join("");
-  const card=(k,e,t,d,c)=>{ const s=st[k]||["",""]; return `<button class="rtcard" data-rtir="${k}" style="--rc:${c}"><span class="rth"><span class="rte">${e}</span><b>${t}</b></span><small>${d}</small><i class="${s[1]}">${hoyEsc(s[0])}</i></button>`; };
+  // "Los tuyos" (24 nov 2026): arriba los juegos en los que ya estás; en las demás secciones solo quedan los que no juegas
+  const tuyos=rtTuyos(), arriba=[];
+  const cardH=(k,e,t,d,c)=>{ const s=st[k]||["",""]; return `<button class="rtcard" data-rtir="${k}" style="--rc:${c}"><span class="rth"><span class="rte">${e}</span><b>${t}</b></span><small>${d}</small><i class="${s[1]}">${hoyEsc(s[0])}</i></button>`; };
+  const card=(k,e,t,d,c)=>{ if(tuyos.has(k)){ arriba.push(cardH(k,e,t,d,c)); return ""; } return cardH(k,e,t,d,c); };
   const bol=hoyBoletaHTML("todo","data-rtir");
-  box.innerHTML=`<div class="rt"><header class="rthead"><span>Tus juegos de la semana, en un solo lugar</span><h2>Retas</h2></header>
-    ${bol||`<section class="rtsec"><p class="rtlisto">✓ Todo listo: no tienes nada por cerrar en los próximos días.</p></section>`}
+  let html=`<div class="rt"><header class="rthead"><span>Tus juegos de la semana, en un solo lugar</span><h2>Retas</h2></header>
+    ${bol||`<section class="rtsec"><p class="rtlisto">✓ Todo listo: no tienes nada por cerrar en los próximos días.</p></section>`}@@TUYOS@@
     <section class="rtsec"><h3 class="rth3">Quinielas <small>Atínale a quién gana</small></h3><div class="rtgrid">
       ${card("nflq","🏈","Quiniela NFL","Con spread o sin spread","#7FB8E8")}${D.qmx?card("qmx","⚽","Quiniela Liga MX","Local, empate o visita","#F2D466"):""}${card("cfbq","🏟️","Quiniela colegial","Los partidos grandes del sábado","#C9A7F0")}${st.cfbll?card("cfbll","🏆","Llave del Playoff colegial","12 equipos, ¿quién es campeón?","#E8A33D"):""}</div></section>
     <section class="rtsec"><h3 class="rth3">Survivor <small>Un equipo que gane, sin repetir</small></h3><div class="rtgrid">
@@ -7260,6 +7273,10 @@ async function rtRender(){
       ${card("fanucl","⭐","Fantasy Champions","11 jugadores, 80 de presupuesto","#9FD3A8")}${card("fanmx","⭐","Fantasy Liga MX","Nuevo · el mismo juego con la Liga MX","#9FD3A8")}</div></section>
     <section class="rtsec"><h3 class="rth3">Más</h3><div class="rtgrid">
       ${card("q5","🏀","Quinteta NBA","5 equipos, cada victoria suma","#E8A33D")}${card("rd","🎯","Reto del día","Una pregunta diaria, cuida tu racha","#C9A7F0")}${card("mock","📋","Mock draft NFL","Arma tu draft y compáralo con tus amigos","#9CC7E6")}</div></section></div>`;
+  html=html.replace(/<section class="rtsec"><h3 class="rth3">[^<]*(?:<small>[^<]*<\/small>)?<\/h3><div class="rtgrid">\s*<\/div><\/section>/g,"");
+  const tuy=arriba.length?`<section class="rtsec rttuyos"><h3 class="rth3">Los tuyos <small>Los juegos en los que estás</small></h3><div class="rtgrid">${arriba.join("")}</div></section>`:"";
+  html=html.replace("@@TUYOS@@",()=>tuy);
+  box.innerHTML=html;
 }
 function rtIr(k){ pzTrack("retas_ir",{k}); window.scrollTo(0,0);
   if(k==="qmx"){ QMX.vista="picks"; return showTab("qmx"); } if(k==="llave"){ QMX.vista="llave"; return showTab("qmx"); }
