@@ -2380,6 +2380,38 @@ h2{font:400 36px/.98 var(--tab);text-transform:uppercase;letter-spacing:.01em}
 .pzcah i{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--mark);color:#15241F;font:400 15px var(--tab);font-style:normal;animation:pzPop .5s .35s cubic-bezier(.3,1.6,.5,1) both}
 @keyframes pzEntL{from{transform:translateX(-40px);opacity:0}}@keyframes pzEntR{from{transform:translateX(40px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.pzmir i,.pzcah span,.pzcah i{animation:none}}
+
+/* ===== Ideas visuales, tanda 3 ===== */
+.pzcarr svg{display:block;width:100%;max-width:560px;height:auto;margin:8px auto 0}
+.pzcsel{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--muted)}
+.pzcsel select{background:var(--surface,#263D36);color:var(--ink);border:1px solid var(--line,#3A554C);border-radius:10px;padding:8px 10px;font:inherit;min-height:40px}
+.pztemp{margin-bottom:16px}
+.pztg{display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center;margin-top:8px}
+.pzring{position:relative;width:120px;height:120px}.pzring svg{width:120px;height:120px;display:block}
+.pzring>span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.pzring b{font:400 30px/1 var(--tab)}.pzring small{font-size:11.5px;color:var(--muted)}
+.pzrg{stroke-dashoffset:var(--o);animation:pzRg 1.3s ease-out both}@keyframes pzRg{from{stroke-dashoffset:var(--c)}}
+.pztx{display:flex;flex-direction:column;gap:8px;font-size:14px}.pztx b{font:400 24px/1 var(--tab);margin-right:4px}.pztx .pzrh b{color:var(--good)}
+.pzfichas{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.pzfichas i{width:20px;height:20px;border-radius:50%;box-sizing:border-box;animation:pzPop .4s cubic-bezier(.3,1.6,.5,1) both}
+.pzfichas i.s{background:var(--good)}.pzfichas i.r{background:var(--mark)}.pzfichas i.n{border:2px solid var(--bad)}
+.pzjb{display:flex;gap:4px;align-items:flex-end;height:96px;margin-top:14px;border-bottom:1px solid var(--line,#3A554C)}
+.pzjb span{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+.pzjb i{display:block;background:#4B6A5F;border-radius:4px 4px 0 0;transform-origin:bottom;animation:pzSube .7s ease-out both}.pzjb i.b{background:var(--mark)}
+.pzjb small{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted)}
+.pzjb+.grnota{margin-top:24px}
+@keyframes pzSube{from{transform:scaleY(0)}}
+.pzescs{display:flex;flex-direction:column;gap:10px}
+.pzesc{border-radius:16px;background:var(--surface,#263D36);border:1px solid var(--line,#3A554C);padding:12px 14px}
+.pzeh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.pzeh b{font:700 16px var(--body)}
+.pzval{font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;background:#9CC7E6;color:#15241F;border-radius:6px;padding:3px 7px;transform:rotate(-3deg);animation:pzPop .5s .2s cubic-bezier(.3,1.6,.5,1) both}
+.pzeb{display:flex;gap:3px;height:24px;margin-top:8px;border-radius:7px;overflow:hidden}
+.pzeb i{display:grid;place-items:center;background:#4B6A5F;font:700 12px var(--body);font-style:normal;min-width:22px}.pzeb i.mi{background:var(--mark);color:#15241F}.pzeb i.ok{box-shadow:inset 0 0 0 2px var(--good)}
+.pzeq{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px}
+.pzeq span{display:flex;align-items:center;gap:3px;flex-wrap:wrap}.pzeq small{font-size:11.5px;color:var(--muted);margin-right:3px}
+.pzeq em{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;color:#15241F;font:700 10px var(--body);font-style:normal;animation:pzCae .45s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes pzCae{from{transform:translateY(-12px);opacity:0}}
+.pzdet{margin-top:12px}.pzdet summary{cursor:pointer;color:var(--mark);font-weight:600;padding:8px 0}
+@media (prefers-reduced-motion:reduce){.pzrg,.pzfichas i,.pzjb i,.pzval,.pzeq em{animation:none}}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -6174,7 +6206,7 @@ async function loadMxTable(){
         {k:"n",h:"Equipo",l:1,f:r=>`${r.logo?`<img src="${r.logo}" alt="" width="20" height="20" style="vertical-align:-4px;margin-right:8px">`:""}<span class="nm"${usaAF(LEAGUES[FLIG])&&r.id?` data-eqf="${r.id}"`:""}>${r.n}</span>`,asc:1},
         {k:"pts",h:"Puntos"},{k:"pj",h:"PJ"},{k:"g",h:"G"},{k:"e",h:"E"},{k:"p",h:"P",asc:1},{k:"gf",h:"GF"},{k:"gc",h:"GC",asc:1},{k:"dg",h:"Dif.",f:r=>r.dg==null?"–":(r.dg>0?"+":"")+r.dg}],rows,this)}};
       st.render(); MX_TABLE_ROWS=rows; if(LEAGUES[FLIG].liguilla&&mxLgLoaded) renderMxBracket(rows);
-      suertePinta(key).catch(()=>{});
+      suertePinta(key).then(()=>carreraPinta(key)).catch(()=>{});
       return;
     }
     // Para estas ligas, /apis/site/v2/.../standings regresa vacío; hay que usar /apis/v2/.../standings.
@@ -7347,6 +7379,77 @@ async function qmxPicksDe(jid,uid){   // picks de otro (o tuyos) de una jornada 
   return r;
 }
 // Tabla general que arma GitHub cada mañana (todos los que tienen picks): datos/qmx_tabla.json
+
+// ===== Ideas visuales, tanda 3 (24 nov 2026) =====
+// Carrera de la tabla: lugar de cada equipo jornada por jornada (con los resultados de API-Football de la temporada).
+// Tus equipos favoritos en amarillo; puedes resaltar cualquier otro con el menú. En ligas con Liguilla, la zona del 1º al 8º.
+const CARR={};
+async function carreraPinta(key){
+  let el=$("#mxCarrera"); if(!el){ el=document.createElement("div"); el.id="mxCarrera"; const su=$("#mxSuerte"); su?su.before(el):$("#mxtable").append(el); }
+  if(!usaAF(LEAGUES[key])) { el.innerHTML=""; return; }
+  if(!CARR[key]) CARR[key]=(async()=>{ const {S}=await afSeasonEvents(key); const F=await AF_EV[key+"|"+S.id];
+      const fin=F.filter(f=>/^(FT|AET|PEN)$/.test(f.fixture?.status?.short||"")&&/\d+\s*$/.test(f.league?.round||"")&&!/final|play|liguilla|knock|quarter|semi|round of/i.test(f.league?.round||""));
+      if(fin.length<10) return null;
+      const pre=r=>String(r).replace(/\s*-?\s*\d+\s*$/,""), ult=fin.slice().sort((a,b)=>b.fixture.timestamp-a.fixture.timestamp)[0], P=pre(ult.league.round);
+      const G=fin.filter(f=>pre(f.league.round)===P), R=Math.max(...G.map(f=>+f.league.round.match(/(\d+)\s*$/)[1]));
+      const eq={}; for(const f of G) for(const t of [f.teams.home,f.teams.away]) eq[t.id]=eq[t.id]||{id:t.id,n:afNombre(t),logo:t.logo};
+      const ids=Object.keys(eq), pos={}; ids.forEach(i=>pos[i]=[]);
+      for(let r=1;r<=R;r++){ const T=Object.fromEntries(ids.map(i=>[i,{p:0,gf:0,gc:0}]));
+        for(const f of G){ if(+f.league.round.match(/(\d+)\s*$/)[1]>r) continue; const h=T[f.teams.home.id], a=T[f.teams.away.id], gh=+f.goals.home, ga=+f.goals.away;
+          h.gf+=gh; h.gc+=ga; a.gf+=ga; a.gc+=gh; if(gh>ga) h.p+=3; else if(gh<ga) a.p+=3; else { h.p++; a.p++; } }
+        ids.slice().sort((x,y)=>T[y].p-T[x].p||(T[y].gf-T[y].gc)-(T[x].gf-T[x].gc)||T[y].gf-T[x].gf).forEach((i,k)=>pos[i].push(k+1)); }
+      return {R,eq,pos,ids,tor:P}; })().catch(()=>null);
+  const C=await CARR[key]; if(key!==FLIG) return; if(!C||C.R<3){ el.innerHTML=""; return; }
+  const fav=C.ids.filter(i=>FAV?.eq?.["f"+i]), sel=el.dataset.sel&&C.ids.includes(el.dataset.sel)?el.dataset.sel:null;
+  const lider=C.ids.find(i=>C.pos[i][C.R-1]===1), hl=[...new Set([...fav,...(sel?[sel]:[]),...(!fav.length&&!sel?[lider]:[])])];
+  const N=C.ids.length, W=360, gut=92, H=N*11+34, X=r=>+(26+(r-1)/(C.R-1)*(W-26-gut)).toFixed(1), Y=k=>+(10+(k-1)*11).toFixed(1);
+  const path=i=>C.pos[i].map((k,r)=>`${r?"L":"M"}${X(r+1)} ${Y(k)}`).join(" ");
+  const cut=LEAGUES[key].liguilla?8:0, col=i=>fav.includes(i)?"#F2D466":i===sel?"#9CC7E6":"#F2D466";
+  // etiquetas a la derecha sin encimarse
+  const L=hl.map(i=>({i,y:Y(C.pos[i][C.R-1])})).sort((a,b)=>a.y-b.y); for(let k=1;k<L.length;k++) if(L[k].y-L[k-1].y<13) L[k].y=L[k-1].y+13;
+  el.innerHTML=`<div class="dbox pzcarr"><span class="dk">La carrera · lugar por jornada</span>
+    <div class="pzleg"><span><i style="width:16px;height:3px;background:#F2D466"></i>${fav.length?"Tus equipos":"Líder"}</span>${sel&&!fav.includes(sel)?`<span><i style="width:16px;height:3px;background:#9CC7E6"></i>${grEsc(C.eq[sel].n)}</span>`:""}<span><i style="width:16px;height:3px;background:#5E766C"></i>Los demás</span>${cut?`<span><i style="width:14px;height:10px;background:rgba(143,214,166,.2);border-bottom:1.5px dashed #8FD6A6"></i>Liguilla (1º a ${cut}º)</span>`:""}</div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Lugar en la tabla de cada equipo de la jornada 1 a la ${C.R}">
+    ${cut?`<rect x="26" y="${Y(1)-5}" width="${W-26-gut+4}" height="${Y(cut)-Y(1)+10.5}" fill="rgba(143,214,166,.08)"/><line x1="26" y1="${Y(cut)+5.5}" x2="${W-gut+4}" y2="${Y(cut)+5.5}" stroke="#8FD6A6" stroke-dasharray="4 4"/>`:""}
+    <g fill="#A8B8AF" font-size="10" font-family="Barlow,Arial,sans-serif"><text x="0" y="${Y(1)+3.5}">1º</text>${cut?`<text x="0" y="${Y(cut)+3.5}">${cut}º</text>`:""}<text x="0" y="${Y(N)+3.5}">${N}º</text>
+      <text x="${X(1)}" y="${H-4}" text-anchor="middle">J1</text><text x="${X(C.R)}" y="${H-4}" text-anchor="middle">J${C.R}</text></g>
+    ${C.ids.filter(i=>!hl.includes(i)).map(i=>`<path d="${path(i)}" fill="none" stroke="#5E766C" stroke-width="1.2" stroke-linejoin="round" opacity=".55"/>`).join("")}
+    ${hl.map(i=>`<path class="pzwl" pathLength="1" d="${path(i)}" fill="none" stroke="${col(i)}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${X(C.R)}" cy="${Y(C.pos[i][C.R-1])}" r="4.5" fill="${col(i)}" stroke="#1F332D" stroke-width="2"/>`).join("")}
+    ${L.map(z=>`<text x="${W-gut+12}" y="${z.y+4}" fill="${col(z.i)}" font-size="11.5" font-weight="700" font-family="Barlow,Arial,sans-serif">${C.pos[z.i][C.R-1]}º ${grEsc(C.eq[z.i].n.length>11?(AF_COD[z.i]||C.eq[z.i].n.slice(0,10)):C.eq[z.i].n)}</text>`).join("")}</svg>
+    <label class="pzcsel">Resaltar <select data-carrsel="1"><option value="">—</option>${C.ids.slice().sort((a,b)=>C.eq[a].n.localeCompare(C.eq[b].n)).map(i=>`<option value="${i}"${i===sel?" selected":""}>${grEsc(C.eq[i].n)}</option>`).join("")}</select></label>
+    <p class="grnota">${grEsc(C.tor||"")} · lugar al final de cada jornada (puntos, diferencia de goles y goles a favor).</p></div>`;
+}
+document.addEventListener("change",ev=>{ const s=ev.target.closest?.("[data-carrsel]"); if(!s) return; const el=$("#mxCarrera"); el.dataset.sel=s.value; carreraPinta(FLIG).catch(()=>{}); });
+// Tu temporada en la quiniela: anillo de aciertos, tu lugar, tu racha (fichas) y aciertos por jornada.
+function qmxTuTemporada(G,js,F,yo){
+  const x=G.t?.[yo]; if(!x) return ""; const J=qmxD().J;
+  const jj=js.filter(j=>G.j[j].fin&&x.j[j]&&J[j]); if(!jj.length) return "";
+  const nj=j=>J[j].p.filter(r=>!qmxRes(r,QMX.vivo).susp).length||J[j].p.length;
+  const ac=jj.reduce((s,j)=>s+(x.j[j][0]||0),0), tot=jj.reduce((s,j)=>s+nj(j),0), pct=tot?Math.round(ac/tot*100):0, lugar=F.findIndex(f=>f.h===yo)+1;
+  const fichas=[]; for(const j of jj){ const mi=qmxMios(j).p||{}; J[j].p.slice().sort((a,b)=>a[1]-b[1]).forEach(r=>{ const R=qmxRes(r,QMX.vivo); if(R.fin&&mi[r[0]]) fichas.push(mi[r[0]]===R.r); }); }
+  let racha=0; for(let i=fichas.length-1;i>=0&&fichas[i];i--) racha++;
+  const ult=fichas.slice(-12), C=2*Math.PI*54, best=Math.max(...jj.map(j=>(x.j[j][0]||0)/nj(j)));
+  return `<section class="dbox pztemp"><span class="dk">Tu temporada</span><div class="pztg">
+    <div class="pzring" role="img" aria-label="Atinaste ${pct}% de tus picks"><svg viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="70" r="54" fill="none" stroke="#3A554C" stroke-width="14"/><circle class="pzrg" cx="70" cy="70" r="54" fill="none" stroke="#F2D466" stroke-width="14" stroke-linecap="round" transform="rotate(-90 70 70)" stroke-dasharray="${C.toFixed(1)}" style="--o:${(C*(1-pct/100)).toFixed(1)};--c:${C.toFixed(1)}"/></svg><span><b>${pct}%</b><small>atinaste</small></span></div>
+    <div class="pztx"><div><b>${lugar}º</b> de ${F.length} en la general</div><div><b>${ac}</b> de ${tot} picks</div>${racha>=2?`<div class="pzrh"><b>${racha}</b> seguidos sin fallar</div>`:""}</div></div>
+    ${ult.length>=4?`<div class="pzfichas" role="img" aria-label="Tus últimos ${ult.length} picks: ${ult.filter(Boolean).length} aciertos">${ult.map((v,i)=>`<i class="${v?(i>=ult.length-racha?"r":"s"):"n"}" style="animation-delay:${(i*.05).toFixed(2)}s"></i>`).join("")}</div><p class="grnota">Tus últimos ${ult.length} picks: relleno = acierto, aro = fallo; en amarillo, tu racha.</p>`:""}
+    ${jj.length>=2?`<div class="pzjb" role="img" aria-label="Aciertos por jornada">${jj.map((j,i)=>{ const v=(x.j[j][0]||0)/nj(j); return `<span title="${qmxCorJ(j)}: ${x.j[j][0]} de ${nj(j)}"><i class="${v===best?"b":""}" style="height:${Math.max(4,v*100).toFixed(0)}%;animation-delay:${(i*.04).toFixed(2)}s"></i><small>${hoyEsc(qmxCorJ(j).replace(/^J/,""))}</small></span>`; }).join("")}</div><p class="grnota">Aciertos por jornada; en amarillo, tu mejor.</p>`:""}</section>`;
+}
+// Qué escogió tu grupo (jornada ya cerrada): cuántos fueron con cada resultado y quién; tu pick resaltado.
+function qmxEscogio(P,M,ultP,yo){
+  if(M.length<2||!P.length) return ""; const ini=n=>String(n||"?").trim().split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(), C=["#9CC7E6","#F29C8C","#8FD6A6","#C9D6CF","#C9A7F0","#F2A86C"];
+  const cards=P.map(r=>{ const R=qmxRes(r,QMX.vivo), H=qmxEq(r[2]), A=qmxEq(r[3]), by={L:[],E:[],V:[]};
+    M.forEach((m,i)=>{ const k=ultP[m.uid]?.pk?.p?.[r[0]]; if(by[k]) by[k].push({n:m.uid===yo?"TÚ":ini(m.nombre),c:m.uid===yo?"#F2D466":C[i%C.length],yo:m.uid===yo}); });
+    const tot=by.L.length+by.E.length+by.V.length; if(!tot) return "";
+    const mio=Object.keys(by).find(k=>by[k].some(z=>z.yo)), val=mio&&by[mio].length===1&&tot>=3;
+    const seg=k=>by[k].length?`<i class="${k===mio?"mi":""}${R.fin&&R.r===k?" ok":""}" style="flex:${by[k].length}">${by[k].length}</i>`:"";
+    const nom={L:H.ab||H.n,E:"Empate",V:A.ab||A.n};
+    return `<div class="pzesc"><div class="pzeh"><b>${hoyEsc(H.n)} ${R.gl!=null&&(R.fin||R.vivo)?`${R.gl}-${R.gv}`:"vs"} ${hoyEsc(A.n)}</b>${val?`<span class="pzval">${R.fin?(R.r===mio?"Valiente y le atinaste":"Fuiste valiente"):"Pick valiente"}</span>`:""}</div>
+      <div class="pzeb">${seg("L")}${seg("E")}${seg("V")}</div>
+      <div class="pzeq">${["L","E","V"].filter(k=>by[k].length).map(k=>`<span><small>${hoyEsc(nom[k])}</small>${by[k].map((z,i)=>`<em style="background:${z.c};animation-delay:${(i*.05).toFixed(2)}s">${hoyEsc(z.n)}</em>`).join("")}</span>`).join("")}</div>
+      ${val&&!R.fin?`<p class="grnota">Si sale, solo tú sumas.</p>`:""}</div>`; }).join("");
+  return cards?`<h3 style="margin:18px 0 6px">Qué escogió el grupo</h3><div class="pzescs">${cards}</div>`:"";
+}
 async function qmxTablaGen(){ if(QMX.gen&&Date.now()-QMX.genT<5*60e3) return QMX.gen;
   QMX.gen=await fetch(`datos/qmx_tabla.json?v=${Math.floor(Date.now()/3e5)}`).then(r=>r.ok?r.json():null).catch(()=>null); QMX.genT=Date.now(); return QMX.gen; }
 // Marcadores al momento de los partidos ya empezados que en los datos de la página no aparecen terminados
@@ -7380,7 +7483,7 @@ async function qmxGeneral(el){
   const F=Object.entries(G.t).map(([h,x])=>({h,a:x.a,pts:js.reduce((s,j)=>s+(x.j[j]?.[0]||0),0)+(x.ll||0),ll:x.ll,u:x.j[ult]?.[0],g:gan[h]||0,r:racha(x)})).sort((a,b)=>b.pts-a.pts||b.g-a.g);
   const al=pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"long",hour:"numeric",minute:"2-digit"}).format(new Date(G.al.replace("Z",":00Z")));
   const jf=[...js].reverse().find(j=>G.j[j].fin), prem=jf==null?"":qmxPremiosHTML(jf,Object.entries(G.t).filter(([,x])=>x.j[jf]).map(([h,x])=>({n:x.a,a:x.j[jf][0],g:x.j[jf][1],v:x.j[jf][2],yo:h===yo})),G.j[jf].goles,`Premios ${qmxDeJ(jf)} · entre todos`);
-  box.innerHTML=`${prem}<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>${qmxCorJ(ult)}</th>${hayLl?"<th>Llave</th>":""}<th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map((x,i)=>`<tr${x.h===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${x.h===yo?" (tú)":""}${vidaFlama(x.r)}</td><td><b>${x.pts}</b></td><td>${x.u??"–"}</td>${hayLl?`<td>${x.ll??"–"}</td>`:""}<td>${x.g}</td></tr>`).join("")}</tbody></table></div>
+  box.innerHTML=`${yo?qmxTuTemporada(G,js,F,yo):""}${prem}<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>${qmxCorJ(ult)}</th>${hayLl?"<th>Llave</th>":""}<th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map((x,i)=>`<tr${x.h===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.a)}${x.h===yo?" (tú)":""}${vidaFlama(x.r)}</td><td><b>${x.pts}</b></td><td>${x.u??"–"}</td>${hayLl?`<td>${x.ll??"–"}</td>`:""}<td>${x.g}</td></tr>`).join("")}</tbody></table></div>
     <p class="note">${F.length} jugadores. Cuentan las jornadas desde la ${js[0]}. Se actualiza cada mañana (última vez: ${al}); los puntos de la jornada en juego los ves en tus grupos y en Mis picks.</p>`;
 }
 // Retas v2 (29 oct 2026): "Tabla" = la general y tus grupos como botones en la misma vista; "Chat" = el chat de cada grupo.
@@ -7434,8 +7537,8 @@ async function qmxTabla(g){
   box.innerHTML=Ls.length?`<div class="tbl" style="max-width:640px"><table><thead><tr><th>#</th><th class="l">Jugador</th><th>Pts</th><th>J. ${ultJ}</th><th title="Jornadas ganadas">Gan.</th></tr></thead><tbody>${F.map(([u,x],i)=>`<tr${u===yo?' style="background:#2F4A41"':""}><td>${i+1}</td><td class="l">${acctEsc(x.n)}${u===yo?" (tú)":""}${mv(u)}</td><td><b>${x.pts}</b></td><td>${x.ult??"–"}</td><td>${x.gan}</td></tr>`).join("")}</tbody></table></div>
     ${M.length<2?`<p class="note"><b>Solo tú estás en este grupo.</b> Tus amigos tienen que abrir el link de invitación y tocar «Unirme» (si primero crean su cuenta, la invitación los espera). Mientras, todos salen en la pestaña General.</p>`:""}
     ${QMX.prem&&Ls.includes(QMX.prem.j)?qmxPremiosHTML(QMX.prem.j,QMX.prem.L,QMX.prem.goles,`Premios ${qmxDeJ(QMX.prem.j)} en «${acctEsc(g.nombre)}»`):""}
-    <h3 style="margin:18px 0 6px">Picks ${qmxDeJ(ultJ)}</h3><div class="tbl qmxpk"><table><thead><tr><th class="l">Partido</th>${M.map(m=>`<th>${acctEsc((m.nombre||"").split(" ")[0])}</th>`).join("")}</tr></thead><tbody>${P.map(r=>{ const R=qmxRes(r,QMX.vivo);
-      return `<tr><td class="l">${hoyEsc(qmxEq(r[2]).ab||qmxEq(r[2]).n)} ${R.gl!=null&&(R.fin||R.vivo)?`${R.gl}-${R.gv}`:"vs"} ${hoyEsc(qmxEq(r[3]).ab||qmxEq(r[3]).n)}</td>${M.map(m=>{ const k=ultP[m.uid]?.pk?.p?.[r[0]]; return `<td class="${R.fin&&k?(k===R.r?"ok":"mal"):""}">${k||"–"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>
+    ${qmxEscogio(P,M,ultP,yo)}<details class="pzdet"><summary>Picks ${qmxDeJ(ultJ)} en tabla</summary><div class="tbl qmxpk"><table><thead><tr><th class="l">Partido</th>${M.map(m=>`<th>${acctEsc((m.nombre||"").split(" ")[0])}</th>`).join("")}</tr></thead><tbody>${P.map(r=>{ const R=qmxRes(r,QMX.vivo);
+      return `<tr><td class="l">${hoyEsc(qmxEq(r[2]).ab||qmxEq(r[2]).n)} ${R.gl!=null&&(R.fin||R.vivo)?`${R.gl}-${R.gv}`:"vs"} ${hoyEsc(qmxEq(r[3]).ab||qmxEq(r[3]).n)}</td>${M.map(m=>{ const k=ultP[m.uid]?.pk?.p?.[r[0]]; return `<td class="${R.fin&&k?(k===R.r?"ok":"mal"):""}">${k||"–"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div></details>
     <p class="note">Desempate de cada jornada: goles más cercanos. En la tabla, empate en puntos: más jornadas ganadas.</p>`
     :`<p class="note">La tabla arranca cuando cierre la primera jornada (la ${qmxAbierta()??13}). Los picks de los demás se ven en cuanto se cierra.</p>`;
 }
