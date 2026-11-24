@@ -2272,6 +2272,9 @@ h2{font:400 36px/.98 var(--tab);text-transform:uppercase;letter-spacing:.01em}
 .tuinv{display:flex;align-items:center;justify-content:center;width:100%;max-width:640px;min-height:50px;margin:16px 0 0;border:0;border-radius:25px;background:var(--mark);color:#15241F;font:700 16px var(--body);cursor:pointer}
 .tumail{max-width:640px;margin-top:14px}
 #favsBody .hfav>.hh{display:none}
+/* Amigos en pestañas */
+#amBody[data-amt="act"] [data-amg]:not([data-amg="act"]),#amBody[data-amt="du"] [data-amg]:not([data-amg="du"]),#amBody[data-amt="tab"] [data-amg]:not([data-amg="tab"]){display:none}
+.amtabs{position:static;margin-top:18px}
 /* Retas */
 .rthead{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);padding:6px 0 8px;margin:0 0 18px;display:flex;flex-direction:column-reverse;gap:2px}
 .rthead h2{margin:0;font:400 54px/.95 var(--tab);text-transform:uppercase}.rthead span{font:600 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -9545,6 +9548,11 @@ async function amVota(pid,i){
   catch(e){ console.warn("Feed: votar",e?.code||e); }
 }
 // ---- la sección ----
+// Amigos en 3 pestañas (24 nov 2026): Actividad (lo que hacen + invita y gana), Duelos y Tabla (comparación y sufrimiento).
+function amTab(){ let t=null; try{ t=localStorage.getItem("pz_am_tab"); }catch(e){} return ["act","du","tab"].includes(t)?t:"act"; }
+document.addEventListener("click",ev=>{ const b=ev.target.closest?.("[data-amtab]"); if(!b) return; try{ localStorage.setItem("pz_am_tab",b.dataset.amtab); }catch(e){}
+  pzTrack("am_tab",{k:b.dataset.amtab}); const box=$("#amBody"); if(box) box.dataset.amt=b.dataset.amtab;
+  document.querySelectorAll("[data-amtab]").forEach(x=>x.setAttribute("aria-selected",String(x===b))); });
 async function amRender(){
   const box=$("#amBody"); if(!box) return; amBadge();
   if(!amOk()){ box.innerHTML=`<div class="qgate" style="max-width:640px"><b>Entra con tu cuenta para agregar a tus amigos</b><span>Ve lo que hacen en todos los juegos, comenta y échales carrilla. Solo tus amigos ven lo que haces.</span><button class="btn" data-acct>Entrar</button></div>`; return; }
@@ -9556,17 +9564,18 @@ async function amRender(){
   box.innerHTML=`${inv?`<div class="aminv" id="amInv">${amAv(inv,52)}<span><b>${hoyEsc(PERF.cache[inv]?.a||"")}</b><small>Te invitó a ser su amigo en La Pizarra</small></span><button class="btn" data-amsol="${hoyEsc(inv)}">Agregar</button><button class="q5link" data-aminvno="1">Ahora no</button></div>`:""}
     ${Rc.length?`<section class="hsec amsec"><div class="hh"><h3>Solicitudes</h3></div>${Rc.map(a=>`<div class="amsolr">${amAv(a.otro,46,a)}<span><b>${hoyEsc(amNom(a.otro,a))}</b><small>Quiere ser tu amigo</small></span><button class="btn" data-amok="${a.id}">Aceptar</button><button class="q5link" data-amno="${a.id}">Ahora no</button></div>`).join("")}</section>`:""}
     ${perfNudgeHTML()}
-    <div id="amInvC">${invCardHTML()}</div>
     <div class="amfila">${A.map(a=>`<button class="amf" data-amper="${hoyEsc(a.otro)}">${amAv(a.otro,58,a)}<span>${hoyEsc(amNom(a.otro,a).split(" ")[0])}</span></button>`).join("")}<button class="amf amadd" data-amadd="1"><span class="amplus">+</span><span>Agregar</span></button></div>
     <div id="amAgrega" hidden></div>
-    <div id="amCmp">${amCmpHTML()}</div>
-    <section class="hsec amsec" id="amDu"></section>
-    <section class="hsec amsec" id="amSuf"></section>
+    ${A.length?`<div class="htabs amtabs" role="tablist" aria-label="Amigos">${[["act","Actividad"],["du","Duelos"],["tab","Tabla"]].map(([k,n])=>`<button role="tab" aria-selected="${amTab()===k}" data-amtab="${k}">${n}</button>`).join("")}</div>`:""}
+    <div id="amCmp" data-amg="tab">${amCmpHTML()}</div>
+    <section class="hsec amsec" id="amDu" data-amg="du"></section>
+    <section class="hsec amsec" id="amSuf" data-amg="tab"></section>
     ${En.length?`<p class="note">Esperando respuesta de ${En.map(a=>`${hoyEsc(amNom(a.otro,a))} <button class="q5link" data-amcan="${a.id}">Cancelar</button>`).join(" · ")}</p>`:""}
-    ${A.length?`<div class="hseg amfil" role="group" aria-label="Juego">${[["todo","Todo"],...Object.entries(AM_G).map(([k,v])=>[k,v[0]])].map(([k,n])=>`<button data-amfil="${k}" aria-pressed="${AM.filtro===k}">${n}</button>`).join("")}</div>
-      <div class="amfeed">${F.length?F.map(amPost).join(""):`<p class="note">${AM.feed?.length?"Nada de este juego todavía.":"Aquí sale lo que hacen tus amigos: sus picks guardados, sus aciertos, sus logros y más. Los picks de cada quien nunca se publican."}</p>`}</div>`
-    :`<div class="amvacio"><b>Agrega a tus amigos</b><span>Búscalos por su apodo, mándales tu link por WhatsApp o escoge a los de tus grupos. Cuando acepten, aquí ves lo que hace cada quien en todos los juegos.</span><button class="btn" data-amadd="1">Agregar amigos</button></div>${F.length?`<div class="amfeed">${F.map(amPost).join("")}</div>`:""}`}`;
+    ${A.length?`<div data-amg="act"><div class="hseg amfil" role="group" aria-label="Juego">${[["todo","Todo"],...Object.entries(AM_G).map(([k,v])=>[k,v[0]])].map(([k,n])=>`<button data-amfil="${k}" aria-pressed="${AM.filtro===k}">${n}</button>`).join("")}</div>
+      <div class="amfeed">${F.length?F.map(amPost).join(""):`<p class="note">${AM.feed?.length?"Nada de este juego todavía.":"Aquí sale lo que hacen tus amigos: sus picks guardados, sus aciertos, sus logros y más. Los picks de cada quien nunca se publican."}</p>`}</div><div id="amInvC">${invCardHTML()}</div></div>`
+    :`<div id="amInvC">${invCardHTML()}</div><div class="amvacio"><b>Agrega a tus amigos</b><span>Búscalos por su apodo, mándales tu link por WhatsApp o escoge a los de tus grupos. Cuando acepten, aquí ves lo que hace cada quien en todos los juegos.</span><button class="btn" data-amadd="1">Agregar amigos</button></div>${F.length?`<div class="amfeed">${F.map(amPost).join("")}</div>`:""}`}`;
   if(!A.length&&!Rc.length) amAgrega();
+  box.dataset.amt=A.length?amTab():"";
   duPinta(); amFotosVisibles(); amSufPinta();
   invCarga().then(()=>{ const c=$("#amInvC"); if(c) c.innerHTML=invCardHTML(); }).catch(()=>{});
 }
