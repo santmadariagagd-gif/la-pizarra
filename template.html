@@ -2315,6 +2315,42 @@ h2{font:400 36px/.98 var(--tab);text-transform:uppercase;letter-spacing:.01em}
 .rdcard .rdb{background:#fff;border-color:#C9D2CB;color:#15241F}
 /* tarjetas de invitación sin colores que compitan */
 .bienv,.pfnudge{background:var(--surface);border:1px solid var(--line)}
+
+/* ===== Ideas visuales, tanda 1 (24 nov 2026): gis que se dibuja, rayita que viaja, borrador, aguja, cuenta atrás ===== */
+@keyframes pzRaya{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.hoyhead h2 .hm::after,.hoyhead h2 .hd::after,.headrow h2::after{content:"";display:block;width:min(150px,80%);height:10px;margin-top:6px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cfilter id='g'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='1' seed='3'/%3E%3CfeDisplacementMap in='SourceGraphic' scale='2.2'/%3E%3C/filter%3E%3Cpath filter='url(%23g)' d='M3 6 C 22 2.5, 42 8.5, 62 5 S 100 3, 117 6.5' fill='none' stroke='%23F2D466' stroke-width='3.2' stroke-linecap='round' stroke-dasharray='9 1.6' opacity='.9'/%3E%3C/svg%3E") no-repeat 0 0/100% 100%;animation:pzRaya 1s .15s cubic-bezier(.5,0,.2,1) both}
+.pzhasind>button,.pzhasind>button[aria-current="page"],.pzhasind>button[aria-selected="true"]{border-bottom-color:transparent!important}
+.pzhasind.pzrel{position:relative}
+.pzind{position:absolute;left:0;bottom:-2px;height:4px;width:0;background:var(--mark);border-radius:2px;pointer-events:none;transition:transform .38s cubic-bezier(.6,0,.25,1),width .38s cubic-bezier(.6,0,.25,1),opacity .2s}
+@keyframes pzBorr{from{background-position:120% 0}to{background-position:-20% 0}}
+.pzload::before{content:"";display:block;height:54px;margin:0 0 10px;border-radius:14px;background:linear-gradient(100deg,var(--surface,#263D36) 0 35%,rgba(236,239,231,.13) 50%,var(--surface,#263D36) 65% 100%);background-size:250% 100%;animation:pzBorr 1.3s ease-in-out infinite}
+.pzload::after{content:"";display:block;height:12px;width:62%;margin-top:8px;border-radius:6px;background:linear-gradient(100deg,var(--surface,#263D36) 0 35%,rgba(236,239,231,.13) 50%,var(--surface,#263D36) 65% 100%);background-size:250% 100%;animation:pzBorr 1.3s .15s ease-in-out infinite}
+@keyframes pzChk{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+.pzok path{stroke-dasharray:24;animation:pzChk .45s .12s ease-out both}
+.pzag{flex:none;width:156px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.pzag svg{display:block;width:156px;height:94px;overflow:visible}
+.pzag .pzagn{transform-origin:80px 84px;transform:rotate(var(--a));animation:pzAgu 1.7s cubic-bezier(.25,1.5,.45,1) both}
+@keyframes pzAgu{0%{transform:rotate(-90deg)}100%{transform:rotate(var(--a))}}
+.pzag b{font:400 30px/1 var(--tab);margin-top:2px}.pzag b small{font-size:16px}
+.pzag span{font-size:11.5px;color:var(--muted)}
+.pzcta{display:flex;justify-content:center;align-items:flex-start;gap:6px;margin:4px 0 12px;padding:14px 10px 10px;border-radius:18px;background:#15241F;border:2px solid var(--line,#3A554C)}
+.pzcta .pzcg{display:flex;flex-direction:column;align-items:center;gap:5px}
+.pzcta .pzcd{display:flex;gap:4px}
+.pzcta .pzcd span{display:grid;place-items:center;width:38px;height:56px;border-radius:8px;background:var(--surface,#263D36);font:400 40px/1 var(--tab);color:var(--mark)}
+.pzcta .pzcg:last-child .pzcd span{color:var(--ink)}
+.pzcta small{font:600 10.5px var(--body);letter-spacing:.12em;color:var(--muted)}
+.pzcta i{font:400 32px/56px var(--tab);color:var(--mark);font-style:normal}
+.pzcta span.pzfl{animation:pzFlip .35s cubic-bezier(.4,0,.2,1)}
+@keyframes pzFlip{0%{transform:translateY(-35%);opacity:0}100%{transform:none;opacity:1}}
+.pzcta+.pzprog{margin-top:-4px}
+.pzprog{display:flex;align-items:center;gap:10px;margin:0 0 12px;font:700 14px var(--body)}
+.pzprog>span{flex:1;height:10px;border-radius:5px;background:var(--line,#3A554C);overflow:hidden}
+.pzprog>span i{display:block;height:100%;border-radius:5px;background:var(--mark);transform-origin:left;animation:pzProg .8s ease-out both}
+@keyframes pzProg{from{transform:scaleX(0)}}
+.pzprog b{color:var(--mark);white-space:nowrap}
+.qmxp.pzfalta{outline:2px dashed var(--mark);outline-offset:3px;border-radius:12px;animation:pzNudge 4s ease-in-out 1s infinite}
+@keyframes pzNudge{0%,86%,100%{transform:none}88%{transform:translateX(-4px)}91%{transform:translateX(4px)}94%{transform:translateX(-2px)}97%{transform:translateX(1px)}}
+@media (prefers-reduced-motion:reduce){.hoyhead h2 .hm::after,.hoyhead h2 .hd::after,.headrow h2::after,.pzload::before,.pzload::after,.pzok path,.pzag .pzagn,.pzcta span.pzfl,.pzprog>span i,.qmxp.pzfalta{animation:none}.pzind{transition:none}}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -3913,7 +3949,7 @@ $("#qGames").addEventListener("click",e=>{
 $("#qGames").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches?.(".team[data-qt],.team[data-st]")){e.preventDefault(); e.target.click();}});
 async function loadQuiniela(){
   document.querySelectorAll("#qSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===qnMode));
-  const box=$("#qGames"); if(!qnCache) box.innerHTML=`<p class="note">Cargando…</p>`;
+  const box=$("#qGames"); if(!qnCache) box.innerHTML=`<p class="note pzload">Cargando…</p>`;
   const [P,INJ]=await Promise.all([qnGet(),qnMode==="surv"?null:qnInj()]), G=P.games, ats=qnATS();
   $("#qTitle").textContent=qnMode==="surv"?`Survivor · ${P.label}`:`Quiniela · ${P.label}`; qnSurvPinta();
   $("#qMsg").textContent=P.src==="nflverse"?"No pudimos traer las líneas de tu quiniela de ESPN; estas son las líneas de Las Vegas.":"";
@@ -4255,7 +4291,7 @@ function nflDetHTML(x,S,b,L){
   const pr=t=>(D.pr_nfl||[]).find(r=>r.t===t)||{}, rA=pr(x.a), rH=pr(x.h), rk=(k,t,asc)=>{const L2=(D.pr_nfl||[]).filter(r=>r[k]!=null).sort((a,c)=>asc?a[k]-c[k]:c[k]-a[k]); const i=L2.findIndex(r=>r.t===t); return i<0?"–":(i+1)+"º";};
   const cara=[["Récord",nflRec(x.a)||"–",nflRec(x.h)||"–"],["Power Ranking NFL",rA.r?rA.r+"º":"–",rH.r?rH.r+"º":"–"],["Ataque (lugar en EPA)",rk("off",x.a),rk("off",x.h)],["Defensa (lugar en EPA)",rk("de",x.a,true),rk("de",x.h,true)]];
   const boxCara=`<div class="dbox"><span class="dk">Cara a cara</span>${cara.map(([n,a,h])=>`<div class="dbl"><b>${a}</b><span>${n}</span><b>${h}</b></div>`).join("")}</div>`;
-  const boxLes=`<div class="dbox nprev"><span class="dk">Lesiones, descanso y duelos previos</span><div class="npv" id="npv"><p class="note">Cargando…</p></div></div>`;
+  const boxLes=`<div class="dbox nprev"><span class="dk">Lesiones, descanso y duelos previos</span><div class="npv" id="npv"><p class="note pzload">Cargando…</p></div></div>`;
   // ---- Armado: pestañas en el celular (Resumen · Jugada a jugada · Estadísticas · Jugadores · Previa) y en
   // computadora (Resumen con estadísticas · Jugada a jugada · Jugadores · Previa). Antes del partido: Previa · Lesiones.
   const tabs=pre?["Previa","Lesiones"]:["Resumen","Jugada a jugada","Estadísticas","Jugadores","Previa"];
@@ -4267,7 +4303,7 @@ function nflDetHTML(x,S,b,L){
 }
 async function openNfl(id,quiet){
   const x=(D.sched||[]).find(g=>g.id===id); if(!x) return; if(!quiet) vidaAct("f");
-  if(!dlg.open){ $("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando…</p>`; dlg.showModal(); }
+  if(!dlg.open){ $("#gbody").innerHTML=`<p class="note pzload" style="text-align:center;margin:40px 0">Cargando…</p>`; dlg.showModal(); }
   if(!PAQ_OK.box) await paquete("box").catch(()=>{});
   const L=NLIVE[id], b=(D.box||{})[id], pre=x.hs==null&&!L;
   let S=null;
@@ -5228,7 +5264,7 @@ function mxPreviaHTML(sm,H,A){
 async function openMx(id,quiet){
   const {ev}=LEAGUES[FLIG].nat?await selSeason():await mxSeason(); const e=ev.find(x=>x.id===id); if(!e) return;
   const keep=quiet?$("#gbody").scrollTop:0;
-  if(!quiet){$("#gbody").innerHTML=`<p class="note" style="text-align:center;margin:40px 0">Cargando detalle…</p>`; dlg.showModal(); vidaAct("f");}
+  if(!quiet){$("#gbody").innerHTML=`<p class="note pzload" style="text-align:center;margin:40px 0">Cargando detalle…</p>`; dlg.showModal(); vidaAct("f");}
   let sm=null; try{sm=e._sm?await smSummary(e,FLIG):await fetch(`${ESPN}/site/v2/sports/soccer/${e._slug||flSlug()}/summary?event=${id}`).then(r=>r.json());}catch(err){}
   if(quiet&&(!dlg.open||DLG_CUR?.id!==id)) return;   // lo cerraron o abrieron otro mientras se actualizaba
   if(sm?._f){ const x=afEvent(sm._f,LEAGUES[FLIG]||{}); hoyCopia(e,x); }   // el detalle trae el marcador y el estado más recientes
@@ -5780,7 +5816,7 @@ async function findSB(season){
   return e||null;
 }
 async function openSB(season){
-  $("#gbody").innerHTML=`<p class="note" style="text-align:center">Cargando el Super Bowl de la temporada ${season}…</p>`; dlg.showModal();
+  $("#gbody").innerHTML=`<p class="note pzload" style="text-align:center">Cargando el Super Bowl de la temporada ${season}…</p>`; dlg.showModal();
   let e=null; try{e=await findSB(season);}catch(err){}
   if(!e){
     const r=sbRow(season);
@@ -6462,7 +6498,7 @@ async function slMatchLoad(quiet){
     if(SL.src!=="espn"&&(!FM.state||Date.now()-FM.stateT>3600e3)){FM.state=await getJ("/state/nfl").catch(()=>null); FM.stateT=Date.now();}
     const st=FM.state||{}, last=Math.min(18,(SL.league.settings?.playoff_week_start||15)+2);
     if(FM.week==null) FM.week=Math.max(1,Math.min(last,+(st.display_week||st.week)||D.gweek||1));
-    if(!quiet) box.innerHTML=`<p class="note">Cargando tu matchup…</p>`;
+    if(!quiet) box.innerHTML=`<p class="note pzload">Cargando tu matchup…</p>`;
     const w=FM.week, [mu,INJ]=await Promise.all([SL.src==="espn"?espnMatchups(w,quiet):getJ(`/league/${lid}/matchups/${w}`),qnInj()]);
     if(FM.week!==w||SL.league?.league_id!==lid) return;
     FM.mu=mu; fmRender(mu,w,INJ,last); if(!quiet) fmTxLoad();
@@ -6703,7 +6739,7 @@ async function nbaPartidos(){
   const f=NBA.dia, box=$("#nbaGames");
   $("#nbaDiaTxt").textContent=nbaDiaTxt(f); $("#nbaDiaSub").textContent=f===NBA_INICIO?"Noche inaugural":f===nbaHoy()?"Hoy":"";
   $("#nbaInv").innerHTML=nbaInvHTML();
-  if(!NBA.cache[f]) box.innerHTML=`<p class="note">Cargando partidos…</p>`;
+  if(!NBA.cache[f]) box.innerHTML=`<p class="note pzload">Cargando partidos…</p>`;
   nbaEquipos();
   let ev; try{ ev=await nbaDia(f); }catch(err){ if(NBA.dia===f) box.innerHTML=`<p class="note">ESPN no respondió. Intenta en un momento.</p>`; return; }
   if(NBA.dia!==f) return;
@@ -6834,7 +6870,7 @@ function nbaTablaDatos(){
   return NBA.stP;
 }
 async function nbaTabla(){
-  const box=$("#nbaTabla"); if(!NBA.st) box.innerHTML=`<p class="note">Cargando tabla…</p>`;
+  const box=$("#nbaTabla"); if(!NBA.st) box.innerHTML=`<p class="note pzload">Cargando tabla…</p>`;
   document.querySelectorAll("#nbaConf button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.conf===NBA.conf));
   let R; try{ R=await nbaTablaDatos(); }catch(err){ box.innerHTML=`<p class="note">ESPN no respondió. Intenta en un momento.</p>`; return; }
   const L=R[NBA.conf]||[], empezo=L.some(r=>r.w+r.l>0);
@@ -6951,7 +6987,7 @@ async function q5Mia(q,cerrado,lock){
   const box=$("#q5Body"), nombre=k=>NBA.eq?.[k]?.n||NBA_N[k];
   const pend=!cerrado?`Puedes cambiarla hasta el primer partido (${nbaDiaTxt(NBA_INICIO).toLowerCase()}, ${nbaHora(new Date(lock).toISOString())}).`:
     `Cuentan las victorias desde el ${nbaDiaTxt(q.d).toLowerCase()}. ${nbaHoy()<Q5_CAMBIOS?"Tu primer cambio se abre el 1 de diciembre: cada mes puedes cambiar 1 equipo.":q5PuedeCambiar(q)?"Este mes puedes cambiar 1 equipo.":`Ya hiciste tu cambio de ${q5MesTxt(q5Mes())}; el siguiente se abre el 1 del próximo mes.`}`;
-  box.innerHTML=`<p class="note">Cargando tus equipos…</p>`;
+  box.innerHTML=`<p class="note pzload">Cargando tus equipos…</p>`;
   const H=await Promise.all(q.eq.map(k=>nbaHorario(k)));
   const pasados=q.p||[], HP={}; await Promise.all([...new Set(pasados.flatMap(t=>t[0]))].map(async k=>{ HP[k]=await nbaHorario(k)||[]; }));
   const ptsAntes=pasados.reduce((s,[eq,d,h])=>s+eq.reduce((s2,k)=>s2+(HP[k]||[]).filter(x=>x.fin&&x.gano&&x.f>=d&&x.f<h).length,0),0);
@@ -6988,7 +7024,7 @@ async function q5Grupos(){   // tus grupos de la quiniela: {id, nombre, hashes d
 }
 async function q5Tabla(){
   const box=$("#q5Tabla"); if(!box) return;
-  if(!box.innerHTML) box.innerHTML=`<p class="note">Cargando tabla…</p>`;
+  if(!box.innerHTML) box.innerHTML=`<p class="note pzload">Cargando tabla…</p>`;
   const [J,St]=await Promise.all([q5Datos(),nbaTablaDatos().catch(()=>null)]);
   if(!$("#q5Tabla")) return;
   const E=Object.entries(J?.e||{});
@@ -7122,14 +7158,15 @@ function qmxRender(sinRed){
   const L=qmxJornadas(); if(QMX.j==null||!L.includes(QMX.j)) QMX.j=qmxDefault();
   const j=QMX.j, J=qmxD().J[j], now=Date.now()/1000, cerrada=J.pr<=now, mios=qmxMios(j), V=QMX.vivo;
   if(!sinRed){ qmxNube(j); if(cerrada) qmxVivo(j); }
-  let ac=0, fin=0, goles=0, todos=true;
+  let ac=0, fin=0, goles=0, todos=true, yaFalta=false;
   const filas=J.p.map(r=>{ const [fid,ts,hid,vid,,,,pr]=r, R=qmxRes(r,V), H=qmxEq(hid), A=qmxEq(vid), mi=mios.p[fid], lpz=qmxLpz(pr);
     if(R.fin){ fin++; goles+=(R.gl||0)+(R.gv||0); if(mi&&mi===R.r) ac++; } else if(!R.susp) todos=false;
     const iv=+j>=18?(J.p.find(x=>x!==r&&new Set([x[2],x[3],hid,vid]).size===2)?.[1]>ts?"Ida · ":"Vuelta · "):"";
     const est=iv+(R.susp?"Suspendido":R.vivo?`<b class="vivo">EN VIVO ${V[fid]?.min?V[fid].min+"'":""}</b>`:R.fin?"Final":qmxHora(ts));
     const btn=(k,i)=>{ const on=mi===k, ok=R.fin&&on&&R.r===k, mal=R.fin&&on&&R.r!==k, res=R.fin&&R.r===k;
       return `<button data-qmx="${fid}" data-k="${k}" aria-pressed="${on}"${cerrada?" disabled":""} class="${ok?"ok":mal?"mal":res?"res":""}" aria-label="${k==="L"?`Gana ${H.n}`:k==="V"?`Gana ${A.n}`:"Empate"}"><b>${k}</b><span>${pr?pr[i]+"%":""}</span></button>`; };
-    return `<div class="qmxp"><div class="qmxh"><span>${est}</span>${lpz?`<span>La Pizarra: <b>${lpz}</b></span>`:""}</div>
+    const falta=!cerrada&&!mi&&!R.fin&&!R.vivo&&!R.susp&&!yaFalta; if(falta) yaFalta=true;
+    return `<div class="qmxp${falta&&Object.keys(mios.p).length?" pzfalta":""}"><div class="qmxh"><span>${est}</span>${lpz?`<span>La Pizarra: <b>${lpz}</b></span>`:""}</div>
       <div class="qmxr"><span class="qmxe">${hoyLogo(H.logo,"qmxl")}${hoyEsc(H.n)}${R.gl!=null&&(R.fin||R.vivo)?` <b data-pzsc="q${fid}h">${R.gl}</b>`:""}</span>
       <div class="qmxb">${["L","E","V"].map(btn).join("")}</div>
       <span class="qmxe d">${R.gv!=null&&(R.fin||R.vivo)?`<b data-pzsc="q${fid}v">${R.gv}</b> `:""}${hoyEsc(A.n)}${hoyLogo(A.logo,"qmxl")}</span></div></div>`; }).join("");
@@ -7142,6 +7179,7 @@ function qmxRender(sinRed){
     ${!cerrada?`<div class="qmxtools"><span>L = gana el local · E = empate · V = gana la visita</span><button class="q5link" id="qmxCopia">Copiar a La Pizarra</button>${hechos?`<button class="q5link" id="qmxShare">📸 Compartir mis picks</button>`:""}</div>`:hechos?`<div class="qmxtools"><button class="q5link" id="qmxShare">📸 Compartir mis picks</button></div>`:""}
     ${cerrada&&!hechos?`<p class="note">No guardaste picks para esta jornada (ni en este navegador ni en tu cuenta). El borde verde marca el resultado real.</p>`:""}
     ${(qmxD().L?.sem||[]).length===8?`<button class="rjcard" data-qvgo="llave"><span>🏆</span><span><b>Llave de la Liguilla</b><small>${qmxD().L.pr>now?"Escoge quién pasa a semis, los finalistas y el campeón":"Mira cómo va tu llave"}</small></span><i>›</i></button>`:""}
+    ${!cerrada&&J.pr-now<7*86400?`<div class="pzcta" data-pzcta="${J.pr}" role="timer"></div><div class="pzprog"><span><i style="width:${Math.round(hechos/J.p.length*100)}%"></i></span><b>${hechos} de ${J.p.length} listos</b></div>`:""}
     <div class="qmxlist">${filas}</div>
     <div class="qmxdes"><div><b>Desempate: goles de la jornada</b><span>${cerrada?`Tu pronóstico: ${mios.g??"–"} · van ${goles} goles`:"¿Cuántos goles se meten en los partidos de la jornada?"}</span></div>
       <input id="qmxG" type="number" inputmode="numeric" min="0" max="60" value="${mios.g??""}"${cerrada?" disabled":""} aria-label="Goles de la jornada"></div>
@@ -7150,6 +7188,7 @@ function qmxRender(sinRed){
     ${cerrada&&abierta!=null&&abierta!==j?`<p class="note"><button class="q5link" data-qmxj="${abierta}">Ir a ${qmxNomJ(abierta).toLowerCase()}, que está abierta</button></p>`:""}
     ${cuenta}
     <p class="note">El % es la probabilidad según las casas de apuestas. 1 punto por acierto. Todos los picks se cierran con el primer partido de la jornada, como en el Progol.${+j>=18?" En la Liguilla escoges el resultado de cada partido (ida y vuelta) a los 90 minutos: no cuentan tiempos extra ni penales.":""}</p>`;
+  box.querySelectorAll("[data-pzcta]").forEach(pzCtaPinta);
 }
 document.addEventListener("click",ev=>{
   const t=ev.target; if(!t.closest) return;
@@ -7683,7 +7722,7 @@ async function fanPuntos(sinRed){
   const enJ=C.find(fanEnJuego);
   if(!FAN.vj||!C.includes(FAN.vj)) FAN.vj=enJ||C[C.length-1];
   const k=FAN.vj, desdeI=fanTodas().indexOf(FAN.D.desde), practica=fanTodas().indexOf(k)<desdeI, vivo=fanEnJuego(k);
-  if(vivo&&!sinRed){ box.innerHTML=`<p class="note">Cargando marcadores…</p>`; await fanVivo(k); if(FAN.vista!=="puntos"||FAN.vj!==k) return; }
+  if(vivo&&!sinRed){ box.innerHTML=`<p class="note pzload">Cargando marcadores…</p>`; await fanVivo(k); if(FAN.vista!=="puntos"||FAN.vj!==k) return; }
   const T=fanPtsDe(k)||{}, abierta=fanAbierta();
   const yo=FAN.hash&&FAN.D.tabla?.[FAN.hash], Lo=yo?.L?.[k];
   const m=practica?(fanMio(abierta||k)||(FAN.eq?.length===11?{eq:FAN.eq,c:FAN.c}:null)):Lo?{eq:Lo[0].map(String),c:String(Lo[1])}:fanMio(k);
@@ -8441,6 +8480,34 @@ function pzVoto(el,id,mine,res){
   if(res!=null&&mine===res){ let ya=null; try{ ya=localStorage.getItem("pz_conf_"+id); localStorage.setItem("pz_conf_"+id,"1"); }catch(e){}
     if(!ya){ pzConfeti(); pzAviso("¡Le atinaste!","Tu voto del partido de la semana fue el bueno"); } }
 }
+
+// ===== Ideas visuales, tanda 1 (24 nov 2026) =====
+// Aguja del Sufrómetro: medio círculo de tranquilo (verde) a infarto (rojo); la aguja se columpia hasta su lugar.
+function pzAguja(suf,lbl="de sufrimiento"){ const v=Math.max(0,Math.min(100,+suf||0));
+  return `<div class="pzag" style="--a:${(-90+v*1.8).toFixed(1)}deg" role="img" aria-label="${v}% ${hoyEsc(lbl)}"><svg viewBox="0 0 160 96" aria-hidden="true">
+    <path d="M16 84 A64 64 0 0 1 34.7 38.7" fill="none" stroke="#8FD6A6" stroke-width="14"/><path d="M34.7 38.7 A64 64 0 0 1 80 20" fill="none" stroke="#F2D466" stroke-width="14"/>
+    <path d="M80 20 A64 64 0 0 1 125.3 38.7" fill="none" stroke="#F2A86C" stroke-width="14"/><path d="M125.3 38.7 A64 64 0 0 1 144 84" fill="none" stroke="#F29C8C" stroke-width="14"/>
+    <g class="pzagn"><line x1="80" y1="84" x2="80" y2="30" stroke="#ECEFE7" stroke-width="4" stroke-linecap="round"/></g><circle cx="80" cy="84" r="8" fill="#ECEFE7"/><circle cx="80" cy="84" r="3.2" fill="#1F332D"/></svg>
+    <b>${v}<small>%</small></b><span>${hoyEsc(lbl)}</span></div>`; }
+// Rayita amarilla que viaja entre pestañas (.subnav y .htabs): un solo indicador por barra que se mueve al botón activo.
+let PZ_IND_T=0;
+function pzInd(){ PZ_IND_T=0; document.querySelectorAll(".subnav,.htabs,.dtabs").forEach(c=>{
+    if(!c.offsetParent) return; const b=[...c.children].find(x=>x.tagName==="BUTTON"&&(x.getAttribute("aria-current")==="page"||x.getAttribute("aria-selected")==="true")&&x.offsetParent);
+    let i=c.querySelector(":scope>.pzind");
+    if(!b){ if(i) i.style.opacity=0; return; }
+    if(!i){ i=document.createElement("span"); i.className="pzind"; i.setAttribute("aria-hidden","true"); i.style.transition="none"; c.appendChild(i); c.classList.add("pzhasind"); if(getComputedStyle(c).position==="static") c.classList.add("pzrel"); requestAnimationFrame(()=>requestAnimationFrame(()=>{ i.style.transition=""; })); }
+    i.style.opacity=1; i.style.width=b.offsetWidth+"px"; i.style.transform=`translateX(${b.offsetLeft}px)`; }); }
+function pzIndPide(){ if(!PZ_IND_T) PZ_IND_T=requestAnimationFrame(pzInd); }
+try{ new MutationObserver(pzIndPide).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["aria-current","aria-selected","hidden"]}); }catch(e){}
+addEventListener("resize",pzIndPide); document.addEventListener("click",()=>setTimeout(pzIndPide,30)); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(pzIndPide);
+// Cuenta atrás tipo marcador de estadio: <div class="pzcta" data-pzcta="epoch"> se pinta y corre cada segundo.
+function pzCtaPinta(el){ const s=Math.max(0,Math.round(+el.dataset.pzcta-Date.now()/1000)), d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), x=s%60, p2=v=>String(v).padStart(2,"0");
+  const G=d?[[p2(Math.min(d,99)),"DÍAS"],[p2(h),"HORAS"],[p2(m),"MIN"]]:[[p2(h),"HORAS"],[p2(m),"MIN"],[p2(x),"SEG"]], key=G.map(g=>g[1]).join();
+  if(el.dataset.k!==key){ el.dataset.k=key; el.innerHTML=G.map(([v,l])=>`<div class="pzcg"><div class="pzcd">${[...v].map(c=>`<span>${c}</span>`).join("")}</div><small>${l}</small></div>`).join(`<i aria-hidden="true">:</i>`);
+    el.setAttribute("aria-label",`Faltan ${d?d+" días, ":""}${h} horas y ${m} minutos`); return; }
+  const S=el.querySelectorAll(".pzcd span"), t=G.map(g=>g[0]).join("");
+  S.forEach((sp,i)=>{ if(sp.textContent!==t[i]){ sp.textContent=t[i]; sp.classList.remove("pzfl"); void sp.offsetWidth; sp.classList.add("pzfl"); } }); }
+setInterval(()=>{ document.querySelectorAll("[data-pzcta]").forEach(el=>{ if(el.offsetParent) pzCtaPinta(el); }); },1000);
 // "Guardado" con palomita que rebota
 const pzOk=t=>`<span class="pzok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>${hoyEsc(t)}</span>`;
 // Flechitas de la tabla: tu lugar contra la jornada anterior (se guarda en el navegador)
@@ -9496,7 +9563,7 @@ function amPost(p){
     ${p.big?`<div class="ambig"><b style="color:${G[1]||"var(--mark)"}">${hoyEsc(p.big)}</b><span>${hoyEsc(p.det||"")}</span></div>`:""}
     <div class="amacc">${AM_R.map(([k,n,e])=>`<button data-amr="${k}" aria-pressed="${!!mio[k]}" aria-label="${n}"><span class="amre">${e}</span><span>${(p.r?.[k]||0)||""}</span></button>`).join("")}
       <button class="amcom" data-amc="1" aria-label="Comentarios"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>${p.nc||""}</button></div>
-    ${ab?`<div class="amcoms">${C?(C.length?C.map(c=>`<p><b>${hoyEsc(c.uid===yo?"Tú":c.n||amNom(c.uid))}</b> ${hoyEsc(c.tx)}${c.uid===yo||p.uid===yo?` <button class="q5link" data-amcdel="${hoyEsc(c.id)}">Borrar</button>`:""}</p>`).join(""):`<p class="note">Sé el primero en comentar.</p>`):`<p class="note">Cargando…</p>`}
+    ${ab?`<div class="amcoms">${C?(C.length?C.map(c=>`<p><b>${hoyEsc(c.uid===yo?"Tú":c.n||amNom(c.uid))}</b> ${hoyEsc(c.tx)}${c.uid===yo||p.uid===yo?` <button class="q5link" data-amcdel="${hoyEsc(c.id)}">Borrar</button>`:""}</p>`).join(""):`<p class="note">Sé el primero en comentar.</p>`):`<p class="note pzload">Cargando…</p>`}
       <div class="amrap">${AM_RAP.map(t=>`<button data-amrap="${hoyEsc(t)}">${hoyEsc(t)}</button>`).join("")}</div>
       <form class="amcf" data-amcf="1"><input maxlength="140" placeholder="Escribe un comentario" aria-label="Comentario" autocomplete="off"><button class="btn">Mandar</button></form></div>`:""}</div>`;
 }
@@ -10186,7 +10253,7 @@ function favsSufreT(){
   L.sort((a,b)=>b.n-a.n); const prom=L.reduce((s,z)=>s+z.n,0)/L.length, suf=Math.round(100-prom), V=FAVS_VER.find(([m])=>prom>=m);
   const nom=(k,x)=>k[0]==="b"?(NBA_N[k.slice(1)]||x.n):k[0]==="n"?(NT[k.slice(1)]?.n||x.n):x.n;
   SUFH.ultT={modo:"temporada",suf,V,L:L.slice().reverse().map(z=>({k:z.k,nom:nom(z.k,z.x),pct:100-z.n,lin:z.det,D:null,peor:null}))};
-  return `<div class="fvsuf"><div class="fvsg"><div class="fvsmed" style="--p:${suf}"><b>${suf}<small>%</small></b><span>de sufrimiento</span></div>
+  return `<div class="fvsuf"><div class="fvsg">${pzAguja(suf)}
       <div class="fvsv"><b>${hoyEsc(V[1])}</b><span>${hoyEsc(V[2])}</span></div></div>
     <ol class="fvsl">${L.map((z,i)=>{ const T=FAVS_SUF.find(([m])=>z.n>=m); return `<li><span class="fvsn">${i+1}</span>${favsLogo(z.k,32)}<span class="fvst"><b>${hoyEsc(nom(z.k,z.x))}</b><small>${hoyEsc(z.det)}</small></span>
       <span class="fvsb"><i style="width:${Math.max(4,z.n)}%;background:${T[2]}"></i></span><em style="color:${T[2]}">${T[1]}</em></li>`; }).join("")}</ol>
@@ -10393,7 +10460,7 @@ function sufhExp(k,z){
   const seq=sqU>=3?` · ${sqU} años sin Champions`:sqM>=4?` · ${sqM} años sin título`:"";
   return {suf:Math.max(0,Math.round(100*suf/D.length)),D,cumple,base,exige:sufhEspTxt(k,z,base)+seq,peores}; }
 function favsSufreH(){
-  if(!SUFH.d){ sufhCarga(); return `<div class="fvsuf"><p class="note">Cargando la historia de tus equipos…</p></div>`; }
+  if(!SUFH.d){ sufhCarga(); return `<div class="fvsuf"><p class="note pzload">Cargando la historia de tus equipos…</p></div>`; }
   const todos=[...Object.entries(FAV.eq).filter(([k])=>/^[fnbe]/.test(k)),...Object.entries(FAV.jug).filter(([k])=>"rt".includes(k[0]))];
   const L=todos.map(([k,x])=>{ const h=sufhEquipo(k); return h?{k,x,...h,n:Math.round(h.v*100)}:null; }).filter(Boolean);
   const sin=todos.length-L.length, carga=todos.some(([k])=>k[0]==="t"&&SUFT[FAV.jug[k]?.n]===null);
@@ -10406,7 +10473,7 @@ function favsSufreH(){
   const nom=(k,x)=>k[0]==="n"?(NT[k.slice(1)]?.n||x.n):k[0]==="b"?(NBA_N[k.slice(1)]||x.n):x.n;
   const barrasE=z=>`<span class="fvhb fvhbe" aria-hidden="true">${z.X.D.map(x=>{ const h=Math.round(Math.min(1,Math.abs(x.d)/.45)*100); return `<i class="${x.d>=0?"up":"dn"}" style="--h:${Math.max(6,h)}%;background:${x.d>=.05?"#9FD3A8":x.d>-.05?"rgba(255,255,255,.35)":x.d>-.2?"#FFB27A":"#FF7A6B"}" title="${hoyEsc(x.n)}"></i>`; }).join("")}</span>`;
   const barras=z=>`<span class="fvhb" aria-hidden="true">${z.T.map(x=>`<i style="height:${Math.round(18+82*x.v)}%;background:${x.et>=4?"#F2D466":x.et===3?"#FFB27A":x.et>=1?"#9FD3A8":"rgba(255,255,255,.28)"}" title="${hoyEsc(x.n)}"></i>`).join("")}</span>`;
-  return `${sub}<div class="fvsuf"><div class="fvsg"><div class="fvsmed" style="--p:${suf}"><b>${suf}<small>%</small></b><span>de sufrimiento</span></div>
+  return `${sub}<div class="fvsuf"><div class="fvsg">${pzAguja(suf)}
       <div class="fvsv"><b>${hoyEsc(V[1])}</b><span>${hoyEsc(esp?"Medido contra lo que se le exige a cada uno.":V[2])}</span></div></div>
     <ol class="fvsl fvslh">${L.map((z,i)=>{ const T=FAVS_SUF.find(([m])=>z.n>=m), ab=SUFH.ab===z.k;
       return `<li><button class="fvhrow" data-fvsab="${hoyEsc(z.k)}" aria-expanded="${ab}"><span class="fvsn">${i+1}</span>${favsLogo(z.k,34)}<b class="fvhn">${hoyEsc(nom(z.k,z.x))}</b><em style="color:${T[2]}">${100-z.n}%</em><small class="fvhlin">${hoyEsc(esp?`Se le exige: ${z.X.exige} · cumplió ${z.X.cumple} de ${z.T.length}`:z.det)}</small></button>
@@ -10674,7 +10741,7 @@ function tuPinta(){
     :`<section class="tuyo tuin"><div><b>Entra con tu cuenta</b><small>Para jugar con tus amigos, guardar tus picks en la nube y recibir avisos.</small></div><button class="btn" data-acct>Entrar</button></section>`;
   top.innerHTML+=`<h3 class="tuh3">Mis equipos</h3>`;
   const fila=(k,t,d)=>`<button class="tuf" data-tuact="${k}"><span><b>${t}</b>${d?`<small>${d}</small>`:""}</span></button>`;
-  bot.innerHTML=`${ok?`<h3 class="tuh3">Mis grupos</h3><div id="tuGr"><p class="note">Cargando tus grupos…</p></div>`:""}
+  bot.innerHTML=`${ok?`<h3 class="tuh3">Mis grupos</h3><div id="tuGr"><p class="note pzload">Cargando tus grupos…</p></div>`:""}
     <button class="tuinv" data-tuact="invita">Invitar a un amigo</button>
     <h3 class="tuh3">Ajustes</h3><div class="tufs">
       ${ok?fila("avisos","Avisos al teléfono","Cierres, resultados y lo que hacen tus amigos"):""}
@@ -11138,7 +11205,7 @@ function grGrid(Gd,mode){
 async function grRender(){
   const box=$("#grBody"); if(!box) return;
   if(!D.fb){box.innerHTML=`<p class="note">Muy pronto.</p>`; return;}
-  if(!ACCT.ready&&ACCT_INI){box.innerHTML=`<p class="note">Cargando…</p>`; return;}
+  if(!ACCT.ready&&ACCT_INI){box.innerHTML=`<p class="note pzload">Cargando…</p>`; return;}
   if(!ACCT.user){box.innerHTML=`<p class="note">${GR.join?(invNom()?`${hoyEsc(invNom())} te invitó a su grupo de quiniela NFL. `:"Te invitaron a un grupo de quiniela. "):""}Para crear un grupo o unirte a uno, <button class="alink" data-acct>entra a tu cuenta</button>.</p>`; return;}
   if(!acctOk()){box.innerHTML=`<p class="note">Para usar los grupos, primero <button class="alink" data-acct>confirma tu correo</button>.</p>`; return;}
   if(!GR.loaded) await grLoadIds();
@@ -11159,7 +11226,7 @@ async function grRender(){
   if(GR.cur){ await Promise.all([grReconcile().catch(()=>false),svReconcile().catch(()=>false)]); grMain(GR.cur); }
 }
 async function grMain(g,soft){
-  const box=$("#grMain"); if(!box) return; if(!soft) box.innerHTML=`<p class="note">Cargando la tabla…</p>`;
+  const box=$("#grMain"); if(!box) return; if(!soft) box.innerHTML=`<p class="note pzload">Cargando la tabla…</p>`;
   let Gd; try{ Gd=(GR.data[g]&&Date.now()-GR.data[g].t<60e3)?GR.data[g]:await grLoad(g); }
   catch(e){ console.warn("Grupos:",e); box.innerHTML=`<p class="note">No pudimos cargar el grupo. Intenta de nuevo en un momento.</p>`; return; }
   if(GR.cur!==g) return;
