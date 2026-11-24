@@ -12549,7 +12549,7 @@ function ntPinta(){
 // ----- Avisos al teléfono (29 oct 2026) -----
 // Se pide permiso, Firebase Cloud Messaging da una clave de este aparato y se guarda en avisos_tk/{uid} (solo tú la lees).
 // El robot avisos.py (GitHub, cada 10 min) manda los avisos; sw.js los muestra aunque la página esté cerrada.
-const PUSH_K="pz_push", PUSH_P={eq:["Partidos de tus equipos","Cuando están por empezar y el resultado final"],gol:["Goles","Cada gol de tus equipos de fútbol"],soc:["Amigos","Solicitudes y comentarios en tus posts"],ret:["Retos","Cuando un amigo te reta a un duelo"],riv:["Sufrimiento ajeno","Cuando pierde el rival de toda la vida de tu equipo"],cie:["Recordatorios y resumen","Si está por cerrar algo y no has jugado, y tu semana cada lunes"]};
+const PUSH_K="pz_push", PUSH_P={eq:["Partidos de tus equipos","Cuando están por empezar y el resultado final"],gol:["Goles","Cada gol de tus equipos de fútbol"],soc:["Amigos","Solicitudes y comentarios en tus posts"],ret:["Retos","Cuando un amigo te reta a un duelo"],riv:["Sufrimiento ajeno","Cuando pierde el rival de toda la vida de tu equipo"],cie:["Recordatorios y resumen","Si está por cerrar algo y no has jugado, y tu semana cada lunes"],fantasy:["Tu fantasy en vivo","Jugadas grandes de tus titulares, si tu rival te pasa y el resultado final"]};
 const pushLs=()=>{ try{ return JSON.parse(localStorage.getItem(PUSH_K)||"{}")||{}; }catch(e){ return {}; } };
 const pushGuardaLs=o=>{ try{ localStorage.setItem(PUSH_K,JSON.stringify(o)); }catch(e){} };
 const pushIOS=()=>/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);

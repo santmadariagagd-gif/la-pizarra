@@ -523,10 +523,13 @@ class Avisos:
         try: self.periodico()
         except Exception as e: print("Periódico:", e)
         F = self.favoritos()
-        inicio = time.time()
+        inicio = time.time(); ffc = {}
         while True:
             self.now = time.time()
             hay = False
+            try:   # fantasy en vivo (24 nov 2026)
+                import ff_vivo; hay |= ff_vivo.corre(self, ffc)
+            except Exception as e: print("Fantasy en vivo:", repr(e)[:150])
             try: hay |= self.futbol(F, True)
             except Exception as e: print("Fútbol:", e)
             hay |= self.espn(F, "NFL", "n", "football/nfl", NFL_AB)
@@ -555,6 +558,8 @@ class DBFirebase:
             tk = [t for t in x.get("tk") or [] if isinstance(t, str) and t]
             if tk: R[d.id] = {"tk": tk, "p": x.get("p") or {}}
         return R
+    def usuario(self, uid):
+        return self.c.document(f"usuarios/{uid}").get().to_dict() or {}
     def favoritos(self, uid):
         d = self.c.document(f"usuarios/{uid}").get().to_dict() or {}
         return (d.get("fav") or {}).get("eq") or {}
