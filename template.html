@@ -2204,6 +2204,7 @@ dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background
 .dtabs button{font:400 18px var(--tab);text-transform:uppercase;letter-spacing:.02em;padding:10px 10px;border-bottom-width:4px;margin-bottom:-2px}
 .det .dk{font:400 22px/1 var(--tab);letter-spacing:.01em;color:var(--ink)}
 .det .dk2{letter-spacing:.08em;text-transform:uppercase}
+.det h3.dk{margin:0}.det h3.dk small{display:block;margin-top:4px;font:500 12.5px var(--body);text-transform:none;letter-spacing:0;color:var(--muted)}
 @media (max-width:560px){.deq .dt b{font-size:21px}.deq .dm{font-size:46px}.deq .dh{font-size:32px}}
 /* Retas */
 .rthead{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);padding:6px 0 8px;margin:0 0 18px;display:flex;flex-direction:column-reverse;gap:2px}
@@ -5098,7 +5099,7 @@ function mxPreviaHTML(sm,H,A){
       const comp=/liga|premier|la ?liga|serie a|bundesliga|ligue 1|champions/i.test(x.competitionName||"")?"":` · ${x.competitionName}`;
       return `<li><span class="qp">${pzDTF("es-MX",{timeZone:TZ,day:"numeric",month:"short"}).format(new Date(x.gameDate))}</span><span>${home?"vs":"en"} ${esTeam(x.opponent?.displayName||"")}${comp}</span><span class="qs"><b>${gf}-${gc}</b> ${R[x.gameResult]?.[0]||""}</span></li>`;}).join("")}</ul>`;};
   const f=forma(H)+forma(A);
-  if(f) h+=`<h3>Forma (últimos 5, del más reciente al más viejo)</h3>${f}`;
+  if(f) h+=`<h3 class="dk">Forma <small>últimos 5, del más reciente al más viejo</small></h3>${f}`;
   const S=(sm.seasonseries||[]).find(x=>x.type==="head-to-head")||sm.seasonseries?.[0];
   if(S?.events?.length){
     const cnt={[ids[0]]:0,[ids[1]]:0,x:0}, nmS=c=>String(c.team?.id)===String(ids[0])?nm(H):String(c.team?.id)===String(ids[1])?nm(A):nm(c);
