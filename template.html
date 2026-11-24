@@ -9661,7 +9661,7 @@ async function rdPinta(){
   const estado=res==="x"?`<div class="rdres x">Se anuló: no cuenta para tu racha.</div>`:res?`<div class="rdres ${acierto?"si":"no"}">${mi?(acierto?`¡Le atinaste! Quedó ${c.gh}-${c.ga}.`:`Esta vez no. Quedó ${c.gh}-${c.ga}.`):`Quedó ${c.gh}-${c.ga}. No contestaste.`}</div>`
     :cerr?`<span class="rdnota">${mi?"Ya está en juego. La respuesta sale cuando termine.":"Ya cerró. Mañana hay otro."}</span>`:"";
   const ayerH=ayer&&ayer.res&&ayer.res!=="x"?(()=>{ const m=rdLs()[rdMas(f,-1)]; return `<span class="rdayer">Ayer: ${m?(m===ayer.res?"le atinaste":"no le atinaste"):"no contestaste"} · ${hoyEsc(rdTexto(ayer).ops.find(o=>o[0]===ayer.res)?.[1]||"")}</span>`; })():"";
-  el.innerHTML=`<section class="rdcard${RD.k?" rdre":""}"><div class="rdh"><span class="rdtag">Reto del día</span><span class="rdmeta">${hoyEsc(T.liga)} · ${hoyEsc(T.hora)}</span>
+  el.innerHTML=`<section class="rdcard${RD.k?" rdre":""}"><div class="rdh"><span class="rdtag">${c.tg?"Reto de Thanksgiving":"Reto del día"}</span><span class="rdmeta">${hoyEsc(T.liga)} · ${hoyEsc(T.hora)}</span>
       ${yo?.r?`<span class="vfl rdfl">${VIDA_FLAMA}${yo.r}</span>`:""}</div>
     <b class="rdq">${hoyEsc(T.q)}</b>${opsH}${estado}
     <div class="rdpie">${!cerr?`<span class="rdcd" data-rdcd="${c.ts}"></span>`:ayerH||"<span></span>"}<button class="q5link" data-rdsem="1">Tu semana</button></div></section>`;
@@ -11716,12 +11716,24 @@ function avCfb(){ const TB=CFBQ.TB, now=Date.now()/1000; if(!TB) return null;
   const [w,x]=ws[0], jid=`${TB.s}-${w}`, n=(x.g||[]).length; return {w,n,pr:x.pr,mias:Math.min(n,Object.keys(cfbLs()[jid]||CFBQ.mias[jid]||{}).length)}; }
 function hoyPortadaHTML(){
   const now=Date.now()/1000, f=HOY.f; let P=null;
-  try{ if(D.qmx&&f!=="nfl"){ const J=qmxD().J, LL=qmxD().L, nom=id=>qmxEq(id).n;
+  // Thanksgiving (24 nov 2026): el jueves de Acción de Gracias (y la noche anterior, ya cerrada la quiniela de Liga MX) la portada
+  // son los partidos de la NFL de ese día.
+  try{ if(f!=="fut"&&(typeof verNfl!=="function"||verNfl())&&D.sched){ const yr=+D.season, nov=new Date(Date.UTC(yr,10,1)), tgd=Date.UTC(yr,10,1+((4-nov.getUTCDay()+7)%7)+21,18)/1000, tg=avYmd(tgd);
+    const G=D.sched.filter(x=>x.ko&&avYmd(+new Date(x.ko)/1000)===tg).sort((a,b)=>a.ko<b.ko?-1:1), hoy=avYmd(now);
+    let qcerro=true; try{ const j=qmxAbierta(); if(j!=null&&qmxD().J[j].pr>now) qcerro=false; }catch(e){}
+    const vispera=avYmd(tgd-86400)===hoy&&qcerro&&new Date().getHours()>=12;
+    if(G.length&&(hoy===tg||vispera)&&G.some(x=>x.hs==null)){ const nm=t=>NT[t]?.n||t, hora=x=>pzDTF("es-MX",{timeZone:"America/Mexico_City",hour:"numeric",minute:"2-digit"}).format(new Date(x.ko)).replace(/\s?([ap])\.?\s?m\.?/i," $1m");
+      const N=avNfl(), falta=N&&N.mios<N.F.length;
+      P={k:`NFL · Semana ${G[0].w} · Thanksgiving`,tit:hoy===tg?"Hoy es Thanksgiving":"Mañana es Thanksgiving",
+        dek:`${G.length} partidos en el Día de Acción de Gracias, como cada año con Detroit y Dallas. El primero ${hoy===tg?"a las":"mañana a las"} ${hora(G[0])}.`,
+        grid:G.map(x=>({s:x.hs!=null?`Final · ${x.as_}-${x.hs}`:hora(x),t:`${nm(x.a)} en ${nm(x.h)}`})),
+        cta:falta?{ir:"nflq",t:"Haz tus picks",s:N.mios?`te faltan ${N.F.length-N.mios}`:`${N.F.length} partidos`}:{ir:"nflq",t:"Ver tus picks",s:"✓ ya los tienes"}}; } } }catch(e){ console.warn("portada tg",e); }
+  try{ if(!P&&D.qmx&&f!=="nfl"){ const J=qmxD().J, LL=qmxD().L, nom=id=>qmxEq(id).n;
     const r=[18,19,20].find(j=>J[j]&&J[j].p.some(x=>!qmxRes(x).fin)&&J[j].pr-now<6*86400);
     if(r){ const X=J[r], ida=X.p.slice(0,Math.max(1,X.p.length/2)), sem=(LL?.sem||[]).map(Number), sd=id=>sem.indexOf(+id)+1;
       const hoy=X.p.filter(x=>avYmd(x[1])===avYmd(now)&&!qmxRes(x).fin), antes=now<X.pr;
       const tit=hoy.length?"Hoy hay Liguilla":r===18?(antes?"Arranca la Liguilla":"Se juegan los cuartos"):r===19?"Semifinales":"La gran final";
-      const dek=hoy.length?`${hoy.map(x=>`${nom(x[2])} vs ${nom(x[3])}`).join(", ")}. El primero ${hoyEsc(qmxHora(hoy[0][1]).toLowerCase())}.`
+      const dek=hoy.length?`${hoy.map(x=>`${nom(x[2])} vs ${nom(x[3])}`).join(", ")}. El primero a las ${hoyEsc(pzDTF("es-MX",{timeZone:"America/Mexico_City",hour:"numeric",minute:"2-digit"}).format(new Date(hoy[0][1]*1000)).replace(/\s?([ap])\.?\s?m\.?/i," $1m"))}.`
         :antes?(r===18?`Ocho equipos, cuatro series. La ida es ${avCuando(X.pr)}: ¿quién es tu campeón?`:`La ida es ${avCuando(X.pr)}.`):"Sigue la serie y tus picks.";
       const grid=ida.map(x=>{ const a=sd(x[2]), b=sd(x[3]), [p,q]=a&&b&&a>b?[x[3],x[2]]:[x[2],x[3]]; return {s:a&&b?`${Math.min(a,b)} vs ${Math.max(a,b)}`:"",t:`${nom(p)} · ${nom(q)}`}; });
       const Pll=qmxMios("llave").p||{}, hll=(Pll.q||[]).filter(v=>v!=null).length+(Pll.s||[]).filter(v=>v!=null).length+(Pll.c!=null?1:0);

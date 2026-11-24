@@ -2883,7 +2883,9 @@ def _reto_dia():
             if not x.get('ko') or x.get('hs') is not None: continue
             ts=nfl_ts(x)
             if datetime.fromtimestamp(ts,tz).date()!=dia or ts<time.time()+1800: continue
-            C.append(dict(tipo="nfl",id=x['id'],ts=ts,h=x['h'],a=x['a'],sp=x.get('sp'),tot=x.get('tot'),p=9+(2 if datetime.fromtimestamp(ts,tz).hour>=18 else 0)))
+            # Thanksgiving (4º jueves de noviembre): el reto es de la NFL (el de la noche gana por el +2)
+            tg=dia.month==11 and dia.weekday()==3 and 22<=dia.day<=28
+            C.append(dict(tipo="nfl",id=x['id'],ts=ts,h=x['h'],a=x['a'],sp=x.get('sp'),tot=x.get('tot'),p=9+(2 if datetime.fromtimestamp(ts,tz).hour>=18 else 0)+(8 if tg else 0),tg=1 if tg else None))
         # Colegial (23 nov 2026): los partidos del ranking también pueden ser el reto (sábados, sobre todo)
         for g in (globals().get('CFB_C') or {}).get('games') or []:
             if g.get('ok') or not g.get('ko') or g.get('tbd') or not (g.get('hr') or g.get('ar')): continue
@@ -2904,7 +2906,9 @@ def _reto_dia():
             c["q"]=["spread","total"][n%2]
             if c["q"]=="spread" and not c.get("sp"): c["q"]="gana" if not c.get("tot") else "total"
             if c["q"]=="total" and not c.get("tot"): c["q"]="gana"
-        c.pop("p",None); c["res"]=None; return c
+        c.pop("p",None); c["res"]=None
+        if not c.get("tg"): c.pop("tg",None)
+        return c
     nuevos=[]
     for dia in [ahora.date()]+([ahora.date()+timedelta(days=1)] if ahora.hour>=18 else []):
         f=dia.isoformat()
