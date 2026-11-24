@@ -2194,6 +2194,18 @@ dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background
 .qview button{font:400 18px var(--tab);text-transform:uppercase;letter-spacing:.02em;padding:10px 10px;border-bottom-width:4px;margin-bottom:-2px}
 @media (max-width:480px){.qview{gap:2px}.qview button{font-size:17px;padding:10px 8px}}
 .rjcard{border-color:var(--line);background:var(--surface)}
+/* Todas las pestañas con el estilo de portada (24 nov 2026) */
+h2{font:400 36px/.98 var(--tab);text-transform:uppercase;letter-spacing:.01em}
+.subnav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:2px;border-bottom:2px solid rgba(236,239,231,.55);padding:4px 0 0;margin-bottom:16px;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+.subnav::-webkit-scrollbar{display:none}
+.subnav button{flex:none;white-space:nowrap;font:400 18px/1 var(--tab);text-transform:uppercase;letter-spacing:.02em;padding:12px 10px;border-bottom-width:4px;margin-bottom:-2px}
+.subnav select.league{flex:none;margin-right:8px;width:auto;max-width:150px}
+.hseg{max-width:100%;overflow-x:auto;scrollbar-width:none}.hseg::-webkit-scrollbar{display:none}.hseg>button{flex:none}
+.hsec>.hh{border-top:2px solid rgba(236,239,231,.55);padding-top:10px}
+.hsec>.hh h3{background:none;padding:0;font:400 26px/1 var(--tab);text-transform:uppercase;letter-spacing:.01em}
+.hsec>.hh h3 small{text-transform:none;letter-spacing:0;font-family:var(--body)}
+.hfcta{border:1px solid var(--line)}.qgate{border-left:1px solid var(--line);border-radius:16px}
 /* Detalle de partido con el estilo de portada (24 nov 2026) */
 .dhead{background:linear-gradient(170deg,#2C463E,#233A33);border-color:#4B6A5F}
 .dtop{font:600 12px var(--body);letter-spacing:.1em;text-transform:uppercase}
