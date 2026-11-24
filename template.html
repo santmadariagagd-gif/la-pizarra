@@ -2412,6 +2412,28 @@ h2{font:400 36px/.98 var(--tab);text-transform:uppercase;letter-spacing:.01em}
 @keyframes pzCae{from{transform:translateY(-12px);opacity:0}}
 .pzdet{margin-top:12px}.pzdet summary{cursor:pointer;color:var(--mark);font-weight:600;padding:8px 0}
 @media (prefers-reduced-motion:reduce){.pzrg,.pzfichas i,.pzjb i,.pzval,.pzeq em{animation:none}}
+
+/* ===== Ideas visuales, tanda 4 ===== */
+.fmline svg{display:block;width:100%;max-width:560px;height:auto;margin:6px auto 0}
+.fmlt{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--muted)}.fmlt b{font:400 22px var(--tab);color:var(--mark)}
+.fmvr{display:grid;grid-template-columns:minmax(0,108px) 1fr auto;gap:10px;align-items:center;padding:7px 0}
+.fmvr>b{font:700 15px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fmvr>span{height:9px;border-radius:5px;background:var(--line,#3A554C);overflow:hidden}.fmvr>span i{display:block;height:100%;border-radius:5px;transform-origin:left;animation:pzMir .9s ease-out both}
+.fmvr em{font:400 17px var(--tab);font-style:normal}.fmvr em small{font:500 12px var(--body);color:var(--muted)}
+.fmevr:first-of-type{animation:pzDesl .6s cubic-bezier(.2,1.2,.4,1) both}@keyframes pzDesl{from{transform:translateX(30px);opacity:0}}
+.jperc{margin-top:14px}.jpr{display:grid;grid-template-columns:minmax(0,132px) 1fr 30px;gap:10px;align-items:center;padding:6px 0}
+.jpr>span:first-child{font-size:14px;display:flex;flex-direction:column}.jpr small{font-size:11px;color:var(--muted)}
+.jpb{height:11px;border-radius:6px;background:var(--line,#3A554C);overflow:hidden}.jpb i{display:block;height:100%;border-radius:6px;transform-origin:left;animation:pzMir 1s ease-out both}
+.jpr>b{font:400 17px var(--tab);text-align:right}
+.pzhist{margin-bottom:8px}
+.nserie{margin-top:12px;border-top:1px solid var(--line,#3A554C);padding-top:10px}
+.nsh{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}.nsh b{color:var(--ink);font-size:14px}
+.nserie ul{list-style:none;margin:6px 0 0;padding:0}
+.nserie li{display:grid;grid-template-columns:44px 1fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--line,#3A554C);font-size:14px;animation:pzCae .4s ease-out both}
+.nserie li b{font:400 17px var(--tab);color:var(--good)}.nserie li b.r{color:var(--bad)}.nserie li b.g{color:var(--mark)}
+.nserie li.yo span{color:var(--mark);font-weight:600}
+.ncampo .bl,.ncampo .fd{transition:left 1s cubic-bezier(.3,.9,.3,1)}
+@media (prefers-reduced-motion:reduce){.fmvr>span i,.fmevr:first-of-type,.jpb i,.nserie li{animation:none}}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -4258,6 +4280,17 @@ function nflJugadores(S){   // {ABR:{atletas por id con sus números}} a partir 
     for(const p of Object.values(P)) p.ppr=nflPPR(p); }
   return T;
 }
+
+// NFL en vivo: las jugadas de la serie ofensiva en curso, con tus jugadores de fantasy en amarillo.
+function nflSerieHTML(cd){
+  const P=(cd?.plays||[]).filter(p=>p.text); if(!P.length) return "";
+  let mios=[]; try{ const R=(SL?.rosters||[]).find(r=>r.roster_id===SL?.mine?.roster_id); mios=(R?.players||[]).map(sid=>String(slPlayer(sid).n||"").split(" ").slice(-1)[0]).filter(a=>a.length>2); }catch(e){}
+  const tm=NFL_AB[cd.team?.abbreviation]||cd.team?.abbreviation||"";
+  return `<div class="nserie"><div class="nsh"><b>Esta serie${tm?` · ${detEsc(tm)}`:""}</b><span>${cd.offensivePlays??P.length} jugadas · ${cd.yards??0} yds${cd.timeElapsed?.displayValue?` · ${detEsc(cd.timeElapsed.displayValue)}`:""}</span></div>
+    <ul>${P.slice(-6).reverse().map((p,i)=>{ const y=p.statYardage, yo=mios.some(a=>p.text.includes(a));
+      return `<li class="${yo?"yo":""}" style="animation-delay:${(i*.05).toFixed(2)}s"><b class="${p.scoringPlay?"g":y<0?"r":""}">${p.scoringPlay?"TD":y!=null&&y!==0?(y>0?"+":"")+y:"0"}</b><span>${detEsc(nflJugEs(p.text))}</span></li>`; }).join("")}</ul>
+    ${mios.length?`<p class="grnota">En amarillo, jugadas de tus jugadores de fantasy.</p>`:""}</div>`;
+}
 function nflDetHTML(x,S,b,L){
   const A=NT[x.a]||{n:x.a}, H=NT[x.h]||{n:x.h}, when=x.ko?new Date(x.ko):null;
   const st=S?.header?.competitions?.[0]?.status?.type?.state, vivo=!!L?.live||st==="in", fin=x.hs!=null||!!L?.done||st==="post", pre=!vivo&&!fin;
@@ -4279,7 +4312,7 @@ function nflDetHTML(x,S,b,L){
     const bx=lado===x.a?yd:lado===x.h?100-yd:50, ataca=s.pos===x.h?-1:1, fd=s.dist?Math.max(0,Math.min(100,bx+ataca*s.dist)):null;
     sit=`<div class="nsit"><div class="nsl"><span>${s.pos?`<i class="bal"></i><b>${detEsc((NT[s.pos]||{n:s.pos}).n)}</b> con el balón`:"Balón muerto"}</span><b class="dd2">${detEsc(String(s.dd||"").replace(/\bat\b/,"·"))}</b></div>
       <div class="ncampo"><span class="ez a"></span><span class="ez h"></span><span class="mc"></span>${fd!=null?`<span class="fd" style="left:${fd}%"></span>`:""}${pm?`<span class="bl" style="left:${bx}%"></span>`:""}</div>
-      <div class="dtx"><span>Zona de anotación ${x.a}</span><span>Medio campo</span><span>Zona de anotación ${x.h}</span></div>${s.last?`<p class="ult"><b>Última jugada:</b> ${detEsc(nflJugEs(s.last))}</p>`:""}</div>`; }
+      <div class="dtx"><span>Zona de anotación ${x.a}</span><span>Medio campo</span><span>Zona de anotación ${x.h}</span></div>${s.last?`<p class="ult"><b>Última jugada:</b> ${detEsc(nflJugEs(s.last))}</p>`:""}${nflSerieHTML(S?.drives?.current)}</div>`; }
   // Probabilidad de ganar
   let wp="";
   const W=(S?.winprobability||[]).map(p=>p.homeWinPercentage).filter(v=>v!=null);
@@ -6654,6 +6687,76 @@ function fmSugPinta(M,slots,w,INJ){ const el=$("#fmSug"); if(!el) return;
   if(!L.length){ el.innerHTML=""; return; }
   el.innerHTML=`<section class="fmsug"><span>Antes de sus partidos</span><p>${L.length===1?"Un cambio que te suma":`${L.length} cambios que te suman`}, según el consenso de los expertos</p>
     ${L.slice(0,3).map(x=>`<div><span>Mete a <b>${hoyEsc(x.a.p.n)}</b> por <b>${hoyEsc(x.b.p.n)}</b></span><b>+${fmPts(Math.round((x.a.pr-x.b.pr)*10)/10)}</b></div>`).join("")}</section>`; }
+
+// ===== Ideas visuales, tanda 4 (24 nov 2026) =====
+// Fantasy: tu semana en una línea (la probabilidad de ganar se va guardando en este navegador cada vez que abres el matchup
+// con partidos en juego; los puntos son las jugadas grandes de "Lo último") y cómo va cada titular contra su proyección.
+function fmHist(lid,w,prob,vivo,fin){ const k=`pz_fm_h_${lid}_${w}`; let H=[]; try{ H=JSON.parse(localStorage.getItem(k)||"[]"); }catch(e){}
+  const now=Date.now(), l=H[H.length-1];
+  if((vivo||H.length)&&(!l||(l[1]!==prob&&now-l[0]>45e3)||(vivo&&now-l[0]>15*60e3)||(fin&&l[1]!==prob))){ H.push([now,prob]); if(H.length>500) H=H.slice(-500); try{ localStorage.setItem(k,JSON.stringify(H)); }catch(e){} }
+  return H; }
+function fmLineaHTML(H,ev){
+  if(H.length<3) return ""; const t0=H[0][0], t1=Math.max(H[H.length-1][0],t0+36e5), W=360, Hh=150, X=t=>+(34+(t-t0)/(t1-t0)*(W-44)).toFixed(1), Y=v=>+(12+(1-v/100)*(Hh-36)).toFixed(1);
+  const d=H.map(([t,v],i)=>`${i?"L":"M"}${X(t)} ${Y(v)}`).join(" "), at=t=>{ let v=H[0][1]; for(const [tt,vv] of H){ if(tt<=t) v=vv; else break; } return v; };
+  const dias=[], f=pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"short"}); let pv="";
+  for(let t=t0;t<=t1;t+=36e5){ const n=f.format(new Date(t)).replace(".",""); if(n!==pv){ dias.push([t,n]); pv=n; } }
+  const big=(ev||[]).filter(e=>Math.abs(e.d)>=5.5&&e.t>=t0&&e.t<=t1).slice(0,12);
+  const last=H[H.length-1];
+  return `<section class="fmline"><h3 class="fmh3">Tu semana en una línea</h3><div class="fmlt"><span>Probabilidad de ganar</span><b>${last[1]}%</b></div>
+    <svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Tu probabilidad de ganar durante la semana: empezó en ${H[0][1]}% y va en ${last[1]}%">
+    <line x1="34" y1="${Y(50)}" x2="${W-10}" y2="${Y(50)}" stroke="#4B6A5F" stroke-dasharray="3 4"/><text x="0" y="${Y(50)+4}" fill="#A8B8AF" font-size="10.5" font-family="Barlow,Arial,sans-serif">50%</text>
+    ${dias.length>1?dias.map(([t,n],i)=>`${i?`<line x1="${X(t)}" y1="8" x2="${X(t)}" y2="${Hh-20}" stroke="#3A554C"/>`:""}<text x="${X(t)+4}" y="${Hh-5}" fill="#A8B8AF" font-size="10.5" font-weight="600" font-family="Barlow,Arial,sans-serif">${hoyEsc(n[0].toUpperCase()+n.slice(1))}</text>`).join(""):""}
+    <path class="pzwl" pathLength="1" d="${d}" fill="none" stroke="#F2D466" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    ${big.map(e=>`<circle class="pzlev" cx="${X(e.t)}" cy="${Y(at(e.t))}" r="5.5" fill="${e.m?"#8FD6A6":"#F29C8C"}" stroke="#1F332D" stroke-width="2"><title>${e.d>0?"+":""}${fmPts(Math.round(e.d*10)/10)} ${hoyEsc(fmShort(slPlayer(e.sid).n))}</title></circle>`).join("")}
+    <circle class="pzlpt" cx="${X(last[0])}" cy="${Y(last[1])}" r="5" fill="#F2D466" stroke="#1F332D" stroke-width="2"/></svg>
+    <div class="pzleg"><span><i style="width:10px;height:10px;border-radius:50%;background:#8FD6A6"></i>Jugada grande tuya</span><span><i style="width:10px;height:10px;border-radius:50%;background:#F29C8C"></i>Del rival</span></div>
+    <p class="grnota">Se va dibujando con las veces que abres tu matchup mientras hay partidos (se guarda en este teléfono).</p></section>`;
+}
+function fmVsEsperado(M,w){
+  const L=(M.starters||[]).filter(s=>s&&s!=="0").map(sid=>{ const p=slPlayer(sid), G=fmGame(fmTm(p.t),w), x=fmProj(sid,p), a=M.players_points?.[sid]||0; return {sid,p,G,x,a}; })
+    .filter(z=>!z.G.bye&&z.G.st!=="pre"&&z.x>0); if(L.length<2) return "";
+  return `<section class="fmvse"><h3 class="fmh3">Contra lo esperado</h3>${L.map((z,i)=>{ const r=z.a/z.x, c=r>=1?"#8FD6A6":r>=.6?"#F2D466":"#F29C8C";
+    return `<div class="fmvr"><b>${hoyEsc(fmShort(z.p.n))}</b><span><i style="width:${Math.min(100,r*100).toFixed(0)}%;background:${c};animation-delay:${(i*.06).toFixed(2)}s"></i></span><em>${fmPts(z.a)}<small>/${fmPts(z.x)}</small></em></div>`; }).join("")}
+    <p class="grnota">La barra llena es lo que esperábamos que hiciera; verde, ya lo pasó.${L.some(z=>z.G.st==="in")?" Los que siguen jugando todavía pueden sumar.":""}</p></section>`;
+}
+// Tarjeta de jugador: dónde está contra los demás de su posición en la liga (percentiles por cada 90 minutos).
+function jugPercHTML(J,f){
+  if(!J?.filas||!f||f.min<270) return ""; const pos=f.pg||f.pos, L=J.filas.filter(r=>(r.pg||r.pos)===pos&&r.min>=270); if(L.length<8) return "";
+  const p90=(r,k)=>(r[k]||0)/r.min*90, pct=(k,inv)=>{ const v=p90(f,k), n=L.filter(r=>inv?p90(r,k)>v:p90(r,k)<v).length, e=L.filter(r=>p90(r,k)===v).length; return Math.round((n+e/2)/L.length*100); };
+  const M=pos==="G"?[["sv","Atajadas"],["gc","Goles recibidos",1],["cs","Porterías en cero"]]:pos==="D"?[["fs","Faltas que le hacen"],["g","Goles"],["as","Asistencias"],["fc","Faltas que comete",1]]
+    :[["g","Goles"],["sot","Tiros a gol"],["sh","Tiros"],["as","Asistencias"],["fs","Faltas que le hacen"]];
+  const NP={G:"porteros",D:"defensas",M:"medios",F:"delanteros"};
+  const F=M.filter(([k])=>L.some(r=>r[k]!=null)).map(([k,n,inv])=>[n,pct(k,inv),p90(f,k)]);
+  return `<div class="dbox jperc"><span class="dk">Contra otros ${NP[pos]||"jugadores de su posición"}</span><p class="grnota" style="margin:2px 0 8px">Lugar entre ${L.length} ${NP[pos]||"jugadores"} de la liga con 270+ minutos, por cada 90 minutos (100 = el mejor).</p>
+    ${F.map(([n,v,x],i)=>`<div class="jpr"><span>${n}<small>${x.toFixed(2)} por 90'</small></span><span class="jpb"><i style="width:${Math.max(3,v)}%;background:${v>=70?"#8FD6A6":v>=40?"#F2D466":"#F29C8C"};animation-delay:${(i*.07).toFixed(2)}s"></i></span><b>${v}</b></div>`).join("")}</div>`;
+}
+// Historia para Instagram de tu jornada (1080×1920).
+async function pzHistoria(o){
+  const W=1080,H=1920,c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d");
+  try{ await Promise.all(['400 100px "Anton"','700 60px "Barlow Condensed"','400 40px "Barlow"','600 40px "Barlow"'].map(f=>document.fonts.load(f))); }catch(e){}
+  const F=(w,s,fam="Barlow")=>`${w} ${s}px "${fam}", "Arial Narrow", Arial, sans-serif`, P=84;
+  x.fillStyle="#1F332D"; x.fillRect(0,0,W,H);
+  for(const [cx,cy,r,a] of [[200,260,520,.05],[900,1100,560,.04]]){ const g=x.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,`rgba(255,255,255,${a})`); g.addColorStop(1,"rgba(255,255,255,0)"); x.fillStyle=g; x.fillRect(0,0,W,H); }
+  x.globalAlpha=.16; x.strokeStyle="#ECEFE7"; x.lineWidth=8; x.lineCap="round";
+  for(const ox of [720,840]){ x.beginPath(); x.arc(ox,250,28,0,Math.PI*2); x.stroke(); } x.beginPath(); x.moveTo(950,90); x.lineTo(995,135); x.moveTo(995,90); x.lineTo(950,135); x.stroke();
+  x.beginPath(); x.moveTo(720,220); x.quadraticCurveTo(740,140,930,120); x.stroke(); x.globalAlpha=1;
+  let y=170; x.font=F(700,62,"Barlow Condensed"); x.fillStyle="#ECEFE7"; x.fillText("La",P,y); x.fillStyle="#F2D466"; x.fillText("Pizarra",P+x.measureText("La ").width,y);
+  y+=150; x.font=F(600,36); x.fillStyle="#A8B8AF"; x.fillText(String(o.kick||"").toUpperCase(),P,y);
+  y+=150; x.font=F(400,150,"Anton"); x.fillStyle="#ECEFE7"; x.fillText(String(o.l1||"").toUpperCase(),P,y);
+  y+=160; x.fillStyle="#F2D466"; x.fillText(String(o.l2||"").toUpperCase(),P,y); const tw=Math.min(x.measureText(String(o.l2||"").toUpperCase()).width,W-2*P);
+  x.strokeStyle="#F2D466"; x.lineWidth=12; x.beginPath(); x.moveTo(P,y+40); x.bezierCurveTo(P+tw*.3,y+22,P+tw*.6,y+58,P+tw,y+34); x.stroke();
+  y+=120; const S=o.stats||[], bw=(W-2*P-30)/2;
+  S.slice(0,2).forEach(([a,b,col],i)=>{ const bx=P+i*(bw+30); x.fillStyle="#263D36"; x.strokeStyle="#4B6A5F"; x.lineWidth=3; x.beginPath(); x.roundRect(bx,y,bw,230,40); x.fill(); x.stroke();
+    x.font=F(400,110,"Anton"); x.fillStyle=col||"#ECEFE7"; x.fillText(a,bx+40,y+130); x.font=F(400,36); x.fillStyle="#C9D6CF"; x.fillText(b,bx+40,y+190); });
+  if(S.length) y+=290;
+  if(o.dest){ x.fillStyle="#F2D466"; x.beginPath(); x.roundRect(P,y,W-2*P,250,40); x.fill(); x.fillStyle="#15241F"; x.font=F(700,32); x.fillText(String(o.dest[0]).toUpperCase(),P+44,y+70);
+    x.font=F(700,64,"Barlow Condensed"); x.fillText(o.dest[1],P+44,y+150); x.font=F(400,36); x.fillText(o.dest[2]||"",P+44,y+205); y+=310; }
+  if(o.celdas?.length){ const n=o.celdas.length, gap=14, cw=Math.min(90,(W-2*P-gap*(n-1))/n);
+    o.celdas.forEach((ok,i)=>{ const cx=P+i*(cw+gap); x.fillStyle=ok==null?"rgba(255,255,255,.12)":ok?"#8FD6A6":"#F29C8C"; x.beginPath(); x.roundRect(cx,y,cw,cw,20); x.fill(); }); }
+  x.save(); x.translate(P,H-150); x.rotate(-.06); x.font=F(400,76,"Anton"); x.fillStyle="#F2D466"; x.fillText("¿ME GANAS?",0,0); x.restore();
+  x.font=F(700,44,"Barlow Condensed"); x.fillStyle="#A8B8AF"; x.textAlign="right"; x.fillText("lapizarra.mx",W-P,H-140); x.textAlign="left";
+  return await new Promise(r=>c.toBlob(r,"image/png"));
+}
 function fmRender(mu,w,INJ,last){
   const box=$("#slMatch"), me=SL.mine, rid=me.roster_id;
   const M=(mu||[]).find(x=>x.roster_id===rid);
@@ -6677,6 +6780,8 @@ function fmRender(mu,w,INJ,last){
   const rest=lm.n+lm.l+lo.n+lo.l, eA=pA!=null&&!allDone?pA:a, eB=pB!=null&&!allDone?pB:b;
   const prob=allDone||M.nodetail?(a>b?100:a<b?0:50):Math.round(100*fmPhi((eA-eB)/Math.max(3,6.5*Math.sqrt(Math.max(1,rest)))));
   const ev=M.nodetail?[]:fmEventos(M,O,w);
+  const HS=O&&!M.nodetail&&w>=curW?fmHist(SL.league?.league_id||"x",w,prob,anyLive,allDone):[];
+  if(O&&allDone&&a>b&&w>=curW-1){ try{ const kk=`pz_fm_win_${SL.league?.league_id}_${w}`; if(!localStorage.getItem(kk)){ localStorage.setItem(kk,"1"); setTimeout(()=>{ pzConfeti(); pzAviso("¡Ganaste tu matchup!",`Semana ${w}: ${fmPts(a)} – ${fmPts(b)}`); },600); } }catch(e){} }
   const head=`<div class="fmhero${anyLive?" vivo":""}"><div class="fmhs">
     <div class="fmside me"><span class="fml">Tú</span><b>${teamName(me)}</b><small>${rec(me)}</small><strong>${fmPts(a)}</strong>${!allDone&&pA!=null?`<small>va para ${fmPts(Math.round(pA*10)/10)}</small>`:""}</div>
     <span class="fmvs">${anyLive?'<i class="fmdot"></i>':""}${M.nodetail?"VS":stat==="Final"?"FINAL":"VS"}</span>
@@ -6706,7 +6811,7 @@ function fmRender(mu,w,INJ,last){
     const px=x.points??0, py=y?.points??0;
     return `<li><span class="${px>py?"lead":""}">${teamName(R(x.roster_id))}</span><b>${fmPts(px)} – ${fmPts(py)}</b><span class="${py>px?"lead":""}">${y?teamName(R(y.roster_id)):"–"}</span></li>`;}).join("");
   fmSugPinta(M,slots,w,INJ);
-  box.innerHTML=nav+`<div class="fm">${head}${alerts}<h3 class="fmh3">Posición por posición</h3><div class="fmrows">${rows}</div>
+  box.innerHTML=nav+`<div class="fm">${head}${fmLineaHTML(HS,ev)}${M.nodetail?"":fmVsEsperado(M,w)}${alerts}<h3 class="fmh3">Posición por posición</h3><div class="fmrows">${rows}</div>
     ${bench?`<details class="fmbench"><summary>Tu banca (${benchIds.length})</summary><div class="fmrows">${bench}</div></details>`:""}</div>
     ${others?`<h3 style="margin-top:22px">Otros matchups de tu liga</h3><ul class="fmother">${others}</ul>`:""}`;
 }
@@ -7300,6 +7405,7 @@ function qmxRender(sinRed){
     <div class="qmxdes"><div><b>Desempate: goles de la jornada</b><span>${cerrada?`Tu pronóstico: ${mios.g??"–"} · van ${goles} goles`:"¿Cuántos goles se meten en los partidos de la jornada?"}</span></div>
       <input id="qmxG" type="number" inputmode="numeric" min="0" max="60" value="${mios.g??""}"${cerrada?" disabled":""} aria-label="Goles de la jornada"></div>
     <p class="note" id="qmxGuardo"></p>
+    ${cerrada&&todos&&fin&&hechos?`<button class="pzsharebtn pzhist" id="qmxHist">📱 Historia para Instagram</button>`:""}
     ${cerrada&&todos&&fin&&hechos?`<button class="pzsharebtn" id="qmxShare"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>Compartir mi jornada</button>`:""}
     ${cerrada&&abierta!=null&&abierta!==j?`<p class="note"><button class="q5link" data-qmxj="${abierta}">Ir a ${qmxNomJ(abierta).toLowerCase()}, que está abierta</button></p>`:""}
     ${cuenta}
@@ -7323,6 +7429,17 @@ document.addEventListener("click",ev=>{
       const ab=id=>qmxEq(id).ab||qmxEq(id).n.slice(0,3).toUpperCase();
       const etq=J.p.map((r,i)=>[R[i].gl!=null?`${R[i].gl}-${R[i].gv}`:"–",ab(r[2]),ab(r[3])]);
       pzCompartir({titulo:`Quiniela Liga MX · Jornada ${j}`,grande:`${ac}/${n}`,sub:"aciertos",celdas,etq,stats:st},`liga-mx-j${j}`); })(); return; }
+  if(t.closest("#qmxHist")){ (async()=>{ const j=QMX.j, J=qmxD().J[j], mios=qmxMios(j), R=J.p.map(r=>qmxRes(r,QMX.vivo));
+      const celdas=J.p.map((r,i)=>R[i].susp?null:mios.p[r[0]]?mios.p[r[0]]===R[i].r:false), ac=celdas.filter(v=>v===true).length, n=J.p.filter((r,i)=>!R[i].susp).length;
+      const G=await qmxTablaGen(), yo=typeof acctOk==="function"&&acctOk()?await q5Hash(ACCT.user.uid):null, st=[];
+      if(G&&yo&&G.t?.[yo]){ const L=Object.entries(G.t).map(([h,x])=>[h,Object.values(x.j).reduce((s,v)=>s+(v[0]||0),0)]).sort((a,b)=>b[1]-a[1]); st.push([`${L.findIndex(x=>x[0]===yo)+1}º`,`de ${L.length} en la general`]); }
+      let racha=0; for(let i=celdas.length-1;i>=0&&celdas[i]!==false;i--) if(celdas[i]) racha++;
+      st.push([`${ac}`,`de ${n} aciertos`,"#8FD6A6"]);
+      // El que nadie veía venir: tu acierto con menor probabilidad según las casas
+      let dest=null; J.p.forEach((r,i)=>{ const k=mios.p[r[0]]; if(!R[i].fin||k!==R[i].r||!r[7]) return; const pr=r[7][k==="L"?0:k==="E"?1:2]; if(pr&&(!dest||pr<dest.pr)) dest={pr,r,k}; });
+      const D2=dest&&dest.pr<=40?["El que nadie veía venir",`${qmxEq(dest.r[2]).n} ${R[J.p.indexOf(dest.r)].gl}-${R[J.p.indexOf(dest.r)].gv} ${qmxEq(dest.r[3]).n}`,`Las casas le daban ${dest.pr}% y le atinaste`]:null;
+      const b=await pzHistoria({kick:`Quiniela Liga MX · ${qmxNomJ(j)}`,l1:"Le atiné",l2:`${ac} de ${n}`,stats:st.slice(0,2),dest:D2,celdas});
+      pzCompartir(null,`historia-j${j}`,{blob:b,titulo:"Tu historia de la jornada"}); })(); return; }
   if(t.closest("#qmxCopia")){ const j=QMX.j, x=qmxMios(j); x.p={...x.p}; for(const r of qmxD().J[j].p){ const l=qmxLpz(r[7]); if(l) x.p[r[0]]=l; } qmxGuarda(j,x); qmxRender(true); return; }
   const ql=t.closest("[data-ql]"); if(ql){ try{localStorage.setItem("pz_qliga",ql.dataset.ql);}catch(e){} showSport("qn"); window.scrollTo(0,0); return; }
 });
@@ -8849,7 +8966,7 @@ async function pzCompartir(o,nombre,op={}){
   $("#gbody").innerHTML=pzSkel(2); if(!dlg.open) dlg.showModal(); pzTrack("compartir_abre",{t:nombre});
   const b=op.blob||await pzImagen(o), TX=op.texto||"¿Me ganas? https://lapizarra.mx"; if(!b){ $("#gbody").innerHTML=`<p class="note">No se pudo hacer la imagen en este navegador.</p>`; return; }
   const f=new File([b],`la-pizarra-${nombre}.png`,{type:"image/png"}), url=URL.createObjectURL(b), puede=!!(navigator.canShare&&navigator.canShare({files:[f]}));
-  $("#gbody").innerHTML=`<div class="pzshare${nombre==="sufrometro"||nombre==="mi-semana"?" pzstory":""}"><h2>${op.titulo||"Comparte tu jornada"}</h2><img src="${url}" alt="Imagen para compartir con tu resultado"><div class="pzsb">
+  $("#gbody").innerHTML=`<div class="pzshare${nombre==="sufrometro"||nombre==="mi-semana"||/^historia/.test(nombre)?" pzstory":""}"><h2>${op.titulo||"Comparte tu jornada"}</h2><img src="${url}" alt="Imagen para compartir con tu resultado"><div class="pzsb">
     <button class="pzwa" id="pzShareWa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>Mandar por WhatsApp</button>
     ${puede?`<button class="q5link" id="pzShareGo">Más opciones</button>`:""}<a class="q5link" href="${url}" download="la-pizarra-${nombre}.png" id="pzShareDl">Descargar imagen</a></div>
     <p class="note">${puede?"En el menú que se abre, escoge WhatsApp (o Instagram, o donde quieras).":"Se descarga la imagen y se abre WhatsApp: adjúntala en el chat que quieras."}</p></div>`;
@@ -12060,7 +12177,7 @@ async function favFichaPinta(id,x){
     ${(()=>{ const b=(LJ||[]).slice().sort((a,b)=>b.fixture.timestamp-a.fixture.timestamp)[0]; if(!b||b.fixture.timestamp*1000<Date.now()-12*86400e3) return "";
       return `<div class="jbaja"><b>${hoyEsc(bajaEs(b.player.reason,b.player.type))}</b><span>Reportado como baja para el partido del ${pzDTF("es-MX",{timeZone:"America/Mexico_City",day:"numeric",month:"long"}).format(new Date(b.fixture.timestamp*1000))}.</span></div>`; })()}
     ${st?`<h4 class="stat-cat">${filas.length?"Esta temporada · todas las competiciones":"Esta temporada · liga"}</h4><div class="jfg">${st}</div>`:`<p class="note">Todavía no tenemos sus estadísticas de esta temporada.</p>`}
-    ${desglose}${extra?`<div class="jfx" style="margin-top:14px">${extra}</div>`:""}</div>`;
+    ${f?jugPercHTML(J,f):""}${desglose}${extra?`<div class="jfx" style="margin-top:14px">${extra}</div>`:""}</div>`;
 }
 $("#gbody").addEventListener("click",ev=>{ const p=ev.target.closest(".jfi [data-hid],.eqfi [data-hid]"); if(p){ hoyAbrir(p.dataset.hk,p.dataset.hid); } });
 function hoyFavHTML(){
