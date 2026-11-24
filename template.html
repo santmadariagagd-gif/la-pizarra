@@ -2188,6 +2188,15 @@ dialog#pdlg{padding:0;border:1px solid var(--line);border-radius:20px;background
 .hbr span{display:flex;flex-direction:column;min-width:0}.hbr b{font:700 18px/1.15 var(--display)}.hbr small{font-size:13px;color:var(--muted)}
 .hbr em{font:400 22px var(--tab);font-style:normal;white-space:nowrap}
 .hbr:hover{background:rgba(255,255,255,.03)}
+/* Pestañas de Hoy */
+.htabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:6px 0 16px;border-bottom:2px solid rgba(236,239,231,.55);position:sticky;top:0;z-index:5;background:var(--bg);padding-top:6px}
+.htabs::-webkit-scrollbar{display:none}
+.htabs button{flex:1 0 auto;min-height:46px;padding:0 8px;border:0;background:none;color:var(--muted);font:400 17px var(--tab);text-transform:uppercase;letter-spacing:.02em;cursor:pointer;border-bottom:4px solid transparent;margin-bottom:-2px}
+.htabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--mark)}
+#hoy[data-htab] .hoymain>[data-hgrp]{display:none}
+#hoy[data-htab="ult"] .hoymain>[data-hgrp="ult"],#hoy[data-htab="par"] .hoymain>[data-hgrp="par"],#hoy[data-htab="eq"] .hoymain>[data-hgrp="eq"],#hoy[data-htab="vid"] .hoymain>[data-hgrp="vid"]{display:block}
+#hoy .hoymain>[data-hgrp]>.hsec:first-child>.hh{border-top:0;padding-top:0}
+#hoyUlt .hult>.hh h3{font-size:0}#hoyUlt .hult>.hh h3 small{margin:0}#hoyFav>.hsec>.hh h3{display:none}
 /* Lo último como breves: la primera a lo ancho, las demás en dos columnas */
 #hoyUlt .ulist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:none;border:0;border-radius:0;gap:0}
 #hoyUlt .uit{border-top:1px solid var(--line);padding:12px 12px 12px 0;border-radius:0}
@@ -2314,10 +2323,9 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div id="hoyPor"></div>
   <div id="hoyRd"></div>
   <div id="hoyVivo"></div>
-  <div id="hoyCfb"></div>
-  <div id="hoyPf"></div>
+  <div class="htabs" id="hoyTabs" role="tablist" aria-label="Secciones de Hoy"></div>
   <div class="hoygrid">
-    <div class="hoymain"><div id="hoyUlt"></div><div id="hoyFav"></div><div id="hoySem"></div><div id="hoyMarc"></div><div id="hoyVid"></div><div id="hoyBs"></div><div id="hoyNfl"></div></div>
+    <div class="hoymain"><div id="hoyUlt" data-hgrp="ult"></div><div id="hoyFav" data-hgrp="eq"></div><div id="hoyPf" data-hgrp="eq"></div><div id="hoySem" data-hgrp="par"></div><div id="hoyMarc" data-hgrp="par"></div><div id="hoyCfb" data-hgrp="par"></div><div id="hoyNfl" data-hgrp="par"></div><div id="hoyVid" data-hgrp="vid"></div><div id="hoyBs" data-hgrp="vid"></div></div>
     <aside class="hoyside"><div id="hoyLpz"></div></aside>
   </div>
 </section>
@@ -11749,6 +11757,17 @@ function hoyBoletaHTML(){
   return `<section class="hbol"><div class="hbolh"><h2>Tu boleta</h2><span>${R.length} ${R.length===1?"pendiente":"pendientes"}</span></div>
     ${R.map(x=>`<button class="hbr" data-hir="${x.ir}"><span><b>${hoyEsc(x.nom)}</b><small>${hoyEsc(x.sub)}</small></span><em style="color:${BOL_COL[x.c]}${x.falta<7200?";animation:vlate 1.6s ease-in-out infinite":""}">${bolFalta(x.falta)}</em></button>`).join("")}</section>`;
 }
+// ---- Pestañas de Hoy (23 nov 2026): arriba lo esencial (nota principal, Tu boleta, reto, en vivo); lo demás en 4 pestañas,
+// una a la vez. Se recuerda la última que viste.
+const HOY_TABS=[["ult","Lo último"],["par","Partidos"],["eq","Mis equipos"],["vid","Videos"]];
+function hoyTab(){ let t=null; try{ t=localStorage.getItem("pz_hoy_tab"); }catch(e){} return HOY_TABS.some(x=>x[0]===t)?t:"ult"; }
+function hoyTabsPinta(){ const el=$("#hoyTabs"); if(!el) return; const t=hoyTab();
+  $("#hoy").dataset.htab=t;
+  const html=HOY_TABS.map(([k,n])=>`<button role="tab" id="htab-${k}" aria-selected="${k===t}" data-htab="${k}">${n}</button>`).join("");
+  if(el.innerHTML!==html) el.innerHTML=html; }
+$("#hoyTabs")?.addEventListener("click",ev=>{ const b=ev.target.closest("[data-htab]"); if(!b) return; const k=b.dataset.htab;
+  try{ localStorage.setItem("pz_hoy_tab",k); }catch(e){} pzTrack("hoy_tab",{k}); hoyTabsPinta();
+  const y=$("#hoyTabs").getBoundingClientRect().top+scrollY-12; if(scrollY>y) window.scrollTo({top:y,behavior:"smooth"}); });
 function hoyAvisoFila(n){ const liga=ULT_LIGA[n.liga]||"";
   return `<button class="uit uav" data-hir="${n.ir}"><span class="ub"><span class="um"><span class="utag u-pizarra"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${AV_SVG}</svg>La Pizarra</span>${n.ir==="cfbq"||n.ir==="cfbll"?"Colegial":liga}</span>
     <b>${hoyEsc(n.tit)}</b><span class="ud">${n.html?n.det:hoyEsc(n.det)}</span></span><svg class="uch" width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>`; }
@@ -11898,6 +11917,7 @@ function hoyPaint(){
   hoyArma();
   $("#hoyFecha").textContent=cap(fDay(new Date())); $("#hoyFiltro").innerHTML=hoyFiltroHTML();
   try{ $("#hoyPortada").innerHTML=hoyPortadaHTML(); $("#hoyBoleta").innerHTML=hoyBoletaHTML(); }catch(e){ console.warn("Portada:",e); }
+  hoyTabsPinta();
   const st=$("#hoyVivo .hstrip"), x=st?st.scrollLeft:0;
   $("#hoyVivo").innerHTML=hoyVivoHTML(); const st2=$("#hoyVivo .hstrip"); if(st2) st2.scrollLeft=x;
   $("#hoyFav").innerHTML=hoyFavHTML(); $("#hoySem").innerHTML=hoySemHTML(); $("#hoyMarc").innerHTML=hoyMarcHTML(); $("#hoyUlt").innerHTML=hoyUltHTML();
@@ -12164,7 +12184,7 @@ const hoyOrdenLs=()=>{ try{ const o=JSON.parse(localStorage.getItem("pz_hoy_orde
 function hoyOrden(){
   const o=hoyOrdenLs(), main=$("#hoy .hoymain"), side=$("#hoy .hoyside"), grid=$("#hoy .hoygrid"); if(!main||!grid) return;
   if(o&&o.length){ const todos=[...o,...HOY_ORD.map(x=>x[0]).filter(id=>!o.includes(id))]; for(const id of todos){ const el=$("#"+id); if(el) main.append(el); } side.hidden=true; grid.classList.add("hoyuna"); }
-  else { const por=$("#hoyPor"); for(const id of ["hoyVivo","hoyRd"]){ const el=$("#"+id); if(el) (por?por.after(el):grid.before(el)); } for(const id of ["hoyUlt","hoyFav","hoySem","hoyMarc","hoyVid","hoyBs","hoyNfl"]){ const el=$("#"+id); if(el) main.append(el); } const l=$("#hoyLpz"); if(l) side.append(l); side.hidden=false; grid.classList.remove("hoyuna"); }
+  else { const por=$("#hoyPor"); for(const id of ["hoyVivo","hoyRd"]){ const el=$("#"+id); if(el) (por?por.after(el):grid.before(el)); } for(const id of ["hoyUlt","hoyFav","hoyPf","hoySem","hoyMarc","hoyCfb","hoyNfl","hoyVid","hoyBs"]){ const el=$("#"+id); if(el) main.append(el); } const l=$("#hoyLpz"); if(l) side.append(l); side.hidden=false; grid.classList.remove("hoyuna"); }
 }
 const PERS={};
 function persAbre(){ if(!dlg.open){ dlg.showModal(); FICHA.pila=[]; } pzTrack("personaliza_abre",{}); persPinta(); }
