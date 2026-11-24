@@ -41,6 +41,27 @@ def _nombre(sid):
 def _pts(v): return f"{round(v or 0, 2):g}"
 
 
+def _jugada(t, ap):
+    """Última jugada de ESPN (en inglés) → texto corto en español, si menciona al jugador."""
+    import re
+    T = str(t or "")
+    if not ap or len(ap) < 3 or ap not in T: return ""
+    y = re.search(r"for (-?\d+) (?:yds|yards)", T, re.I); y = y.group(1) if y else None
+    td = bool(re.search("touchdown", T, re.I)); yd = f" de {y} yardas" if y else ""
+    if re.search("field goal is good", T, re.I):
+        d = re.search(r"(\d+) (?:yard|yd) field goal", T, re.I); return f"gol de campo de {d.group(1)} yardas" if d else "gol de campo"
+    if re.search("pass", T, re.I) and not re.search("incomplete", T, re.I):
+        rec = bool(re.search(r"to [A-Z][\w.'-]*\.?\s?" + re.escape(ap), T))
+        return ("recepción de TD" if td else "recepción") + yd if rec else ("pase de TD" if td else "pase") + yd
+    if re.search(r"(run|rush|left end|right end|up the middle|tackle|guard)", T, re.I): return ("carrera de TD" if td else "carrera") + yd
+    return "touchdown" if td else ""
+
+
+def _equipo(sid):
+    _nombre(sid)
+    return (_NOM.get(str(sid)) or ["", "", ""])[2] if _NOM else ""
+
+
 def corre(A, cache):
     """A = el objeto Avisos (subs, E, db, manda). cache = dict que dura toda la corrida (ligas, usuarios)."""
     subs = A.subs or {}
@@ -49,6 +70,10 @@ def corre(A, cache):
     except Exception as e: print("Fantasy en vivo: ESPN", repr(e)[:120]); return False
     est = [((ev.get("competitions") or [{}])[0].get("status") or ev.get("status") or {}).get("type", {}).get("state") for ev in sb.get("events") or []]
     vivo, todo = "in" in est, bool(est) and all(s == "post" for s in est)
+    ULT = {}   # equipo → última jugada de su partido
+    for ev in sb.get("events") or []:
+        C = (ev.get("competitions") or [{}])[0]; lp = ((C.get("situation") or {}).get("lastPlay") or {}).get("text") or ""
+        for c in C.get("competitors") or []: ULT[{"WSH": "WAS", "JAX": "JAX", "LAR": "LA"}.get(c["team"]["abbreviation"], c["team"]["abbreviation"])] = lp
     E = A.E.setdefault("ff", {})
     if not vivo and not (todo and any(not x.get("fin") for x in E.values())): return False
     if "estado" not in cache:
@@ -88,7 +113,9 @@ def corre(A, cache):
                 sube = sorted(((pp[s] - (S["p"].get(s) or 0), s) for s in pp if s in S["p"]), reverse=True)
                 if sube and sube[0][0] >= 5.5:
                     d, s = sube[0]
-                    A.manda(uid, "fantasy", f"+{_pts(d)} de {_nombre(s)}", f"Tu fantasy: vas {_pts(a)} – {_pts(b)}" + (" · arriba" if a > b else " · abajo" if a < b else ""),
+                    eq = _equipo(s); eq = {"LAR": "LA"}.get(eq, eq); ap = (_NOM.get(str(s)) or [""])[0].split(" ")[-1] if _NOM else ""
+                    jug = _jugada(ULT.get(eq, ""), ap)
+                    A.manda(uid, "fantasy", f"+{_pts(d)} de {_nombre(s)}" + (f": {jug}" if jug else ""), f"Tu fantasy: vas {_pts(a)} – {_pts(b)}" + (" · arriba" if a > b else " · abajo" if a < b else ""),
                             "/#fmatch", f"ff|{uid}|{w}|{s}|{int(pp[s] * 10)}"); n += 1
                 antes, ahora = (S["a"] or 0) - (S["b"] or 0), a - b
                 if O and antes * ahora < 0 and abs(ahora) >= 1:

@@ -6471,13 +6471,26 @@ async function slMatchLoad(quiet){
 }
 const fmPhi=z=>{ const t=1/(1+.2316419*Math.abs(z)), d=.3989423*Math.exp(-z*z/2), p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274)))); return z>0?1-p:p; };
 const fmHace=t=>{ const m=Math.round((Date.now()-t)/60000); return m<1?"ahora":m<60?`hace ${m} min`:`hace ${Math.round(m/60)} h`; };
+// Jugada de ESPN (en inglés) → texto corto en español: "Pase de TD de 12 yardas", "Carrera de 32 yardas", "Gol de campo de 45 yardas"…
+function fmJugada(t,ap){ const T=String(t), rec=!!ap&&new RegExp(`to [A-Z][a-zA-Z.'-]*\\.?\\s?${ap}`).test(T), y=(T.match(/for (-?\d+) (?:yds|yards)/i)||[])[1], td=/touchdown/i.test(T);
+  if(/field goal is good/i.test(T)){ const d=(T.match(/(\d+) (?:yard|yd) field goal/i)||[])[1]; return d?`Gol de campo de ${d} yardas`:"Gol de campo"; }
+  if(/pass/i.test(T)&&!/incomplete/i.test(T)) return `${rec?(td?"Recepción de TD":"Recepción"):(td?"Pase de TD":"Pase completo")}${y?` de ${y} yardas`:""}`;
+  if(/intercept/i.test(T)) return "Intercepción";
+  if(/fumble/i.test(T)) return "Balón suelto";
+  if(/sacked/i.test(T)) return "Captura";
+  if(/(run|rush|left end|right end|up the middle|left tackle|right tackle|left guard|right guard)/i.test(T)) return `${td?"Carrera de TD":"Carrera"}${y?` de ${y} yardas`:""}`;
+  return td?"Touchdown":""; }
 // Eventos: diferencia de puntos de cada titular entre actualizaciones; se guardan por liga y semana (pz_fm_ev) para no perderlos al recargar
 function fmEventos(M,O,w){
   const k=`${SL.league?.league_id}|${w}`; let S; try{ S=JSON.parse(localStorage.getItem("pz_fm_ev")||"null"); }catch(e){}
   if(!S||S.k!==k) S={k,snap:null,ev:[]};
   const now=Date.now(), cur={}, nuevos=[];
   for(const [m,mine] of [[M,1],[O,0]]) for(const sid of (m?.starters||[])){ if(!sid||sid==="0") continue; const v=m.players_points?.[sid]; if(v==null) continue; cur[sid]=v;
-    if(S.snap&&S.snap[sid]!=null&&Math.abs(v-S.snap[sid])>=0.5) nuevos.push({sid,d:v-S.snap[sid],p:v,t:now,m:mine}); }
+    if(S.snap&&S.snap[sid]!=null&&Math.abs(v-S.snap[sid])>=0.5){
+      // la jugada: la última jugada del partido de su equipo (ESPN en vivo), si menciona su apellido
+      let x=""; try{ const P=slPlayer(sid), t=fmTm(P.t), g=(D.sched||[]).find(g=>g.w===+w&&(g.a===t||g.h===t)), L=g&&NLIVE[g.id]?.sit?.last||"";
+        const ap=String(P.n||"").split(" ").slice(-1)[0]; if(L&&ap&&ap.length>2&&L.includes(ap)) x=fmJugada(L,ap); }catch(e){}
+      nuevos.push({sid,d:v-S.snap[sid],p:v,t:now,m:mine,x}); } }
   S.ev=[...nuevos.sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)),...S.ev].slice(0,30); S.snap=cur;
   try{ localStorage.setItem("pz_fm_ev",JSON.stringify(S)); }catch(e){}
   return S.ev;
@@ -6518,7 +6531,7 @@ function fmRender(mu,w,INJ,last){
     <div class="fmside op"><span class="fml">Rival</span><b>${O?teamName(R(O.roster_id)):"Sin rival"}</b><small>${O?rec(R(O.roster_id)):""}</small><strong>${fmPts(b)}</strong>${!allDone&&pB!=null?`<small>va para ${fmPts(Math.round(pB*10)/10)}</small>`:""}</div></div>
     ${O?`<div class="fmprob"><div><span class="${prob>=50?"w":""}">${allDone?(a>b?"Ganaste":a<b?"Perdiste":"Empate"):`${prob}% ganas`}</span><span>${allDone?"":`${100-prob}%`}</span></div><div class="fmpb"><i style="flex:${Math.max(prob,1)}"></i><i style="flex:${Math.max(100-prob,1)}"></i></div></div>`:""}
     ${M.nodetail?"":`<div class="fmcnt"><div><b class="${lm.l?"v":""}">${lm.l}</b>jugando</div><div><b>${lm.n}</b>por jugar</div><div><b>${ter}</b>terminaron</div></div>`}</div>
-    ${ev.length?`<section class="fmev"><h3>Lo último</h3>${ev.slice(0,6).map(e=>`<div class="fmevr${e.m?"":" riv"}"><b>${e.d>0?"+":""}${fmPts(Math.round(e.d*10)/10)}</b><span><b>${e.m?"":"Rival · "}${fmShort(slPlayer(e.sid).n)}</b><small>lleva ${fmPts(e.p)} puntos</small></span><small>${fmHace(e.t)}</small></div>`).join("")}</section>`:""}`;
+    ${ev.length?`<section class="fmev"><h3>Lo último</h3>${ev.slice(0,6).map(e=>`<div class="fmevr${e.m?"":" riv"}"><b>${e.d>0?"+":""}${fmPts(Math.round(e.d*10)/10)}</b><span><b>${e.m?"":"Rival · "}${fmShort(slPlayer(e.sid).n)}</b><small>${e.x?`${hoyEsc(e.x)} · `:""}lleva ${fmPts(e.p)} puntos</small></span><small>${fmHace(e.t)}</small></div>`).join("")}</section>`:""}`;
   const rows=M.nodetail?`<p class="note" style="margin:12px 0">En ligas de ESPN, el detalle jugador por jugador solo está disponible en la semana actual.</p>`:slots.map((slot,i)=>{
     const s1=M.starters?.[i], s2=O?.starters?.[i], p1=pts(M,s1), p2=pts(O,s2);
     const c1=fmCard(s1,p1,w,INJ,"l",slot), c2=O?fmCard(s2,p2,w,INJ,"r",slot):{html:`<div class="fmp r"></div>`};
