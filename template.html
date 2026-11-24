@@ -2251,6 +2251,7 @@ h2{font:400 36px/.98 var(--tab);text-transform:uppercase;letter-spacing:.01em}
 .hffs b{display:block;font:700 15px var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hffs strong{font:400 44px/1 var(--tab);color:var(--mark)}.hffs strong.op{color:#C9D6CF}.hffs>span{font:400 16px var(--tab);color:var(--muted)}
 .hff p{margin:12px 0 0;padding-top:10px;border-top:1px dashed #4B6A5F;font-size:14px;color:#C9D6CF}
 /* Deportes: botones de deporte y tira de "más" */
+.depchips[hidden],.depmas[hidden]{display:none!important}
 .subnav button.sec{display:none}.subnav[data-for=mas]{display:none!important}
 .depchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:6px 0 10px}.depchips::-webkit-scrollbar{display:none}
 .depchips button{flex:none;height:40px;padding:0 16px;border-radius:20px;border:1px solid var(--line);background:transparent;color:#C9D6CF;font:600 15px var(--body);cursor:pointer}
@@ -2258,6 +2259,19 @@ h2{font:400 36px/.98 var(--tab);text-transform:uppercase;letter-spacing:.01em}
 .depmas{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-6px 0 16px}.depmas::-webkit-scrollbar{display:none}
 .depmas button{flex:none;min-height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 14px var(--body);cursor:pointer}
 .depmas button[aria-pressed="true"]{color:var(--ink);border-color:var(--mark)}
+/* Tú */
+.tuyo{display:flex;align-items:center;gap:14px;margin:0 0 18px;max-width:640px}.tuyo>div{flex:1;min-width:0;display:flex;flex-direction:column}
+.tuyo b{font:400 32px/1 var(--tab);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis}.tuyo small{color:var(--muted);font-size:13.5px;margin-top:4px}
+.tuin{padding:16px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}.tuin b{font-size:24px}
+.tubtn{flex:none;min-height:40px;padding:0 16px;border-radius:20px;border:1px solid #4B6A5F;background:transparent;color:var(--ink);font:600 14px var(--body);cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
+.tuh3{font:400 26px/1 var(--tab);text-transform:uppercase;border-top:2px solid rgba(236,239,231,.55);padding-top:10px;margin:22px 0 8px;max-width:640px}
+.tufs{display:flex;flex-direction:column;max-width:640px}
+.tuf,.tug{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:13px 0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.tuf{padding-right:24px;position:relative}.tuf::after{content:"›";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:22px;color:var(--muted)}
+.tuf span,.tug span{display:flex;flex-direction:column;min-width:0}.tuf b,.tug b{font:700 18px var(--display)}.tuf small,.tug small{font-size:13px;color:var(--muted)}
+.tuinv{display:flex;align-items:center;justify-content:center;width:100%;max-width:640px;min-height:50px;margin:16px 0 0;border:0;border-radius:25px;background:var(--mark);color:#15241F;font:700 16px var(--body);cursor:pointer}
+.tumail{max-width:640px;margin-top:14px}
+#favsBody .hfav>.hh{display:none}
 /* Retas */
 .rthead{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);padding:6px 0 8px;margin:0 0 18px;display:flex;flex-direction:column-reverse;gap:2px}
 .rthead h2{margin:0;font:400 54px/.95 var(--tab);text-transform:uppercase}.rthead span{font:600 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -2338,7 +2352,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <nav class="tabs sports" aria-label="Deporte">
     <button aria-selected="true" data-sport="hoy">Hoy</button>
     <button aria-selected="false" data-sport="qn">Retas</button>
-    <button aria-selected="false" data-sport="favs">Favoritos</button>
+    <button aria-selected="false" data-sport="favs">Tú</button>
     <button aria-selected="false" data-sport="ff">Fantasy NFL</button>
     <button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false">Deportes <svg class="depch" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
   </nav>
@@ -2548,8 +2562,10 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
   <div id="amBody"></div>
 </section>
 <section class="panel hidden" id="favs">
-  <div class="headrow"><h2>Favoritos</h2></div>
+  <div class="headrow"><h2>Tú</h2></div>
+  <div id="tuTop"></div>
   <div id="favsBody"></div>
+  <div id="tuBottom"></div>
 </section>
 <section class="panel hidden" id="f1">
   <div class="headrow"><h2>Fórmula 1</h2></div>
@@ -2712,7 +2728,7 @@ if(/^G-[A-Z0-9]+$/.test(window.PZ_GA)){
 </section>
 
 <nav class="bnav" aria-label="Secciones">
-  <button aria-selected="true" data-sport="hoy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Hoy</button><button aria-selected="false" data-sport="qn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Retas</button><button aria-selected="false" data-sport="amigos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.9-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6-.4 4.6 1.2 5 4.3"/></svg>Amigos</button><button aria-selected="false" data-sport="favs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>Favoritos</button><button aria-selected="false" data-sport="ff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="9.5" ry="6" transform="rotate(-35 12 12)"/><path d="M9.5 14.5l5-5M10.5 11l1 1M12 9.5l1 1M13.5 12.5l-1-1"/></svg>Fantasy</button><button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3 12h18"/></svg>Deportes</button>
+  <button aria-selected="true" data-sport="hoy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Hoy</button><button aria-selected="false" data-sport="qn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Retas</button><button aria-selected="false" data-sport="amigos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.9-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c2.6-.4 4.6 1.2 5 4.3"/></svg>Amigos</button><button aria-selected="false" data-sport="favs"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 14.5-4 16 0"/></svg>Tú</button><button aria-selected="false" data-sport="ff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="9.5" ry="6" transform="rotate(-35 12 12)"/><path d="M9.5 14.5l5-5M10.5 11l1 1M12 9.5l1 1M13.5 12.5l-1-1"/></svg>Fantasy</button><button aria-selected="false" data-sport="dep" aria-haspopup="menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M3 12h18"/></svg>Deportes</button>
 </nav>
 <div class="depmenu" id="depMenu" role="menu" aria-label="Deportes" hidden>
   <button role="menuitem" data-dep="mx"><b>Fútbol</b><span>Liga MX, Europa, Champions y selecciones</span></button>
@@ -2887,7 +2903,7 @@ function showTab(id){SECTIONS.forEach(s=>$("#"+s).classList.toggle("hidden",s!==
   pzTrack("ver_seccion",{seccion:id,liga:id.startsWith("mx")?FLIG:""});
   document.querySelectorAll(".subnav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.tab===id||(b.dataset.tab==="froster"&&["fwaivers","frank","ftrade"].includes(id))));
   try{ depNavSync(id,grp); }catch(e){} document.querySelectorAll(".subnav button[aria-current]").forEach(b=>b.setAttribute("aria-current","page"));
-  if(id==="favs"){ favsRender(); setTimeout(()=>typeof sufObserva==="function"&&sufObserva(),400); } if(id==="amigos") amRender();
+  if(id==="favs"){ favsRender(); try{ tuPinta(); }catch(e){ console.warn("Tú:",e); } setTimeout(()=>typeof sufObserva==="function"&&sufObserva(),400); } if(id==="amigos") amRender();
   if(id==="retas") rtRender(); if(id==="survmx") smxRender();
   if(id==="qmx") qmxAbre(); if(id==="fan") fanRender(); if(id==="f1") f1Render(); if(id==="tenis") tenRender(); if(id==="ncaa") cfbRender(); if(id==="nfldraft") drRender();
   if(id==="nbagames") nbaPartidos(); if(id==="nbatable") nbaTabla(); if(id==="nbastats") nbaStats(); if(id==="nbaq5") q5Render();
@@ -10628,6 +10644,35 @@ async function fvvRevisa(){
   } finally { delete FVV.p[el.dataset.vk]; }
 }
 setInterval(()=>{ fvvRevisa().catch(()=>{}); },30e3);
+// ---- Tú (24 nov 2026): antes "Favoritos". Arriba tu perfil; en medio tus equipos (lo de siempre); abajo tus grupos, invitar a
+// un amigo y los ajustes (avisos, correos, personalizar Hoy y colores, cuenta).
+function tuPinta(){
+  const top=$("#tuTop"), bot=$("#tuBottom"); if(!top||!bot) return; const ok=typeof acctOk==="function"&&acctOk(), P=perfMio();
+  top.innerHTML=ok?`<section class="tuyo">${typeof perfAvatar==="function"&&P?perfAvatar(P,64):""}<div><b>${hoyEsc(P?.a||"Tu perfil")}</b><small>${hoyEsc(perfTitulo(P)||"Escoge tu apodo, tu número y tus colores")}</small></div><button class="tubtn" data-tuact="perfil">Editar</button></section>`
+    :`<section class="tuyo tuin"><div><b>Entra con tu cuenta</b><small>Para jugar con tus amigos, guardar tus picks en la nube y recibir avisos.</small></div><button class="btn" data-acct>Entrar</button></section>`;
+  top.innerHTML+=`<h3 class="tuh3">Mis equipos</h3>`;
+  const fila=(k,t,d)=>`<button class="tuf" data-tuact="${k}"><span><b>${t}</b>${d?`<small>${d}</small>`:""}</span></button>`;
+  bot.innerHTML=`${ok?`<h3 class="tuh3">Mis grupos</h3><div id="tuGr"><p class="note">Cargando tus grupos…</p></div>`:""}
+    <button class="tuinv" data-tuact="invita">Invitar a un amigo</button>
+    <h3 class="tuh3">Ajustes</h3><div class="tufs">
+      ${ok?fila("avisos","Avisos al teléfono","Cierres, resultados y lo que hacen tus amigos"):""}
+      ${fila("pers","Personalizar Hoy y colores","Qué secciones ves, en qué orden y los colores de tu equipo")}
+      ${ok?fila("perfil","Mi perfil","Apodo, número, camiseta y título"):""}
+      ${fila("cuenta",ok?"Cuenta y privacidad":"Entrar o crear cuenta",ok?"Tu correo, salir y borrar tu cuenta":"Gratis, con Google")}
+    </div>${ok&&typeof mailCard==="function"?`<div class="tumail">${mailCard()}</div>`:""}`;
+  if(ok) tuGrupos();
+}
+async function tuGrupos(){ const el=$("#tuGr"); if(!el) return;
+  const ids=[...new Set([...(typeof GR!=="undefined"&&GR.ids||[]),...(typeof qmxIds==="function"?qmxIds():[]),...(typeof fanIds==="function"?fanIds():[])])];
+  if(!ids.length){ el.innerHTML=`<p class="note">Todavía no estás en ningún grupo. Crea uno desde cualquier quiniela y comparte el link.</p>`; return; }
+  const I=await Promise.all(ids.map(id=>grInfo(id).catch(()=>null)));
+  el.innerHTML=`<div class="tufs">${ids.map((id,i)=>I[i]?`<div class="tug"><span><b>${hoyEsc(I[i].nombre||"Grupo")}</b><small>${hoyEsc((I[i].modos||[]).map(m=>({qmx:"Liga MX",fan:"Fantasy",q5:"Quinteta"}[m]||"Quiniela NFL")).join(" · ")||"Quiniela")}</small></span><a class="tubtn" href="https://wa.me/?text=${encodeURIComponent(`Únete a mi grupo «${I[i].nombre||"La Pizarra"}» en La Pizarra: ${grLink(id)}`)}" target="_blank" rel="noopener">Invitar</a></div>`:"").join("")}</div>`;
+}
+document.addEventListener("click",ev=>{ const b=ev.target.closest?.("[data-tuact]"); if(!b) return; const k=b.dataset.tuact; pzTrack("tu_accion",{k});
+  if(k==="perfil") return perfAbre(); if(k==="pers") return persAbre(); if(k==="avisos") return ntAbre();
+  if(k==="cuenta") return (typeof acctOpen==="function"?acctOpen():$("#acctBtn")?.click());
+  if(k==="invita"){ const t=`Juega conmigo en La Pizarra: quinielas, retos y fantasy gratis. https://lapizarra.mx/?vuelve=0${typeof pzDe==="function"?pzDe():""}`;
+    if(navigator.share) navigator.share({text:t}).catch(()=>{}); else window.open(`https://wa.me/?text=${encodeURIComponent(t)}`,"_blank","noopener"); } });
 function favsRender(){
   const b=$("#favsBody"); if(!b) return; const E=Object.keys(FAV.eq), J=Object.keys(FAV.jug);
   if(!E.length&&!J.length){ FAVS.lastH=null; b.innerHTML=hoyFavHTML(); return; }
