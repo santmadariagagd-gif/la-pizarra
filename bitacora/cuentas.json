@@ -1,26 +1,26 @@
 {
- "al": "2026-11-24T22:44:50.717967+00:00",
- "cuentas": 19,
- "verificadas": 19,
- "nuevas_7d": 0,
- "nuevas_30d": 6,
- "activas_7d": 7,
- "activas_30d": 14,
+ "al": "2026-11-25T21:57:26.915027+00:00",
+ "cuentas": 20,
+ "verificadas": 20,
+ "nuevas_7d": 1,
+ "nuevas_30d": 7,
+ "activas_7d": 8,
+ "activas_30d": 15,
  "por_forma_de_entrar": {
-  "google.com": 17,
+  "google.com": 18,
   "password": 2
  },
- "perfiles": 14,
+ "perfiles": 15,
  "amistades": 12,
  "grupos": 6,
  "con_avisos_al_telefono": 1,
  "juegan": {
-  "quiniela_liga_mx": 4,
+  "quiniela_liga_mx": 7,
   "survivor_liga_mx": 1,
   "fantasy": 3,
   "reto_del_dia": 8,
   "duelos": 6,
-  "posts": 39
+  "posts": 45
  },
  "pizarron_pedidos": 0
 }
