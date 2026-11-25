@@ -3615,3 +3615,25 @@ except StopIteration:
 os.makedirs(os.path.join(aqui,'docs'),exist_ok=True)
 open(os.path.join(aqui,'docs','index.html'),'w',encoding='utf-8').write(html)
 print(f'Listo: docs/index.html (temporada {S}, semana {wk})')
+# Salud para el tablero del dueño (25 nov 2026): Firestore admin/salud (solo lo lee la cuenta del dueño). Sin nombres ni correos.
+try:
+    _sa=os.environ.get('FIREBASE_SA','').strip()
+    if _sa:
+        import firebase_admin
+        from firebase_admin import credentials, firestore
+        if not firebase_admin._apps: firebase_admin.initialize_app(credentials.Certificate(json.loads(_sa)))
+        _hoy=datetime.now(ZoneInfo('America/Mexico_City')).strftime('%Y-%m-%d')
+        _st={}
+        try:
+            _r=_af_pide("https://v3.football.api-sports.io/status"); _rq=(_r or {}).get('requests') or {}
+            _st={'hoy':_rq.get('current'),'tope':_rq.get('limit_day'),'plan':((_r or {}).get('subscription') or {}).get('plan'),'fin':((_r or {}).get('subscription') or {}).get('end')}
+        except Exception as _e: _st={'error':repr(_e)[:120]}
+        try:
+            import cfb as _cfb; _p,_U,_mes=_cfb._uso(); _cf={'mes':_mes,'usadas':_U.get(_mes,0),'tope':_cfb.TOPE_MES}
+        except Exception as _e: _cf={'error':repr(_e)[:120]}
+        _ev=os.environ.get('GITHUB_EVENT_NAME','local')
+        firestore.client().document('admin/salud').set({'build':{'t':datetime.now(ZoneInfo('UTC')).isoformat(),'por':_ev,'af_corrida':AF_USADOS[0],'af_cache':AF_DE_CACHE[0]},
+            'af':_st,'cfbd':_cf,'af_dia':{_hoy:firestore.Increment(AF_USADOS[0])}},merge=True)
+        print("Tablero: salud guardada")
+except Exception as ex:
+    print("Tablero: no se pudo guardar la salud:",repr(ex)[:150])

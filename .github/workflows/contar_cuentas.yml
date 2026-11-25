@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: read
 jobs:
   contar:
     runs-on: ubuntu-24.04
@@ -18,6 +19,7 @@ jobs:
       - run: python contar_cuentas.py
         env:
           FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+          GH_TOKEN: ${{ github.token }}
       - name: Guardar
         run: |
           git config user.name "La Pizarra bot"

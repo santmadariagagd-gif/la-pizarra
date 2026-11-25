@@ -152,6 +152,9 @@ class Avisos:
         self.nuevos += 1
         print(f"→ {uid[:6]}… [{cat}] {titulo} · {cuerpo}")
         if PRUEBA: return
+        # para el tablero (25 nov 2026): cuántos avisos salen por día y por tipo (sin nombres)
+        dia = time.strftime("%Y-%m-%d", time.localtime(self.now - 6 * 3600))
+        C = self.E.setdefault("cnt", {}).setdefault(dia, {}); C[cat or "otro"] = C.get(cat or "otro", 0) + 1
         malos = self.enviar_fcm(S["tk"], {"t": titulo, "b": cuerpo, "u": url, "g": (clave or "")[:60]})
         if malos:
             S["tk"] = [t for t in S["tk"] if t not in malos]
@@ -500,6 +503,7 @@ class Avisos:
         self.E["vis"] = {k: v for k, v in self.E.get("vis", {}).items() if v > self.now - 86400}
         self.E["conoc"] = {k: v for k, v in self.E["conoc"].items() if v > self.now - 120 * 86400}
         self.E["mail"] = {k: v for k, v in self.E.get("mail", {}).items() if v > self.now - 21 * 86400}
+        self.E["cnt"] = dict(sorted(self.E.get("cnt", {}).items())[-30:])
 
     def corre(self):
         try:   # marcadores en vivo del colegial (19 nov 2026)

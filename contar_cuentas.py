@@ -133,3 +133,60 @@ try:
     for f in filas: print(" ".join(str(f[k]) for k in ("alta", "ult", "nfl", "qmx", "rd", "rd7", "fan", "posts", "amigos", "sleeper", "push", "fav", "apodo", "invitado")))
 except Exception as ex:
     print("Retención: no se pudo:", repr(ex))
+
+# ---------------- Tablero v2 (25 nov 2026): regresan, qué más usan, avisos y correos, salud de las automatizaciones ----------------
+# Todo va a admin/tablero (solo lo lee el dueño). En el log solo números (es público).
+try:
+    extra = {}
+    try:
+        F = filas
+        viejas = [f for f in F if f["alta"] >= 2]
+        extra["ret"] = dict(viejas=len(viejas), regresaron=sum(1 for f in viejas if f["ult"] < f["alta"]),
+                            semana=sum(1 for f in viejas if f["ult"] < f["alta"] and f["ult"] <= 6),
+                            nuevas_30=[sum(1 for f in F if f["alta"] < 30 and f["alta"] >= 2), sum(1 for f in F if 2 <= f["alta"] < 30 and f["ult"] < f["alta"])])
+        extra["j2"] = dict(nfl=sum(1 for f in F if f["nfl"]), sleeper=sum(1 for f in F if f["sleeper"]), amigos=sum(1 for f in F if f["amigos"]),
+                           favs=sum(1 for f in F if f["fav"]))
+    except NameError:
+        pass
+    try: extra.setdefault("j2", {})["cfb"] = uids("cfb_picks")
+    except Exception: pass
+    try: extra["j2"]["mocks"] = cuenta("mocks")
+    except Exception: pass
+    try: extra["j2"]["llave"] = sum(1 for x in docs("qmx_picks", "j") if x.get("j") == "llave")
+    except Exception: pass
+    # avisos al teléfono y correos (sistema/avisos: lo escribe avisos.py)
+    try:
+        EA = db.document("sistema/avisos").get().to_dict() or {}
+        extra["push"] = sorted([[d, sum(c.values()), c] for d, c in (EA.get("cnt") or {}).items()])[-14:]
+        mc = Counter(k.split("-")[0] for k in (EA.get("mail") or {}))
+        extra["mail"] = sorted(mc.items(), key=lambda kv: -kv[1])
+        extra["cfbv"] = EA.get("cfbv") or {}
+    except Exception as ex:
+        print("Tablero v2: avisos", repr(ex)[:120])
+    # salud de las automatizaciones y lo último que cambió (API de GitHub con el token de la corrida)
+    tok, repo = os.environ.get("GH_TOKEN"), os.environ.get("GITHUB_REPOSITORY")
+    if tok and repo:
+        import urllib.request
+        gh = lambda ruta: json.loads(urllib.request.urlopen(urllib.request.Request(f"https://api.github.com/repos/{repo}/{ruta}",
+                     headers={"Authorization": f"Bearer {tok}", "Accept": "application/vnd.github+json", "User-Agent": "la-pizarra"}), timeout=30).read())
+        try:
+            R = gh("actions/runs?per_page=100").get("workflow_runs") or []
+            lim = datetime.now(timezone.utc) - timedelta(days=7); W = {}
+            for r in R:
+                n = r.get("name") or "?"; t = r.get("created_at") or ""
+                w = W.setdefault(n, dict(n=n, ult=t, est=r.get("conclusion") or r.get("status"), corridas=0, fallas=0))
+                if datetime.fromisoformat(t.replace("Z", "+00:00")) >= lim:
+                    w["corridas"] += 1; w["fallas"] += int(r.get("conclusion") == "failure")
+            extra["wf"] = sorted(W.values(), key=lambda w: w["ult"], reverse=True)
+        except Exception as ex:
+            print("Tablero v2: corridas", repr(ex)[:120])
+        try:
+            C = gh("commits?per_page=60")
+            extra["cambios"] = [[c["commit"]["author"]["date"], c["commit"]["message"].split("\n")[0][:140]] for c in C
+                                if not c["commit"]["message"].startswith("Actualización automática")][:12]
+        except Exception as ex:
+            print("Tablero v2: cambios", repr(ex)[:120])
+    db.collection("admin").document("tablero").set(extra, merge=True)
+    print("Tablero v2:", {k: (len(v) if isinstance(v, (list, dict)) else v) for k, v in extra.items()})
+except Exception as ex:
+    print("Tablero v2: no se pudo:", repr(ex)[:200])

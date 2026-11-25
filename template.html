@@ -2434,6 +2434,10 @@ h2{font:400 36px/.98 var(--tab);text-transform:uppercase;letter-spacing:.01em}
 .nserie li.yo span{color:var(--mark);font-weight:600}
 .ncampo .bl,.ncampo .fd{transition:left 1s cubic-bezier(.3,.9,.3,1)}
 @media (prefers-reduced-motion:reduce){.fmvr>span i,.fmevr:first-of-type,.jpb i,.nserie li{animation:none}}
+
+.tbk.mal b{color:var(--bad)}.tbk.bien b{color:var(--good)}
+.tbcob{list-style:none;margin:6px 0 0;padding:0}.tbcob li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line,#3A554C)}.tbcob li div{display:flex;flex-direction:column;min-width:0}.tbcob li div:last-child{text-align:right;flex:none}.tbcob span{font-size:12.5px;color:var(--muted)}
+.tbcam{list-style:none;margin:6px 0 0;padding:0}.tbcam li{display:grid;grid-template-columns:56px 1fr;gap:8px;padding:8px 0;border-bottom:1px solid var(--line,#3A554C);font-size:13.5px;line-height:1.35}.tbcam small{color:var(--muted);padding-top:1px}
 </style>
 <script>
 // Google Analytics 4. build_site.py cambia __GA_ID__ por el ID de google_analytics.txt (G-XXXXXXX);
@@ -3515,7 +3519,7 @@ function tbCols(P){ const mx=Math.max(...P.map(p=>p[1]),1);
 async function tbAbre(){
   $("#gbody").innerHTML=pzSkel(4); if(!dlg.open) dlg.showModal(); pzTrack("tablero_abre",{});
   if(!(typeof acctOk==="function"&&acctOk())){ $("#gbody").innerHTML=`<p class="note">Entra con tu cuenta para ver el tablero.</p><button class="btn" data-acct>Entrar</button>`; return; }
-  let X=null; try{ const s=await ACCT.db.doc("admin/tablero").get(); X=s.exists?s.data():null; }catch(e){ $("#gbody").innerHTML=`<p class="note">El tablero es solo para el dueño de La Pizarra.</p>`; return; }
+  let X=null, SA={}; try{ const [s,s2]=await Promise.all([ACCT.db.doc("admin/tablero").get(),ACCT.db.doc("admin/salud").get().catch(()=>null)]); X=s.exists?s.data():null; SA=s2?.exists?s2.data():{}; }catch(e){ $("#gbody").innerHTML=`<p class="note">El tablero es solo para el dueño de La Pizarra.</p>`; return; }
   if(!X){ $("#gbody").innerHTML=`<p class="note">El tablero se arma cada mañana; todavía no hay datos.</p>`; return; }
   try{ localStorage.setItem("pz_admin","1"); }catch(e){}
   const n=X.n||{}, J=n.juegan||{}, h=X.h||[], al=pzDTF("es-MX",{timeZone:"America/Mexico_City",weekday:"long",day:"numeric",month:"long",hour:"numeric",minute:"2-digit"}).format(new Date(X.al));
@@ -3524,9 +3528,10 @@ async function tbAbre(){
   const tabla=(cab,F)=>F.length?`<div class="tbl"><table><thead><tr>${cab.map((c,i)=>`<th${i?"":' class="l"'}>${c}</th>`).join("")}</tr></thead><tbody>${F.map(r=>`<tr>${r.map((c,i)=>`<td${i?"":' class="l"'}>${hoyEsc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`:`<p class="note">Nada todavía.</p>`;
   $("#gbody").innerHTML=`<div class="tb"><h2>Tablero de La Pizarra</h2><p class="note">Se actualiza cada mañana · último: ${hoyEsc(al)}. Solo tú lo ves.</p>
     <div class="tbks">${tile("Cuentas",n.cuentas,`+${n.nuevas_7d} esta semana`)}${tile("Entraron hoy",X.a1??"–",`${n.activas_7d} en 7 días`)}${tile("Avisos al teléfono",n.con_avisos_al_telefono,`de ${n.cuentas}`)}${tile("Llegaron invitados",X.invitados||0,"con el link de alguien")}${tile("Pedidos del Pizarrón",n.pizarron_pedidos||0,"por activar")}</div>
+    ${tbV2(X,SA)}
     <h3>Cuentas en total · últimos 60 días</h3>${tbLinea("c",(X.altas||[]).map(a=>[a[0],a[2]]),"Cuentas en total")}
     <h3>Gente que entró en los últimos 7 días</h3>${tbLinea("a",h.map(x=>[x.d,x.a7]),"Activas en 7 días")}
-    <h3>¿Quién juega qué?</h3><p class="note">Personas distintas que alguna vez jugaron cada cosa.</p>${tbBarras([["Reto del día",J.reto_del_dia||0],["Quiniela Liga MX",J.quiniela_liga_mx||0],["Fantasy",J.fantasy||0],["Survivor Liga MX",J.survivor_liga_mx||0],["Duelos (retos)",J.duelos||0],["Publicaciones en Amigos",J.posts||0]])}
+    <h3>¿Quién juega qué?</h3><p class="note">Personas distintas que alguna vez jugaron cada cosa.</p>${tbBarras([["Reto del día",J.reto_del_dia||0],["Quiniela Liga MX",J.quiniela_liga_mx||0],["Quiniela NFL",X.j2?.nfl??"–"],["Llave de la Liguilla",X.j2?.llave??"–"],["Quiniela colegial",X.j2?.cfb??"–"],["Liga de Sleeper conectada",X.j2?.sleeper??"–"],["Mock draft NFL",X.j2?.mocks??"–"],["Fantasy (UCL / Liga MX)",J.fantasy||0],["Survivor Liga MX",J.survivor_liga_mx||0],["Con amigos",X.j2?.amigos??"–"],["Duelos (retos)",J.duelos||0],["Publicaciones en Amigos",J.posts||0]].filter(r=>r[1]!=="–").sort((a,b)=>b[1]-a[1]))}
     <h3>Reto del día · respuestas por día</h3>${tbCols(X.rd||[])}
     <div class="tbdos"><div><h3>Quiniela Liga MX por jornada</h3>${tbBarras(X.qmx||[],nomJ)}</div><div><h3>Survivor por jornada</h3>${tbBarras(X.smx||[],nomJ)}</div><div><h3>Fantasy por jornada</h3>${tbBarras(X.fan||[],nomJ)}</div></div>
     <h3>Cuentas nuevas</h3>${tabla(["Apodo","Se registró","Entró con","Última vez"],(X.nuevas||[]).map(r=>[r[0],TB_F(r[1]),r[2]==="google"?"Google":r[2]==="password"?"Correo":r[2],r[3]?TB_F(r[3]):"–"]))}
@@ -3541,6 +3546,42 @@ document.addEventListener("pointermove",ev=>{ const c=ev.target.closest?.(".tbch
   const ln=c.querySelector(".tbx"), h=c.querySelector(".tbh"); ln.setAttribute("x1",px); ln.setAttribute("x2",px); ln.setAttribute("visibility","visible"); h.setAttribute("cx",px); h.setAttribute("cy",py); h.setAttribute("visibility","visible");
   const tip=c.querySelector(".tbtip"); tip.hidden=false; tip.innerHTML=`<b>${P[i][1]}</b> · ${TB_F(P[i][0])}`; tip.style.left=`${Math.min(85,Math.max(5,px/vb.width*100))}%`; });
 document.addEventListener("pointerleave",ev=>{ const c=ev.target.closest?.(".tbch"); if(!c) return; c.querySelectorAll(".tbx,.tbh").forEach(e=>e.setAttribute("visibility","hidden")); c.querySelector(".tbtip").hidden=true; },true);
+
+// Tablero v2 (25 nov 2026): regresan, cómo le va a La Pizarra, avisos y correos, salud de las automatizaciones, cobros y lo último que cambió.
+const TB_COBROS=[["DigitalOcean","Servidor del proxy de API-Football (api.lapizarra.mx)","US$4 al mes","fin de mes, a la tarjeta"],
+  ["College Football Data","Plan Tier 1 (Patreon), marcadores en vivo del colegial","MXN 25 al mes","cada mes"],
+  ["API-Football","Plan Pro, 7,500 consultas al día","según el plan","ver fecha abajo"],
+  ["Resend","Correos (plan gratis, 3,000 al mes)","gratis","—"],["Firebase","Cuentas, base de datos y avisos (plan gratis)","gratis","—"],["GitHub Pages","La página","gratis","—"]];
+function tbV2(X,SA){
+  const tile=(k,v,s,c)=>`<div class="tbk${c?" "+c:""}"><small>${k}</small><b>${v}</b>${s?`<span>${s}</span>`:""}</div>`, R=X.ret||{}, pc=(a,b)=>b?Math.round(a/b*100)+"%":"–";
+  const hace=t=>{ if(!t) return "–"; const m=Math.round((Date.now()-new Date(t))/6e4); return m<60?`hace ${m} min`:m<48*60?`hace ${Math.round(m/60)} h`:`hace ${Math.round(m/1440)} días`; };
+  const wf=X.wf||[], fallas=wf.reduce((a,w)=>a+(w.fallas||0),0), act=wf.find(w=>w.n==="Actualizar La Pizarra"), af=SA.af||{}, cf=SA.cfbd||{}, mes=new Date().toISOString().slice(0,7), cv=(X.cfbv||{})[mes];
+  const ats=typeof lpzRecord==="function"?lpzRecord("ats"):null, su=typeof lpzRecord==="function"?lpzRecord("su"):null, v3=typeof lpzRecord==="function"?lpzRecord("ats",null,11):null;
+  const rec=r=>r?`${r.w}-${r.l}${r.p?`-${r.p}`:""}`:"–", pr=r=>r&&r.w+r.l?Math.round(100*r.w/(r.w+r.l))+"%":"";
+  const NP={cie:"Cierres de quiniela",eq:"Tus equipos",gol:"Goles",riv:"Rivales",ret:"Retos",soc:"Amigos",fantasy:"Fantasy en vivo",otro:"Otros"};
+  const pushT={}; (X.push||[]).forEach(([d,n,c])=>Object.entries(c||{}).forEach(([k,v])=>pushT[k]=(pushT[k]||0)+v));
+  const NM={semana:"Tu semana (lunes)",cierre:"Cierre de quiniela",racha:"Racha del reto",extranamos:"Te extrañamos",llave:"Llena tu Llave"};
+  return `<h3>Salud de la página</h3><div class="tbks">
+      ${tile("Página actualizada",hace(SA.build?.t||act?.ult),act?.est==="failure"?"la última corrida falló":"todo bien",act?.est==="failure"?"mal":"")}
+      ${tile("Fallas en 7 días",fallas,fallas?wf.filter(w=>w.fallas).map(w=>`${w.n} (${w.fallas})`).join(", "):"ninguna",fallas?"mal":"")}
+      ${tile("API-Football hoy",af.hoy!=null?`${Number(af.hoy).toLocaleString("es-MX")}`:"–",af.tope?`de ${Number(af.tope).toLocaleString("es-MX")}${af.fin?` · plan hasta ${TB_F(String(af.fin).slice(0,10))}`:""}`:"",af.hoy>af.tope*.85?"mal":"")}
+      ${tile("Colegial este mes",cf.usadas!=null?cf.usadas:"–",`de ${cf.tope||1500} (datos)${cv!=null?` · en vivo ${cv} de 3,000`:""}`)}</div>
+    ${wf.length?`<details class="pzdet"><summary>Automatizaciones (${wf.length})</summary><div class="tbl"><table><thead><tr><th class="l">Automatización</th><th>Última</th><th>Estado</th><th>7 días</th></tr></thead><tbody>${wf.map(w=>`<tr><td class="l">${hoyEsc(w.n)}</td><td>${hace(w.ult)}</td><td>${w.est==="success"?"✓":w.est==="failure"?"✗ falló":hoyEsc(w.est||"")}</td><td>${w.corridas}${w.fallas?` · ${w.fallas} ✗`:""}</td></tr>`).join("")}</tbody></table></div></details>`:""}
+    <h3>¿Regresan?</h3><div class="tbks">
+      ${tile("Regresaron otro día",pc(R.regresaron||0,R.viejas),`${R.regresaron??"–"} de ${R.viejas??"–"} cuentas`)}
+      ${tile("Cuentas del último mes",pc(R.nuevas_30?.[1]||0,R.nuevas_30?.[0]),`${R.nuevas_30?.[1]??"–"} de ${R.nuevas_30?.[0]??"–"} volvieron`)}
+      ${tile("Usaron la página esta semana",R.semana??"–","de las que regresaron")}</div>
+    <p class="note">"Regresaron" = usaron la página después del día en que se registraron (cuentas de 2 días o más).</p>
+    <h3>¿Cómo le va a La Pizarra?</h3><div class="tbks">
+      ${tile("Picks NFL contra el spread",rec(ats),pr(ats)?`${pr(ats)} en la temporada`:"",ats&&ats.w>ats.l?"bien":"")}
+      ${tile("Regla nueva (desde sem. 11)",rec(v3),pr(v3)||"")}
+      ${tile("Picks NFL sin spread",rec(su),pr(su)?`${pr(su)} de ganadores`:"",su&&su.w>su.l?"bien":"")}</div>
+    <p class="note">Contra el spread, lo realista a la larga es 51-52%.</p>
+    <div class="tbdos"><div><h3>Avisos al teléfono · 14 días</h3>${X.push?.length?tbCols((X.push||[]).map(([d,n])=>[d,n]))+tbBarras(Object.entries(pushT).sort((a,b)=>b[1]-a[1]),k=>NP[k]||k):`<p class="note">Se empieza a contar desde hoy.</p>`}</div>
+      <div><h3>Correos · 21 días</h3>${X.mail?.length?tbBarras(X.mail,k=>NM[k]||k):`<p class="note">Nada todavía.</p>`}</div></div>
+    <h3>Lo último que cambió en la página</h3>${(X.cambios||[]).length?`<ul class="tbcam">${X.cambios.map(([d,m])=>`<li><small>${TB_F(String(d).slice(0,10))}</small>${hoyEsc(m)}</li>`).join("")}</ul>`:`<p class="note">Aparece mañana.</p>`}
+    <h3>Lo que se paga</h3><ul class="tbcob">${TB_COBROS.map(([a,b,c,d])=>`<li><div><b>${hoyEsc(a)}</b><span>${hoyEsc(b)}</span></div><div><b>${hoyEsc(c)}</b>${d!=="—"?`<span>${hoyEsc(d)}</span>`:""}</div></li>`).join("")}</ul>`;
+}
 const TB_LAST={};
 // El botón del tablero solo sale en la cuenta del dueño: se compara una huella del correo (el correo no está escrito en la página).
 let TB_DUENO=null;
