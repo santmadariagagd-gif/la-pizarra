@@ -9828,6 +9828,184 @@
       "ATL@MIN": -6.5,
       "TEN@JAX": -14.5
      }
+    },
+    {
+     "cuando": "2026-11-26 15:33",
+     "motivo": "diaria",
+     "lineas": {
+      "PHI@DAL": {
+       "draftkings": -8.5,
+       "fanduel": -8.5,
+       "betonlineag": -8.5,
+       "betmgm": -8.5,
+       "lowvig": -8.5,
+       "betrivers": -8.5,
+       "mybookieag": -8.5,
+       "betus": -9.5,
+       "bovada": -8.5
+      },
+      "KC@BUF": {
+       "draftkings": -3.0,
+       "fanduel": -3.0,
+       "betmgm": -3.0,
+       "mybookieag": -3.0,
+       "betrivers": -3.0,
+       "betonlineag": -3.0,
+       "lowvig": -3.0,
+       "betus": -3.0,
+       "bovada": -3.0
+      },
+      "DEN@PIT": {
+       "draftkings": 4.5,
+       "fanduel": 4.5,
+       "betmgm": 5.0,
+       "betrivers": 4.0,
+       "betonlineag": 4.5,
+       "lowvig": 4.5,
+       "betus": 5.0,
+       "mybookieag": 5.0,
+       "bovada": 5.0
+      },
+      "ATL@MIN": {
+       "draftkings": -7.0,
+       "fanduel": -7.0,
+       "betrivers": -6.5,
+       "betus": -7.0,
+       "lowvig": -7.0,
+       "betonlineag": -7.0,
+       "betmgm": -7.0,
+       "bovada": -7.0,
+       "mybookieag": -7.0
+      },
+      "BAL@HOU": {
+       "draftkings": -6.5,
+       "fanduel": -6.5,
+       "betrivers": -7.0,
+       "betus": -7.0,
+       "lowvig": -7.0,
+       "betonlineag": -7.0,
+       "betmgm": -6.5,
+       "bovada": -6.5,
+       "mybookieag": -6.5
+      },
+      "NO@CIN": {
+       "draftkings": -10.0,
+       "betus": -10.0,
+       "fanduel": -9.5,
+       "betrivers": -10.0,
+       "lowvig": -10.0,
+       "betonlineag": -10.0,
+       "betmgm": -10.0,
+       "bovada": -10.0,
+       "mybookieag": -10.0
+      },
+      "NYG@IND": {
+       "draftkings": 6.0,
+       "fanduel": 6.5,
+       "betrivers": 6.0,
+       "betus": 6.0,
+       "lowvig": 6.5,
+       "betonlineag": 6.5,
+       "betmgm": 6.0,
+       "bovada": 6.0,
+       "mybookieag": 6.0
+      },
+      "TEN@JAX": {
+       "draftkings": -14.5,
+       "betus": -14.5,
+       "fanduel": -14.5,
+       "betrivers": -14.5,
+       "betonlineag": -14.5,
+       "lowvig": -14.5,
+       "betmgm": -14.5,
+       "bovada": -14.5,
+       "mybookieag": -14.5
+      },
+      "NYJ@MIA": {
+       "draftkings": 4.5,
+       "fanduel": 5.5,
+       "betrivers": 5.0,
+       "lowvig": 5.0,
+       "betonlineag": 5.0,
+       "betus": 5.0,
+       "betmgm": 5.5,
+       "bovada": 5.5,
+       "mybookieag": 5.0
+      },
+      "NE@LAC": {
+       "draftkings": 2.5,
+       "betus": 1.0,
+       "fanduel": 1.5,
+       "betrivers": 1.5,
+       "lowvig": 2.0,
+       "betonlineag": 2.0,
+       "betmgm": 2.0,
+       "bovada": 2.0,
+       "mybookieag": 2.5
+      },
+      "WAS@ARI": {
+       "draftkings": 6.5,
+       "betus": 7.0,
+       "fanduel": 7.0,
+       "betrivers": 7.0,
+       "lowvig": 6.5,
+       "betonlineag": 6.5,
+       "betmgm": 6.5,
+       "bovada": 6.5,
+       "mybookieag": 7.0
+      },
+      "SEA@SF": {
+       "draftkings": -3.0,
+       "betus": -3.0,
+       "fanduel": -2.5,
+       "betrivers": -3.0,
+       "lowvig": -3.0,
+       "betonlineag": -3.0,
+       "betmgm": -3.0,
+       "bovada": -3.0,
+       "mybookieag": -2.5
+      },
+      "LV@CLE": {
+       "draftkings": -4.5,
+       "fanduel": -4.5,
+       "betrivers": -4.5,
+       "betonlineag": -4.5,
+       "betus": -4.5,
+       "lowvig": -4.5,
+       "betmgm": -4.5,
+       "bovada": -5.0,
+       "mybookieag": -4.5
+      },
+      "CAR@TB": {
+       "draftkings": -3.0,
+       "betus": -3.0,
+       "fanduel": -3.0,
+       "betrivers": -2.5,
+       "lowvig": -3.0,
+       "betonlineag": -3.0,
+       "betmgm": -3.0,
+       "bovada": -3.0,
+       "mybookieag": -3.0
+      }
+     },
+     "espn": {
+      "NE@LAC": -1.5,
+      "GB@LA": -2.5,
+      "CHI@DET": 2.5,
+      "DEN@PIT": 2.5,
+      "NO@CIN": -9.5,
+      "NYG@IND": 6.5,
+      "NYJ@MIA": 3.5,
+      "BAL@HOU": -6.5,
+      "WAS@ARI": 7.5,
+      "SEA@SF": -2.5,
+      "CAR@TB": -2.5,
+      "PHI@DAL": -8.5,
+      "KC@BUF": -2.5,
+      "LV@CLE": -4.5,
+      "ATL@MIN": -6.5,
+      "TEN@JAX": -14.5
+     }
     }
    ],
    "primera_vez": "2026-11-24T17:46+00:00"
