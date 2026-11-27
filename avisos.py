@@ -463,7 +463,8 @@ class Avisos:
         RV = {k: v for k, v in getattr(self, "RV", {}).items() if k[0] == pre}
         keys = {k[1:] for k in list(F) + list(RV) if k[0] == pre}
         if not keys: return False
-        try: j = get_json(f"{ESPN}/{ruta}/scoreboard")
+        # 27 nov 2026: ESPN contesta 403 a "LaPizarra/1.0 (+https://lapizarra.mx)" con Accept: application/json; ff_vivo.py entra bien así:
+        try: j = get_json(f"{ESPN}/{ruta}/scoreboard", {"User-Agent": "La Pizarra (lapizarra.mx)", "Accept": "*/*"})
         except Exception as e: print("ESPN", liga, e); return False
         hay = False
         for ev in j.get("events") or []:
