@@ -1622,6 +1622,54 @@ def af_torneo_actual(F):
     if not reg: return None
     ya=[f for f in reg if f["fixture"]["timestamp"]<=time.time()]
     return af_torneo(max(ya,key=lambda f:f["fixture"]["timestamp"]) if ya else min(reg,key=lambda f:f["fixture"]["timestamp"]))
+# El jugador del día (27 nov 2026): juego tipo Wordle. Lista de jugadores de la Liga MX con minutos en el torneo actual y su edad,
+# nacionalidad y foto (API-Football /players, ~25 páginas, con caché). La página escoge al del día con la fecha (igual para todos).
+NAC_ES={"Mexico":"México","Argentina":"Argentina","Colombia":"Colombia","Uruguay":"Uruguay","Paraguay":"Paraguay","Chile":"Chile","Ecuador":"Ecuador",
+  "Peru":"Perú","Brazil":"Brasil","Venezuela":"Venezuela","Bolivia":"Bolivia","USA":"Estados Unidos","Canada":"Canadá","Costa-Rica":"Costa Rica",
+  "Costa Rica":"Costa Rica","Panama":"Panamá","Honduras":"Honduras","Guatemala":"Guatemala","El-Salvador":"El Salvador","El Salvador":"El Salvador",
+  "Jamaica":"Jamaica","Haiti":"Haití","Cuba":"Cuba","Spain":"España","Portugal":"Portugal","France":"Francia","Italy":"Italia","Germany":"Alemania",
+  "Netherlands":"Países Bajos","Belgium":"Bélgica","England":"Inglaterra","Croatia":"Croacia","Serbia":"Serbia","Greece":"Grecia","Switzerland":"Suiza",
+  "Nigeria":"Nigeria","Ghana":"Ghana","Cameroon":"Camerún","Senegal":"Senegal","Ivory-Coast":"Costa de Marfil","Morocco":"Marruecos","Japan":"Japón",
+  "South-Korea":"Corea del Sur","Australia":"Australia","Dominican-Republic":"República Dominicana","Curacao":"Curazao","Suriname":"Surinam"}
+REG_NAC={"Sudamérica":["Argentina","Colombia","Uruguay","Paraguay","Chile","Ecuador","Peru","Brazil","Venezuela","Bolivia"],
+  "Norte y Centroamérica":["Mexico","USA","Canada","Costa-Rica","Costa Rica","Panama","Honduras","Guatemala","El-Salvador","El Salvador","Jamaica","Haiti","Cuba","Dominican-Republic","Curacao","Suriname"],
+  "África":["Nigeria","Ghana","Cameroon","Senegal","Ivory-Coast","Morocco"],"Asia y Oceanía":["Japan","South-Korea","Australia"]}
+def jugador_del_dia_datos(lid,season,filas):
+    from datetime import timedelta
+    P={}
+    for pg in range(1,41):
+        R=af("players",league=lid,season=season,page=pg)
+        for x in R or []:
+            pl=x.get("player") or {}; P[pl.get("id")]=pl
+        if not R or len(R)<20: break
+    reg=lambda na:next((k for k,v in REG_NAC.items() if na in v),"Europa" if na else "")
+    L=[]
+    for r in filas:
+        pl=P.get(r["id"]) or {}
+        if r.get("min",0)<450 or not pl.get("nationality"): continue
+        na=pl["nationality"]; nom=r["n"]
+        if pl.get("firstname") and pl.get("lastname") and "." in nom:
+            nom=f'{pl["firstname"].split()[0]} {pl["lastname"]}'
+        L.append([r["id"],nom,r["t"],r.get("tn") or "",r.get("pg") or r.get("pos"),r.get("nu"),pl.get("age"),NAC_ES.get(na,na.replace("-"," ")),reg(na),r.get("g",0),r.get("min",0)])
+    L.sort(key=lambda z:-z[10])
+    # El del día lo escoge el build y no cambia una vez escrito (dia = {fecha: id}); hoy y los 6 días que siguen.
+    # Candidatos: 900+ minutos, con número; sin repetir en 60 días.
+    ruta=os.path.join("docs","datos","jdia_mx.json")
+    try: dia=(json.load(open(ruta,encoding="utf-8")).get("dia") or {})
+    except Exception: dia={}
+    import random
+    hoy=datetime.now(ZoneInfo("America/Mexico_City")).date()
+    cand=[z[0] for z in L if z[10]>=900 and z[5]]
+    for k in range(7):
+        f=(hoy+timedelta(days=k)).isoformat()
+        if f in dia or not cand: continue
+        rec={v for d,v in dia.items() if d>=(hoy-timedelta(days=60)).isoformat()}
+        op=[c for c in cand if c not in rec] or cand
+        dia[f]=random.Random(f"jdia-{f}").choice(op)
+    dia={d:v for d,v in sorted(dia.items()) if d>=(hoy-timedelta(days=90)).isoformat()}
+    json.dump(dict(t=datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%MZ"),s=season,dia=dia,L=L),open(ruta,"w",encoding="utf-8"),ensure_ascii=False,separators=(",",":"))
+    print(f"Jugador del día: {len(L)} jugadores ({len(P)} perfiles de API-Football), {len(cand)} candidatos")
+
 def af_player_stats(lid,nombre,F,torneo=None,cods=None,sin_previas=False,sin_clasif=False):
     """Suma partido por partido las estadísticas de jugadores de los partidos terminados de F (de un torneo, si se da)."""
     if torneo: F=[f for f in F if af_torneo(f)==torneo]
@@ -1659,6 +1707,7 @@ def af_player_stats(lid,nombre,F,torneo=None,cods=None,sin_previas=False,sin_cla
                 r=P.setdefault(pid,dict(id=pid,n=(x["player"].get("name") or "").strip(),t=ab,tn=nm_eq,logo=t.get("logo") if SM_ESCUDOS else None,
                     pos=pos,ap=0,tit=0,min=0,g=0,as_=0,sh=0,sot=0,yc=0,rc=0,fc=0,fs=0,sv=0,gc=None,cs=None))
                 if tit: r["pos"]=pos
+                if g.get("number"): r["nu"]=g.get("number")   # número de playera (para "El jugador del día")
                 nn=(x["player"].get("name") or "").strip()
                 if len(nn)>len(r["n"]) and not nn.endswith("."): r["n"]=nn   # a veces viene "J. Paradela" y otras el nombre completo
                 r["ap"]+=1; r["tit"]+=1 if tit else 0; r["min"]+=mins
@@ -1762,7 +1811,11 @@ if AFK:
             AF_FX[clave]=(F,torneo)
             cods=af_codigos(lid,actual); sp=clave in AF_SIN_PREVIAS; sc=clave in AF_SIN_CLASIF
             AF_XG_ULT.clear()
-            guarda_jugadores(f'jugadores_{clave}.json',af_player_stats(lid,f"{nombre} {torneo or actual}",F,torneo,cods,sp,sc))
+            _JS=af_player_stats(lid,f"{nombre} {torneo or actual}",F,torneo,cods,sp,sc)
+            if clave=="mx" and not AF_AGOTADO[0]:   # antes de guardar: guarda_jugadores le quita el nombre del equipo a cada fila
+                try: jugador_del_dia_datos(lid,actual,_JS)
+                except Exception as ex: print("Jugador del día: no se pudo",repr(ex)[:150])
+            guarda_jugadores(f'jugadores_{clave}.json',_JS)
             if AF_XG_ULT: AF_XG[clave]=dict(n=nombre,s=actual,tor=torneo,eq=list(AF_XG_ULT.values()))
             # Torneos y temporadas pasadas: una sola vez (ya no cambian), cada uno en su archivo.
             # Liga MX: jugadores_mx_<temporada>_<Apertura|Clausura>.json (temporada 2025 = Apertura 2025 + Clausura 2026)
